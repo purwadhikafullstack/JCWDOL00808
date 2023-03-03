@@ -16,6 +16,22 @@ app.use(
 
 app.use(express.json());
 
+// Sequelize Model Synchronization (comment if not used)
+// const Sequelize = require("sequelize");
+// const Models = require("../models");
+// Models.sequelize
+//   .sync({
+//     force: false,
+//     alter: true,
+//     logging: console.log,
+//   })
+//   .then(function () {
+//     console.log("Database is Synchronized!");
+//   })
+//   .catch(function (err) {
+//     console.log(err, "Something Went Wrong with Database Update!");
+//   });
+
 //#region API ROUTES
 
 // ===========================
@@ -51,6 +67,11 @@ app.use((err, req, res, next) => {
     next();
   }
 });
+
+//Sample syntax
+//Import router for controller from index.js inside routers folder
+// const { userRouters } = require("./routers"); //refer to index.js in routers folder
+// app.use("/accounts", userRouters);
 
 //#endregion
 
