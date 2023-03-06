@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       from_warehouse_id: DataTypes.INTEGER,
       to_warehouse_id: DataTypes.INTEGER,
       quantity: DataTypes.INTEGER,
+      mutation_type: DataTypes.STRING,
       approvedAt: DataTypes.DATE,
     },
     {
