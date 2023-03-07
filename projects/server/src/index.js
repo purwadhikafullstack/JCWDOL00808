@@ -37,41 +37,40 @@ app.use(express.json());
 // ===========================
 // NOTE : Add your routes here
 
-app.get("/api", (req, res) => {
-  res.send(`Hello, this is my API`);
-});
+// app.get("/api", (req, res) => {
+//   res.send(`Hello, this is my API`);
+// });
 
-app.get("/api/greetings", (req, res, next) => {
-  res.status(200).json({
-    message: "Hello, Student !",
-  });
-});
+// app.get("/api/greetings", (req, res, next) => {
+//   res.status(200).json({
+//     message: "Hello, Student !",
+//   });
+// });
 
-// ===========================
+// // ===========================
 
-// not found
-app.use((req, res, next) => {
-  if (req.path.includes("/api/")) {
-    res.status(404).send("Not found !");
-  } else {
-    next();
-  }
-});
+// // not found
+// app.use((req, res, next) => {
+//   if (req.path.includes("/api/")) {
+//     res.status(404).send("Not found !");
+//   } else {
+//     next();
+//   }
+// });
 
-// error
-app.use((err, req, res, next) => {
-  if (req.path.includes("/api/")) {
-    console.error("Error : ", err.stack);
-    res.status(500).send("Error !");
-  } else {
-    next();
-  }
-});
+// // error
+// app.use((err, req, res, next) => {
+//   if (req.path.includes("/api/")) {
+//     console.error("Error : ", err.stack);
+//     res.status(500).send("Error !");
+//   } else {
+//     next();
+//   }
+// });
 
-//Sample syntax
 //Import router for controller from index.js inside routers folder
-// const { userRouters } = require("./routers"); //refer to index.js in routers folder
-// app.use("/accounts", userRouters);
+const { usersRouter } = require("./routers"); //refer to index.js in routers folder
+app.use("/user", usersRouter);
 
 //#endregion
 
