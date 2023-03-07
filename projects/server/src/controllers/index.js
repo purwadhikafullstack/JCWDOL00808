@@ -1,6 +1,5 @@
-//Sample syntax
-// const userControllers = require("./userControllers");
+const usersController = require("./usersController");
 
-// module.exports = {
-//   userControllers,
-// };
+module.exports = {
+  usersController,
+};
