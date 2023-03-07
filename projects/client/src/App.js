@@ -1,23 +1,21 @@
-import axios from "axios";
-// import logo from "./logo.svg";
 import "./App.css";
-import { useEffect, useState } from "react";
-import Sidebar from "../src/components/sidebar";
-// import { Routes, Route, redirect } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import Registration from "./pages/user/Registration";
+import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
+import Sidebar from "./components/sidebar";
 
 function App() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/greetings`);
-      setMessage(data?.message || "");
-    })();
-  }, []);
   return (
-    <div>
-      <Sidebar />
-      
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/user/register" element={<Registration />} />
+        <Route path="/admin" element={<Sidebar />} />
+
+        {/* Fallback route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 }
