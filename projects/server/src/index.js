@@ -9,7 +9,7 @@ app.use(
   cors({
     origin: [
       process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
+      process.env.WHITELISTED_DOMAIN.split(","),
     ],
   })
 );
