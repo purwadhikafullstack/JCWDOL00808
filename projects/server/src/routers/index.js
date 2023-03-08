@@ -5,3 +5,9 @@
 // module.exports = {
 //   userRouters,
 // };
+
+const adminsRouter = require("./admins");
+
+module.exports = {
+  adminsRouter,
+};
