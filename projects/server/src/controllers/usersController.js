@@ -34,7 +34,8 @@ module.exports = {
         );
         let compiledTemplate = handlebars.compile(template);
         let registerTemplate = compiledTemplate({
-          registrationLink: "http://localhost:3000/user/verify/",
+          registrationLink: "http://localhost:3000/user/verify",
+          email,
           token: createVerificationToken({ id: createAccount.dataValues.id }),
         });
         await transporter.sendMail({
@@ -59,6 +60,17 @@ module.exports = {
         message: error,
         data: null,
       });
+    }
+  },
+  verify: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      const { email, password } = req.body;
+      console.log(email);
+      console.log(password);
+      await users.update(password, { where: email }, { transaction: t });
+    } catch (error) {
+      console.log(error);
     }
   },
 };

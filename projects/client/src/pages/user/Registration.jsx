@@ -42,8 +42,8 @@ export default function Registration() {
       setIsLoading(false);
       console.log(error);
       toast({
-        title: error?.response?.data?.message,
-        description: "Use another email address",
+        title: error?.response?.data?.message || error?.message,
+        description: error?.message ? "" : "Use another email address",
         status: "error",
         duration: 5000,
         isClosable: true,

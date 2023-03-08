@@ -41,7 +41,7 @@ export default function Verification() {
       );
       toast({
         title: response?.data?.message,
-        description: "Check your email to continue registration",
+        description: "You can continue login now",
         status: "success",
         duration: 5000,
         isClosable: true,
@@ -51,8 +51,8 @@ export default function Verification() {
       setIsLoading(false);
       console.log(error);
       toast({
-        title: error?.response?.data?.message,
-        description: "Use another email address",
+        title: error?.response?.data?.message || error?.message,
+        description: error?.message ? "" : "Use another email address",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -185,7 +185,9 @@ export default function Verification() {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-                <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
+                <FormErrorMessage>
+                  {formik.errors.confirmPassword}
+                </FormErrorMessage>
               </FormControl>
 
               <Stack spacing={10} pt={2}>
