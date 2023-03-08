@@ -89,6 +89,8 @@ export default function Registration() {
           <Stack spacing={4}>
             <form onSubmit={formik.handleSubmit}>
               <FormControl
+                id="email"
+                isRequired
                 isInvalid={formik.touched.email && formik.errors.email}
               >
                 <FormLabel>Email address</FormLabel>

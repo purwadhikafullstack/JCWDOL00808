@@ -2,6 +2,7 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Registration from "./pages/user/Registration";
 import Home from "./pages/Home";
+import Verification from "./pages/user/Verification";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/user/register" element={<Registration />} />
+        <Route path="/user/verify" element={<Verification />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
