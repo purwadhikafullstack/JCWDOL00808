@@ -35,7 +35,7 @@ export default function Verification() {
     try {
       setIsLoading(true);
       const password = values.password;
-      const response = await axios.post(
+      const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/user/verify`,
         { email, password, token }
       );

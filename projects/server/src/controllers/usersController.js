@@ -11,6 +11,8 @@ const { createVerificationToken } = require("../helper/verificationToken");
 const transporter = require("../helper/transporter");
 const fs = require("fs").promises;
 const handlebars = require("handlebars");
+// Import hash function
+const { hashPassword, hashMatch } = require("../lib/hash");
 
 module.exports = {
   register: async (req, res) => {
@@ -68,9 +70,26 @@ module.exports = {
       const { email, password } = req.body;
       console.log(email);
       console.log(password);
-      await users.update(password, { where: email }, { transaction: t });
+      await users.update(
+        { password: await hashPassword(password), is_verified: 1 },
+        { where: { email } },
+        { transaction: t }
+      );
+
+      t.commit();
+      res.status(201).send({
+        isError: false,
+        message: "Password created.",
+        data: null,
+      });
     } catch (error) {
       console.log(error);
+      t.rollback();
+      res.status(404).send({
+        isError: true,
+        message: error?.message,
+        data: null,
+      });
     }
   },
 };
