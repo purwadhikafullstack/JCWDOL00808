@@ -4,9 +4,16 @@ import Logo from "../assets/logo.png";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
+  const [showSubMenu, setShowSubMenu] = useState(false); // state untuk menampilkan submenu
+
   const Menus = [
     { title: "Dashboard", src: "Chart_fill" },
-    { title: "Accounts", src: "User", gap: true },
+    { 
+      title: "Accounts", 
+      src: "User", 
+      gap: true, 
+      onClick: () => setShowSubMenu(!showSubMenu) // mengubah nilai state showSubMenu ketika menu "Accounts" di-klik
+    },
     { title: "Schedule ", src: "Calendar" },
     { title: "Search", src: "Search" },
     { title: "Analytics", src: "Chart" },
@@ -33,8 +40,16 @@ export default function Sidebar() {
               key={index}
               className={`flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-gray-300 text-sm items-center gap-x-4 
               ${Menu.gap ? "mt-9" : "mt-2"} ${index === 0 && "bg-light-white"} `}
+              onClick={Menu.onClick} // menambahkan event onClick pada item menu
             >
               <span className={`${!open && "hidden"} origin-left duration-200`}>{Menu.title}</span>
+              {/* menampilkan submenu jika showSubMenu bernilai true */}
+              {Menu.title === "Accounts" && showSubMenu && (
+                <ul className="absolute bg-light-white rounded-md p-2 text-gray-300 text-sm w-40 mt-2">
+                  <li className="cursor-pointer hover:bg-gray-100 p-1">Admin</li>
+                  <li className="cursor-pointer hover:bg-gray-100 p-1">User</li>
+                </ul>
+              )}
             </li>
           ))}
         </ul>
@@ -44,4 +59,4 @@ export default function Sidebar() {
       </div>
     </div>
   );
-}
+              }
