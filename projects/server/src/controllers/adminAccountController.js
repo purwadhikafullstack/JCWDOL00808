@@ -27,6 +27,7 @@ module.exports = {
       //step 1 ambil data dari client (body)
       let { email, password, full_name, is_verified, phone_number, role } = req.body;
       let profile_picture = req.files.profile_picture[0].path;
+      
 
       // step 2 validasi
       let findEmail = await admins.findOne({
@@ -35,12 +36,12 @@ module.exports = {
         },
       });
 
-      if (findEmail)
-        return res.status(404).send({
-          isError: true,
-          message: "email is exist",
-          data: null,
-        });
+      if (findEmail) 
+      return res.status(404).send({
+        isError: true,
+        message: "email is exist",
+        data: null,
+      });
 
       //step 3 insert data ke users
       await admins.create({ email, password: await hashPassword(password), full_name, is_verified, phone_number, role, profile_picture }, { transaction: t });
@@ -69,6 +70,7 @@ module.exports = {
       const { id } = req.params;
       let admin = await admins.findOne({ where: { id: id } });
       if (!admin) {
+        await t.rollback();
         return res.status(404).send({
           isError: true,
           message: "Admin not found",
@@ -118,6 +120,40 @@ module.exports = {
       res.status(200).send({
         isError: false,
         message: "Admin data updated successfully",
+        data: null,
+      });
+    } catch (error) {
+      await t.rollback();
+      res.status(400).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+
+  deleteAdmin: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      // step 1: retrieve admin data from database
+      const { id } = req.params;
+      let admin = await admins.findOne({ where: { id: id } });
+      if (!admin) {
+        return res.status(404).send({
+          isError: true,
+          message: "Admin not found",
+          data: null,
+        });
+      }
+
+      // step 2: delete admin data from database
+      await admins.destroy({ where: { id: id } }, { transaction: t });
+
+      // step 3: send response
+      await t.commit();
+      res.status(200).send({
+        isError: false,
+        message: "Admin data deleted successfully",
         data: null,
       });
     } catch (error) {
