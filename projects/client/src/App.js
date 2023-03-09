@@ -6,6 +6,7 @@ import Verification from "./pages/user/Verification";
 import NotFound from "./pages/NotFound";
 import Sidebar from "./components/sidebar";
 import Login from "./pages/user/Login";
+import AdminLogin from "./pages/AdminLogin";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/user/verify" element={<Verification />} />
         <Route path="/user/login" element={<Login />} />
         <Route path="/admin" element={<Sidebar />} />
+        <Route path="/admin/login" element=<AdminLogin /> />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
