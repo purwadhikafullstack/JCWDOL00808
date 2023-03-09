@@ -1,4 +1,5 @@
-require("dotenv/config");
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
@@ -66,8 +67,9 @@ app.use(express.json());
 // });
 
 //Import router for controller from index.js inside routers folder
-const { usersRouter, adminRouter } = require("./routers"); //refer to index.js in routers folder
+const { usersRouter, adminsRouter, adminRouter } = require("./routers"); //refer to index.js in routers folder
 app.use("/user", usersRouter);
+app.use("/admins", adminsRouter);
 app.use("/admin", adminRouter);
 
 //#endregion

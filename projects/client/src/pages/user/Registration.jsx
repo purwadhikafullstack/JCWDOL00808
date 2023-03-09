@@ -40,10 +40,9 @@ export default function Registration() {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
       toast({
-        title: error?.response?.data?.message,
-        description: "Use another email address",
+        title: error?.response?.data?.message || error?.message,
+        description: error?.message ? "" : "Use another email address",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -89,6 +88,8 @@ export default function Registration() {
           <Stack spacing={4}>
             <form onSubmit={formik.handleSubmit}>
               <FormControl
+                id="email"
+                isRequired
                 isInvalid={formik.touched.email && formik.errors.email}
               >
                 <FormLabel>Email address</FormLabel>
