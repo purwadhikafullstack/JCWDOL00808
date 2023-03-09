@@ -4,15 +4,15 @@ import Logo from "../assets/logo.png";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
-  const [showSubMenu, setShowSubMenu] = useState(false); // state untuk menampilkan submenu
+  const [showSubMenu, setShowSubMenu] = useState(false);
 
   const Menus = [
     { title: "Dashboard", src: "Chart_fill" },
-    { 
-      title: "Accounts", 
-      src: "User", 
-      gap: true, 
-      onClick: () => setShowSubMenu(!showSubMenu) // mengubah nilai state showSubMenu ketika menu "Accounts" di-klik
+    {
+      title: "Accounts",
+      src: "User",
+      gap: true,
+      onClick: () => setShowSubMenu(!showSubMenu),
     },
     { title: "Schedule ", src: "Calendar" },
     { title: "Search", src: "Search" },
@@ -23,7 +23,7 @@ export default function Sidebar() {
 
   return (
     <div className="flex">
-      <div className={` ${open ? "w-72" : "w-20 "} bg-dark-purple h-screen p-5  pt-8 relative duration-300`}>
+      <div className={`${open ? "w-72" : "w-20"} bg-dark-purple h-screen p-5  pt-8 relative duration-300`}>
         <img
           src={control}
           className={`absolute cursor-pointer -right-3 top-9 w-7 border-dark-purple
@@ -38,12 +38,12 @@ export default function Sidebar() {
           {Menus.map((Menu, index) => (
             <li
               key={index}
-              className={`flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-gray-300 text-sm items-center gap-x-4 
+              className={`flex rounded-md p-2 cursor-pointer hover:bg-light-white text-gray-300 text-sm items-center gap-x-4 
               ${Menu.gap ? "mt-9" : "mt-2"} ${index === 0 && "bg-light-white"} `}
-              onClick={Menu.onClick} // menambahkan event onClick pada item menu
+              onClick={Menu.onClick}
             >
               <span className={`${!open && "hidden"} origin-left duration-200`}>{Menu.title}</span>
-              {/* menampilkan submenu jika showSubMenu bernilai true */}
+              {/* Menampilkan submenu jika showSubMenu bernilai true */}
               {Menu.title === "Accounts" && showSubMenu && (
                 <ul className="absolute bg-light-white rounded-md p-2 text-gray-300 text-sm w-40 mt-2">
                   <li className="cursor-pointer hover:bg-gray-100 p-1">Admin</li>
@@ -55,8 +55,8 @@ export default function Sidebar() {
         </ul>
       </div>
       <div className="h-screen flex-1 p-7">
-        <h1 className="text-2xl font-semibold ">Dashboard Page</h1>
+        <h1 className="text-2xl font-semibold">Dashboard Page</h1>
       </div>
     </div>
   );
-              }
+}

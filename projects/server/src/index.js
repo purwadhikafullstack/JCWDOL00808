@@ -76,10 +76,10 @@ app.use("/admin", adminRouter);
 const clientPath = "../../client/build";
 app.use(express.static(join(__dirname, clientPath)));
 
-// // Serve the HTML page
-// app.get("*", (req, res) => {
-//   res.sendFile(join(__dirname, clientPath, "index.html"));
-// });
+// Serve the HTML page
+app.get("*", (req, res) => {
+  res.sendFile(join(__dirname, clientPath, "index.html"));
+});
 
 //#endregion
 

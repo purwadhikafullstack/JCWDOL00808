@@ -8,14 +8,9 @@ const admins = db.admins;
 //import hashing
 const { hashPassword, hashMatch } = require("../lib/hash");
 
-
 module.exports = {
-  getUser: async (req, res) => {
+  getUserAdmin: async (req, res) => {
     try {
-      // if (req.admins.role !== "1") {
-      //   return res.status(403).json({ message: "Forbidden" });
-      // }
-
       // Ambil semua data admin dari database
       const admin = await admins.findAll();
       res.json({ admin });
@@ -29,28 +24,25 @@ module.exports = {
     const t = await sequelize.transaction();
     try {
       //step 1 ambil data dari client (body)
-      let { username, email, password, recipient, phone_number, address, city, province, postal_code } = req.body;
+      let { email, password, full_name, is_verified, phone_number, role } = req.body;
+      let profile_picture = req.files.profile_picture[0].path;
 
       // step 2 validasi
-      let findUsername = await admins.findOne({
+      let findEmail = await admins.findOne({
         where: {
-          username,
+          email,
         },
       });
 
-      if (findUsername)
+      if (findEmail)
         return res.status(404).send({
           isError: true,
-          message: "Username is exist",
+          message: "email is exist",
           data: null,
         });
 
       //step 3 insert data ke users
-      let insertUsers = await users.create({ username, email, password: await hashPassword(password) }, { transaction: t });
-      let users_id = insertUsers.dataValues.id;
-
-      //step 4 insert data ke users_address (membutuhkan id user)
-      await users_address.create({ recipient, phone_number, address, city, province, postal_code, users_id }, { transaction: t });
+      await admins.create({ email, password: await hashPassword(password), full_name, is_verified, phone_number, role, profile_picture }, { transaction: t });
 
       //step 5 kirim response
       await t.commit();
