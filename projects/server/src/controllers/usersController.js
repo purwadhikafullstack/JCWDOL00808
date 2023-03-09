@@ -115,4 +115,41 @@ module.exports = {
       });
     }
   },
+  login: async(req,res) => {
+    try {
+      let {email,password} = req.body;
+
+      const findEmail = await users.findOne({ where: { email } });
+      if (!findEmail) {
+        res.status(409).send({
+          isError: true,
+          message: "Email not found.",
+          data: null,
+        });
+      }
+      
+      let hasMatchResult = await hashMatch(password, email.dataValues.password)
+      
+      if(hasMatchResult === false) return res.status(404).send({
+        isError: true, 
+        message: 'Password not valid', 
+        data: true
+    })
+
+    res.status(200).send({
+        isError: false, 
+        message: 'Login Success', 
+        data: {
+            token: createVerificationToken({id: email.dataValues.id})
+        }
+    })
+      
+    } catch (error) {
+      res.status(500).send({
+        isError: true, 
+        message: error.message, 
+        data: true
+    })
+    }
+  }
 };
