@@ -1,13 +1,7 @@
-//Sample syntax
-
-// const userRouters = require("./userRouters");
-
-// module.exports = {
-//   userRouters,
-// };
-
+const usersRouter = require("./usersRouter");
 const adminsRouter = require("./admins");
 
 module.exports = {
+  usersRouter,
   adminsRouter,
 };

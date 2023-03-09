@@ -28,12 +28,9 @@ module.exports = (sequelize, DataTypes) => {
       //Constraint email format and set unique
       email: {
         type: DataTypes.STRING,
+        unique: true,
         validate: {
-          isEmail: { msg: "Invalid email" },
-        },
-        unique: {
-          args: true,
-          msg: "Email already exist",
+          isEmail: true,
         },
       },
       password: DataTypes.STRING,
@@ -44,7 +41,10 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
       },
       phone_number: DataTypes.STRING,
-      role: DataTypes.INTEGER,
+      role: {
+        type: DataTypes.INTEGER,
+        defaultValue: 3,
+      },
       profile_picture: DataTypes.STRING,
     },
     {

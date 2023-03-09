@@ -48,34 +48,31 @@ app.use(express.json());
 //   });
 // });
 
-// ===========================
+// // ===========================
 
-// not found
-app.use((req, res, next) => {
-  if (req.path.includes("/api/")) {
-    res.status(404).send("Not found !");
-  } else {
-    next();
-  }
-});
+// // not found
+// app.use((req, res, next) => {
+//   if (req.path.includes("/api/")) {
+//     res.status(404).send("Not found !");
+//   } else {
+//     next();
+//   }
+// });
 
-// error
-app.use((err, req, res, next) => {
-  if (req.path.includes("/api/")) {
-    console.error("Error : ", err.stack);
-    res.status(500).send("Error !");
-  } else {
-    next();
-  }
-});
+// // error
+// app.use((err, req, res, next) => {
+//   if (req.path.includes("/api/")) {
+//     console.error("Error : ", err.stack);
+//     res.status(500).send("Error !");
+//   } else {
+//     next();
+//   }
+// });
 
-//Sample syntax
 //Import router for controller from index.js inside routers folder
-// const { userRouters } = require("./routers"); //refer to index.js in routers folder
-
-const { adminsRouter } = require("./routers")
+const { usersRouter, adminsRouter } = require("./routers"); //refer to index.js in routers folder
+app.use("/user", usersRouter);
 app.use("/admins", adminsRouter);
-
 
 //#endregion
 
