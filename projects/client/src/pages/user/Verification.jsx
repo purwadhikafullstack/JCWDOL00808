@@ -23,6 +23,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 export default function Verification() {
+  //Get value from url query
   const queryParams = new URLSearchParams(window.location.search);
   const email = queryParams.get("email");
   const token = queryParams.get("token");
@@ -50,7 +51,9 @@ export default function Verification() {
   const handleCreatePassword = async (values) => {
     try {
       setIsLoading(true);
+      //Get password input from formik values
       const password = values.password;
+      //Send updated data to database
       const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/user/verify`,
         { email, password, token }

@@ -6,7 +6,10 @@ const db = require("../../models/index");
 const users = db.users;
 
 // Import verification token function
-const { createVerificationToken } = require("../helper/verificationToken");
+const {
+  createVerificationToken,
+  validateVerificationToken,
+} = require("../helper/verificationToken");
 // Import transporter function
 const transporter = require("../helper/transporter");
 const fs = require("fs").promises;
@@ -50,7 +53,7 @@ module.exports = {
         t.commit();
         res.status(201).send({
           isError: false,
-          message: "Email registered.",
+          message: "Account created.",
           data: null,
         });
       }
@@ -67,9 +70,9 @@ module.exports = {
   verify: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const { email, password } = req.body;
-      console.log(email);
-      console.log(password);
+      const { email, password, token } = req.body;
+      validateVerificationToken(token);
+
       await users.update(
         { password: await hashPassword(password), is_verified: 1 },
         { where: { email } },
@@ -95,7 +98,6 @@ module.exports = {
   isVerified: async (req, res) => {
     try {
       const { email } = req.params;
-      console.log(email);
 
       const verificationStatus = await users.findOne({ where: { email } });
 
