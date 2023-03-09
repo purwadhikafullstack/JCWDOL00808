@@ -92,4 +92,25 @@ module.exports = {
       });
     }
   },
+  isVerified: async (req, res) => {
+    try {
+      const { email } = req.params;
+      console.log(email);
+
+      const verificationStatus = await users.findOne({ where: { email } });
+
+      res.status(200).send({
+        isError: false,
+        message: "Get verification status",
+        data: verificationStatus.is_verified,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
 };

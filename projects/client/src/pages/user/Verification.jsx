@@ -16,11 +16,11 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Verification() {
   const queryParams = new URLSearchParams(window.location.search);
@@ -29,7 +29,23 @@ export default function Verification() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const toast = useToast();
+
+  const isVerified = async () => {
+    try {
+      //Get is_verified from database
+      const verificationStatus = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/user/verify/${email}`
+      );
+      //If user is_verified true, navigate to login page
+      if (verificationStatus?.data?.data) {
+        navigate("/user/login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleCreatePassword = async (values) => {
     try {
@@ -59,6 +75,10 @@ export default function Verification() {
       });
     }
   };
+
+  useEffect(() => {
+    isVerified();
+  });
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
