@@ -40,7 +40,6 @@ export default function Registration() {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
       toast({
         title: error?.response?.data?.message || error?.message,
         description: error?.message ? "" : "Use another email address",
