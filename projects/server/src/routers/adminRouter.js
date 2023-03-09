@@ -7,6 +7,6 @@ const uploadImages = require("../middleware/uploadImage");
 
 Router.get("/getAdmin", adminAccountController.getUserAdmin);
 Router.post("/registerAdmin", uploadImages, adminAccountController.register);
-
+Router.patch("/patchAdmin/:id", uploadImages, adminAccountController.patchAdmin);
 
 module.exports = Router;
