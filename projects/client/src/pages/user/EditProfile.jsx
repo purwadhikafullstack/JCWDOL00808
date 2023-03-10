@@ -7,28 +7,52 @@ import {
   Input,
   Stack,
   useColorModeValue,
-  Avatar,
-  AvatarBadge,
-  IconButton,
   Center,
   useToast,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { SmallCloseIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import RemovePicConfirmation from "../../components/RemovePicConfirmation";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function EditProfile() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const profilePicture = useRef(null);
   const navigate = useNavigate();
   const toast = useToast();
 
-  const handleChangeProfile = async (values) => {
+  const handlePictureChange = async (event) => {
     try {
+      const profile_picture = event.target.files;
+      console.log(profile_picture);
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/user/picture`, {
+        profile_picture,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleRemovePicture = async () => {
+    try {
+      console.log("remove pic");
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEditProfile = async (values) => {
+    try {
+      const { fullName, phoneNumber } = values;
+      console.log(fullName, phoneNumber);
     } catch (error) {
       console.log(error);
     }
@@ -66,7 +90,7 @@ export default function EditProfile() {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      handleChangeProfile(values);
+      handleEditProfile(values);
     },
   });
 
@@ -80,7 +104,7 @@ export default function EditProfile() {
       <Stack
         spacing={4}
         w={"full"}
-        maxW={"md"}
+        maxW={"lg"}
         bg={useColorModeValue("white", "gray.700")}
         rounded={"xl"}
         boxShadow={"lg"}
@@ -94,20 +118,27 @@ export default function EditProfile() {
           <FormLabel>Profile picture</FormLabel>
           <Stack direction={["column", "row"]} spacing={6}>
             <Center>
-              <Avatar size="xl" src="https://bit.ly/sage-adebayo">
-                <AvatarBadge
-                  as={IconButton}
-                  size="sm"
-                  rounded="full"
-                  top="-10px"
-                  colorScheme="red"
-                  aria-label="remove Image"
-                  icon={<SmallCloseIcon />}
-                />
-              </Avatar>
+              <RemovePicConfirmation
+                isOpen={isOpen}
+                onClose={onClose}
+                onDelete={handleRemovePicture}
+              />
             </Center>
             <Center w="full">
-              <Button w="full">Change picture</Button>
+              <input
+                type="file"
+                ref={profilePicture}
+                onChange={handlePictureChange}
+                style={{ display: "none" }}
+              />
+              <Button
+                onClick={() => {
+                  profilePicture.current.click();
+                }}
+                w="full"
+              >
+                Change picture
+              </Button>
             </Center>
           </Stack>
         </FormControl>
