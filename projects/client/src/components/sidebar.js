@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BsArrowLeftShort, BsSearch, BsChevronDown, BsReverseLayoutTextSidebarReverse, BsBuilding } from "react-icons/bs";
 import { AiFillEnvironment, AiOutlineFileText, AiOutlineBarChart, AiOutlineSetting, AiOutlineLogout } from "react-icons/ai";
 import { RiDashboardFill } from "react-icons/ri";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const [subMenuOpen, setSubMenuOpen] = useState(false);
   const [openSubMenuIndex, setOpenSubMenuIndex] = useState(-1);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/admin/login");
+    }
+  }, []);
 
   const Menus = [
     { title: "Dashboard" },
@@ -75,9 +84,9 @@ export default function Sidebar() {
           ))}
         </ul>
       </div>
-      {/* <div className="p-7">
+      <div className="p-7">
         <h1 className="text-2xl font-semibold"> Dashboard Page</h1>
-      </div> */}
+      </div>
     </div>
   );
 }
