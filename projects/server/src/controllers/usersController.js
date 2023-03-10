@@ -128,7 +128,7 @@ module.exports = {
         });
       }
       
-      let hasMatchResult = await hashMatch(password, email.dataValues.password)
+      let hasMatchResult = await hashMatch(password, findEmail.dataValues.password)
       
       if(hasMatchResult === false) return res.status(404).send({
         isError: true, 
@@ -140,7 +140,7 @@ module.exports = {
         isError: false, 
         message: 'Login Success', 
         data: {
-            token: createVerificationToken({id: email.dataValues.id})
+            token: createVerificationToken({id: findEmail.dataValues.id})
         }
     })
       
