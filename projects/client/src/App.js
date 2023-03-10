@@ -4,9 +4,10 @@ import Registration from "./pages/user/Registration";
 import Home from "./pages/Home";
 import Verification from "./pages/user/Verification";
 import NotFound from "./pages/NotFound";
-import Sidebar from "./components/sidebar";
 import Login from "./pages/user/Login";
 import AdminLogin from "./pages/AdminLogin";
+import Sidebar from "./components/sidebar";
+import UserList from "./pages/admin/userList";
 
 function App() {
   return (
@@ -16,8 +17,9 @@ function App() {
         <Route path="/user/register" element={<Registration />} />
         <Route path="/user/verify" element={<Verification />} />
         <Route path="/user/login" element={<Login />} />
-        <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<Sidebar />} />
+        <Route path="/admin/adminuserlist" element={<UserList />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
