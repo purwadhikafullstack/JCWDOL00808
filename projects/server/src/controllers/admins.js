@@ -1,4 +1,3 @@
-
 const db = require("../../models/index");
 const admins = db.admins;
 
@@ -24,7 +23,6 @@ module.exports = {
       let { email, password, full_name, is_verified, phone_number, role } = req.body;
       let insertToAdmins = await admins.create({ email, password: await hashPassword, full_name, is_verified, phone_number, role });
       console.log("insertToAdmins:", insertToAdmins);
-
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -47,7 +45,14 @@ module.exports = {
         let checkPass = bcrypt.compareSync(password, data[0].dataValues.password);
         if (checkPass) {
           let token = createToken({ ...data[0].dataValues });
-          return res.status(200).send({ ...data[0].dataValues, token });
+          return res.status(200).send({
+            success: true,
+            message: "Admin login success!",
+            data: {
+              token: token,
+              role: data[0].dataValues.role,
+            },
+          });
         } else {
           return res.status(200).send({
             success: false,
@@ -57,7 +62,7 @@ module.exports = {
       } else {
         return res.status(200).send({
           success: false,
-          message: "This account doesn't exists",
+          message: "This account doesn't exists, please enter the correct e-mail.",
         });
       }
     } catch (err) {
