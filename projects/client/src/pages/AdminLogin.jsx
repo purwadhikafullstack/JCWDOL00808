@@ -32,7 +32,7 @@ const AdminLogin = (props) => {
           let a = JSON.stringify(response?.data?.data);
           let b = JSON.parse(a);
 
-          localStorage.setItem("admin_login", b.token);
+          localStorage.setItem("token", b.token);
           localStorage.setItem("role", b.role);
 
           toast({
@@ -56,7 +56,7 @@ const AdminLogin = (props) => {
           title: `${error.message}`,
           duration: 9000,
           isClosable: true,
-        })
+        });
       });
   };
 
