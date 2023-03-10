@@ -41,7 +41,15 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/adminlogin" element=<AdminLogin /> />
+        <Route path="/" element={<Home />} />
+        <Route path="/user/register" element={<Registration />} />
+        <Route path="/user/verify" element={<Verification />} />
+        <Route path="/user/login" element={<Login />} />
+        <Route path="/admin" element={<Sidebar />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        {/* Fallback route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

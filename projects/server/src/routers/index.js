@@ -7,7 +7,9 @@
 // };
 
 const adminsRouter = require("./admins");
+const warehousesRouter = require("./warehouses");
 
 module.exports = {
   adminsRouter,
+  warehousesRouter,
 };
