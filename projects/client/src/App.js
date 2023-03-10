@@ -19,7 +19,7 @@ function App() {
         <Route path="/user/login" element={<Login />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Sidebar />} />
-        <Route path="/admin/userlist" element={<UserList />} />
+        <Route path="/admin/adminUserList" element={<UserList />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />

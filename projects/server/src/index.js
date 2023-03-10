@@ -7,9 +7,20 @@ const { join } = require("path");
 const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(
+<<<<<<< HEAD
   cors({
     // origin: [process.env.WHITELISTED_DOMAIN && process.env.WHITELISTED_DOMAIN.split(",")],
   })
+=======
+  cors(
+  //   {
+  //   origin: [
+  //     process.env.WHITELISTED_DOMAIN &&
+  //       process.env.WHITELISTED_DOMAIN.split(","),
+  //   ],
+  // }
+  )
+>>>>>>> 60f07d8d809db9868d9a82b0ca042a168bd849d8
 );
 
 app.use(express.json());
@@ -67,10 +78,17 @@ app.use(express.json());
 // });
 
 //Import router for controller from index.js inside routers folder
+<<<<<<< HEAD
 const { usersRouter, adminsRouter, adminRouter } = require("./routers"); //refer to index.js in routers folder
 app.use("/user", usersRouter);
 app.use("/admins", adminsRouter);
 app.use("/admin", adminRouter);
+=======
+const { usersRouter, adminsRouter, warehousesRouter } = require("./routers"); //refer to index.js in routers folder
+app.use("/user", usersRouter);
+app.use("/admins", adminsRouter);
+app.use("/warehouses", warehousesRouter);
+>>>>>>> 60f07d8d809db9868d9a82b0ca042a168bd849d8
 
 //#endregion
 
