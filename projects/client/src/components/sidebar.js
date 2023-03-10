@@ -56,7 +56,7 @@ export default function Sidebar() {
                 {menu.submenu && open && <BsChevronDown className={`${openSubMenuIndex === index && "rotate-180"} ml-24`} onClick={() => setOpenSubMenuIndex(openSubMenuIndex === index ? -1 : index)} />}
               </li>
 
-              {menu.submenu && openSubMenuIndex === index &&  open && (
+              {menu.submenu && openSubMenuIndex === index && open && (
                 <ul>
                   {menu.submenuItems.map((submenuItem, submenuIndex) => {
                     return (
@@ -75,9 +75,9 @@ export default function Sidebar() {
           ))}
         </ul>
       </div>
-      <div className="p-7">
+      {/* <div className="p-7">
         <h1 className="text-2xl font-semibold"> Dashboard Page</h1>
-      </div>
+      </div> */}
     </div>
   );
 }
