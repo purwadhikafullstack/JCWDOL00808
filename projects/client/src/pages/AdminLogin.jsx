@@ -38,10 +38,12 @@ const AdminLogin = (props) => {
   return (
     <div className="flex justify-center items-center h-screen">
       <Box w={[300, 400, 500]} className="shadow p-5">
-      <Text className="font-bold" fontSize="4xl">
+        <Text className="font-bold" fontSize="4xl">
           Login as admin
         </Text>
-        <Text className="mt-3" fontSize="lg">e-mail</Text>
+        <Text className="mt-3" fontSize="lg">
+          e-mail
+        </Text>
         <Input placeholder="Enter your.email@mail.com" />
         <Text fontSize="lg">Password</Text>
         <InputGroup size="md">

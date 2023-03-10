@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BsArrowLeftShort, BsSearch, BsChevronDown, BsReverseLayoutTextSidebarReverse, BsPerson } from "react-icons/bs";
+import { BsArrowLeftShort, BsSearch, BsChevronDown, BsReverseLayoutTextSidebarReverse, BsBuilding } from "react-icons/bs";
 import { AiFillEnvironment, AiOutlineFileText, AiOutlineBarChart, AiOutlineSetting, AiOutlineLogout } from "react-icons/ai";
 import { RiDashboardFill } from "react-icons/ri";
 import React from "react";
@@ -7,10 +7,11 @@ import React from "react";
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const [subMenuOpen, setSubMenuOpen] = useState(false);
+  const [openSubMenuIndex, setOpenSubMenuIndex] = useState(-1);
 
   const Menus = [
     { title: "Dashboard" },
-    { title: "Product", icon: <AiOutlineFileText /> },
+    { title: "Product", icon: <AiOutlineFileText />, submenu: true, submenuItems: [{ title: "Manage Product" }, { title: "Manage Category Product" }] },
     {
       title: "Account",
       icon: <BsReverseLayoutTextSidebarReverse />,
@@ -18,7 +19,7 @@ export default function Sidebar() {
       submenuItems: [{ title: "Admin Account" }, { title: "List User" }],
     },
     { title: "Analytics", icon: <AiOutlineBarChart /> },
-    { title: "Profile", spacing: true, icon: <BsPerson /> },
+    { title: "Warehouse", spacing: true, icon: <BsBuilding /> },
     { title: "Setting", icon: <AiOutlineSetting /> },
     { title: "Logout", icon: <AiOutlineLogout /> },
   ];
@@ -52,15 +53,15 @@ export default function Sidebar() {
               >
                 <span className="text-2xl block float-left">{menu.icon ? menu.icon : <RiDashboardFill />}</span>
                 <span className={`text-base font-medium duration-200 ${!open && "hidden"}`}>{menu.title}</span>
-                {menu.submenu && open && <BsChevronDown className={`${subMenuOpen && "rotate-180"} ml-24`} onClick={() => setSubMenuOpen(!subMenuOpen)} />}
+                {menu.submenu && open && <BsChevronDown className={`${openSubMenuIndex === index && "rotate-180"} ml-24`} onClick={() => setOpenSubMenuIndex(openSubMenuIndex === index ? -1 : index)} />}
               </li>
 
-              {menu.submenu && subMenuOpen && open && (
+              {menu.submenu && openSubMenuIndex === index &&  open && (
                 <ul>
-                  {menu.submenuItems.map((submenuItem, index) => {
+                  {menu.submenuItems.map((submenuItem, submenuIndex) => {
                     return (
                       <li
-                        key={index}
+                        key={submenuIndex}
                         className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
                     p-2 px-5 hover:bg-light-white rounded-md"
                       >
