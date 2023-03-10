@@ -8,7 +8,6 @@ import Login from "./pages/user/Login";
 import AdminLogin from "./pages/AdminLogin";
 import Sidebar from "./components/sidebar";
 import UserList from "./pages/admin/userList";
-// import AdminDashboard from "./components/adminDashboard";
 
 function App() {
   return (
@@ -21,8 +20,6 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/userlist" element={<UserList />} />
-
-        {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />

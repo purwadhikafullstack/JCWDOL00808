@@ -10,6 +10,8 @@ const usersList = db.users;
 //import hashing
 const { hashPassword, hashMatch } = require("../lib/hash");
 
+
+
 module.exports = {
   getUserAdmin: async (req, res) => {
     try {
@@ -23,14 +25,53 @@ module.exports = {
   },
 
   getUserList: async (req, res) => {
-    try {
-      // Ambil semua data user dari database
-      const user = await usersList.findAll();
-      res.json({ user });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
-    }
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search_query || "";
+    const offset = limit * page;
+    const totalRows = await usersList.count({
+      where: {
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            email: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
+    });
+    const totalPage = Math.ceil(totalRows / limit);
+    const result = await usersList.findAll({
+      where: {
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            email: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
+      offset: offset,
+      limit: limit,
+      order: [["id", "DESC"]],
+    });
+    res.json({
+      result: result,
+      page: page,
+      limit: limit,
+      totalRows: totalRows,
+      totalPage: totalPage,
+    });
   },
 
   register: async (req, res) => {
