@@ -165,7 +165,7 @@ module.exports = {
           data: null,
         })
       } else {
-        const findEmail = await users.findOne({ where: { email } });
+
 
         const template = await fs.readFile(
           "./src/template/resetPassword.html",
@@ -234,26 +234,26 @@ module.exports = {
       });
     }
   },
-  isVerifiedNewPassword: async (req, res) => {
-    try {
-      const { email } = req.params;
+  // isVerifiedNewPassword: async (req, res) => {
+  //   try {
+  //     const { email } = req.params;
 
-      const verificationStatus = await users.findOne({ where: { email } });
+  //     const verificationStatus = await users.findOne({ where: { email } });
 
-      res.status(200).send({
-        isError: false,
-        message: "Get verification status",
-        data: verificationStatus.password,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(404).send({
-        isError: true,
-        message: error.message,
-        data: null,
-      });
-    }
-  }
+  //     res.status(200).send({
+  //       isError: false,
+  //       message: "Get verification status",
+  //       data: verificationStatus.password,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(404).send({
+  //       isError: true,
+  //       message: error.message,
+  //       data: null,
+  //     });
+  //   }
+  // }
 };
 
 

@@ -33,20 +33,20 @@ export default function VerificationNewPassword() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const isVerified = async () => {
-    try {
-      //Get is_verified from database
-      const verificationStatus = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/user/verify-new-password/${email}`
-      );
-      //If user password change, navigate to login page
-      if (verificationStatus?.data?.data) {
-        // navigate("/user/login");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const isVerifiedNewPassword = async () => {
+  //   try {
+  //     //Get is_verified from database
+  //     const verificationStatus = await axios.get(
+  //       `${process.env.REACT_APP_API_BASE_URL}/user/verify-new-password/${email}`
+  //     );
+  //     //If user password change, navigate to login page
+  //     if (verificationStatus?.data?.data) {
+  //       // navigate("/user/login");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleCreatePassword = async (values) => {
     try {
@@ -80,9 +80,9 @@ export default function VerificationNewPassword() {
     }
   };
 
-  useEffect(() => {
-    isVerified();
-  });
+  // useEffect(() => {
+  //   isVerifiedNewPassword();
+  // });
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -113,7 +113,6 @@ export default function VerificationNewPassword() {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       handleCreatePassword(values);
-      navigate("/user/login");
     },
   });
 
@@ -230,14 +229,6 @@ export default function VerificationNewPassword() {
                   Create new password
                 </Button>
               </Stack>
-              {/* <Stack pt={6}>
-                <Text align={"center"}>
-                  Already a user?{" "}
-                  <Link as={RouterLink} to="/user/login" color={"blue.400"}>
-                    Login
-                  </Link>
-                </Text>
-              </Stack> */}
             </form>
           </Stack>
         </Box>
