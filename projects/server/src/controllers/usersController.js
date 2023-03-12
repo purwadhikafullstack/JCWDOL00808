@@ -14,8 +14,10 @@ const {
 const transporter = require("../helper/transporter");
 const fs = require("fs").promises;
 const handlebars = require("handlebars");
+const deleteFiles = require("./../helper/deleteFiles");
 // Import hash function
 const { hashPassword, hashMatch } = require("../lib/hash");
+const { error } = require("console");
 
 module.exports = {
   register: async (req, res) => {
@@ -115,9 +117,9 @@ module.exports = {
       });
     }
   },
-  login: async(req,res) => {
+  login: async (req, res) => {
     try {
-      let {email,password} = req.body;
+      let { email, password } = req.body;
 
       const findEmail = await users.findOne({ where: { email } });
       if (!findEmail) {
@@ -127,29 +129,93 @@ module.exports = {
           data: null,
         });
       }
-      
-      let hasMatchResult = await hashMatch(password, email.dataValues.password)
-      
-      if(hasMatchResult === false) return res.status(404).send({
-        isError: true, 
-        message: 'Password not valid', 
-        data: true
-    })
 
-    res.status(200).send({
-        isError: false, 
-        message: 'Login Success', 
+      let hasMatchResult = await hashMatch(password, email.dataValues.password);
+
+      if (hasMatchResult === false)
+        return res.status(404).send({
+          isError: true,
+          message: "Password not valid",
+          data: true,
+        });
+
+      res.status(200).send({
+        isError: false,
+        message: "Login Success",
         data: {
-            token: createVerificationToken({id: email.dataValues.id})
-        }
-    })
-      
+          token: createVerificationToken({ id: email.dataValues.id }),
+        },
+      });
     } catch (error) {
       res.status(500).send({
-        isError: true, 
-        message: error.message, 
-        data: true
-    })
+        isError: true,
+        message: error.message,
+        data: true,
+      });
     }
-  }
+  },
+  changePicture: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      const id = req.params.id;
+      const response = await users.findOne({ where: { id } });
+      //Delete old profile_picture data
+      const oldPicture = response.dataValues.profile_picture;
+      if (oldPicture) {
+        await fs.unlink(`public\\${oldPicture}`, (err) => {
+          if (err) throw err;
+        });
+      }
+      //Get image path data from middleware
+      let profile_picture = req.files?.images[0]?.path.replace("public\\", "");
+
+      await users.update(
+        {
+          profile_picture,
+        },
+        { where: { id } },
+        { transaction: t }
+      );
+
+      t.commit();
+      res.status(201).send({
+        isError: false,
+        message: "Upload Success!",
+        data: null,
+      });
+    } catch (error) {
+      deleteFiles(req.files.images);
+      t.rollback();
+      res.status(500).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+  removePicture: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const response = await users.findOne({ where: { id } });
+      await users.update({ profile_picture: null }, { where: { id } });
+      await fs.unlink(
+        `public\\${response?.dataValues?.profile_picture}`,
+        (err) => {
+          if (err) throw err;
+        }
+      );
+      res.status(200).send({
+        isError: false,
+        message: "Profile picture deleted.",
+        data: null,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
 };

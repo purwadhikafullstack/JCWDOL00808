@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   Flex,
   FormControl,
@@ -8,6 +9,8 @@ import {
   Stack,
   useColorModeValue,
   Center,
+  Text,
+  Tooltip,
   useToast,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -30,30 +33,62 @@ export default function EditProfile() {
 
   const handlePictureChange = async (event) => {
     try {
-      const profile_picture = event.target.files;
-      console.log(profile_picture);
-      await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/user/picture`, {
-        profile_picture,
+      const image = event.target.files[0];
+      const formData = new FormData();
+      formData.append("images", image);
+      //dummy axios, id still hardcoded
+      const response = await axios.patch(
+        `${process.env.REACT_APP_API_BASE_URL}/user/profile/75c451bb-c187-4bfe-baa4-c783e761a5f0/picture`,
+        formData
+      );
+      toast({
+        title: response?.data?.message,
+        description: "Refresh page if picture not available",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
       });
     } catch (error) {
-      console.log(error);
+      toast({
+        title: error?.response?.data?.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const handleRemovePicture = async () => {
     try {
-      console.log("remove pic");
+      //dummy axios, id still hardcoded
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/user/profile/75c451bb-c187-4bfe-baa4-c783e761a5f0/picture`
+      );
       onClose();
+      toast({
+        title: response?.data?.message,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.log(error);
+      toast({
+        title: error?.response?.data?.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const handleEditProfile = async (values) => {
     try {
+      setIsLoading(true);
       const { fullName, phoneNumber } = values;
       console.log(fullName, phoneNumber);
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.log(error);
     }
   };
@@ -114,31 +149,38 @@ export default function EditProfile() {
         <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
           Edit profile
         </Heading>
-        <FormControl id="fullName">
+        <FormControl id="profile_picture">
           <FormLabel>Profile picture</FormLabel>
           <Stack direction={["column", "row"]} spacing={6}>
             <Center>
-              <RemovePicConfirmation
-                isOpen={isOpen}
-                onClose={onClose}
-                onDelete={handleRemovePicture}
-              />
+              <Avatar size="xl" src="https://bit.ly/sage-adebayo">
+                <RemovePicConfirmation
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  onDelete={handleRemovePicture}
+                />
+              </Avatar>
             </Center>
+
             <Center w="full">
-              <input
+              <Input
                 type="file"
+                name="images"
+                accept="image/*"
                 ref={profilePicture}
                 onChange={handlePictureChange}
                 style={{ display: "none" }}
               />
-              <Button
-                onClick={() => {
-                  profilePicture.current.click();
-                }}
-                w="full"
-              >
-                Change picture
-              </Button>
+              <Tooltip hasArrow label="(jpg / jpeg / png) not bigger than 5 MB">
+                <Button
+                  onClick={() => {
+                    profilePicture.current.click();
+                  }}
+                  w="full"
+                >
+                  Change picture
+                </Button>
+              </Tooltip>
             </Center>
           </Stack>
         </FormControl>
@@ -195,6 +237,9 @@ export default function EditProfile() {
             Cancel
           </Button>
           <Button
+            isLoading={isLoading}
+            type="submit"
+            loadingText="Saving"
             bg={"blue.400"}
             color={"white"}
             w="full"
@@ -202,7 +247,7 @@ export default function EditProfile() {
               bg: "blue.500",
             }}
           >
-            Submit
+            Save
           </Button>
         </Stack>
       </Stack>

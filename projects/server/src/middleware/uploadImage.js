@@ -12,7 +12,7 @@ const uploadImages = (req, res, next) => {
 
       req.files.images.forEach((value) => {
         //adjust max file sizes in bytes
-        if (value.size > 100000)
+        if (value.size > 5000000)
           throw {
             message: `${value.originalname} size too large`,
           };
