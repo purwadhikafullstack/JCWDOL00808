@@ -10,9 +10,12 @@ export default function Sidebar() {
   const [subMenuOpen, setSubMenuOpen] = useState(false);
   const [openSubMenuIndex, setOpenSubMenuIndex] = useState(-1);
   const navigate = useNavigate();
+  const [role, setRole] = useState();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    setRole(role);
     if (!token) {
       navigate("/admin/login");
     }
@@ -55,15 +58,17 @@ export default function Sidebar() {
         <ul className="pt-2">
           {Menus.map((menu, index) => (
             <>
-              <li
-                key={index}
-                className={`text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer p-2
-            hover:bg-light-white rounded-md ${menu.spacing ? "mt-9" : "mt-2"} `}
-              >
-                <span className="text-2xl block float-left">{menu.icon ? menu.icon : <RiDashboardFill />}</span>
-                <span className={`text-base font-medium duration-200 ${!open && "hidden"}`}>{menu.title}</span>
-                {menu.submenu && open && <BsChevronDown className={`${openSubMenuIndex === index && "rotate-180"} ml-24`} onClick={() => setOpenSubMenuIndex(openSubMenuIndex === index ? -1 : index)} />}
-              </li>
+              {menu.title === "Account" && role === "2" ? null : ( // role nomor 2 menandakan sebagai admin warehouse
+                <li
+                  key={index}
+                  className={`text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer p-2
+      hover:bg-light-white rounded-md ${menu.spacing ? "mt-9" : "mt-2"} `}
+                >
+                  <span className="text-2xl block float-left">{menu.icon ? menu.icon : <RiDashboardFill />}</span>
+                  <span className={`text-base font-medium duration-200 ${!open && "hidden"}`}>{menu.title}</span>
+                  {menu.submenu && open && <BsChevronDown className={`${openSubMenuIndex === index && "rotate-180"} ml-24`} onClick={() => setOpenSubMenuIndex(openSubMenuIndex === index ? -1 : index)} />}
+                </li>
+              )}
 
               {menu.submenu && openSubMenuIndex === index && open && (
                 <ul>
@@ -72,7 +77,16 @@ export default function Sidebar() {
                       <li
                         key={submenuIndex}
                         className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
-                    p-2 px-5 hover:bg-light-white rounded-md"
+          p-2 px-5 hover:bg-light-white rounded-md"
+                        onClick={() => {
+                          if (menu.title === "Admin Account") {
+                            // navigate("/admin/account/admin");
+                          } else if (submenuItem.title === "List User") {
+                            navigate("/admin/adminuserlist");
+                          } else if (menu.title === "Logout") {
+                            // Handle logout functionality here
+                          }
+                        }}
                       >
                         {submenuItem.title}
                       </li>

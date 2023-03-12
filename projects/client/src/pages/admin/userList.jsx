@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -41,13 +42,13 @@ const UserList = () => {
   };
 
   return (
-    <div class="container mx-auto mt-5">
+    <div class="container mx-auto mt-5 ">
       <div class="grid grid-cols-5 md:grid-cols-2">
         <div class="mx-4">
           <form onSubmit={searchData}>
             <div class="flex justify-center my-2">
               <div class="relative mr-2">
-                <input type="text" class="h-10 w-96 pl-3 pr-8 rounded-lg z-0 border-2 focus:shadow focus:outline-none" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search Name and Email here..." />
+                <input type="text" class="h-10 w-96 pl-3 pr-8 rounded-lg z-0 border-2 focus:shadow focus:outline-none" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search here..." />
                 <div class=" top-0 right-0 mt-3 mr-2">
                   <button type="submit" class="bg-dark-purple hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Search
@@ -59,25 +60,21 @@ const UserList = () => {
           <table class=" w-full border-collapse border border-gray-300 mt-2">
             <thead>
               <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                <th class="py-3 px-6 text-left">ID</th>
+                <th class="py-3 px-6 text-left">No</th>
                 <th class="py-3 px-6 text-left">Name</th>
                 <th class="py-3 px-6 text-left">Email</th>
                 <th class="py-3 px-6 text-left">Phone Number</th>
-                <th class="py-3 px-6 text-left">Verificaton Status</th>
-                <th class="py-3 px-6 text-left">Photo</th>
+                <th class="py-3 px-6 text-left">Verification Status</th>
               </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">
-              {users.map((user) => (
+              {users.map((user, index) => (
                 <tr key={user.id}>
-                  <td class="py-3 px-6 text-left">{user.id}</td>
+                  <td class="py-3 px-6 text-left">{index + 1}</td>
                   <td class="py-3 px-6 text-left">{user.full_name}</td>
                   <td class="py-3 px-6 text-left">{user.email}</td>
                   <td class="py-3 px-6 text-left">{user.phone_number}</td>
                   <td class="py-3 px-6 text-left">{user.is_verified ? "Verified" : "Not Verified"}</td>
-                  <td class="py-3 px-6 text-left">
-                    <img src={user.profile_picture} alt="Profile" />
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -99,6 +96,9 @@ const UserList = () => {
               activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
               disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
             />
+            <Link to="/admin">
+              <button class="bg-dark-purple hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Back</button>
+            </Link>
           </nav>
         </div>
       </div>

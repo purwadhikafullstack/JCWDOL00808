@@ -8,6 +8,8 @@ import Login from "./pages/user/Login";
 import AdminLogin from "./pages/AdminLogin";
 import Sidebar from "./components/sidebar";
 import UserList from "./pages/admin/userList";
+import ManageAdmin from "./pages/admin/manageAdmin";
+import RegisterAdmin from "./pages/admin/registerAdmin"
 
 function App() {
   return (
@@ -20,6 +22,9 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/adminuserlist" element={<UserList />} />
+        <Route path="/admin/manageadmin" element={<ManageAdmin />} />
+        <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
+
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />

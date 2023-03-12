@@ -7,17 +7,69 @@ const db = require("../../models/index");
 const admins = db.admins;
 const usersList = db.users;
 
+// import JOI untuk validasi input dari user
+const Joi = require("joi");
+
 //import hashing
 const { hashPassword, hashMatch } = require("../lib/hash");
-
-
 
 module.exports = {
   getUserAdmin: async (req, res) => {
     try {
-      // Ambil semua data admin dari database
-      const admin = await admins.findAll();
-      res.json({ admin });
+      const page = parseInt(req.query.page) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search_query || "";
+      const offset = limit * page;
+      const sort = req.query.sort || "id"; //default sorting by id
+      const order = req.query.order || "DESC"; //default order DESC
+      const totalRows = await admins.count({
+        where: {
+          [Op.or]: [
+            {
+              full_name: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              email: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+      });
+      const totalPage = Math.ceil(totalRows / limit);
+      const result = await admins.findAll({
+        where: {
+          [Op.or]: [
+            {
+              full_name: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              email: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              phone_number: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+        offset: offset,
+        limit: limit,
+        order: [[sort, order]], // add order clause with the sort and order parameters
+      });
+      res.json({
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
@@ -25,66 +77,101 @@ module.exports = {
   },
 
   getUserList: async (req, res) => {
-    const page = parseInt(req.query.page) || 0;
-    const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search_query || "";
-    const offset = limit * page;
-    const totalRows = await usersList.count({
-      where: {
-        [Op.or]: [
-          {
-            full_name: {
-              [Op.like]: "%" + search + "%",
+    try {
+      const page = parseInt(req.query.page) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search_query || "";
+      const offset = limit * page;
+      const totalRows = await usersList.count({
+        where: {
+          [Op.or]: [
+            {
+              full_name: {
+                [Op.like]: "%" + search + "%",
+              },
             },
-          },
-          {
-            email: {
-              [Op.like]: "%" + search + "%",
+            {
+              email: {
+                [Op.like]: "%" + search + "%",
+              },
             },
-          },
-        ],
-      },
-    });
-    const totalPage = Math.ceil(totalRows / limit);
-    const result = await usersList.findAll({
-      where: {
-        [Op.or]: [
-          {
-            full_name: {
-              [Op.like]: "%" + search + "%",
+          ],
+        },
+      });
+      const totalPage = Math.ceil(totalRows / limit);
+      const result = await usersList.findAll({
+        where: {
+          [Op.or]: [
+            {
+              full_name: {
+                [Op.like]: "%" + search + "%",
+              },
             },
-          },
-          {
-            email: {
-              [Op.like]: "%" + search + "%",
+            {
+              email: {
+                [Op.like]: "%" + search + "%",
+              },
             },
-          },
-        ],
-      },
-      offset: offset,
-      limit: limit,
-      order: [["id", "DESC"]],
-    });
-    res.json({
-      result: result,
-      page: page,
-      limit: limit,
-      totalRows: totalRows,
-      totalPage: totalPage,
-    });
+            {
+              phone_number: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              is_verified: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+        offset: offset,
+        limit: limit,
+        order: [["id", "DESC"]],
+      });
+      res.json({
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
+    }
   },
 
   register: async (req, res) => {
     const t = await sequelize.transaction();
+
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().min(8).required(),
+      full_name: Joi.string().required(),
+      phone_number: Joi.string().required(),
+      role: Joi.string().valid("1", "2").required(),
+      // profile_picture: Joi.object().required(),
+    });
+
     try {
       //step 1 ambil data dari client (body)
-      let { email, password, full_name, is_verified, phone_number, role } = req.body;
+      // let { email, password, full_name, phone_number, role } = req.body;
       let profile_picture = req.files.profile_picture[0].path;
+
+      // Validate input data against schema
+      const { error, value } = schema.validate(req.body);
+      if (error) {
+        return res.status(400).send({
+          isError: true,
+          message: error.details[0].message,
+          data: null,
+        });
+      }
 
       // step 2 validasi
       let findEmail = await admins.findOne({
         where: {
-          email,
+          email: value.email,
         },
       });
 
@@ -96,7 +183,8 @@ module.exports = {
         });
 
       //step 3 insert data ke users
-      await admins.create({ email, password: await hashPassword(password), full_name, is_verified, phone_number, role, profile_picture }, { transaction: t });
+      // await admins.create({ email, password: await hashPassword(password), full_name, phone_number, role, profile_picture }, { transaction: t });
+      await admins.create({ ...value, password: await hashPassword(value.password), profile_picture }, { transaction: t });
 
       //step 5 kirim response
       await t.commit();
