@@ -79,8 +79,8 @@ export default function Sidebar() {
                         className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
           p-2 px-5 hover:bg-light-white rounded-md"
                         onClick={() => {
-                          if (menu.title === "Admin Account") {
-                            // navigate("/admin/account/admin");
+                          if (submenuItem.title === "Admin Account") {
+                            navigate("/admin/manageadmin");
                           } else if (submenuItem.title === "List User") {
                             navigate("/admin/adminuserlist");
                           } else if (menu.title === "Logout") {

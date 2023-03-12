@@ -176,7 +176,7 @@ module.exports = {
       });
 
       if (findEmail)
-        return res.status(404).send({
+        return res.status(400).send({
           isError: true,
           message: "email is exist",
           data: null,
@@ -195,7 +195,8 @@ module.exports = {
       });
     } catch (error) {
       await t.rollback();
-      res.status(404).send({
+
+      res.status(400).send({
         isError: true,
         message: error.message,
         data: null,
@@ -205,7 +206,24 @@ module.exports = {
 
   patchAdmin: async (req, res) => {
     const t = await sequelize.transaction();
+
     try {
+      const schema = Joi.object({
+        email: Joi.string().email(),
+        password: Joi.string().min(8),
+        full_name: Joi.string(),
+        phone_number: Joi.string(),
+        role: Joi.string(),
+      });
+      const { error, value } = schema.validate(req.body);
+      if (error) {
+        return res.status(400).send({
+          isError: true,
+          message: error.details[0].message,
+          data: null,
+        });
+      }
+
       // step 1: retrieve admin data from database
       const { id } = req.params;
       let admin = await admins.findOne({ where: { id: id } });
@@ -219,7 +237,7 @@ module.exports = {
       }
 
       // step 2: update admin data based on request body
-      let { email, password, full_name, phone_number, role } = req.body;
+      let { email, password, full_name, phone_number, role } = value;
       if (email) {
         let findEmail = await admins.findOne({
           where: {
@@ -264,6 +282,7 @@ module.exports = {
       });
     } catch (error) {
       await t.rollback();
+
       res.status(400).send({
         isError: true,
         message: error.message,

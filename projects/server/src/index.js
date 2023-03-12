@@ -72,11 +72,13 @@ app.use(express.json());
 // });
 
 //Import router for controller from index.js inside routers folder
-const { usersRouter, adminsRouter, warehousesRouter, adminRouter } = require("./routers"); //refer to index.js in routers folder
+const { usersRouter, adminsRouter, warehousesRouter, adminRouter, productRouter } = require("./routers"); //refer to index.js in routers folder
 app.use("/user", usersRouter);
 app.use("/admins", adminsRouter);
 app.use("/warehouses", warehousesRouter);
 app.use("/admin", adminRouter);
+app.use("/product", productRouter)
+
 
 //#endregion
 
