@@ -186,7 +186,7 @@ module.exports = {
     } catch (error) {
       deleteFiles(req.files.images);
       t.rollback();
-      res.status(500).send({
+      res.status(404).send({
         isError: true,
         message: error.message,
         data: null,
@@ -194,24 +194,92 @@ module.exports = {
     }
   },
   removePicture: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
       const id = req.params.id;
       const response = await users.findOne({ where: { id } });
-      await users.update({ profile_picture: null }, { where: { id } });
+      await users.update(
+        { profile_picture: null },
+        { where: { id } },
+        { transaction: t }
+      );
       await fs.unlink(
         `public\\${response?.dataValues?.profile_picture}`,
         (err) => {
           if (err) throw err;
         }
       );
+      t.commit();
       res.status(200).send({
         isError: false,
         message: "Profile picture deleted.",
         data: null,
       });
     } catch (error) {
+      t.rollback();
       console.log(error);
-      res.status(500).send({
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+  editProfile: async (req, res) => {
+    try {
+      const { fullName, email, phoneNumber } = req.body;
+      console.log(fullName, email, phoneNumber);
+      await users.update(
+        { full_name: fullName, phone_number: phoneNumber },
+        { where: { id } }
+      );
+      res.status(201).send({
+        isError: false,
+        message: "Profile updated.",
+        data: null,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+  editPassword: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      const { oldPassword, newPassword } = req.body;
+      console.log(oldPassword, newPassword);
+      // const findOldPassword = await users.findOne({ where: { id } });
+
+      // let hasMatchResult = await hashMatch(
+      //   oldPassword,
+      //   findOldPassword.dataValues.password
+      // );
+
+      // if (hasMatchResult === false)
+      //   return res.status(404).send({
+      //     isError: true,
+      //     message: "Password invalid",
+      //     data: true,
+      //   });
+
+      // await users.update(
+      //   { password: await hashPassword(newPassword) },
+      //   { where: { id } }.{transaction:t}
+      // );
+      t.commit();
+      // res.status(201).send({
+      //   isError: false,
+      //   message: "Password updated.",
+      //   data: null,
+      // });
+    } catch (error) {
+      t.rollback();
+      console.log(error);
+      res.status(404).send({
         isError: true,
         message: error.message,
         data: null,

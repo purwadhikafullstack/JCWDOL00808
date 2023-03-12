@@ -4,17 +4,17 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  FormErrorMessage,
   Heading,
   Input,
   Stack,
   useColorModeValue,
   Center,
-  Text,
   Tooltip,
   useToast,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import ChangePassword from "../../components/ChangePassword";
 import RemovePicConfirmation from "../../components/RemovePicConfirmation";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
@@ -24,8 +24,7 @@ import { useState, useEffect, useRef } from "react";
 
 export default function EditProfile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const profilePicture = useRef(null);
   const navigate = useNavigate();
@@ -33,13 +32,17 @@ export default function EditProfile() {
 
   const handlePictureChange = async (event) => {
     try {
+      // const id = localStorage.getItem("token");
       const image = event.target.files[0];
       const formData = new FormData();
       formData.append("images", image);
       //dummy axios, id still hardcoded
       const response = await axios.patch(
-        `${process.env.REACT_APP_API_BASE_URL}/user/profile/75c451bb-c187-4bfe-baa4-c783e761a5f0/picture`,
+        `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`,
         formData
+        // {
+        //   headers: { Authorization: token },
+        // }
       );
       toast({
         title: response?.data?.message,
@@ -60,9 +63,14 @@ export default function EditProfile() {
 
   const handleRemovePicture = async () => {
     try {
+      // const id = localStorage.getItem("token");
+
       //dummy axios, id still hardcoded
       const response = await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/user/profile/75c451bb-c187-4bfe-baa4-c783e761a5f0/picture`
+        `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`
+        // {
+        //   headers: { Authorization: token },
+        // }
       );
       onClose();
       toast({
@@ -84,12 +92,32 @@ export default function EditProfile() {
   const handleEditProfile = async (values) => {
     try {
       setIsLoading(true);
+      // const id = localStorage.getItem("token");
       const { fullName, phoneNumber } = values;
       console.log(fullName, phoneNumber);
+      const response = axios.patch(
+        `${process.env.REACT_APP_API_BASE_URL}/user/profile/`,
+        values
+        // {
+        //   headers: { Authorization: token },
+        // }
+      );
       setIsLoading(false);
+      toast({
+        title: response?.data?.message,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
       setIsLoading(false);
       console.log(error);
+      toast({
+        title: error?.response?.data?.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -97,31 +125,20 @@ export default function EditProfile() {
     email: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
-    fullName: Yup.string(),
-    phoneNumber: Yup.string(),
-    password: Yup.string()
-      .matches(/^(?=.*[A-Z])/, "Must contain at least one uppercase")
-      .matches(/^(?=.*[a-z])/, "Must contain at least one lowercase")
-      .matches(/^(?=.*[0-9])/, "Must contain at least one number")
-      .matches(
-        /^(?=.*[!@#$%^&*])/,
-        "Must contain at least one special character"
-      )
-      .min(8, "Password minimum 8 character")
-      .required("Password is required!"),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref("password"), null],
-      "Passwords must match"
-    ),
+    fullName: Yup.string()
+      .min(3, "Name minimum 3 character")
+      .required("Full name is required"),
+    phoneNumber: Yup.string()
+      .min(10, "Phone number minimum 10 number")
+      .max(14, "Phone number maximum 14 number")
+      .required("Phone number is required"),
   });
 
   const formik = useFormik({
     initialValues: {
       fullName: "",
-      email: "",
+      email: "mail@gmail.com",
       phoneNumber: "",
-      password: "",
-      confirmPassword: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -184,46 +201,63 @@ export default function EditProfile() {
             </Center>
           </Stack>
         </FormControl>
-        <FormControl id="fullName" isRequired>
+        <FormControl
+          id="fullName"
+          isRequired
+          isInvalid={formik.touched.fullName && formik.errors.fullName}
+        >
           <FormLabel>Full name</FormLabel>
           <Input
+            id="fullName"
+            name="fullName"
+            type="text"
+            onChange={formik.handleChange}
+            value={formik.values.fullName}
             placeholder="Full name"
             _placeholder={{ color: "gray.500" }}
-            type="text"
           />
+          <FormErrorMessage>{formik.errors.fullName}</FormErrorMessage>
         </FormControl>
-        <FormControl id="email" isDisabled>
+        <FormControl
+          id="email"
+          isInvalid={formik.touched.email && formik.errors.email}
+        >
           <FormLabel>Email address</FormLabel>
-          <Input
-            placeholder="your-email@example.com"
-            _placeholder={{ color: "gray.500" }}
-            type="email"
-          />
+          <Tooltip
+            hasArrow
+            label="to change email address, please contact our customer service"
+          >
+            <Input
+              isDisabled
+              id="email"
+              name="email"
+              type="email"
+              onChange={formik.handleChange}
+              value={formik.values.email}
+              placeholder="your-email@example.com"
+              _placeholder={{ color: "gray.500" }}
+            />
+          </Tooltip>
+          <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
         </FormControl>
-        <FormControl id="phone" isRequired>
+        <FormControl
+          id="phoneNumber"
+          isRequired
+          isInvalid={formik.touched.phoneNumber && formik.errors.phoneNumber}
+        >
           <FormLabel>Phone number</FormLabel>
           <Input
-            placeholder="08123456789"
-            _placeholder={{ color: "gray.500" }}
+            id="phoneNumber"
+            name="phoneNumber"
             type="text"
-          />
-        </FormControl>
-        <FormControl id="password" isRequired>
-          <FormLabel>Password</FormLabel>
-          <Input
-            placeholder="Password"
+            onChange={formik.handleChange}
+            value={formik.values.phoneNumber}
+            placeholder="082123456xxx"
             _placeholder={{ color: "gray.500" }}
-            type="password"
           />
+          <FormErrorMessage>{formik.errors.phoneNumber}</FormErrorMessage>
         </FormControl>
-        <FormControl id="confirmPassword" isRequired>
-          <FormLabel>Confirm password</FormLabel>
-          <Input
-            placeholder="Confirm password"
-            _placeholder={{ color: "gray.500" }}
-            type="password"
-          />
-        </FormControl>
+
         <Stack spacing={6} direction={["column", "row"]}>
           <Button
             onClick={() => navigate("/")}
@@ -237,6 +271,7 @@ export default function EditProfile() {
             Cancel
           </Button>
           <Button
+            onClick={formik.handleSubmit}
             isLoading={isLoading}
             type="submit"
             loadingText="Saving"
@@ -250,6 +285,23 @@ export default function EditProfile() {
             Save
           </Button>
         </Stack>
+        {showChangePassword ? (
+          <></>
+        ) : (
+          <Button
+            type="button"
+            onClick={() => setShowChangePassword(true)}
+            colorScheme="green"
+          >
+            Change Password
+          </Button>
+        )}
+
+        {showChangePassword ? (
+          <ChangePassword onCancel={() => setShowChangePassword(false)} />
+        ) : (
+          <></>
+        )}
       </Stack>
     </Flex>
   );

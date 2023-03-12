@@ -5,30 +5,32 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  AvatarBadge,
   Button,
-  IconButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
 import React from "react";
 
-export default function RemovePicConfirmation(props) {
+export default function ChangePasswordConfirmation(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
 
   return (
     <>
-      <AvatarBadge
-        as={IconButton}
-        size="sm"
-        rounded="full"
-        top="-10px"
-        colorScheme="red"
-        aria-label="remove Image"
-        icon={<SmallCloseIcon />}
+      <Button
         onClick={onOpen}
-      />
+        type="submit"
+        isLoading={props.isLoading}
+        loadingText="Saving"
+        bg={"blue.400"}
+        color={"white"}
+        w="full"
+        _hover={{
+          bg: "blue.500",
+        }}
+      >
+        Save new password
+      </Button>
+
       <>
         <AlertDialog
           isOpen={isOpen}
@@ -38,7 +40,7 @@ export default function RemovePicConfirmation(props) {
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Delete Profile Picture
+                Save new password?
               </AlertDialogHeader>
 
               <AlertDialogBody>
@@ -52,12 +54,12 @@ export default function RemovePicConfirmation(props) {
                 <Button
                   colorScheme="red"
                   onClick={() => {
-                    props.onDelete();
+                    props.onSave();
                     onClose();
                   }}
                   ml={3}
                 >
-                  Delete
+                  Save
                 </Button>
               </AlertDialogFooter>
             </AlertDialogContent>
