@@ -19,7 +19,7 @@ module.exports = {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const sort = req.query.sort || "id"; //default sorting by id
+      const sort = req.query.sort || "sort"; //default sorting by sort
       const order = req.query.order || "DESC"; //default order DESC
       const totalRows = await products.count({
         where: {
@@ -82,7 +82,6 @@ module.exports = {
 
     try {
       let imageUrl = req.files.imageUrl[0].path;
-     
 
       // Validate input data against schema
       const { error, value } = productSchema.validate(req.body);

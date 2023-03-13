@@ -11,6 +11,7 @@ import UserList from "./pages/admin/userList";
 import ManageAdmin from "./pages/admin/manageAdmin";
 import RegisterAdmin from "./pages/admin/registerAdmin";
 import ManageProducts from "./pages/admin/manageProducts";
+import ProductForm from "./pages/admin/addProduct";
 
 function App() {
   return (
@@ -25,7 +26,9 @@ function App() {
         <Route path="/admin/adminuserlist" element={<UserList />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
         <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
-        <Route path="/admin/manageProducts" element={<ManageProducts />} />
+        <Route path="/admin/manageproducts" element={<ManageProducts />} />
+        <Route path="/admin/addProducts" element={<ProductForm />} />
+
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
