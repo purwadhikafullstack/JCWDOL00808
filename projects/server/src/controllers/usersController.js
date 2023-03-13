@@ -163,15 +163,12 @@ module.exports = {
       //Delete old profile_picture data
       const oldPicture = response.dataValues.profile_picture;
       if (oldPicture) {
-        await fs.unlink(`public\\${oldPicture}`, (err) => {
+        await fs.unlink(oldPicture, (err) => {
           if (err) throw err;
         });
       }
       //Get image path data from middleware
-      let profile_picture = req.files?.profile_picture[0]?.path.replace(
-        "public\\",
-        ""
-      );
+      let profile_picture = req.files?.profile_picture[0]?.path;
 
       await users.update(
         {
@@ -208,12 +205,9 @@ module.exports = {
         { where: { id } },
         { transaction: t }
       );
-      await fs.unlink(
-        `public\\${response?.dataValues?.profile_picture}`,
-        (err) => {
-          if (err) throw err;
-        }
-      );
+      await fs.unlink(response?.dataValues?.profile_picture, (err) => {
+        if (err) throw err;
+      });
       t.commit();
       res.status(200).send({
         isError: false,
@@ -267,7 +261,7 @@ module.exports = {
       );
 
       if (hasMatchResult === false)
-        return res.status(404).send({
+        return res.status(401).send({
           isError: true,
           message: "Invalid password",
           data: true,

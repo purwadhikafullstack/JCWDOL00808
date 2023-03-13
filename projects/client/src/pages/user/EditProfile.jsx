@@ -20,9 +20,11 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { isAuth } from "../../apis/userAPIs";
 
 export default function EditProfile() {
+  const [profile, setProfile] = useState([]);
   const { isOpen, onClose } = useDisclosure();
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -112,6 +114,10 @@ export default function EditProfile() {
     }
   };
 
+  useEffect(() => {
+    isAuth(navigate).then((data) => setProfile(data));
+  }, []);
+
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Invalid email address")
@@ -126,10 +132,11 @@ export default function EditProfile() {
   });
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      fullName: "",
-      email: "",
-      phoneNumber: "",
+      fullName: profile?.full_name || "",
+      email: profile?.email || "",
+      phoneNumber: profile?.phone_number || "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -161,7 +168,17 @@ export default function EditProfile() {
           <FormLabel>Profile picture</FormLabel>
           <Stack direction={["column", "row"]} spacing={6}>
             <Center>
-              <Avatar size="xl" src="https://bit.ly/sage-adebayo">
+              <Avatar
+                crossOrigin="true"
+                size="xl"
+                src={
+                  profile?.profile_picture
+                    ? `${process.env.REACT_APP_API_BASE_URL}/${profile?.profile_picture}`
+                    : null
+                }
+                border="2px"
+                borderColor="papayawhip"
+              >
                 <RemovePicConfirmation
                   isOpen={isOpen}
                   onClose={onClose}
@@ -169,7 +186,6 @@ export default function EditProfile() {
                 />
               </Avatar>
             </Center>
-
             <Center w="full">
               <Input
                 type="file"
