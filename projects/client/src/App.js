@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Verification from "./pages/user/Verification";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/user/Login";
+import EditProfile from "./pages/user/EditProfile";
 import AdminLogin from "./pages/AdminLogin";
 import ResetPassword from "./pages/user/ResetPassword";
 import VerificationNewPassword from "./pages/user/VerificationNewPassword";
@@ -20,6 +21,7 @@ function App() {
         <Route path="/user/verify" element={<Verification />} />
         <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
         <Route path="/user/login" element={<Login />} />
+        <Route path="/user/profile" element={<EditProfile />} />
         <Route path="/user/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/login" element={<AdminLogin />} />
