@@ -169,7 +169,7 @@ module.exports = {
       }
       //Get image path data from middleware
       let profile_picture = req.files?.profile_picture[0]?.path;
-
+      //Update user's profile_picture with a new one
       await users.update(
         {
           profile_picture,
@@ -199,12 +199,15 @@ module.exports = {
     try {
       //Get id from decoding token
       const { id } = req.dataDecode;
+      //Check if user data available in database
       const response = await users.findOne({ where: { id } });
+      //Remove user's profile_picture data from database
       await users.update(
         { profile_picture: null },
         { where: { id } },
         { transaction: t }
       );
+      //Remove image from storage
       await fs.unlink(response?.dataValues?.profile_picture, (err) => {
         if (err) throw err;
       });
@@ -228,6 +231,7 @@ module.exports = {
       //Get id from decoding token
       const { id } = req.dataDecode;
       const { fullName, phoneNumber } = req.body;
+      //Update data with user input
       await users.update(
         { full_name: fullName, phone_number: phoneNumber },
         { where: { id } }
@@ -251,7 +255,6 @@ module.exports = {
       //Get id from decoding token
       const { id } = req.dataDecode;
       const { oldPassword, newPassword } = req.body;
-      console.log(oldPassword, newPassword);
       //Get old password from database to compare
       const findOldPassword = await users.findOne({ where: { id } });
       //Compare input password with hashed password from database

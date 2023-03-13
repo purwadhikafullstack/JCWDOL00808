@@ -165,7 +165,7 @@ export default function EditProfile() {
           Edit profile
         </Heading>
         <FormControl id="profile_picture">
-          <FormLabel>Profile picture</FormLabel>
+          <FormLabel>Profile Picture</FormLabel>
           <Stack direction={["column", "row"]} spacing={6}>
             <Center>
               <Avatar
@@ -213,7 +213,7 @@ export default function EditProfile() {
           isRequired
           isInvalid={formik.touched.fullName && formik.errors.fullName}
         >
-          <FormLabel>Full name</FormLabel>
+          <FormLabel>Full Name</FormLabel>
           <Input
             id="fullName"
             name="fullName"
@@ -229,7 +229,7 @@ export default function EditProfile() {
           id="email"
           isInvalid={formik.touched.email && formik.errors.email}
         >
-          <FormLabel>Email address</FormLabel>
+          <FormLabel>Email Address</FormLabel>
           <Tooltip
             hasArrow
             label="to change email address, please contact our customer service"
@@ -252,7 +252,7 @@ export default function EditProfile() {
           isRequired
           isInvalid={formik.touched.phoneNumber && formik.errors.phoneNumber}
         >
-          <FormLabel>Phone number</FormLabel>
+          <FormLabel>Phone Number</FormLabel>
           <Input
             id="phoneNumber"
             name="phoneNumber"

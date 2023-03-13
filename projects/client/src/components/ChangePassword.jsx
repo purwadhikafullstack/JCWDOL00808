@@ -152,7 +152,7 @@ export default function ChangePassword(props) {
           formik.touched.confirmPassword && formik.errors.confirmPassword
         }
       >
-        <FormLabel>Confirm new password</FormLabel>
+        <FormLabel>Confirm New Password</FormLabel>
         <InputGroup>
           <Input
             id="confirmPassword"
