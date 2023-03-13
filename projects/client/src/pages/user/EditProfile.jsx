@@ -20,29 +20,28 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 
 export default function EditProfile() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useDisclosure();
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const profilePicture = useRef(null);
   const navigate = useNavigate();
   const toast = useToast();
+  const token = localStorage.getItem("token");
 
   const handlePictureChange = async (event) => {
     try {
-      // const id = localStorage.getItem("token");
       const image = event.target.files[0];
       const formData = new FormData();
-      formData.append("images", image);
-      //dummy axios, id still hardcoded
+      formData.append("profile_picture", image);
       const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`,
-        formData
-        // {
-        //   headers: { Authorization: token },
-        // }
+        formData,
+        {
+          headers: { Authorization: token },
+        }
       );
       toast({
         title: response?.data?.message,
@@ -63,16 +62,12 @@ export default function EditProfile() {
 
   const handleRemovePicture = async () => {
     try {
-      // const id = localStorage.getItem("token");
-
-      //dummy axios, id still hardcoded
       const response = await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`
-        // {
-        //   headers: { Authorization: token },
-        // }
+        `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`,
+        {
+          headers: { Authorization: token },
+        }
       );
-      onClose();
       toast({
         title: response?.data?.message,
         status: "success",
@@ -92,15 +87,12 @@ export default function EditProfile() {
   const handleEditProfile = async (values) => {
     try {
       setIsLoading(true);
-      // const id = localStorage.getItem("token");
-      const { fullName, phoneNumber } = values;
-      console.log(fullName, phoneNumber);
-      const response = axios.patch(
+      const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/user/profile/`,
-        values
-        // {
-        //   headers: { Authorization: token },
-        // }
+        values,
+        {
+          headers: { Authorization: token },
+        }
       );
       setIsLoading(false);
       toast({
@@ -111,7 +103,6 @@ export default function EditProfile() {
       });
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
       toast({
         title: error?.response?.data?.message,
         status: "error",
@@ -137,7 +128,7 @@ export default function EditProfile() {
   const formik = useFormik({
     initialValues: {
       fullName: "",
-      email: "mail@gmail.com",
+      email: "",
       phoneNumber: "",
     },
     validationSchema: validationSchema,
@@ -182,7 +173,7 @@ export default function EditProfile() {
             <Center w="full">
               <Input
                 type="file"
-                name="images"
+                name="profile_picture"
                 accept="image/*"
                 ref={profilePicture}
                 onChange={handlePictureChange}

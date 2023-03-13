@@ -7,6 +7,7 @@ const fs = require("fs");
 let defaultPath = "public";
 var storage = multer.diskStorage({
   destination: async (req, file, cb) => {
+    console.log(file);
     // Check Directory (Exist or Not)
     let isDirectoryExist = fs.existsSync(`${defaultPath}/${file.fieldname}`);
 
@@ -22,6 +23,9 @@ var storage = multer.diskStorage({
     }
     if (file.fieldname === "images") {
       cb(null, `${defaultPath}/${file.fieldname}`); // public/images
+    }
+    if (file.fieldname === "profile_picture") {
+      cb(null, `${defaultPath}/${file.fieldname}`); // public/profile_picture
     }
   },
   filename: (req, file, cb) => {

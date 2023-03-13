@@ -5,12 +5,14 @@ const { multerUpload } = require("./../lib/multer");
 const deleteFiles = require("./../helper/deleteFiles");
 
 const uploadImages = (req, res, next) => {
-  const multerResult = multerUpload.fields([{ name: "images", maxCount: 1 }]);
+  const multerResult = multerUpload.fields([
+    { name: "profile_picture", maxCount: 1 },
+  ]);
   multerResult(req, res, function (err) {
     try {
       if (err) throw err;
 
-      req.files.images.forEach((value) => {
+      req.files.profile_picture.forEach((value) => {
         //adjust max file sizes in bytes
         if (value.size > 5000000)
           throw {
@@ -20,8 +22,8 @@ const uploadImages = (req, res, next) => {
 
       next();
     } catch (error) {
-      if (req.files.images) {
-        deleteFiles(req.files.images);
+      if (req.files.profile_picture) {
+        deleteFiles(req.files.profile_picture);
       }
       res.status(400).send({
         isError: true,

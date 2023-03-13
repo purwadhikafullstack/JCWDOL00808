@@ -29,25 +29,24 @@ export default function ChangePassword(props) {
   const handleChangePassword = async (values) => {
     try {
       setIsLoading(true);
-      //   const token = localStorage.getItem("token");
-
-      //dummy axios, id still hardcoded
+      const token = localStorage.getItem("token");
       const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/user/profile/password`,
-        values
-        // {
-        //   headers: { Authorization: token },
-        // }
+        values,
+        {
+          headers: { Authorization: token },
+        }
       );
       setIsLoading(false);
       toast({
         title: response?.data?.message,
+        description: "Please login after changing password.",
         status: "success",
         duration: 5000,
         isClosable: true,
       });
       localStorage.removeItem("token");
-      setTimeout(() => navigate("/login", 3000));
+      setTimeout(() => navigate("/user/login", 5000));
     } catch (error) {
       setIsLoading(false);
       toast({

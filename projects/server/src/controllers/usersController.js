@@ -61,7 +61,6 @@ module.exports = {
       }
     } catch (error) {
       t.rollback();
-      console.log(error);
       res.status(409).send({
         isError: true,
         message: error,
@@ -88,7 +87,6 @@ module.exports = {
         data: null,
       });
     } catch (error) {
-      console.log(error);
       t.rollback();
       res.status(404).send({
         isError: true,
@@ -109,7 +107,6 @@ module.exports = {
         data: verificationStatus.is_verified,
       });
     } catch (error) {
-      console.log(error);
       res.status(404).send({
         isError: true,
         message: error.message,
@@ -130,7 +127,10 @@ module.exports = {
         });
       }
 
-      let hasMatchResult = await hashMatch(password, email.dataValues.password);
+      let hasMatchResult = await hashMatch(
+        password,
+        findEmail.dataValues.password
+      );
 
       if (hasMatchResult === false)
         return res.status(404).send({
@@ -143,7 +143,7 @@ module.exports = {
         isError: false,
         message: "Login Success",
         data: {
-          token: createVerificationToken({ id: email.dataValues.id }),
+          token: createVerificationToken({ id: findEmail.dataValues.id }),
         },
       });
     } catch (error) {
@@ -157,7 +157,8 @@ module.exports = {
   changePicture: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const id = req.params.id;
+      //Get id from decoding token
+      const { id } = req.dataDecode;
       const response = await users.findOne({ where: { id } });
       //Delete old profile_picture data
       const oldPicture = response.dataValues.profile_picture;
@@ -167,7 +168,10 @@ module.exports = {
         });
       }
       //Get image path data from middleware
-      let profile_picture = req.files?.images[0]?.path.replace("public\\", "");
+      let profile_picture = req.files?.profile_picture[0]?.path.replace(
+        "public\\",
+        ""
+      );
 
       await users.update(
         {
@@ -184,7 +188,7 @@ module.exports = {
         data: null,
       });
     } catch (error) {
-      deleteFiles(req.files.images);
+      deleteFiles(req.files.profile_picture);
       t.rollback();
       res.status(404).send({
         isError: true,
@@ -196,7 +200,8 @@ module.exports = {
   removePicture: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const id = req.params.id;
+      //Get id from decoding token
+      const { id } = req.dataDecode;
       const response = await users.findOne({ where: { id } });
       await users.update(
         { profile_picture: null },
@@ -217,7 +222,6 @@ module.exports = {
       });
     } catch (error) {
       t.rollback();
-      console.log(error);
       res.status(404).send({
         isError: true,
         message: error.message,
@@ -227,8 +231,9 @@ module.exports = {
   },
   editProfile: async (req, res) => {
     try {
-      const { fullName, email, phoneNumber } = req.body;
-      console.log(fullName, email, phoneNumber);
+      //Get id from decoding token
+      const { id } = req.dataDecode;
+      const { fullName, phoneNumber } = req.body;
       await users.update(
         { full_name: fullName, phone_number: phoneNumber },
         { where: { id } }
@@ -239,7 +244,6 @@ module.exports = {
         data: null,
       });
     } catch (error) {
-      console.log(error);
       res.status(404).send({
         isError: true,
         message: error.message,
@@ -250,35 +254,38 @@ module.exports = {
   editPassword: async (req, res) => {
     const t = await sequelize.transaction();
     try {
+      //Get id from decoding token
+      const { id } = req.dataDecode;
       const { oldPassword, newPassword } = req.body;
       console.log(oldPassword, newPassword);
-      // const findOldPassword = await users.findOne({ where: { id } });
+      //Get old password from database to compare
+      const findOldPassword = await users.findOne({ where: { id } });
+      //Compare input password with hashed password from database
+      let hasMatchResult = await hashMatch(
+        oldPassword,
+        findOldPassword.dataValues.password
+      );
 
-      // let hasMatchResult = await hashMatch(
-      //   oldPassword,
-      //   findOldPassword.dataValues.password
-      // );
-
-      // if (hasMatchResult === false)
-      //   return res.status(404).send({
-      //     isError: true,
-      //     message: "Password invalid",
-      //     data: true,
-      //   });
-
-      // await users.update(
-      //   { password: await hashPassword(newPassword) },
-      //   { where: { id } }.{transaction:t}
-      // );
+      if (hasMatchResult === false)
+        return res.status(404).send({
+          isError: true,
+          message: "Invalid password",
+          data: true,
+        });
+      //Update new password after old password match
+      await users.update(
+        { password: await hashPassword(newPassword) },
+        { where: { id } },
+        { transaction: t }
+      );
       t.commit();
-      // res.status(201).send({
-      //   isError: false,
-      //   message: "Password updated.",
-      //   data: null,
-      // });
+      res.status(201).send({
+        isError: false,
+        message: "Password updated.",
+        data: null,
+      });
     } catch (error) {
       t.rollback();
-      console.log(error);
       res.status(404).send({
         isError: true,
         message: error.message,
