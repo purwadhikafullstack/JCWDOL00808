@@ -1,4 +1,5 @@
-require("dotenv/config");
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
@@ -6,12 +7,14 @@ const { join } = require("path");
 const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(
-  cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
-  })
+  cors(
+  //   {
+  //   origin: [
+  //     process.env.WHITELISTED_DOMAIN &&
+  //       process.env.WHITELISTED_DOMAIN.split(","),
+  //   ],
+  // }
+  )
 );
 
 app.use(express.json());
@@ -32,7 +35,7 @@ app.use(express.json());
 //     console.log(err, "Something Went Wrong with Database Update!");
 //   });
 
-//#region API ROUTES
+// #region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
@@ -47,7 +50,7 @@ app.use(express.json());
 //   });
 // });
 
-// // ===========================
+// ===========================
 
 // // not found
 // app.use((req, res, next) => {
@@ -69,14 +72,17 @@ app.use(express.json());
 // });
 
 //Import router for controller from index.js inside routers folder
-const { usersRouter, authRouter } = require("./routers"); //refer to index.js in routers folder
+const { usersRouter, authRouter, adminsRouter, warehousesRouter, adminRouter  } = require("./routers"); //refer to index.js in routers folder
 app.use("/user", usersRouter);
 app.use("/auth", authRouter);
+app.use("/admins", adminsRouter);
+app.use("/warehouses", warehousesRouter);
+app.use("/admin", adminRouter);
 app.use(express.static("."));
 
 //#endregion
 
-//#region CLIENT
+// #region CLIENT
 const clientPath = "../../client/build";
 app.use(express.static(join(__dirname, clientPath)));
 

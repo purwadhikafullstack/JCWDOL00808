@@ -4,10 +4,12 @@ const { multerUpload } = require("./../lib/multer");
 // Import deleteFiles
 const deleteFiles = require("./../helper/deleteFiles");
 
+//function untuk mengupload profile_picture
 const uploadImages = (req, res, next) => {
   const multerResult = multerUpload.fields([
     { name: "profile_picture", maxCount: 1 },
   ]);
+
   multerResult(req, res, function (err) {
     try {
       if (err) throw err;

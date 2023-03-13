@@ -154,6 +154,80 @@ module.exports = {
       });
     }
   },
+  resetPassword: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      const email = req.body.email;
+
+      const findEmail = await users.findOne({ where: { email } });
+      if (!findEmail) {
+        res.status(409).send({
+          isError: true,
+          message: "Email not found",
+          data: null,
+        });
+      } else {
+        const template = await fs.readFile(
+          "./src/template/resetPassword.html",
+          "utf-8"
+        );
+        let compiledTemplate = handlebars.compile(template);
+        let resetPasswordTemplate = compiledTemplate({
+          resetPasswordLink: "http://localhost:3000/user/verify-new-password",
+          email,
+          token: createVerificationToken({ id: findEmail.dataValues.id }),
+        });
+        await transporter.sendMail({
+          from: `Warehouser <${process.env.GMAIL}>`,
+          to: email,
+          subject: "Reset Password",
+          html: resetPasswordTemplate,
+        });
+
+        t.commit();
+        res.status(201).send({
+          isError: false,
+          message: "Email already sent for reset password, check your inbox.",
+          data: null,
+        });
+      }
+    } catch (error) {
+      t.rollback();
+      console.log(error);
+      res.status(409).send({
+        isError: true,
+        message: error,
+        data: null,
+      });
+    }
+  },
+  verifyNewPassword: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      const { email, password, token } = req.body;
+      validateVerificationToken(token);
+
+      await users.update(
+        { password: await hashPassword(password) },
+        { where: { email } },
+        { transaction: t }
+      );
+
+      t.commit();
+      res.status(201).send({
+        isError: false,
+        message: "New Password created.",
+        data: null,
+      });
+    } catch (error) {
+      t.rollback();
+      res.status(404).send({
+        isError: true,
+        message: error?.message,
+        data: null,
+      });
+    }
+  },
   changePicture: async (req, res) => {
     const t = await sequelize.transaction();
     try {
@@ -290,4 +364,24 @@ module.exports = {
       });
     }
   },
+  // isVerifiedNewPassword: async (req, res) => {
+  //   try {
+  //     const { email } = req.params;
+
+  //     const verificationStatus = await users.findOne({ where: { email } });
+
+  //     res.status(200).send({
+  //       isError: false,
+  //       message: "Get verification status",
+  //       data: verificationStatus.password,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(404).send({
+  //       isError: true,
+  //       message: error.message,
+  //       data: null,
+  //     });
+  //   }
+  // }
 };
