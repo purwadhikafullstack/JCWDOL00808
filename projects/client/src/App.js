@@ -19,7 +19,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/user/register" element={<Registration />} />
         <Route path="/user/verify" element={<Verification />} />
-        <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
+        <Route
+          path="/user/verify-new-password"
+          element={<VerificationNewPassword />}
+        />
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/profile" element={<EditProfile />} />
         <Route path="/user/reset-password" element={<ResetPassword />} />
