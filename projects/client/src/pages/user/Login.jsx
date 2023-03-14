@@ -84,11 +84,14 @@ const Login = () => {
                 </button>
               </form>
 
-              <h1 className="text-center mt-12 text-xs text-indigo-900">
+              <h1
+                className="text-center mt-12 text-xs text-indigo-900 cursor-pointer"
+                onClick={() => navigate("/user/reset-password")}
+              >
                 Forgot password?
               </h1>
             </div>
-            <div className="border bg-white text-center py-4 border-gray-300">
+            <div className="border bg-white text-center py-4 border-gray-300 ">
               <h1 className="text-sm">
                 Don't have an account?{" "}
                 <span

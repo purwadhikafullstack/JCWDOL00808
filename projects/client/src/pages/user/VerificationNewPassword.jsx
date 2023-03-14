@@ -22,7 +22,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-export default function Verification() {
+export default function VerificationNewPassword() {
   //Get value from url query
   const queryParams = new URLSearchParams(window.location.search);
   const email = queryParams.get("email");
@@ -33,38 +33,39 @@ export default function Verification() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const isVerified = async () => {
-    try {
-      //Get is_verified from database
-      const verificationStatus = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/user/verify/${email}`
-      );
-      //If user is_verified true, navigate to login page
-      if (verificationStatus?.data?.data) {
-        navigate("/user/login");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const isVerifiedNewPassword = async () => {
+  //   try {
+  //     //Get is_verified from database
+  //     const verificationStatus = await axios.get(
+  //       `${process.env.REACT_APP_API_BASE_URL}/user/verify-new-password/${email}`
+  //     );
+  //     //If user password change, navigate to login page
+  //     if (verificationStatus?.data?.data) {
+  //       // navigate("/user/login");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleCreatePassword = async (values) => {
     try {
       setIsLoading(true);
       //Get password input from formik values
-      const { password, confirmPassword } = values;
+      const password = values.password;
       //Send updated data to database
       const response = await axios.patch(
-        `${process.env.REACT_APP_API_BASE_URL}/user/verify`,
-        { email, password, confirmPassword, token }
+        `${process.env.REACT_APP_API_BASE_URL}/user/verify-new-password`,
+        { email, password, token }
       );
       toast({
         title: response?.data?.message,
-        description: "You can continue login now",
+        description: "New password created",
         status: "success",
         duration: 5000,
         isClosable: true,
       });
+      navigate("/user/login");
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -79,9 +80,9 @@ export default function Verification() {
     }
   };
 
-  useEffect(() => {
-    isVerified();
-  });
+  // useEffect(() => {
+  //   isVerifiedNewPassword();
+  // });
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -125,7 +126,7 @@ export default function Verification() {
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
         <Stack align={"center"}>
           <Heading fontSize={"4xl"} textAlign={"center"}>
-            Create password
+            Create new password
           </Heading>
         </Stack>
         <Box
@@ -225,16 +226,8 @@ export default function Verification() {
                     bg: "blue.500",
                   }}
                 >
-                  Create password
+                  Create new password
                 </Button>
-              </Stack>
-              <Stack pt={6}>
-                <Text align={"center"}>
-                  Already a user?{" "}
-                  <Link as={RouterLink} to="/user/login" color={"blue.400"}>
-                    Login
-                  </Link>
-                </Text>
               </Stack>
             </form>
           </Stack>
