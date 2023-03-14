@@ -1,14 +1,15 @@
 import { Box, FormControl, FormLabel, Input, Select, Text, VStack, useDisclosure, useToast, FormErrorMessage } from "@chakra-ui/react";
 import axios from "axios";
 import AddAdminConfirmation from "../../components/AddAdminConfirmation";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useEffect } from "react";
 
-const RegisterAdmin = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const PatchAdmin = () => {
   const toast = useToast();
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const formik = useFormik({
     initialValues: {
@@ -25,11 +26,11 @@ const RegisterAdmin = () => {
       password: Yup.string().min(8, "Password must have 8 character").required("Password is required"),
       phone_number: Yup.string().required("Phone Number is required"),
       role: Yup.string().required("Role is required"),
-      image: Yup.mixed().required("Profile Image is required"),
+      image: Yup.mixed().required("Image is required"),
     }),
     onSubmit: async (values) => {
       try {
-        await registerUser(values);
+        await patchAdmin(values);
       } catch (error) {
         toast({
           title: `${error.message}`,
@@ -41,7 +42,30 @@ const RegisterAdmin = () => {
     },
   });
 
-  const registerUser = async (values) => {
+  const fetchAdminData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/admin/getAdminById/${id}`);
+      const adminData = response.data;
+      console.log(response);
+      formik.setValues({
+        full_name: adminData.full_name,
+        email: adminData.email,
+        password: adminData.password,
+        phone_number: adminData.phone_number,
+        role: adminData.role.toString(),
+        image: null,
+      });
+    } catch (error) {
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const patchAdmin = async (values) => {
     try {
       const formData = new FormData();
       formData.append("full_name", values.full_name);
@@ -49,9 +73,11 @@ const RegisterAdmin = () => {
       formData.append("password", values.password);
       formData.append("phone_number", values.phone_number);
       formData.append("role", values.role);
-      formData.append("profile_picture", values.image);
+      if (values.image) {
+        formData.append("profile_picture", values.image);
+      }
 
-      await axios.post("http://localhost:8000/admin/registerAdmin", formData, {
+      await axios.patch(`http://localhost:8000/admin/patchAdmin/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -68,10 +94,14 @@ const RegisterAdmin = () => {
     }
   };
 
+  useEffect(() => {
+    fetchAdminData();
+  }, []);
+
   return (
     <Box w="100%" maxW="600px" mx="auto" my="auto" mt="3" mb="10">
       <Text fontSize="xl" fontWeight="bold" mb="4">
-        Register Admin
+        Edit Admin
       </Text>
       <form onSubmit={formik.handleSubmit}>
         <VStack spacing="1" align="stretch">
@@ -127,4 +157,4 @@ const RegisterAdmin = () => {
   );
 };
 
-export default RegisterAdmin;
+export default PatchAdmin;

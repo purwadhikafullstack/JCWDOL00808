@@ -6,6 +6,7 @@ const { adminAccountController } = require("../controllers");
 const { uploadImages, uploadImagesProduct } = require("../middleware/uploadImage");
 
 Router.get("/getAdmin", adminAccountController.getUserAdmin);
+Router.get("/getAdminById/:id", adminAccountController.getUserAdminById);
 Router.get("/getAdminUserList", adminAccountController.getUserList);
 Router.post("/registerAdmin", uploadImages, adminAccountController.register);
 Router.patch("/patchAdmin/:id", uploadImages, adminAccountController.patchAdmin);

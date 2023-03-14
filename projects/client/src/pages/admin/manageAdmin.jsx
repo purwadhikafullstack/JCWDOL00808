@@ -138,7 +138,9 @@ const ManageAdmin = () => {
                     <td class="py-3 px-6 text-left">{user.phone_number}</td>
                     <td class="py-3 px-6 text-left">{user.role == 1 ? "Admin" : "Admin Warehouse"}</td>
                     <td class="py-3 px-6 text-left flex">
-                      <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Edit</button>
+                      <Link to={`/admin/patch-admin/${user.id}`}>
+                        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Edit</button>
+                      </Link>
                       <button
                         class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                         onClick={() => {
