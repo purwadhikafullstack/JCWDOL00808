@@ -34,15 +34,13 @@ async function getUsers({ limit, offset, sortBy, order, search, filter }) {
 
   // Mengambil data pengguna dari database menggunakan Sequelize
   const users = await user.findAndCountAll(options);
-  console.log(users)
+  console.log(users);
 
   // Mengembalikan objek yang berisi data pengguna dan total pengguna
   return {
     users: users.rows,
     total_users: users.count,
   };
-
- 
 }
 
 module.exports = {

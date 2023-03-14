@@ -21,6 +21,9 @@
     "projects/*"
   ],
   "dependencies": {
-    "react-paginate": "^8.1.4"
+    "formik": "^2.2.9",
+    "joi": "^17.8.3",
+    "react-paginate": "^8.1.4",
+    "yup": "^1.0.2"
   }
 }
