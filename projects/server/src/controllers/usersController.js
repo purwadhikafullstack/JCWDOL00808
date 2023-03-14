@@ -46,7 +46,7 @@ module.exports = {
           token: createVerificationToken({ id: createAccount.dataValues.id }),
         });
         await transporter.sendMail({
-          from: `Warehouser <${process.env.GMAIL}>`,
+          from: `Big4Commerce <${process.env.GMAIL}>`,
           to: email,
           subject: "Complete Your Registration",
           html: registerTemplate,
@@ -178,7 +178,7 @@ module.exports = {
           token: createVerificationToken({ id: findEmail.dataValues.id }),
         });
         await transporter.sendMail({
-          from: `Warehouser <${process.env.GMAIL}>`,
+          from: `Big4Commerce <${process.env.GMAIL}>`,
           to: email,
           subject: "Reset Password",
           html: resetPasswordTemplate,
