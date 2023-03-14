@@ -124,6 +124,7 @@ export default function EditProfile() {
       .required("Email is required"),
     fullName: Yup.string()
       .min(3, "Name minimum 3 character")
+      .max(30, "Name maximum 30 character")
       .required("Full name is required"),
     phoneNumber: Yup.string()
       .min(10, "Phone number minimum 10 number")
