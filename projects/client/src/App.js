@@ -16,6 +16,9 @@ import RegisterAdmin from "./pages/admin/registerAdmin";
 import ManageProducts from "./pages/admin/manageProducts";
 import ProductForm from "./pages/admin/addProduct";
 import PatchAdmin from "./pages/admin/patchAdmin";
+import ManageCategoryProducts from "./pages/admin/manageCategoryProduct";
+import AddCategoryProduct from "./pages/admin/addCategoryProduct";
+import PatchCategoryProduct from "./pages/admin/patchCategory";
 
 function App() {
   return (
@@ -37,6 +40,9 @@ function App() {
         <Route path="/admin/manageproducts" element={<ManageProducts />} />
         <Route path="/admin/addProducts" element={<ProductForm />} />
         <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
+        <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
+        <Route path="/admin/addcategory" element={<AddCategoryProduct />} />
+        <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
