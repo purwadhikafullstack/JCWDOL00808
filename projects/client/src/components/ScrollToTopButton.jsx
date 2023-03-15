@@ -34,7 +34,7 @@ export default function ScrollToTopButton() {
         onClick={scrollToTop}
         className={
           isVisible
-            ? "opacity-100 bg-gray-700 hover:bg-gray-900 focus:ring-gray-500 inline-flex items-center rounded-full p-3 text-white shadow-sm transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2"
+            ? "opacity-100 bg-gray-700 hover:bg-gray-900 focus:ring-gray-500 inline-flex items-center rounded-full p-3 text-white shadow-sm transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 animate-bounce"
             : "opacity-0"
         }
       >

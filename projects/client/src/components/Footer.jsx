@@ -38,13 +38,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="mb-4">
-                <Link to="/user/profile" className="hover:underline">
-                  My Account
+                <Link to="/user/login" className="hover:underline">
+                  Login
                 </Link>
               </li>
               <li>
-                <Link to="/user/login" className="hover:underline">
-                  Login
+                <Link to="/user/profile" className="hover:underline">
+                  My Account
                 </Link>
               </li>
             </ul>
@@ -118,11 +118,11 @@ export default function Footer() {
             <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
               Install App
             </h2>
-            <ul className="text-gray-600 dark:text-gray-400">
+            <ul className="inline-block">
               <li className="mb-2">
                 <Link to="https://play.google.com/" target="_blank">
                   <img
-                    className="w-32 h-14 ml-2"
+                    className="w-32 h-14"
                     alt="Get it on Google Play"
                     src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
                   />
@@ -131,7 +131,7 @@ export default function Footer() {
               <li>
                 <Link to="https://apps.apple.com" target="_blank">
                   <img
-                    className="w-28 h-14 ml-4"
+                    className="w-28 h-14 ml-2"
                     alt="Download on the App Store"
                     src="https://apple-resources.s3.amazonaws.com/media-badges/download-on-the-app-store/black/en-us.svg"
                   />
