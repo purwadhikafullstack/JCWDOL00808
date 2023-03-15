@@ -18,6 +18,7 @@ const verifySchema = Joi.object({
 });
 
 const editProfileSchema = Joi.object({
+  email: Joi.string().email(),
   fullName: Joi.string().min(3).max(30).required(),
   phoneNumber: Joi.string().min(10).max(14).required(),
 });
