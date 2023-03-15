@@ -27,12 +27,17 @@ var storage = multer.diskStorage({
     if (file.fieldname === "images") {
       cb(null, `${defaultPath}/${file.fieldname}`); // public/images
     }
-    if (file.fieldname === "profile_picture") {
-      cb(null, `${defaultPath}/${file.fieldname}`); // public/profile_picture
-    }
   },
   filename: (req, file, cb) => {
-    cb(null, "PIMG" + "-" + Date.now() + Math.round(Math.random() * 1000000000) + "." + file.mimetype.split("/")[1]); // [image, png]
+    cb(
+      null,
+      "PIMG" +
+        "-" +
+        Date.now() +
+        Math.round(Math.random() * 1000000000) +
+        "." +
+        file.mimetype.split("/")[1]
+    ); // [image, png]
   },
 });
 
