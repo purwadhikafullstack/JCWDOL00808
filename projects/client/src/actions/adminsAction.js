@@ -6,6 +6,13 @@ export const loginAction = (data) => {
   };
 };
 
+export const getAdminsAction = (data) => {
+  return {
+      type: "GET_ADMINS",
+      payload: data
+  }
+}
+
 export const logoutAction = () => {
   localStorage.removeItem("admin_login");
   return {

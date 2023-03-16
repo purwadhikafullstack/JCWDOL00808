@@ -11,11 +11,17 @@ import ResetPassword from "./pages/user/ResetPassword";
 import VerificationNewPassword from "./pages/user/VerificationNewPassword";
 import Sidebar from "./components/sidebar";
 import UserList from "./pages/admin/userList";
+import AdminList from "./pages/admin/AdminList";
+import WarehouseList from "./pages/warehouse/WarehouseList";
+import AddWarehouse from "./pages/warehouse/AddWarehouse";
+import EditWarehouse from "./pages/warehouse/EditWarehouse";
+import AssignAdmin from "./pages/admin/AssignAdmin";
 import ManageAdmin from "./pages/admin/manageAdmin";
 import RegisterAdmin from "./pages/admin/registerAdmin";
 import ManageProducts from "./pages/admin/manageProducts";
 import ProductForm from "./pages/admin/addProduct";
 import PatchAdmin from "./pages/admin/patchAdmin";
+
 
 function App() {
   return (
@@ -33,8 +39,12 @@ function App() {
         <Route path="/user/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<Sidebar />} />
+        <Route path="/admin/list" element={<AdminList />} />
+        <Route path="/admin/assign" element={<AssignAdmin />} />
         <Route path="/admin/adminuserlist" element={<UserList />} />
+        <Route path="/warehouse/list" element={<WarehouseList />} />
+        <Route path="/warehouse/add" element={<AddWarehouse />} />
+        <Route path="/warehouse/edit" element={<EditWarehouse />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
         <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
         <Route path="/admin/manageproducts" element={<ManageProducts />} />
