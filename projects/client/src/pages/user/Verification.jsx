@@ -52,11 +52,11 @@ export default function Verification() {
     try {
       setIsLoading(true);
       //Get password input from formik values
-      const password = values.password;
+      const { password, confirmPassword } = values;
       //Send updated data to database
       const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/user/verify`,
-        { email, password, token }
+        { email, password, confirmPassword, token }
       );
       toast({
         title: response?.data?.message,

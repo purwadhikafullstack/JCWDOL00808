@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Verification from "./pages/user/Verification";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/user/Login";
+import EditProfile from "./pages/user/EditProfile";
 import AdminLogin from "./pages/AdminLogin";
 import ResetPassword from "./pages/user/ResetPassword";
 import VerificationNewPassword from "./pages/user/VerificationNewPassword";
@@ -15,6 +16,12 @@ import WarehouseList from "./pages/warehouse/WarehouseList";
 import AddWarehouse from "./pages/warehouse/AddWarehouse";
 import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import AssignAdmin from "./pages/admin/AssignAdmin";
+import ManageAdmin from "./pages/admin/manageAdmin";
+import RegisterAdmin from "./pages/admin/registerAdmin";
+import ManageProducts from "./pages/admin/manageProducts";
+import ProductForm from "./pages/admin/addProduct";
+import PatchAdmin from "./pages/admin/patchAdmin";
+
 
 function App() {
   return (
@@ -23,8 +30,12 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/user/register" element={<Registration />} />
         <Route path="/user/verify" element={<Verification />} />
-        <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
+        <Route
+          path="/user/verify-new-password"
+          element={<VerificationNewPassword />}
+        />
         <Route path="/user/login" element={<Login />} />
+        <Route path="/user/profile" element={<EditProfile />} />
         <Route path="/user/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -34,6 +45,11 @@ function App() {
         <Route path="/warehouse/list" element={<WarehouseList />} />
         <Route path="/warehouse/add" element={<AddWarehouse />} />
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
+        <Route path="/admin/manageadmin" element={<ManageAdmin />} />
+        <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
+        <Route path="/admin/manageproducts" element={<ManageProducts />} />
+        <Route path="/admin/addProducts" element={<ProductForm />} />
+        <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
