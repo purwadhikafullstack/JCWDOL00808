@@ -40,10 +40,12 @@ export const loginUser = async (email, password) => {
     //   });
   }
 };
-export const isAuth = async (navigate) => {
+export const isAuth = async (navigate, home) => {
   try {
     if (!localStorage.getItem("token")) {
-      navigate("/user/login");
+      if (!home) {
+        navigate("/user/login");
+      }
     } else {
       const token = localStorage.getItem("token");
       const userData = await axios.get(
@@ -53,6 +55,12 @@ export const isAuth = async (navigate) => {
       return userData?.data?.data;
     }
   } catch (error) {
-    toast.error(error?.response?.data?.message);
+    toast.error(error?.response?.data?.message || error?.message);
   }
+};
+
+export const logout = (navigate) => {
+  localStorage.removeItem("token");
+  navigate("/user/login");
+  toast.success("Account logged out.");
 };

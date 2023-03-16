@@ -39,12 +39,12 @@ export default function Footer() {
               </li>
               <li className="mb-4">
                 <Link to="/user/login" className="hover:underline">
-                  Login
+                  Login as user
                 </Link>
               </li>
               <li>
-                <Link to="/user/profile" className="hover:underline">
-                  My Account
+                <Link to="/admin/login" className="hover:underline">
+                  Login as admin
                 </Link>
               </li>
             </ul>
