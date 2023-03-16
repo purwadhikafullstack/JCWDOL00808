@@ -3,6 +3,7 @@ const authController = require("./authController");
 const adminAccountController = require("./adminAccountController");
 const adminsController = require("./admins");
 const productsController = require("./productsController");
+const productController = require("./productController")
 
 module.exports = {
   usersController,
@@ -10,4 +11,5 @@ module.exports = {
   adminAccountController,
   adminsController,
   productsController,
+  productController,
 };
