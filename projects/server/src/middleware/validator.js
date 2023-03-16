@@ -18,8 +18,16 @@ const verifySchema = Joi.object({
 });
 
 const editProfileSchema = Joi.object({
+  email: Joi.string().email(),
   fullName: Joi.string().min(3).max(30).required(),
-  phoneNumber: Joi.string().min(10).max(14).required(),
+  phoneNumber: Joi.string()
+    .pattern(/^((0)|(\+62))/)
+    .min(10)
+    .max(14)
+    .required()
+    .messages({
+      "string.pattern.base": '"phoneNumber" must start with "0" or "+62"',
+    }),
 });
 
 const editPasswordSchema = Joi.object({

@@ -2,6 +2,7 @@ const usersController = require("./usersController");
 const authController = require("./authController");
 const adminAccountController = require("./adminAccountController");
 const adminsController = require("./admins");
+const productsController = require("./productsController");
 const productController = require("./productController")
 
 module.exports = {
@@ -9,5 +10,6 @@ module.exports = {
   authController,
   adminAccountController,
   adminsController,
-  productController
+  productsController,
+  productController,
 };

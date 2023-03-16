@@ -71,12 +71,23 @@ app.use(express.json());
 // });
 
 //Import router for controller from index.js inside routers folder
-const { usersRouter, authRouter, adminsRouter, warehousesRouter, adminRouter, productRouter } = require("./routers"); //refer to index.js in routers folder
+
+const {
+  usersRouter,
+  authRouter,
+  adminsRouter,
+  warehousesRouter,
+  adminRouter,
+  productsRouter,
+  productRouter,
+} = require("./routers"); //refer to index.js in routers folder
+
 app.use("/user", usersRouter);
 app.use("/auth", authRouter);
 app.use("/admins", adminsRouter);
 app.use("/warehouses", warehousesRouter);
 app.use("/admin", adminRouter);
+app.use("/product", productsRouter);
 app.use("/product", productRouter);
 
 app.use(express.static("."));
