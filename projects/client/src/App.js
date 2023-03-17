@@ -19,6 +19,7 @@ import PatchAdmin from "./pages/admin/patchAdmin";
 import ManageCategoryProducts from "./pages/admin/manageCategoryProduct";
 import AddCategoryProduct from "./pages/admin/addCategoryProduct";
 import PatchCategoryProduct from "./pages/admin/patchCategory";
+import PatchProductForm from "./pages/admin/patchProduct";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
         <Route path="/admin/addcategory" element={<AddCategoryProduct />} />
         <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
+        <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />

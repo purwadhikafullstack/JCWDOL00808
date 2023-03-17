@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import AddAdminConfirmation from "../../components/AddAdminConfirmation";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Product Name is required"),
@@ -29,6 +29,7 @@ const PatchProductForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const formik = useFormik({
     initialValues: {
@@ -80,11 +81,35 @@ const PatchProductForm = () => {
 
   useEffect(() => {
     fetchCategories();
+    fetchProductData();
   }, []);
 
   const fetchCategories = async () => {
     const response = await axios.get(`http://localhost:8000/productcategory/listproductcategory`);
     setCategories(response.data.result);
+  };
+
+  const fetchProductData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/product/productId/${id}`);
+      const productData = response.data;
+      console.log(response);
+      formik.setValues({
+        name: productData.name,
+        description: productData.description,
+        price: productData.price,
+        weight: productData.weight,
+        imageUrl: productData.imageUrl,
+        product_categories_id: productData.product_categories_id,
+      });
+    } catch (error) {
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleImageChange = (event) => {
