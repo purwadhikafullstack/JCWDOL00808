@@ -21,7 +21,7 @@ import RegisterAdmin from "./pages/admin/registerAdmin";
 import ManageProducts from "./pages/admin/manageProducts";
 import ProductForm from "./pages/admin/addProduct";
 import PatchAdmin from "./pages/admin/patchAdmin";
-
+import ProductDetails from "./pages/ProductDetails";
 
 function App() {
   return (
@@ -50,6 +50,7 @@ function App() {
         <Route path="/admin/manageproducts" element={<ManageProducts />} />
         <Route path="/admin/addProducts" element={<ProductForm />} />
         <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
+        <Route path="/product-details/:id" element={<ProductDetails />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
