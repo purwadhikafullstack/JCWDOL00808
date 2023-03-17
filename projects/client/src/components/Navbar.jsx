@@ -34,7 +34,6 @@ export default function Navbar() {
               </div>
               <input
                 type="text"
-                id="search-navbar"
                 className="md:block md:w-full w-28 mr-4 p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Search..."
               />
@@ -65,10 +64,7 @@ export default function Navbar() {
 
             <HamburgerMenuButton profile={profile} />
           </div>
-          <div
-            className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-            id="navbar-sticky"
-          >
+          <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
             <ul className="flex flex-col p-1 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
               <li>
                 <Link
