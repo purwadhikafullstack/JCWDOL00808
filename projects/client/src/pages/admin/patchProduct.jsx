@@ -23,7 +23,7 @@ const validationSchema = Yup.object().shape({
     .required("Image is required"),
 });
 
-const ProductForm = () => {
+const PatchProductForm = () => {
   const [image, setImage] = useState("");
   const [categories, setCategories] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -167,4 +167,4 @@ const ProductForm = () => {
   );
 };
 
-export default ProductForm;
+export default PatchProductForm;

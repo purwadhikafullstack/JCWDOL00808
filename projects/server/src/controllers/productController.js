@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 // Import models
 const db = require("../../models/index");
 const products = db.products;
+const categories = db.product_categories;
 
 // import JOI untuk validasi input dari user
 const Joi = require("joi");
@@ -57,6 +58,12 @@ module.exports = {
         limit: limit,
         order: [[sort, order]], // add order clause with the sort and order parameters
       });
+
+      //replace '\' with '/'
+      result.forEach((product) => {
+        product.imageUrl = product.imageUrl.replace(/\\/g, "/");
+      });
+
       res.json({
         result: result,
         page: page,
@@ -78,10 +85,16 @@ module.exports = {
       description: Joi.string().required(),
       price: Joi.number().required(),
       weight: Joi.number().required(),
+      product_categories_id: Joi.number().required(),
     });
 
+    let imageUrl = undefined; // Initialize the imageUrl variable to undefined
+
     try {
-      let imageUrl = req.files.imageUrl[0].path;
+      // Check if req.files contains an imageUrl property
+      if (req.files && req.files.imageUrl) {
+        imageUrl = req.files.imageUrl[0].path;
+      }
 
       // Validate input data against schema
       const { error, value } = productSchema.validate(req.body);
@@ -93,9 +106,14 @@ module.exports = {
         });
       }
 
-      const { name, description, price, weight } = value;
+      const { name, description, price, weight, product_categories_id } = value;
 
       // step 2 validasi
+      const productCategory = await categories.findByPk(product_categories_id);
+      if (!productCategory) {
+        return res.status(404).send({ message: "Product category not found" });
+      }
+
       let findNameProducts = await products.findOne({
         where: {
           name: name,
@@ -110,7 +128,7 @@ module.exports = {
         });
 
       // insert data ke products
-      await products.create({ name, description, price, weight, imageUrl }, { transaction: t });
+      await products.create({ name, description, price, weight, imageUrl, product_categories_id }, { transaction: t });
 
       //step 5 kirim response
       await t.commit();
@@ -120,7 +138,9 @@ module.exports = {
         data: null,
       });
     } catch (error) {
-      deleteFiles(imageUrl);
+      if (imageUrl) {
+        deleteFiles([{ path: imageUrl }]); // Call the deleteFiles function
+      }
       await t.rollback();
       res.status(404).send({
         isError: true,
@@ -130,17 +150,117 @@ module.exports = {
     }
   },
 
+  // patchProduct: async (req, res) => {
+  //   const t = await sequelize.transaction();
+
+  //   try {
+  //     const productSchema = Joi.object({
+  //       name: Joi.string().required(),
+  //       description: Joi.string().required(),
+  //       price: Joi.number().required(),
+  //       weight: Joi.number().required(),
+  //     });
+
+  //     const { error, value } = productSchema.validate(req.body);
+  //     if (error) {
+  //       return res.status(400).send({
+  //         isError: true,
+  //         message: error.details[0].message,
+  //         data: null,
+  //       });
+  //     }
+
+  //     // step 1: retrieve admin data from database
+  //     const { id } = req.params;
+  //     let product = await products.findOne({ where: { id: id } });
+  //     if (!product) {
+  //       await t.rollback();
+  //       return res.status(404).send({
+  //         isError: true,
+  //         message: "products not found",
+  //         data: null,
+  //       });
+  //     }
+
+  //     // step 2: update product data based on request body
+  //     let { name, description, price, weight } = value;
+  //     if (name) {
+  //       let findName = await products.findOne({
+  //         where: {
+  //           name,
+  //           id: { [Op.ne]: product.id }, // exclude current product
+  //         },
+  //       });
+
+  //       //check name to prevent the same name in db
+  //       if (findName) {
+  //         return res.status(400).send({
+  //           isError: true,
+  //           message: "Name Product already exists",
+  //           data: null,
+  //         });
+  //       }
+  //       product.name = name;
+  //     }
+  //     if (description) {
+  //       product.description = description;
+  //     }
+  //     if (price) {
+  //       product.price = price;
+  //     }
+  //     if (weight) {
+  //       product.weight = weight;
+  //     }
+  //     if (req.files && req.files.imageUrl) {
+  //       product.imageUrl = req.files.imageUrl[0].path;
+  //     }
+  //     await product.save({ transaction: t });
+
+  //     // step 3: send response
+  //     await t.commit();
+  //     res.status(200).send({
+  //       isError: false,
+  //       message: "Product data updated successfully",
+  //       data: null,
+  //     });
+  //   } catch (error) {
+  //     await t.rollback();
+  //     res.status(404).send({
+  //       isError: true,
+  //       message: error.message,
+  //       data: null,
+  //     });
+  //   }
+  // },
+
   patchProduct: async (req, res) => {
     const t = await sequelize.transaction();
 
-    try {
-      const productSchema = Joi.object({
-        name: Joi.string().required(),
-        description: Joi.string().required(),
-        price: Joi.number().required(),
-        weight: Joi.number().required(),
-      });
+    const productSchema = Joi.object({
+      name: Joi.string(),
+      description: Joi.string(),
+      price: Joi.number(),
+      weight: Joi.number(),
+      product_categories_id: Joi.number(),
+    });
 
+    let imageUrl = undefined;
+
+    try {
+      const { id } = req.params;
+
+      // Check if the product exists
+      const product = await products.findByPk(id);
+      if (!product) {
+        return res.status(404).send({ message: "Product not found" });
+      }
+
+      // Check if req.files contains an imageUrl property
+      if (req.files && req.files.imageUrl) {
+        imageUrl = req.files.imageUrl[0].path;
+      }
+
+      // Validate input data against schema
       const { error, value } = productSchema.validate(req.body);
       if (error) {
         return res.status(400).send({
@@ -150,62 +270,47 @@ module.exports = {
         });
       }
 
-      // step 1: retrieve admin data from database
-      const { id } = req.params;
-      let product = await products.findOne({ where: { id: id } });
-      if (!product) {
-        await t.rollback();
-        return res.status(404).send({
-          isError: true,
-          message: "products not found",
-          data: null,
-        });
+      const { name, description, price, weight, product_categories_id } = value;
+
+      // step 2 validasi
+      if (product_categories_id) {
+        const productCategory = await categories.findByPk(product_categories_id);
+        if (!productCategory) {
+          return res.status(404).send({ message: "Product category not found" });
+        }
       }
 
-      // step 2: update product data based on request body
-      let { name, description, price, weight } = value;
       if (name) {
-        let findName = await products.findOne({
+        let findNameProducts = await products.findOne({
           where: {
-            name,
-            id: { [Op.ne]: product.id }, // exclude current product
+            name: name,
+            id: { [Op.not]: product },
           },
         });
 
-        //check name to prevent the same name in db
-        if (findName) {
-          return res.status(400).send({
+        if (findNameProducts)
+          return res.status(404).send({
             isError: true,
-            message: "Name Product already exists",
+            message: "Name Product is exist",
             data: null,
           });
-        }
-        product.name = name;
       }
-      if (description) {
-        product.description = description;
-      }
-      if (price) {
-        product.price = price;
-      }
-      if (weight) {
-        product.weight = weight;
-      }
-      if (req.files && req.files.imageUrl) {
-        product.imageUrl = req.files.imageUrl[0].path;
-      }
-      await product.save({ transaction: t });
 
-      // step 3: send response
+      // Update the product
+      await product.update({ name, description, price, weight, imageUrl, product_categories_id }, { transaction: t });
+
       await t.commit();
       res.status(200).send({
         isError: false,
-        message: "Product data updated successfully",
+        message: "Product updated successfully",
         data: null,
       });
     } catch (error) {
+      if (imageUrl) {
+        deleteFiles([{ path: imageUrl }]);
+      }
       await t.rollback();
-      res.status(404).send({
+      res.status(500).send({
         isError: true,
         message: error.message,
         data: null,
@@ -244,6 +349,20 @@ module.exports = {
         message: error.message,
         data: null,
       });
+    }
+  },
+
+  getProductById: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const product = await products.findByPk(id);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      return res.status(200).json(product);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 };

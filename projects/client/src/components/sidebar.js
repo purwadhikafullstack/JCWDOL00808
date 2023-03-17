@@ -83,6 +83,10 @@ export default function Sidebar() {
                             navigate("/admin/manageadmin");
                           } else if (submenuItem.title === "List User") {
                             navigate("/admin/adminuserlist");
+                          } else if (submenuItem.title === "Manage Category Product") {
+                            navigate("/admin/managecategory");
+                          } else if (submenuItem.title === "Manage Product") {
+                            navigate("/admin/manageProducts");
                           } else if (menu.title === "Logout") {
                             // Handle logout functionality here
                           }

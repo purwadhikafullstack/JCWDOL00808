@@ -83,6 +83,13 @@ const PatchAdmin = () => {
         },
       });
 
+      toast({
+        title: `Edit Admin Success`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+
       navigate("/admin/ManageAdmin");
     } catch (error) {
       toast({

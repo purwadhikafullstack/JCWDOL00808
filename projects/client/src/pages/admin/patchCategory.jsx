@@ -57,6 +57,12 @@ const PatchCategoryProduct = () => {
     try {
       await axios.patch(`http://localhost:8000/productcategory/patchcategoryproduct/${id}`, values);
 
+      toast({
+        title: `Edit Category Success`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
       navigate("/admin/managecategory");
     } catch (error) {
       toast({

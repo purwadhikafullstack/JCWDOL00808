@@ -16,6 +16,7 @@ const ManageAdmin = () => {
   const [order, setOrder] = useState("DESC");
 
   useEffect(() => {
+    // set here !
     getUsers();
   }, [page, keyword, sort, order]);
 
@@ -31,6 +32,7 @@ const ManageAdmin = () => {
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
   };
+  //blm dpet get query params
 
   const changePage = ({ selected }) => {
     setPage(selected);

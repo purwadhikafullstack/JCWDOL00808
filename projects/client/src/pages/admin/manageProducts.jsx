@@ -32,6 +32,7 @@ function ManageProducts() {
     setPage(response.data.page);
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
+    console.log(response.data.result);
   };
 
   const deleteProducts = async (id) => {
@@ -168,8 +169,8 @@ function ManageProducts() {
               <Td fontSize="sm">{formatRupiah(product.price)}</Td>
               <Td fontSize="sm">{formatWeight(product.weight)}</Td>
               <Td fontSize="sm">
-                {/* <img src={`http://localhost:8000/public/imageUrl/${product.imageUrl}`} alt="Product image" width="100" /> */}
-                {`http://localhost:8000/${product.imageUrl}`}
+                <img src={`http://localhost:8000/${product.imageUrl}`} alt="Product image" width="100" />
+                {/* {`http://localhost:8000/${product.imageUrl}`} */}
               </Td>
               <Td>
                 <Box display="flex">

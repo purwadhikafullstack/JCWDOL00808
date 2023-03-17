@@ -35,7 +35,12 @@ const AddCategoryProduct = () => {
   const registerCategory = async (values) => {
     try {
       await axios.post("http://localhost:8000/productcategory/addcategoryproduct", values);
-
+      toast({
+        title: `Add Category Success`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
       navigate("/admin/managecategory");
     } catch (error) {
       toast({

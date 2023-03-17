@@ -72,6 +72,11 @@ function ManageCategoryProducts() {
     return shouldTruncate ? truncatedDescription + "..." : description;
   }
 
+  // membuat role admin warehouse hanya bisa read data saja
+  const role = localStorage.getItem("role");
+  const isButtonDisabled = role === "2";
+  const buttonColorScheme = isButtonDisabled ? "gray" : "green";
+
   return (
     <div style={{ margin: "auto", width: "70%" }}>
       {/* fitur search */}
@@ -121,8 +126,8 @@ function ManageCategoryProducts() {
             </MenuItem>
           </MenuList>
         </Menu>
-        <Button colorScheme="green" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />}>
-          <Link to="/admin/addcategory">
+        <Button colorScheme={buttonColorScheme} size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />}>
+          <Link to={isButtonDisabled ? "#" : "/admin/addcategory"} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
             <Flex alignItems="center">
               <Text mr={2}>Add Product</Text>
             </Flex>
@@ -153,8 +158,8 @@ function ManageCategoryProducts() {
               <Td fontSize="sm">{truncateDescription(categoryProduct.description, 35)}</Td>
               <Td>
                 <Box display="flex">
-                  <Link to={`/admin/patch-category/${categoryProduct.id}`}>
-                    <IconButton size="sm" bgColor="green.500" aria-label="Edit" icon={<EditIcon />} mr={2} borderRadius="full" _hover={{ bg: "green.700" }} />
+                  <Link to={isButtonDisabled ? "#" : `/admin/patch-category/${categoryProduct.id}`} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
+                    <IconButton size="sm" bgColor="green.500" aria-label="Edit" icon={<EditIcon />} mr={2} borderRadius="full" _hover={{ bg: "green.700" }} isDisabled={isButtonDisabled} />
                   </Link>
                   <IconButton
                     size="sm"
@@ -163,6 +168,7 @@ function ManageCategoryProducts() {
                     icon={<DeleteIcon />}
                     borderRadius="full"
                     _hover={{ bg: "red.700" }}
+                    isDisabled={isButtonDisabled}
                     onClick={() => {
                       if (window.confirm("Are you sure you want to delete this Category Product ?")) {
                         deleteProducts(categoryProduct.id);
