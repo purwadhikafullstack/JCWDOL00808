@@ -1,8 +1,7 @@
-import { Text, Input, InputGroup, Button, InputRightElement, Select } from "@chakra-ui/react";
-import { Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup, MenuOptionGroup, MenuDivider } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { Text, Input, InputGroup, Button, InputRightElement, Select, useToast } from "@chakra-ui/react";
 import Axios from "axios";
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { API_url } from "../../helper";
 
 const AddWarehouse = (props) => {
@@ -16,6 +15,9 @@ const AddWarehouse = (props) => {
   // nampung province dan city pilihan admin
   const [province, setProvince] = React.useState("");
   const [city, setCity] = React.useState("");
+
+  const toast = useToast();
+  const navigate = useNavigate();
 
   const getProvinceData = () => {
     Axios.get(API_url + `/warehouses/getProvinceData`)
@@ -60,6 +62,13 @@ const AddWarehouse = (props) => {
     })
       .then((response) => {
         console.log(response.data);
+        toast({
+          title: `${response.data.message}`,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+        setTimeout(navigate("/warehouse/list", { replace: true }), 9000);
       })
       .catch((err) => {
         console.log(err);
@@ -93,7 +102,7 @@ const AddWarehouse = (props) => {
               placeholder="Select province"
               onChange={(element) => {
                 setProvince(element.target.value.split(",")[1]);
-                onGetCity(element.target.value.split(","[0]));
+                onGetCity(element.target.value.split(",")[0]);
               }}
             >
               {provinceData.map((value) => {

@@ -8,6 +8,9 @@ route.patch("/updateWarehouseData", warehousesController.updateWarehouseData);
 route.delete("/deleteWarehouseData", warehousesController.deleteWarehouseData);
 route.get("/getProvinceData", warehousesController.getProvinceData);
 route.get("/getCityData", warehousesController.getCityData);
-route.patch("/assignAdmin", warehousesController.assignAdmin)
+route.patch("/assignAdmin", warehousesController.assignAdmin);
+// route.get("/getOpenCageData", warehousesController.getOpenCageData);
+// route.get("/dariMasAji", warehousesController.dariMasAji);
 
 module.exports = route;
+

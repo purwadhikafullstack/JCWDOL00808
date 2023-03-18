@@ -2,6 +2,7 @@ const db = require("../../models/index");
 const WarehousesModel = db.warehouses;
 const request = require("request");
 const fs = require("fs");
+// const XMLHttpRequest = require("xhr2");
 
 const { sequelize } = require("../../models");
 const { where } = require("sequelize");
@@ -73,92 +74,98 @@ module.exports = {
   },
   updateWarehouseData: async (req, res) => {
     try {
-      const { id, name, address, province, city, district, latitude, longitude } = req.body;
-      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district, latitude, longitude }, { where: { id } });
-      res.status(200).json({ success: true, message: "Warehouse data update success!", data: updatedWarehouse });
+      console.log("req.body update warehouse:", req.body);
+      const { id, name, address, province, city } = req.body;
+      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city }, { where: { id: req.body.id } });
+
+      // const { id, name, address, province, city, district, latitude, longitude } = req.body;
+      // const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district, latitude, longitude }, { where: { id } });
+
+      res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
-      res.status(500).json({ success: false, message: "Error updating warehouse data", error: error });
+      res.status(500).send({ success: false, message: "Error updating warehouse data", error: error });
     }
   },
   deleteWarehouseData: async (req, res) => {
-    const t = await sequelize.transaction();
     try {
-      // step 1: retrieve admin data from database
-      const { id } = req.params;
-      let warehouseData = await WarehousesModel.findOne({ where: { id: id } });
-      if (!warehouseData) {
-        return res.status(500).send({
-          isError: true,
-          message: "Warehouse data can't be found.",
-          data: null,
-        });
-      }
+      let deletedWarehouse = await WarehousesModel.findAll({ where: { id: req.query.id } });
 
-      // step 2: delete admin data from database
-      await WarehousesModel.destroy({ where: { id: id } }, { transaction: t });
+      await WarehousesModel.destroy({ where: { id: req.query.id } });
 
-      // step 3: send response
-      await t.commit();
+      console.log("deleted warehouse: ", deletedWarehouse);
+
       res.status(200).send({
-        isError: false,
-        message: "Warehouse data successfully deleted!",
-        data: null,
+        success: true,
+        message: `Warehouse ${deletedWarehouse[0].name} has been deleted!`,
       });
     } catch (error) {
-      await t.rollback();
+      console.log(error);
       res.status(500).send({
-        isError: true,
-        message: error.message,
-        data: null,
+        success: false,
+        message: "Something is wrong.",
       });
     }
   },
   assignAdmin: async (req, res) => {
     try {
       console.log("req.body: ", req.body);
-        let update = await WarehousesModel.update(
-          {
-            admins_id: req.body.admins_id
-          },
-          { where: { id: req.body.id } }
-        );
-        return res.status(200).send({
-          success: true,
-          message: "Admin has been assigned!"
-        })
+      let update = await WarehousesModel.update(
+        {
+          admins_id: req.body.admins_id,
+        },
+        { where: { id: req.body.id } }
+      );
+      return res.status(200).send({
+        success: true,
+        message: "Admin has been assigned!",
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).send(err);
     }
-  }
-  //   editWarehouse: async (req, res) => {
-  //     // console.log("req.files: ", req.files);
-  //     console.log("req.body: ", req.body);
-  //     console.log("req.decript: ", req.decript);
-
-  //     try {
-  //       const { name, address, province, city, district, latitude, longitude, admins_id } = JSON.parse(req.body.data);
-  //       const warehouse = await WarehousesModel.findByPk(req.decript.id);
-
-  //       if (!warehouse) {
-  //         return res.status(500).send({ success: false, message: "Warehouse not found!" });
-  //       }
-
-  //       warehouse.name = name;
-  //       warehouse.address = address;
-  //       warehouse.province = province;
-  //       warehouse.city = city;
-  //       warehouse.district = district;
-  //       warehouse.latitude = latitude;
-  //       warehouse.longitude = longitude;
-  //       warehouse.admins_id = admins_id;
-
-  //       await WarehousesModel.save();
-
-  //       return res.status(200).send({ success: true, message: "Edit data warehouse success!" });
-  //     } catch (error) {
-  //       console.log(error);
-  //       return res.status(500).send(error);
-  //     }
-  //   },
+  },
 };
+// getOpenCageData: async (req, res) => {
+//   let api_key = "3b50c98b083b4331ab5b460ac164e3c2";
+//   let api_url = "https://api.opencagedata.com/geocode/v1/json";
+
+//   let request_url = api_url + "?" + "key=" + api_key + "&q=" + encodeURIComponent("antapani") + "&pretty=1" + "&no_annotations=1";
+
+//   let request = new XMLHttpRequest();
+//   request.open("GET", request_url, true);
+
+//   request.onload = function () {
+//     if (request.status === 200) {
+//       // Success!
+//       let data = JSON.parse(request.responseText);
+//       // alert(data.results[0].formatted); // print the location
+//     } else if (request.status <= 500) {
+//       // We reached our target server, but it returned an error
+
+//       console.log("unable to geocode! Response code: " + request.status);
+//       let data = JSON.parse(request.responseText);
+//       console.log("error msg: " + data.status.message);
+//     } else {
+//       console.log("server error");
+//     }
+//   };
+
+//   request.onerror = function () {
+//     // There was a connection error of some sort
+//     console.log("unable to connect to server");
+//   };
+
+//   request.send(); // make the request
+// },
+
+// dariMasAji: async (req,res) => {
+//   try {
+//     let {warehouse_id} = req.dataDecode
+//     let {name, address, province, city, district, latitude, longitude} = req.body
+//     let response = await geocode ({q: `${district}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2"})
+
+//     res.status(200).send({success: true, dataAPI:response.results[0].geometry})
+//   } catch (error) {
+//     res.status(400).send({success: false,message: "Error"})
+//   }
+// },
