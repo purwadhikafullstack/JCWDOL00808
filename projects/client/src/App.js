@@ -12,7 +12,7 @@ import VerificationNewPassword from "./pages/user/VerificationNewPassword";
 import Sidebar from "./components/sidebar";
 import UserList from "./pages/admin/userList";
 import AdminList from "./pages/admin/AdminList";
-import WarehouseList from "./pages/warehouse/WarehouseList";
+// import WarehouseList from "./pages/warehouse/WarehouseList";
 import AddWarehouse from "./pages/warehouse/AddWarehouse";
 import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import AssignAdmin from "./pages/admin/AssignAdmin";
@@ -21,7 +21,7 @@ import RegisterAdmin from "./pages/admin/registerAdmin";
 import ManageProducts from "./pages/admin/manageProducts";
 import ProductForm from "./pages/admin/addProduct";
 import PatchAdmin from "./pages/admin/patchAdmin";
-
+import ProductDetails from "./pages/ProductDetails";
 
 function App() {
   return (
@@ -42,7 +42,7 @@ function App() {
         <Route path="/admin/list" element={<AdminList />} />
         <Route path="/admin/assign" element={<AssignAdmin />} />
         <Route path="/admin/adminuserlist" element={<UserList />} />
-        <Route path="/warehouse/list" element={<WarehouseList />} />
+        {/* <Route path="/warehouse/list" element={<WarehouseList />} /> */}
         <Route path="/warehouse/add" element={<AddWarehouse />} />
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
@@ -50,6 +50,10 @@ function App() {
         <Route path="/admin/manageproducts" element={<ManageProducts />} />
         <Route path="/admin/addProducts" element={<ProductForm />} />
         <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
+        <Route
+          path="/product-details/:productId"
+          element={<ProductDetails />}
+        />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />

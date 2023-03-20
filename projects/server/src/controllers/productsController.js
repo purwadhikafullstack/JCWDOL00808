@@ -31,4 +31,24 @@ module.exports = {
       });
     }
   },
+  getProductById: async (req, res) => {
+    try {
+      const { productId } = req.params;
+
+      const product = await products.findOne({ where: { id: productId } });
+
+      res.status(200).send({
+        isError: false,
+        message: "Get product details success",
+        data: product,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
 };

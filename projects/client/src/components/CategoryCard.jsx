@@ -9,7 +9,7 @@ export default function CategoryCard() {
   const fetchCategories = async () => {
     try {
       const categoriesData = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/product/category`
+        `${process.env.REACT_APP_API_BASE_URL}/products/category`
       );
       setCategories(categoriesData?.data?.data);
     } catch (error) {
@@ -34,7 +34,7 @@ export default function CategoryCard() {
                 <Link to="#">
                   <div className="flex flex-col justify-between px-1">
                     <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
-                      {category.category}
+                      {category.name}
                     </p>
                     <p className=" dark:text-white dark:opacity-60 text-sm">
                       {category.description}
