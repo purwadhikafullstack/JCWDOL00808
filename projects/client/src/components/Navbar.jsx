@@ -4,14 +4,14 @@ import { isAuth } from "../apis/userAPIs";
 import { useState, useEffect } from "react";
 import { FaShoppingCart, FaSearch } from "react-icons/fa";
 import HamburgerMenuButton from "./HamburgerMenu";
-import { Avatar } from "@chakra-ui/react";
+import AvatarButton from "./AvatarButton";
 
 export default function Navbar() {
   const [profile, setProfile] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    isAuth(navigate, "home").then((data) => setProfile(data));
+    isAuth(navigate).then((data) => setProfile(data));
   }, []);
 
   return (
@@ -41,15 +41,7 @@ export default function Navbar() {
             {profile ? (
               <div className="grid grid-cols-2 gap-1 place-items-center">
                 <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
-                <Link tp="/user/profile">
-                  <Avatar
-                    display={{ base: "none", sm: "block" }}
-                    size="md"
-                    name={profile.full_name}
-                    src={profile.profile_picture}
-                    className="border dark:border-white"
-                  />
-                </Link>
+                <AvatarButton profile={profile} />
               </div>
             ) : (
               <Link to="/user/register">

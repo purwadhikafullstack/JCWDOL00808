@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { logout } from "../apis/userAPIs";
+import { Avatar } from "@chakra-ui/react";
 
-function HamburgerMenuButton(props) {
+function AvatarButton(props) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -11,24 +12,21 @@ function HamburgerMenuButton(props) {
   }
 
   return (
-    <div className="md:hidden">
-      <button
-        type="button"
-        className="block text-gray-500 hover:text-white focus:text-white focus:outline-none"
+    <div>
+      <Avatar
         onClick={handleMenuClick}
-      >
-        <svg viewBox="0 0 20 20" className="w-8 h-8 fill-current">
-          <path
-            fillRule="evenodd"
-            d="M18 14v1H2v-1h16zm0-5v1H2V9h16zm0-5v1H2V4h16z"
-          />
-        </svg>
-      </button>
+        cursor="context-menu"
+        display={{ base: "none", sm: "block" }}
+        size="md"
+        name={props.profile.full_name}
+        src={props.profile.profile_picture}
+        className="border dark:border-white"
+      />
 
       {isOpen && (
         <>
           {props.profile ? (
-            <div className="absolute top-1 right-0 z-50 w-48 mt-12 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <div className="absolute top-5 right-0 z-50 w-48 mt-12 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="px-4 py-3">
                 <p className="text-sm font-medium text-gray-900">
                   Signed in as
@@ -84,4 +82,4 @@ function HamburgerMenuButton(props) {
   );
 }
 
-export default HamburgerMenuButton;
+export default AvatarButton;

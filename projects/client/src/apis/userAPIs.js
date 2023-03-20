@@ -40,10 +40,10 @@ export const loginUser = async (email, password) => {
     //   });
   }
 };
-export const isAuth = async (navigate, home) => {
+export const isAuth = async (navigate, isRestricted = false) => {
   try {
     if (!localStorage.getItem("token")) {
-      if (!home) {
+      if (isRestricted === true) {
         navigate("/user/login");
       }
     } else {
@@ -52,6 +52,7 @@ export const isAuth = async (navigate, home) => {
         `${process.env.REACT_APP_API_BASE_URL}/auth`,
         { headers: { Authorization: token } }
       );
+      localStorage.setItem("user", JSON.stringify(userData?.data?.data));
       return userData?.data?.data;
     }
   } catch (error) {
@@ -60,7 +61,7 @@ export const isAuth = async (navigate, home) => {
 };
 
 export const logout = (navigate) => {
-  localStorage.removeItem("token");
+  localStorage.clear();
   navigate("/user/login");
   toast.success("Account logged out.");
 };

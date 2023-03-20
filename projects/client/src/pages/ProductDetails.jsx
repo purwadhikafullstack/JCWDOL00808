@@ -17,25 +17,30 @@ import {
   Button,
   HStack,
   Spacer,
-  Icon,
+  CircularProgress,
+  useToast,
 } from "@chakra-ui/react";
-import { FaStar, FaRegStar } from "react-icons/fa";
 
 export default function ProductDetails() {
+  const [profile, setProfile] = useState(null);
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const { productId } = useParams();
+  const toast = useToast();
 
   const getProductsData = async () => {
     try {
-      console.log(productId);
       const productsData = await axios.get(
         `${process.env.REACT_APP_API_BASE_URL}/product/${productId}`
       );
-      console.log(productsData?.data?.data);
       setProduct(productsData?.data?.data);
     } catch (error) {
-      console.log(error);
+      toast({
+        title: error?.response?.data?.message || error?.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -45,32 +50,20 @@ export default function ProductDetails() {
 
   useEffect(() => {
     getProductsData();
+    setProfile(JSON.parse(localStorage.getItem("user")));
   }, []);
 
   if (!product) {
     return (
       <div className="container flex flex-col justify-between">
         <Navbar />
-        <div>Loading...</div>
+        <div className="my-8">
+          <CircularProgress isIndeterminate color="blue" />
+        </div>
         <Footer />
       </div>
     );
   }
-
-  // const renderStars = (rating) => {
-  //   const stars = [];
-  //   for (let i = 1; i <= 5; i++) {
-  //     stars.push(
-  //       <Icon
-  //         key={i}
-  //         as={i <= rating ? FaStar : FaRegStar}
-  //         color={i <= rating ? "yellow.400" : "gray.300"}
-  //         mr="1"
-  //       />
-  //     );
-  //   }
-  //   return stars;
-  // };
 
   return (
     <>
@@ -96,14 +89,13 @@ export default function ProductDetails() {
               {product.name}
             </Text>
             <Text>{product.description}</Text>
-            {/* <HStack>
-              {renderStars(product.rating.rate)}
-              <Text>({product.rating.rate})</Text>
-            </HStack> */}
             <Text fontSize="xl" fontWeight="bold">
-              Rp {product.price * quantity},00
+              {(product.price * quantity).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              })}
             </Text>
-            <HStack width="100%">
+            <HStack width="100%" justifyContent="center">
               <Text>Quantity:</Text>
               <NumberInput
                 onChange={(qty) => setQuantity(Number(qty))}
@@ -120,7 +112,11 @@ export default function ProductDetails() {
                 </NumberInputStepper>
               </NumberInput>
             </HStack>
-            <Button colorScheme="blue" width="100%">
+            <Button
+              isDisabled={!profile?.is_verified}
+              colorScheme="blue"
+              width="100%"
+            >
               Add to Cart
             </Button>
           </VStack>
