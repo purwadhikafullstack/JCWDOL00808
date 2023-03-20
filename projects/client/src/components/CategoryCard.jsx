@@ -9,7 +9,7 @@ export default function CategoryCard() {
   const fetchCategories = async () => {
     try {
       const categoriesData = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/product/category`
+        `${process.env.REACT_APP_API_BASE_URL}/products/category`
       );
       setCategories(categoriesData?.data?.data);
     } catch (error) {

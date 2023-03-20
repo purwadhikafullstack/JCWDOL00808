@@ -31,7 +31,7 @@ export default function ProductDetails() {
   const getProductsData = async () => {
     try {
       const productsData = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/product/${productId}`
+        `${process.env.REACT_APP_API_BASE_URL}/products/${productId}`
       );
       setProduct(productsData?.data?.data);
     } catch (error) {
