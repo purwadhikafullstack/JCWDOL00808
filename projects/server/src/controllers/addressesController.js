@@ -28,8 +28,8 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      // let { user_id } = req.dataDecode
-      let { address, province, city, district, postal_code, recipient, phone_number, is_primary, user_id } = req.body
+      let { user_id } = req.dataDecode
+      let { address, province, city, district, postal_code, recipient, phone_number, is_primary } = req.body
 
       let response = await geocode({ q: `${address}, ${district}, ${city}, ${province}`, countrycode: 'id', limit: 1, key: process.env.API_KEY })
       let { lat, lng } = response.results[0].geometry
