@@ -87,7 +87,7 @@ app.use("/auth", authRouter);
 app.use("/admins", adminsRouter);
 app.use("/warehouses", warehousesRouter);
 app.use("/admin", adminRouter);
-app.use("/product", productsRouter);
+app.use("/products", productsRouter);
 app.use("/product", productRouter);
 
 app.use(express.static("."));

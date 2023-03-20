@@ -10,9 +10,9 @@ import Carousel from "nuka-carousel";
 
 export default function Home() {
   return (
-    <div className="container min-h-screen min-w-full flex flex-col justify-between">
+    <div className="container flex flex-col justify-between">
       <Navbar />
-      <div className="mt-16 p-2 md:p-4">
+      <div className="p-2 md:p-4" /*mt-16 */>
         <Carousel
           wrapAround={true}
           autoplay={true}
