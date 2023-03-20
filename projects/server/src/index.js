@@ -80,6 +80,7 @@ const {
   adminRouter,
   productsRouter,
   productRouter,
+  addressesRouter,
 } = require("./routers"); //refer to index.js in routers folder
 
 app.use("/user", usersRouter);
@@ -89,6 +90,7 @@ app.use("/warehouses", warehousesRouter);
 app.use("/admin", adminRouter);
 app.use("/products", productsRouter);
 app.use("/product", productRouter);
+app.use("/address", addressesRouter);
 
 app.use(express.static("."));
 
