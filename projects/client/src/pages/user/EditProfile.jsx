@@ -25,6 +25,7 @@ import { isAuth } from "../../apis/userAPIs";
 
 export default function EditProfile() {
   const [profile, setProfile] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   const { isOpen, onClose } = useDisclosure();
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +46,8 @@ export default function EditProfile() {
           headers: { Authorization: token },
         }
       );
+      setRefresh(!refresh);
+
       toast({
         title: response?.data?.message,
         description: "Refresh page if picture not available",
@@ -76,6 +79,7 @@ export default function EditProfile() {
         duration: 5000,
         isClosable: true,
       });
+      setRefresh(!refresh);
     } catch (error) {
       toast({
         title: error?.response?.data?.message,
@@ -116,7 +120,7 @@ export default function EditProfile() {
 
   useEffect(() => {
     isAuth(navigate).then((data) => setProfile(data));
-  }, []);
+  }, [refresh]);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
