@@ -37,7 +37,7 @@ const ProductForm = () => {
       price: 0,
       weight: 0,
       product_categories_id: "",
-      image: null,
+      imageUrl: null,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -150,18 +150,18 @@ const ProductForm = () => {
         <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
       </FormControl>
 
-      <Box mb={2}>
+      <FormControl mb={2} id="imageUrl" isInvalid={formik.touched.imageUrl && formik.errors.imageUrl}>
         <FormLabel>Image Product</FormLabel>
         <Flex>
           <Box w={16} h={16} mr={4}>
             {image && <Image src={image} alt="Produk" />}
           </Box>
           <Box>
-            <Input type="file" accept="image/*" onChange={handleImageChange} isInvalid={formik.touched.image && formik.errors.image} />
-            <FormErrorMessage>{formik.errors.image}</FormErrorMessage>
+            <Input type="file" accept="image/*" onChange={handleImageChange} />
+            <FormErrorMessage>{formik.errors.imageUrl}</FormErrorMessage>
           </Box>
         </Flex>
-      </Box>
+      </FormControl>
       <AddAdminConfirmation onSave={formik.handleSubmit} />
     </form>
   );

@@ -38,7 +38,7 @@ const PatchProductForm = () => {
       price: 0,
       weight: 0,
       product_categories_id: "",
-      image: null,
+      imageUrl: null,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -52,7 +52,7 @@ const PatchProductForm = () => {
       formData.append("product_categories_id", values.product_categories_id);
 
       try {
-        await axios.post("http://localhost:8000/product/addproduct", formData, {
+        await axios.patch(`http://localhost:8000/product/patchproduct/${id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -61,7 +61,7 @@ const PatchProductForm = () => {
         formik.resetForm();
         setImage("");
         toast({
-          title: `Add Product Success`,
+          title: `Edit Product Success`,
           status: "success",
           duration: 9000,
           isClosable: true,
@@ -93,7 +93,7 @@ const PatchProductForm = () => {
     try {
       const response = await axios.get(`http://localhost:8000/product/productId/${id}`);
       const productData = response.data;
-      console.log(response);
+      console.log(response.data);
       formik.setValues({
         name: productData.name,
         description: productData.description,
@@ -102,6 +102,7 @@ const PatchProductForm = () => {
         imageUrl: productData.imageUrl,
         product_categories_id: productData.product_categories_id,
       });
+      setImage(productData.imageUrl);
     } catch (error) {
       toast({
         title: `${error.message}`,
@@ -175,18 +176,19 @@ const PatchProductForm = () => {
         <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
       </FormControl>
 
-      <Box mb={2}>
+      <FormControl mb={2} id="imageUrl" isInvalid={formik.touched.imageUrl && formik.errors.imageUrl}>
         <FormLabel>Image Product</FormLabel>
         <Flex>
           <Box w={16} h={16} mr={4}>
             {image && <Image src={image} alt="Produk" />}
           </Box>
           <Box>
-            <Input type="file" accept="image/*" onChange={handleImageChange} isInvalid={formik.touched.image && formik.errors.image} />
-            <FormErrorMessage>{formik.errors.image}</FormErrorMessage>
+            <Input type="file" accept="image/*" onChange={handleImageChange} />
+            <FormErrorMessage>{formik.errors.imageUrl}</FormErrorMessage>
           </Box>
         </Flex>
-      </Box>
+      </FormControl>
+
       <AddAdminConfirmation onSave={formik.handleSubmit} />
     </form>
   );

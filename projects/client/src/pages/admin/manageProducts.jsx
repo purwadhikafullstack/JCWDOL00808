@@ -1,4 +1,4 @@
-import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon, InfoOutlineIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus, FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
@@ -16,6 +16,7 @@ function ManageProducts() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
+  const toast = useToast();
 
   useEffect(() => {
     getProducts();
@@ -39,8 +40,19 @@ function ManageProducts() {
     try {
       await axios.delete(`http://localhost:8000/product/deleteproduct/${id}`);
       getProducts();
+      toast({
+        title: `Product success deleted`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.log(error);
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     }
   };
 
@@ -85,6 +97,11 @@ function ManageProducts() {
 
     return shouldTruncate ? truncatedDescription + "..." : description;
   }
+
+  // membuat role admin warehouse hanya bisa read data saja
+  const role = localStorage.getItem("role");
+  const isButtonDisabled = role === "2";
+  const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
     <div style={{ margin: "auto", width: "70%" }}>
@@ -135,8 +152,8 @@ function ManageProducts() {
             </MenuItem>
           </MenuList>
         </Menu>
-        <Button colorScheme="green" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />}>
-          <Link to={"/admin/addproducts"}>
+        <Button colorScheme={buttonColorScheme} size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />}>
+          <Link to={isButtonDisabled ? "#" : "/admin/addproducts"} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
             <Flex alignItems="center">
               <Text mr={2}>Add Product</Text>
             </Flex>
@@ -174,7 +191,9 @@ function ManageProducts() {
               </Td>
               <Td>
                 <Box display="flex">
-                  <IconButton size="sm" bgColor="green.500" aria-label="Edit" icon={<EditIcon />} mr={2} borderRadius="full" _hover={{ bg: "green.700" }} />
+                  <Link to={isButtonDisabled ? "#" : `/admin/patch-product/${product.id}`} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
+                    <IconButton size="sm" bgColor="green.500" aria-label="Edit" icon={<EditIcon />} mr={2} borderRadius="full" _hover={{ bg: "green.700" }} isDisabled={isButtonDisabled} />
+                  </Link>
                   <IconButton
                     size="sm"
                     bgColor="red.500"
@@ -182,6 +201,7 @@ function ManageProducts() {
                     icon={<DeleteIcon />}
                     borderRadius="full"
                     _hover={{ bg: "red.700" }}
+                    isDisabled={isButtonDisabled}
                     onClick={() => {
                       if (window.confirm("Are you sure you want to delete this product ?")) {
                         deleteProducts(product.id);

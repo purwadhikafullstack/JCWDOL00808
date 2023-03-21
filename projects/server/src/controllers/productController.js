@@ -359,6 +359,10 @@ module.exports = {
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
+
+      //replace '\' with '/'
+      product.imageUrl = product.imageUrl.replace(/\\/g, "/");
+
       return res.status(200).json(product);
     } catch (error) {
       console.error(error);
