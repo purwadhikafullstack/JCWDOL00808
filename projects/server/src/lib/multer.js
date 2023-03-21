@@ -29,7 +29,15 @@ var storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
-    cb(null, "PIMG" + "-" + Date.now() + Math.round(Math.random() * 1000000000) + "." + file.mimetype.split("/")[1]); // [image, png]
+    cb(
+      null,
+      "PIMG" +
+        "-" +
+        Date.now() +
+        Math.round(Math.random() * 1000000000) +
+        "." +
+        file.mimetype.split("/")[1]
+    ); // [image, png]
   },
 });
 

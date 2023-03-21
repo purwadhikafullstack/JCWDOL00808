@@ -40,19 +40,28 @@ export const loginUser = async (email, password) => {
     //   });
   }
 };
-export const isAuth = async (navigate) => {
+export const isAuth = async (navigate, isRestricted = false) => {
   try {
     if (!localStorage.getItem("token")) {
-      navigate("/user/login");
+      if (isRestricted === true) {
+        navigate("/user/login");
+      }
     } else {
       const token = localStorage.getItem("token");
       const userData = await axios.get(
         `${process.env.REACT_APP_API_BASE_URL}/auth`,
         { headers: { Authorization: token } }
       );
+      localStorage.setItem("user", JSON.stringify(userData?.data?.data));
       return userData?.data?.data;
     }
   } catch (error) {
-    toast.error(error?.response?.data?.message);
+    toast.error(error?.response?.data?.message || error?.message);
   }
+};
+
+export const logout = (navigate) => {
+  localStorage.clear();
+  navigate("/user/login");
+  toast.success("Account logged out.");
 };
