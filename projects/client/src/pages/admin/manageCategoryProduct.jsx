@@ -1,4 +1,4 @@
-import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon, InfoOutlineIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus, FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
@@ -16,6 +16,8 @@ function ManageCategoryProducts() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
+
+  const toast = useToast();
 
   useEffect(() => {
     getCategoryProducts();
@@ -37,9 +39,20 @@ function ManageCategoryProducts() {
   const deleteProducts = async (id) => {
     try {
       await axios.delete(`http://localhost:8000/productcategory/deletecategoryproduct/${id}`);
+      toast({
+        title: `Delete Category Success`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
       getCategoryProducts();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     }
   };
 
@@ -154,7 +167,7 @@ function ManageCategoryProducts() {
               <Td fontSize="sm" fontWeight="medium">
                 {index + 1}
               </Td>
-              <Td fontSize="sm">{categoryProduct.category}</Td>
+              <Td fontSize="sm">{categoryProduct.name}</Td>
               <Td fontSize="sm">{truncateDescription(categoryProduct.description, 35)}</Td>
               <Td>
                 <Box display="flex">

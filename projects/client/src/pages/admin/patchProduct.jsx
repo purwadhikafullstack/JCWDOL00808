@@ -139,7 +139,7 @@ const PatchProductForm = () => {
         <Select placeholder="Select Product Category" {...formik.getFieldProps("product_categories_id")}>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
-              {category.category}
+              {category.name}
             </option>
           ))}
         </Select>

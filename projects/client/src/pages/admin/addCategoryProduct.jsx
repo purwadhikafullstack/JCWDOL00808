@@ -11,11 +11,11 @@ const AddCategoryProduct = () => {
 
   const formik = useFormik({
     initialValues: {
-      category: "",
+      name: "",
       description: "",
     },
     validationSchema: Yup.object({
-      category: Yup.string().required("Category Name is required"),
+      name: Yup.string().required("Category Name is required"),
       description: Yup.string().required("Description is required"),
     }),
     onSubmit: async (values) => {
@@ -59,10 +59,10 @@ const AddCategoryProduct = () => {
       </Text>
       <form onSubmit={formik.handleSubmit}>
         <VStack spacing="1" align="stretch">
-          <FormControl id="category" isRequired isInvalid={formik.touched.category && formik.errors.category}>
+          <FormControl id="name" isRequired isInvalid={formik.touched.name && formik.errors.name}>
             <FormLabel>Category Name</FormLabel>
-            <Input type="text" {...formik.getFieldProps("category")} placeholder="Input Category" />
-            <FormErrorMessage>{formik.errors.category}</FormErrorMessage>
+            <Input type="text" {...formik.getFieldProps("name")} placeholder="Input Category" />
+            <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
           </FormControl>
 
           <FormControl id="description" isRequired isInvalid={formik.touched.description && formik.errors.description}>

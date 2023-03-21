@@ -16,13 +16,13 @@ module.exports = {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const sort = req.query.sort || "category"; //default sorting by category
+      const sort = req.query.sort || "name"; //default sorting by name
       const order = req.query.order || "DESC"; //default order DESC
       const totalRows = await product_categories.count({
         where: {
           [Op.or]: [
             {
-              category: {
+              name: {
                 [Op.like]: "%" + search + "%",
               },
             },
@@ -34,7 +34,7 @@ module.exports = {
         where: {
           [Op.or]: [
             {
-              category: {
+              name: {
                 [Op.like]: "%" + search + "%",
               },
             },
@@ -61,7 +61,7 @@ module.exports = {
     const t = await sequelize.transaction();
 
     const productSchema = Joi.object({
-      category: Joi.string().required(),
+      name: Joi.string().required(),
       description: Joi.string().required(),
     });
 
@@ -76,30 +76,30 @@ module.exports = {
         });
       }
 
-      const { category, description } = value;
+      const { name, description } = value;
 
       // step 2 validasi
       let findNameProductCategory = await product_categories.findOne({
         where: {
-          category: category,
+          name: name,
         },
       });
 
       if (findNameProductCategory)
         return res.status(409).send({
           isError: true,
-          message: "Category Product is exist",
+          message: "Category name is exist",
           data: null,
         });
 
       // insert data ke category
-      await product_categories.create({ category, description }, { transaction: t });
+      await product_categories.create({ name, description }, { transaction: t });
 
       //step 5 kirim response
       await t.commit();
       res.status(201).send({
         isError: false,
-        message: "Add category products success",
+        message: "Add name category products success",
         data: null,
       });
     } catch (error) {
@@ -117,7 +117,7 @@ module.exports = {
 
     try {
       const productSchema = Joi.object({
-        category: Joi.string().required(),
+        name: Joi.string().required(),
         description: Joi.string().required(),
       });
 
@@ -142,11 +142,11 @@ module.exports = {
         });
       }
 
-      let { category, description } = value;
-      if (category) {
+      let { name, description } = value;
+      if (name) {
         let findNameCategory = await product_categories.findOne({
           where: {
-            category,
+            name,
             id: { [Op.ne]: productCategory.id }, // exclude current product
           },
         });
@@ -158,7 +158,7 @@ module.exports = {
             data: null,
           });
         }
-        productCategory.category = category;
+        productCategory.name = name;
       }
       if (description) {
         productCategory.description = description;
