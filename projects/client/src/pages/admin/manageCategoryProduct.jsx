@@ -6,8 +6,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-function ManageProducts() {
-  const [products, setProducts] = useState([]);
+function ManageCategoryProducts() {
+  const [category, setCategoryProducts] = useState([]);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [pages, setPages] = useState(0);
@@ -16,36 +16,36 @@ function ManageProducts() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
+
   const toast = useToast();
 
   useEffect(() => {
-    getProducts();
+    getCategoryProducts();
   }, [page, keyword, sort, order]);
 
-  const getProducts = async () => {
-    const response = await axios.get(`http://localhost:8000/product/listproduct?search_query=${keyword}&page=${page}&limit=${limit}`, {
+  const getCategoryProducts = async () => {
+    const response = await axios.get(`http://localhost:8000/productcategory/listproductcategory?search_query=${keyword}&page=${page}&limit=${limit}`, {
       params: {
         sort,
         order,
       },
     });
-    setProducts(response.data.result);
+    setCategoryProducts(response.data.result);
     setPage(response.data.page);
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
-    console.log(response.data.result);
   };
 
   const deleteProducts = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/product/deleteproduct/${id}`);
-      getProducts();
+      await axios.delete(`http://localhost:8000/productcategory/deletecategoryproduct/${id}`);
       toast({
-        title: `Product success deleted`,
+        title: `Delete Category Success`,
         status: "success",
         duration: 9000,
         isClosable: true,
       });
+      getCategoryProducts();
     } catch (error) {
       toast({
         title: `${error.message}`,
@@ -76,19 +76,6 @@ function ManageProducts() {
     setOrder(value);
     setPage(0);
   };
-
-  function formatRupiah(number) {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(number);
-  }
-
-  function formatWeight(weightInGrams) {
-    const weightInKilograms = weightInGrams / 1000;
-    return `${weightInKilograms} kg`;
-  }
 
   //function untuk memoting deskripsi yang terlalu panjang
   function truncateDescription(description, maxLength) {
@@ -127,11 +114,11 @@ function ManageProducts() {
             Name
           </MenuButton>
           <MenuList>
-            <MenuItem value={sort} onClick={() => handleSort("name")}>
-              Name
+            <MenuItem value={sort} onClick={() => handleSort("category")}>
+              Category
             </MenuItem>
-            <MenuItem value={sort} onClick={() => handleSort("price")}>
-              Price
+            <MenuItem value={sort} onClick={() => handleSort("description")}>
+              Description
             </MenuItem>
           </MenuList>
         </Menu>
@@ -153,7 +140,7 @@ function ManageProducts() {
           </MenuList>
         </Menu>
         <Button colorScheme={buttonColorScheme} size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />}>
-          <Link to={isButtonDisabled ? "#" : "/admin/addproducts"} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
+          <Link to={isButtonDisabled ? "#" : "/admin/addcategory"} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
             <Flex alignItems="center">
               <Text mr={2}>Add Product</Text>
             </Flex>
@@ -168,30 +155,23 @@ function ManageProducts() {
         </TableCaption>
         <Thead>
           <Tr>
-            <Th>Name</Th>
+            <Th>No</Th>
+            <Th>Category</Th>
             <Th>Description</Th>
-            <Th>Price</Th>
-            <Th>Weight</Th>
-            <Th>Image</Th>
-            <Th>Actions</Th>
+            <Th>Action</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {products.map((product) => (
-            <Tr key={product.id} align="center">
+          {category.map((categoryProduct, index) => (
+            <Tr key={categoryProduct.id} align="center">
               <Td fontSize="sm" fontWeight="medium">
-                {product.name}
+                {index + 1}
               </Td>
-              <Td fontSize="sm">{truncateDescription(product.description, 35)}</Td>
-              <Td fontSize="sm">{formatRupiah(product.price)}</Td>
-              <Td fontSize="sm">{formatWeight(product.weight)}</Td>
-              <Td fontSize="sm">
-                <img src={`http://localhost:8000/${product.imageUrl}`} alt="Product image" width="100" />
-                {/* {`http://localhost:8000/${product.imageUrl}`} */}
-              </Td>
+              <Td fontSize="sm">{categoryProduct.name}</Td>
+              <Td fontSize="sm">{truncateDescription(categoryProduct.description, 35)}</Td>
               <Td>
                 <Box display="flex">
-                  <Link to={isButtonDisabled ? "#" : `/admin/patch-product/${product.id}`} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
+                  <Link to={isButtonDisabled ? "#" : `/admin/patch-category/${categoryProduct.id}`} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
                     <IconButton size="sm" bgColor="green.500" aria-label="Edit" icon={<EditIcon />} mr={2} borderRadius="full" _hover={{ bg: "green.700" }} isDisabled={isButtonDisabled} />
                   </Link>
                   <IconButton
@@ -203,8 +183,8 @@ function ManageProducts() {
                     _hover={{ bg: "red.700" }}
                     isDisabled={isButtonDisabled}
                     onClick={() => {
-                      if (window.confirm("Are you sure you want to delete this product ?")) {
-                        deleteProducts(product.id);
+                      if (window.confirm("Are you sure you want to delete this Category Product ?")) {
+                        deleteProducts(categoryProduct.id);
                       }
                     }}
                   />
@@ -243,4 +223,4 @@ function ManageProducts() {
   );
 }
 
-export default ManageProducts;
+export default ManageCategoryProducts;
