@@ -27,22 +27,18 @@ export default function CategoryCard() {
         return (
           <div
             key={index}
-            className="relative hover:animate-pulse flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
+            className="relative hover:animate-pulse flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
           >
-            <div className="flex-auto p-4">
-              <div className="flex flex-row justify-center -mx-3">
-                <Link to="#">
-                  <div className="flex flex-col justify-between px-1">
-                    <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
-                      {category.name}
-                    </p>
-                    <p className=" dark:text-white dark:opacity-60 text-sm">
-                      {category.description}
-                    </p>
-                  </div>
-                </Link>
+            <Link to="#">
+              <div className="flex flex-col items-center justify-between p-4">
+                <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
+                  {category.name}
+                </p>
+                <p className=" dark:text-white dark:opacity-60 text-sm">
+                  {category.description}
+                </p>
               </div>
-            </div>
+            </Link>
           </div>
         );
       })}

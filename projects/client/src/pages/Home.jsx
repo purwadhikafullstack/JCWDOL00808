@@ -10,29 +10,54 @@ import Carousel from "nuka-carousel";
 import { ProductCard } from "../components/ProductCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import ReactPaginate from "react-paginate";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [pageCount, setPageCount] = useState(0);
+  const [limit] = useState(12);
+  const [offset, setOffset] = useState(0);
 
-  const getProducts = async () => {
+  const getSearch = (keyword) => {
+    setSearch(keyword);
+    setOffset(0);
+  };
+
+  const fetchProducts = async () => {
     try {
       const productsData = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/products/`
+        `${process.env.REACT_APP_API_BASE_URL}/products/`,
+        {
+          params: {
+            search,
+            minPrice,
+            maxPrice,
+            sortBy,
+            sortOrder,
+            limit,
+            offset,
+          },
+        }
       );
-      setProducts(productsData?.data?.data);
-      console.log(productsData?.data?.data);
+      setProducts(productsData?.data?.data?.rows);
+      setPageCount(Math.ceil(productsData?.data?.data?.count / limit));
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getProducts();
-  }, []);
+    fetchProducts();
+  }, [search, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
   return (
     <div className="container flex flex-col justify-between">
-      <Navbar />
+      <Navbar func={getSearch} />
       <div className="p-2 md:p-4" /*mt-16 */>
         <Carousel
           wrapAround={true}
@@ -53,42 +78,88 @@ export default function Home() {
           <img src={Carousel4} alt="carousel-4" className="w-full rounded-lg" />
         </Carousel>
       </div>
-      <div className="my-4 px-2 grid md:grid-cols-4 grid-cols-2 gap-4">
+      <div
+        className="flex gap-4 overflow-x-auto whitespace-nowrap py-4 px-4" /*my-4 px-2 grid md:grid-cols-4 grid-cols-2 gap-4*/
+      >
         <CategoryCard />
+      </div>
+      <div>
+        <label htmlFor="sort" className="font-medium">
+          Sort by :
+        </label>
+        <select
+          id="sort"
+          value={`${sortBy}-${sortOrder}`}
+          onChange={(e) => {
+            const [newSortBy, newSortOrder] = e.target.value.split("-");
+            setSortBy(newSortBy);
+            setSortOrder(newSortOrder);
+          }}
+        >
+          <option value="name-asc">Name A-Z</option>
+          <option value="name-desc">Name Z-A</option>
+          <option value="price-asc">Lower Price</option>
+          <option value="price-desc">Higher Price</option>
+        </select>
       </div>
       <div className="grid md:grid-cols-4 grid-cols-1">
         <div className="mx-2 my-4 p-2 border-2 border-black dark:bg-gray-800 dark:text-white shadow rounded-lg">
           <p>Filter</p>
           <p className="text-left">Price</p>
-          <div>
-            Min Price
-            <div class="flex">
-              <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+          <div className="py-4">
+            <div className="flex">
+              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
                 Rp
               </span>
               <input
+                onBlur={(event) => setMinPrice(event.target.value)}
                 type="text"
-                class="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Min price"
               />
             </div>
           </div>
           <div>
-            Max Price
-            <div class="flex">
-              <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+            <div className="flex">
+              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
                 Rp
               </span>
               <input
+                onBlur={(event) => setMaxPrice(event.target.value)}
                 type="text"
-                class="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Max price"
               />
             </div>
           </div>
         </div>
+
         <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4">
           <ProductCard products={products} />
+          <div className="grid md:col-span-4 col-span-2 place-items-center">
+            <ReactPaginate
+              previousLabel={"<"}
+              nextLabel={">"}
+              pageCount={pageCount}
+              onPageChange={({ selected }) => setOffset(selected * limit)}
+              containerClassName={"flex"}
+              pageLinkClassName={
+                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              }
+              previousLinkClassName={
+                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              }
+              nextLinkClassName={
+                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              }
+              activeLinkClassName={
+                "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              }
+              disabledLinkClassName={
+                "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+              }
+            />
+          </div>
         </div>
       </div>
       <Footer />

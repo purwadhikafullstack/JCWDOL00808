@@ -1,5 +1,6 @@
 // Import Sequelize
 const { Sequelize } = require("../../models");
+const { Op } = require("sequelize");
 
 // Import models
 const db = require("../../models/index");
@@ -17,7 +18,9 @@ const {
 module.exports = {
   getCategories: async (req, res) => {
     try {
-      const allCategories = await product_categories.findAll();
+      const allCategories = await product_categories.findAll({
+        order: [["name", "asc"]],
+      });
 
       res.status(200).send({
         isError: false,
@@ -74,25 +77,44 @@ module.exports = {
   },
   getAllProducts: async (req, res) => {
     try {
-      const productsData = await products.findAll({
-        include: [
-          {
-            model: stocks,
-            attributes: [],
-            required: false,
-          },
-        ],
-        attributes: [
-          "id",
-          "name",
-          "description",
-          "price",
-          "weight",
-          "imageUrl",
-          [Sequelize.fn("SUM", Sequelize.col("Stocks.stock")), "totalStock"],
-        ],
-        group: ["products.id"],
-      });
+      const { search, minPrice, maxPrice, sortBy, sortOrder, limit, offset } =
+        req.query;
+
+      // Build the query object for Sequelize
+      const query = {
+        where: {},
+        order: [],
+        limit: limit ? parseInt(limit) : 8, // Set default limit to 10
+        offset: offset ? parseInt(offset) : 0, // Set default offset to 0
+      };
+
+      // Add search query by name
+      if (search) {
+        query.where.name = {
+          [Op.like]: `%${search}%`,
+        };
+      }
+
+      // Add filter query by price
+      if (minPrice || maxPrice) {
+        query.where.price = {};
+
+        if (minPrice) {
+          query.where.price[Op.gte] = parseInt(minPrice);
+        }
+
+        if (maxPrice) {
+          query.where.price[Op.lte] = parseInt(maxPrice);
+        }
+      }
+
+      // Add sorting function
+      if (sortBy && sortOrder) {
+        query.order.push([sortBy, sortOrder.toUpperCase()]);
+      }
+
+      // Execute the query
+      const productsData = await products.findAndCountAll(query);
 
       res.status(200).send({
         isError: false,
@@ -100,7 +122,6 @@ module.exports = {
         data: productsData,
       });
     } catch (error) {
-      console.log(error);
       res.status(404).send({
         isError: false,
         message: error.message,

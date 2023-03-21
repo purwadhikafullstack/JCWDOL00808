@@ -1,4 +1,4 @@
-import { Button, CircularProgress } from "@chakra-ui/react";
+import { CircularProgress } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -28,7 +28,7 @@ export const ProductCard = (props) => {
         return (
           <div
             key={product.id}
-            className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+            className="flex flex-col justify-between md:flex-none w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
           >
             <Link to={`/product-details/${product.id}`}>
               <img
