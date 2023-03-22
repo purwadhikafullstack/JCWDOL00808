@@ -9,12 +9,14 @@ import Carousel4 from "../assets/carousel/carousel4.jpg";
 import Carousel from "nuka-carousel";
 import { ProductCard } from "../components/ProductCard";
 import { useState, useEffect } from "react";
+import { toast, Toaster } from "react-hot-toast";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState();
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("name");
@@ -28,6 +30,11 @@ export default function Home() {
     setOffset(0);
   };
 
+  const getCategory = (category_id) => {
+    setCategory(category_id);
+    setOffset(0);
+  };
+
   const fetchProducts = async () => {
     try {
       const productsData = await axios.get(
@@ -35,6 +42,7 @@ export default function Home() {
         {
           params: {
             search,
+            category,
             minPrice,
             maxPrice,
             sortBy,
@@ -47,13 +55,13 @@ export default function Home() {
       setProducts(productsData?.data?.data?.rows);
       setPageCount(Math.ceil(productsData?.data?.data?.count / limit));
     } catch (error) {
-      console.log(error);
+      toast.error(error?.response?.data?.message || error?.message);
     }
   };
 
   useEffect(() => {
     fetchProducts();
-  }, [search, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
+  }, [search, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
   return (
     <div className="container flex flex-col justify-between">
@@ -81,10 +89,10 @@ export default function Home() {
       <div
         className="flex gap-4 overflow-x-auto whitespace-nowrap py-4 px-4" /*my-4 px-2 grid md:grid-cols-4 grid-cols-2 gap-4*/
       >
-        <CategoryCard />
+        <CategoryCard func={getCategory} />
       </div>
-      <div>
-        <label htmlFor="sort" className="font-medium">
+      <div className="flex justify-end items-center mt-4 px-4">
+        <label htmlFor="sort" className="font-medium mr-1">
           Sort by :
         </label>
         <select
@@ -95,6 +103,7 @@ export default function Home() {
             setSortBy(newSortBy);
             setSortOrder(newSortOrder);
           }}
+          className="px-2 py-1 border border-gray-500 rounded-md"
         >
           <option value="name-asc">Name A-Z</option>
           <option value="name-desc">Name Z-A</option>
@@ -164,6 +173,7 @@ export default function Home() {
       </div>
       <Footer />
       <ScrollToTopButton />
+      <Toaster />
     </div>
   );
 }

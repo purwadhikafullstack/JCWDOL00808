@@ -77,8 +77,16 @@ module.exports = {
   },
   getAllProducts: async (req, res) => {
     try {
-      const { search, minPrice, maxPrice, sortBy, sortOrder, limit, offset } =
-        req.query;
+      const {
+        search,
+        category,
+        minPrice,
+        maxPrice,
+        sortBy,
+        sortOrder,
+        limit,
+        offset,
+      } = req.query;
 
       // Build the query object for Sequelize
       const query = {
@@ -114,6 +122,11 @@ module.exports = {
         query.where.name = {
           [Op.like]: `%${search}%`,
         };
+      }
+
+      // Add category query
+      if (category) {
+        query.where.product_categories_id = category;
       }
 
       // Add filter query by price
