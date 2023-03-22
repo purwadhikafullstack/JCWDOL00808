@@ -82,7 +82,7 @@ export default function Verification() {
   useEffect(() => {
     isVerified();
     if (!email && !token) {
-      navigate("/user/login");
+      navigate("/");
     }
   });
 

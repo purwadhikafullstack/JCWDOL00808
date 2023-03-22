@@ -44,7 +44,8 @@ export const isAuth = async (navigate, isRestricted = false) => {
   try {
     if (!localStorage.getItem("token")) {
       if (isRestricted === true) {
-        navigate("/user/login");
+        navigate("/");
+        // navigate("/user/login");
       }
     } else {
       const token = localStorage.getItem("token");
