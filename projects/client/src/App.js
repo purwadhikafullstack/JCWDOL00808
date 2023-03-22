@@ -21,7 +21,13 @@ import RegisterAdmin from "./pages/admin/registerAdmin";
 import ManageProducts from "./pages/admin/manageProducts";
 import ProductForm from "./pages/admin/addProduct";
 import PatchAdmin from "./pages/admin/patchAdmin";
+import { useSelector } from "react-redux"
 
+// const { role } = useSelector((state) => {
+//   return {
+//     role: state.adminsReducer.role,
+//   };
+// });
 
 function App() {
   return (
@@ -50,6 +56,12 @@ function App() {
         <Route path="/admin/manageproducts" element={<ManageProducts />} />
         <Route path="/admin/addProducts" element={<ProductForm />} />
         <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
+
+        {/* { !show ? null : role == 2 ? (
+          // pages yang bisa diakses super admin saja: assign admin
+        ) : (
+          // pages yang nggak bisa diakses admin warehouse
+        )} */}
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />

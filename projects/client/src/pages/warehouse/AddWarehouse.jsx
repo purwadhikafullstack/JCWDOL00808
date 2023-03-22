@@ -11,10 +11,12 @@ const AddWarehouse = (props) => {
   // nampung hasil get dari raja ongkir
   const [provinceData, setProvinceData] = React.useState([]);
   const [cityData, setCityData] = React.useState([]);
+  const [districtData, setDistrictData] = React.useState([])
 
   // nampung province dan city pilihan admin
   const [province, setProvince] = React.useState("");
   const [city, setCity] = React.useState("");
+  const [district, setDistrict] = React.useState("")
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -49,16 +51,16 @@ const AddWarehouse = (props) => {
       });
   };
 
+  const getDistrictData = () => {}
+
   const buttonAddWarehouse = () => {
     // alert(province + city)
-    Axios.post(API_url + `/warehouses/addWarehouseData`, {
+    Axios.post(API_url + `/warehouses/addWarehouse`, {
       name,
       address,
       province,
       city,
-      // district,
-      // latitude,
-      // longitude,
+      district,
     })
       .then((response) => {
         console.log(response.data);
@@ -87,32 +89,33 @@ const AddWarehouse = (props) => {
           <div className="mt-4 text-muted fw-bold text-start">
             <Text fontSize="md">Name</Text>
             <Input placeholder="Warehouse name" size="md" onChange={(element) => setName(element.target.value)} />
-          </div>
-          <div className="mt-4 text-muted fw-bold text-start">
-            <Text fontSize="md">Address</Text>
-            <InputGroup size="md">
-              <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
-            </InputGroup>
-          </div>
-        </div>
-        <div className="my-5 mx-5 px-5">
-          <div className="mt-5 pt-5 text-muted fw-bold text-start">
-            <Text fontSize="md">Province</Text>
-            <Select
-              placeholder="Select province"
-              onChange={(element) => {
-                setProvince(element.target.value.split(",")[1]);
-                onGetCity(element.target.value.split(",")[0]);
-              }}
-            >
-              {provinceData.map((value) => {
-                return (
-                  <option value={value.province_id + "," + value.province} key={value.province_id}>
-                    {value.province}
-                  </option>
-                );
-              })}
-            </Select>
+            {/* </div> */}
+            <div className="mt-4 text-muted fw-bold text-start">
+              <Text fontSize="md">Address</Text>
+              <InputGroup size="md">
+                <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
+              </InputGroup>
+              {/* </div> */}
+            </div>
+            {/* <div className="my-5 mx-5 px-5"> */}
+            <div className="mt-4 text-muted fw-bold text-start">
+              <Text fontSize="md">Province</Text>
+              <Select
+                placeholder="Select province"
+                onChange={(element) => {
+                  setProvince(element.target.value.split(",")[1]);
+                  onGetCity(element.target.value.split(",")[0]);
+                }}
+              >
+                {provinceData.map((value) => {
+                  return (
+                    <option value={value.province_id + "," + value.province} key={value.province_id}>
+                      {value.province}
+                    </option>
+                  );
+                })}
+              </Select>
+            </div>
           </div>
           <div>
             <div className="mt-4 text-muted fw-bold text-start">
@@ -126,6 +129,25 @@ const AddWarehouse = (props) => {
                   );
                 })}
               </Select>
+            </div>
+            <div className="mt-4 text-muted fw-bold text-start">
+              <Text fontSize="md">District (Kecamatan)</Text>
+              <Input
+                placeholder="Input district"
+                // onChange={(element) => {
+                // setProvince(element.target.value.split(",")[1]);
+                // onGetCity(element.target.value.split(",")[0]);
+                // }}
+                onChange={(element) => setDistrict(element.target.value)}
+              >
+                {/* {provinceData.map((value) => {
+                  return (
+                    <option value={value.province_id + "," + value.province} key={value.province_id}>
+                      {value.province}
+                    </option>
+                  );
+                })} */}
+              </Input>
             </div>
           </div>
         </div>

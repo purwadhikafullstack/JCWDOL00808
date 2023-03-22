@@ -6,7 +6,6 @@ const warehousesRouter = require("./warehouses");
 const productsRouter = require("./productsRouter");
 const productRouter = require("./productRouter");
 
-
 module.exports = {
   usersRouter,
   authRouter,

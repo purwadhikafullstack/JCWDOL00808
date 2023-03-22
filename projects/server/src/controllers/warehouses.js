@@ -1,13 +1,57 @@
 const db = require("../../models/index");
 const WarehousesModel = db.warehouses;
 const request = require("request");
-const fs = require("fs");
 // const XMLHttpRequest = require("xhr2");
+const { geocode } = require("opencage-api-client");
+const fs = require("fs");
 
 const { sequelize } = require("../../models");
-const { where } = require("sequelize");
+const { Op } = require("sequelize");
 
 module.exports = {
+  getAllWarehouse: async (req, res) => {
+    try {
+      const search = req.query.search_query || "";
+      const sort = req.query.sort || "id"; //default sorting by id
+      const order = req.query.order || "DESC"; //default order DESC
+
+      const { count: totalRows, rows: result } = await WarehousesModel.findAndCountAll({
+        where: {
+          [Op.or]: [
+            {
+              name: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              province: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              city: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+        order: [[sort, order]], // add order clause with the sort and order parameters
+      });
+
+      const totalPage = Math.ceil(totalRows / result.length);
+
+      res.json({
+        result: result,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
+      
+      console.log("req.query: ", req.query);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Something is wrong." });
+    }
+  },
   getProvinceData: async (req, res) => {
     let options = {
       method: "GET",
@@ -19,9 +63,8 @@ module.exports = {
       if (error) throw new Error(error);
 
       console.log(body);
-      fs.writeFileSync("./src/dbProvince.json", body);
-      let data = JSON.parse(fs.readFileSync("./src/dbProvince.json"));
-      res.status(200).send(data.rajaongkir.results);
+      let data = JSON.parse(body).rajaongkir.results;
+      res.status(200).send(data);
     });
   },
   getCityData: async (req, res) => {
@@ -36,50 +79,55 @@ module.exports = {
       if (error) throw new Error(error);
 
       console.log(body);
-      fs.writeFileSync("./src/dbCity.json", body);
-      let data = JSON.parse(fs.readFileSync("./src/dbCity.json"));
-      res.status(200).send(data.rajaongkir.results);
+      let data = JSON.parse(body).rajaongkir.results;
+      res.status(200).send(data);
     });
+  },
+  getDistrictData: async (req, res) => {
+    try {
+      let data = await JSON.parse(fs.readFileSync("../districts.json"));
+      console.log("masuk");
+    } catch (error) {
+      console.log(error);
+    }
   },
   getWarehouseData: async (req, res) => {
     try {
-      // Ambil semua data admin dari database
-      let WarehouseData = await WarehousesModel.findAll();
-      res.status(200).send(WarehouseData);
+      console.log(req.query.page);
+      const page = parseInt(req.query.page) || 0;
+      const limit = 5;
+      const offset = limit * page;
+
+      let WarehouseData = await WarehousesModel.findAndCountAll({
+        limit,
+        offset,
+      });
+      res.status(200).send({ ...WarehouseData, totalPage: Math.ceil(WarehouseData.count / limit) });
     } catch (error) {
       console.error(error);
       res.status(500).send({ success: false, message: "Something is wrong." });
     }
   },
-  addWarehouseData: async (req, res) => {
+  addWarehouse: async (req, res) => {
     try {
-      // let { name, address, province, city, district, latitude, longitude } = req.body;
-      // let insertToWarehouses = await WarehousesModel.create({ name, address, province, city, district, latitude, longitude });
-      // console.log("insertToWarehouses:", insertToWarehouses);
+      console.log("masuk");
+      let { name, address, province, city, district } = req.body;
+      let response = await geocode({ q: `${address}, ${district}, ${province}, ${city}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2" });
+      console.log(response);
+      let { lat, lng } = response.results[0].geometry;
 
-      let { name, address, province, city } = req.body;
-      let insertToWarehouses = await WarehousesModel.create({ name, address, province, city });
-      console.log("insertToWarehouses:", insertToWarehouses);
+      let createNewWarehouse = await WarehousesModel.create({ name, address, province, city, district, latitude: lat, longitude: lng });
 
-      res.status(200).send({
-        success: true,
-        message: "New warehouse data added!",
-      });
+      res.status(200).send({ success: true, message: "New warehouse data added", dataAPI: response.results[0].geometry });
     } catch (error) {
-      res.status(500).send({
-        success: false,
-        message: "Warehouse data addition failed",
-      });
+      res.status(400).send({ success: false, message: "Error" });
     }
   },
   updateWarehouseData: async (req, res) => {
     try {
       console.log("req.body update warehouse:", req.body);
-      const { id, name, address, province, city } = req.body;
-      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city }, { where: { id: req.body.id } });
-
-      // const { id, name, address, province, city, district, latitude, longitude } = req.body;
-      // const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district, latitude, longitude }, { where: { id } });
+      const { id, name, address, province, city, district } = req.body;
+      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district }, { where: { id: req.body.id } });
 
       res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
@@ -125,47 +173,3 @@ module.exports = {
     }
   },
 };
-// getOpenCageData: async (req, res) => {
-//   let api_key = "3b50c98b083b4331ab5b460ac164e3c2";
-//   let api_url = "https://api.opencagedata.com/geocode/v1/json";
-
-//   let request_url = api_url + "?" + "key=" + api_key + "&q=" + encodeURIComponent("antapani") + "&pretty=1" + "&no_annotations=1";
-
-//   let request = new XMLHttpRequest();
-//   request.open("GET", request_url, true);
-
-//   request.onload = function () {
-//     if (request.status === 200) {
-//       // Success!
-//       let data = JSON.parse(request.responseText);
-//       // alert(data.results[0].formatted); // print the location
-//     } else if (request.status <= 500) {
-//       // We reached our target server, but it returned an error
-
-//       console.log("unable to geocode! Response code: " + request.status);
-//       let data = JSON.parse(request.responseText);
-//       console.log("error msg: " + data.status.message);
-//     } else {
-//       console.log("server error");
-//     }
-//   };
-
-//   request.onerror = function () {
-//     // There was a connection error of some sort
-//     console.log("unable to connect to server");
-//   };
-
-//   request.send(); // make the request
-// },
-
-// dariMasAji: async (req,res) => {
-//   try {
-//     let {warehouse_id} = req.dataDecode
-//     let {name, address, province, city, district, latitude, longitude} = req.body
-//     let response = await geocode ({q: `${district}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2"})
-
-//     res.status(200).send({success: true, dataAPI:response.results[0].geometry})
-//   } catch (error) {
-//     res.status(400).send({success: false,message: "Error"})
-//   }
-// },
