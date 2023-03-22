@@ -1,7 +1,6 @@
 const db = require("../../models/index");
 const WarehousesModel = db.warehouses;
 const request = require("request");
-// const XMLHttpRequest = require("xhr2");
 const { geocode } = require("opencage-api-client");
 const fs = require("fs");
 
@@ -110,7 +109,6 @@ module.exports = {
   },
   addWarehouse: async (req, res) => {
     try {
-      console.log("masuk");
       let { name, address, province, city, district } = req.body;
       let response = await geocode({ q: `${address}, ${district}, ${province}, ${city}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2" });
       console.log(response);
