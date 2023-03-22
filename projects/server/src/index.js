@@ -72,16 +72,7 @@ app.use(express.json());
 
 //Import router for controller from index.js inside routers folder
 
-const {
-  usersRouter,
-  authRouter,
-  adminsRouter,
-  warehousesRouter,
-  adminRouter,
-  productsRouter,
-  productRouter,
-  addressesRouter,
-} = require("./routers"); //refer to index.js in routers folder
+const { usersRouter, authRouter, adminsRouter, warehousesRouter, adminRouter, productsRouter, productRouter, productCategoryRouter, addressesRouter } = require("./routers"); //refer to index.js in routers folder
 
 app.use("/user", usersRouter);
 app.use("/auth", authRouter);
@@ -90,6 +81,7 @@ app.use("/warehouses", warehousesRouter);
 app.use("/admin", adminRouter);
 app.use("/products", productsRouter);
 app.use("/product", productRouter);
+app.use("/productcategory", productCategoryRouter);
 app.use("/address", addressesRouter);
 
 app.use(express.static("."));
@@ -99,11 +91,7 @@ app.use(express.static("."));
 // #region CLIENT
 const clientPath = "../../client/build";
 app.use(express.static(join(__dirname, clientPath)));
-
-// Serve the HTML page
-app.get("*", (req, res) => {
-  res.sendFile(join(__dirname, clientPath, "index.html"));
-});
+res.sendFile(join(__dirname, clientPath, "index.html"));
 
 //#endregion
 

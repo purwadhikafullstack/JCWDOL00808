@@ -16,6 +16,7 @@ const ManageAdmin = () => {
   const [order, setOrder] = useState("DESC");
 
   useEffect(() => {
+    // set here !
     getUsers();
   }, [page, keyword, sort, order]);
 
@@ -31,6 +32,7 @@ const ManageAdmin = () => {
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
   };
+  //blm dpet get query params
 
   const changePage = ({ selected }) => {
     setPage(selected);
@@ -69,7 +71,7 @@ const ManageAdmin = () => {
 
   return (
     <div class="container mx-auto mt-5">
-      <div class="grid grid-cols-5 md:grid-cols-2">
+      <div class="grid grid-cols-5 md:grid-cols-1">
         <div class="mx-4">
           <form onSubmit={searchData}>
             <div class="flex justify-center my-2">
