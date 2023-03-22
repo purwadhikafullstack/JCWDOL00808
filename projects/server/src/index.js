@@ -91,7 +91,7 @@ app.use(express.static("."));
 // #region CLIENT
 const clientPath = "../../client/build";
 app.use(express.static(join(__dirname, clientPath)));
-res.sendFile(join(__dirname, clientPath, "index.html"));
+// res.sendFile(join(__dirname, clientPath, "index.html"));
 
 //#endregion
 

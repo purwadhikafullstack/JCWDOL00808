@@ -136,7 +136,7 @@ const UserAddress = () => {
     <Box>
       <Heading>User Addresses</Heading>
       <form onSubmit={formik.handleSubmit}>
-        <VStack spacing={4} mt={4}>
+        <VStack spacing={4} mt={4} mx="auto" maxW="480px">
           <FormControl
             isInvalid={formik.errors.address && formik.touched.address}
           >
