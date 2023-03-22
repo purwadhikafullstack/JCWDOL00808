@@ -17,10 +17,12 @@ import { Link as RouterLink } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Registration() {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const toast = useToast();
 
   const handleRegister = async (email) => {
@@ -65,6 +67,12 @@ export default function Registration() {
       handleRegister(values);
     },
   });
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <Flex

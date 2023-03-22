@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import AddAdminConfirmation from "../../components/AddAdminConfirmation";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Product Name is required"),
@@ -23,12 +23,13 @@ const validationSchema = Yup.object().shape({
     .required("Image is required"),
 });
 
-const ProductForm = () => {
+const PatchProductForm = () => {
   const [image, setImage] = useState("");
   const [categories, setCategories] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const formik = useFormik({
     initialValues: {
@@ -51,7 +52,7 @@ const ProductForm = () => {
       formData.append("product_categories_id", values.product_categories_id);
 
       try {
-        await axios.post("http://localhost:8000/product/addproduct", formData, {
+        await axios.patch(`http://localhost:8000/product/patchproduct/${id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -60,7 +61,7 @@ const ProductForm = () => {
         formik.resetForm();
         setImage("");
         toast({
-          title: `Add Product Success`,
+          title: `Edit Product Success`,
           status: "success",
           duration: 9000,
           isClosable: true,
@@ -80,11 +81,36 @@ const ProductForm = () => {
 
   useEffect(() => {
     fetchCategories();
+    fetchProductData();
   }, []);
 
   const fetchCategories = async () => {
     const response = await axios.get(`http://localhost:8000/productcategory/listproductcategory`);
     setCategories(response.data.result);
+  };
+
+  const fetchProductData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/product/productId/${id}`);
+      const productData = response.data;
+      console.log(response.data);
+      formik.setValues({
+        name: productData.name,
+        description: productData.description,
+        price: productData.price,
+        weight: productData.weight,
+        imageUrl: productData.imageUrl,
+        product_categories_id: productData.product_categories_id,
+      });
+      setImage(productData.imageUrl);
+    } catch (error) {
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleImageChange = (event) => {
@@ -162,9 +188,10 @@ const ProductForm = () => {
           </Box>
         </Flex>
       </FormControl>
+
       <AddAdminConfirmation onSave={formik.handleSubmit} />
     </form>
   );
 };
 
-export default ProductForm;
+export default PatchProductForm;
