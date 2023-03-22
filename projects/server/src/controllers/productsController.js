@@ -56,7 +56,7 @@ module.exports = {
           "price",
           "weight",
           "imageUrl",
-          [Sequelize.fn("SUM", Sequelize.col("Stocks.stock")), "totalStock"],
+          [Sequelize.fn("SUM", Sequelize.col("stocks.stock")), "totalStock"],
         ],
         group: ["products.id"],
       });
@@ -84,8 +84,29 @@ module.exports = {
       const query = {
         where: {},
         order: [],
-        limit: limit ? parseInt(limit) : 8, // Set default limit to 10
+        limit: limit ? parseInt(limit) : 12, // Set default limit to 12
         offset: offset ? parseInt(offset) : 0, // Set default offset to 0
+        include: [
+          {
+            model: stocks,
+            attributes: [],
+            required: true,
+          },
+        ],
+        //Add total stock from all the warehouse
+        attributes: {
+          include: [
+            [
+              Sequelize.literal(`(
+                SELECT SUM(stock)
+                FROM stocks
+                WHERE
+                  stocks.products_id = products.id
+              )`),
+              "totalStock",
+            ],
+          ],
+        },
       };
 
       // Add search query by name
