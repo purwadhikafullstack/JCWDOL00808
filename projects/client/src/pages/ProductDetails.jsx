@@ -113,11 +113,11 @@ export default function ProductDetails() {
               </NumberInput>
             </HStack>
             <Button
-              isDisabled={!profile?.is_verified}
+              isDisabled={!profile?.is_verified || product.totalStock === "0"}
               colorScheme="blue"
               width="100%"
             >
-              Add to Cart
+              {product.totalStock !== "0" ? "Add to cart" : "Out of stock"}
             </Button>
           </VStack>
         </Flex>

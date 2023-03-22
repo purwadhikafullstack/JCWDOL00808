@@ -28,13 +28,13 @@ export default function ScrollToTopButton() {
   }, []);
 
   return (
-    <div className="fixed bottom-16 right-0 left-0">
+    <div className="fixed w-6 bottom-16 right-1/2">
       <button
         type="button"
         onClick={scrollToTop}
         className={
           isVisible
-            ? "opacity-100 bg-gray-700 hover:bg-gray-900 focus:ring-gray-500 inline-flex items-center rounded-full p-3 text-white shadow-sm transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 animate-bounce"
+            ? "opacity-100 bg-gray-700 hover:bg-gray-900 focus:ring-gray-500 items-center rounded-full p-3 text-white shadow-sm transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 animate-bounce"
             : "opacity-0"
         }
       >
