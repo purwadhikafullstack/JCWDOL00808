@@ -64,5 +64,7 @@ export const isAuth = async (navigate, isRestricted = false) => {
 export const logout = (navigate) => {
   localStorage.clear();
   navigate("/user/login");
-  toast.success("Account logged out.");
+  setTimeout(() => {
+    toast.success("Account logged out.");
+  }, 500);
 };
