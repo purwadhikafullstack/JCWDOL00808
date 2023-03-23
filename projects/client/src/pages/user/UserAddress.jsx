@@ -46,9 +46,7 @@ const UserAddress = () => {
       });
   };
 
-  // useEffect(() => {
-  //   getProvinceData();
-  // }, []);
+  
 
   const onGetCity = (province_id) => {
     // console.log("province_id:", province_id)
@@ -169,7 +167,7 @@ const UserAddress = () => {
       postal_code: "",
       recipient: "",
       phone_number: "",
-      primary_data: false,
+      is_primary: "",
     },
     validationSchema: Yup.object({
       address: Yup.string().required("Required"),
@@ -179,6 +177,7 @@ const UserAddress = () => {
       postal_code: Yup.string().required("Required"),
       recipient: Yup.string().required("Required"),
       phone_number: Yup.string().required("Required"),
+      is_primary: Yup.number().required("Required"),
     }),
     onSubmit: handleAddAddress,
   });
@@ -203,25 +202,39 @@ const UserAddress = () => {
             <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
           </FormControl>
           <FormControl
-            isInvalid={formik.errors.district && formik.touched.district}
+            isInvalid={formik.errors.province && formik.touched.province}
           >
-            <FormLabel htmlFor="district">District</FormLabel>
-            <Input
-              id="district"
-              name="district"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.district}
-            />
-            <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
+            <FormLabel htmlFor="province">Province</FormLabel>
+            <Select
+              id="province"
+              name="province"
+              placeholder=" "
+              // type="text"
+              // onChange={formik.handleChange}
+              onChange={(element) => {
+                setProvince(element.target.value.split(",")[1]);
+                onGetCity(element.target.value.split(","[0]));
+                formik.handleChange(element)
+              }}
+              // onBlur={formik.handleBlur}
+              value={formik.values.province}
+            >
+               {provinceData.map((value) => {
+                return (
+                  <option value={value.province_id + "," + value.province} key={value.province_id}>
+                    {value.province}
+                  </option>
+                );
+              })}
+            </Select>
+            <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={formik.errors.city && formik.touched.city}>
             <FormLabel htmlFor="city">City</FormLabel>
             <Select
               id="city"
               name="city"
-              placeholder="Select city"
+              placeholder=" "
               // type="text"
               // onChange={formik.handleChange}
               onChange={(element) => {
@@ -243,32 +256,18 @@ const UserAddress = () => {
             <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
           </FormControl>
           <FormControl
-            isInvalid={formik.errors.province && formik.touched.province}
+            isInvalid={formik.errors.district && formik.touched.district}
           >
-            <FormLabel htmlFor="province">Province</FormLabel>
-            <Select
-              id="province"
-              name="province"
-              placeholder="Select province"
-              // type="text"
-              // onChange={formik.handleChange}
-              onChange={(element) => {
-                setProvince(element.target.value.split(",")[1]);
-                onGetCity(element.target.value.split(","[0]));
-                formik.handleChange(element)
-              }}
-              // onBlur={formik.handleBlur}
-              value={formik.values.province}
-            >
-               {provinceData.map((value) => {
-                return (
-                  <option value={value.province_id + "," + value.province} key={value.province_id}>
-                    {value.province}
-                  </option>
-                );
-              })}
-            </Select>
-            <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
+            <FormLabel htmlFor="district">District</FormLabel>
+            <Input
+              id="district"
+              name="district"
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.district}
+            />
+            <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
           </FormControl>
           <FormControl
             isInvalid={formik.errors.postal_code && formik.touched.postal_code}
@@ -314,18 +313,27 @@ const UserAddress = () => {
             />
             <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
           </FormControl>
-          <HStack>
-            <Switch
-              id="primary_data"
-              name="primary_data"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              isChecked={formik.values.primary_data}
-            />
-            <FormLabel htmlFor="primary_data" mb="0">
-              Primary Address
-            </FormLabel>
-          </HStack>
+          <FormControl 
+            isInvalid={
+              formik.errors.is_primary && formik.touched.is_primary
+            }
+          >
+           <FormLabel htmlFor="is_primary">Primary Address</FormLabel> 
+           <Select  {...formik.getFieldProps("is_primary")}
+           onChange={formik.handleChange}>
+              {[
+                { value: 1, label: "Yes" },
+                { value: 0, label: "No" },
+              ].map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+              
+            </Select>
+            <FormErrorMessage>{formik.errors.is_primary}</FormErrorMessage>
+          </FormControl> 
+    
           <Button
             type="submit"
             colorScheme="blue"
