@@ -14,28 +14,85 @@ import {
   Text,
   IconButton,
   Flex,
+  Select
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 const token = localStorage.getItem("token");
 
 const EditUserAddress = () => {
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  // nampung hasil get dari raja ongkir
+  const [provinceData, setProvinceData] = useState([]);
+  const [cityData, setCityData] = useState([]);
+
+  // nampung province dan city pilihan admin
+  const [province, setProvince] = useState("");
+  const [city, setCity] = useState("");
+
+  const getProvinceData = () => {
+    axios.get(`http://localhost:8000/warehouses/getProvinceData`)
+      .then((response) => {
+        setProvinceData(response.data);
+      })
+      .catch((error) => {
+        toast({
+          title: "Error fetching data.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
+
+  const onGetCity = (province_id) => {
+    // console.log("province_id:", province_id)
+    axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
+      .then((response) => {
+        
+        setCityData(response.data);
+      })
+      .catch((error) => {
+        toast({
+          title: "Error fetching data.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
 
   useEffect(() => {
       fetchAddresses();
-  }, []);
+      getProvinceData();
+  }, []);;
 
   const fetchAddresses = async () => {
     try {
       // Replace with your API endpoint to get all addresses
-      const response = await axios.get("http://localhost:8000/address/get-address", 
+      const response = await axios.get(`http://localhost:8000/address/get-address/${id}`, 
       {
         headers: { Authorization: token },
       });
+      const addressData = response.data
+      formik.setValues({
+        address: addressData.address,
+        district: addressData.district,
+        city: addressData.city,
+        province: addressData.province,
+        postal_code: addressData.postal_code,
+        recipient: addressData.recipient,
+        phone_number: addressData.phone_number,
+        is_primary: addressData.is_primary,
+
+      })
       setAddresses(response.data.result);
     } catch (error) {
       toast({
@@ -96,27 +153,6 @@ const EditUserAddress = () => {
     }
   };
 
-  const handleDeleteAddress = async (id) => {
-    try {
-      // Replace with your API endpoint to delete an address
-      await axios.delete(`/api/addresses/${id}`);
-      toast({
-        title: "Address deleted.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      fetchAddresses();
-    } catch (error) {
-      toast({
-        title: "Error deleting address.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
   const formik = useFormik({
     initialValues: {
       address: "",
@@ -126,7 +162,7 @@ const EditUserAddress = () => {
       postal_code: "",
       recipient: "",
       phone_number: "",
-      primary_data: false,
+      is_primary: "",
     },
     validationSchema: Yup.object({
       address: Yup.string().required("Required"),
@@ -136,11 +172,13 @@ const EditUserAddress = () => {
       postal_code: Yup.string().required("Required"),
       recipient: Yup.string().required("Required"),
       phone_number: Yup.string().required("Required"),
+      is_primary: Yup.number().required("Required"),
     }),
-    onSubmit: handleAddAddress,
+    onSubmit: handleEditAddress,
   });
 
   return (
+    <>
     <Box>
       <Heading>User Addresses</Heading>
       <form onSubmit={formik.handleSubmit}>
@@ -160,6 +198,60 @@ const EditUserAddress = () => {
             <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
           </FormControl>
           <FormControl
+            isInvalid={formik.errors.province && formik.touched.province}
+          >
+            <FormLabel htmlFor="province">Province</FormLabel>
+            <Select
+              id="province"
+              name="province"
+              placeholder=" "
+              // type="text"
+              // onChange={formik.handleChange}
+              onChange={(element) => {
+                setProvince(element.target.value.split(",")[1]);
+                onGetCity(element.target.value.split(","[0]));
+                formik.handleChange(element)
+              }}
+              // onBlur={formik.handleBlur}
+              value={formik.values.province}
+            >
+               {provinceData.map((value) => {
+                return (
+                  <option value={value.province_id + "," + value.province} key={value.province_id}>
+                    {value.province}
+                  </option>
+                );
+              })}
+            </Select>
+            <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={formik.errors.city && formik.touched.city}>
+            <FormLabel htmlFor="city">City</FormLabel>
+            <Select
+              id="city"
+              name="city"
+              placeholder=" "
+              // type="text"
+              // onChange={formik.handleChange}
+              onChange={(element) => {
+                setCity(element.target.value)
+                formik.handleChange(element)
+              }}
+              onBlur={formik.handleBlur}
+              value={formik.values.city}
+              
+            >
+              {cityData.map((value) => {
+                  return (
+                    <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                      {value.type} {value.city_name}
+                    </option>
+                  );
+                })}
+              </Select>
+            <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
+          </FormControl>
+          <FormControl
             isInvalid={formik.errors.district && formik.touched.district}
           >
             <FormLabel htmlFor="district">District</FormLabel>
@@ -172,32 +264,6 @@ const EditUserAddress = () => {
               value={formik.values.district}
             />
             <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={formik.errors.city && formik.touched.city}>
-            <FormLabel htmlFor="city">City</FormLabel>
-            <Input
-              id="city"
-              name="city"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.city}
-            />
-            <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isInvalid={formik.errors.province && formik.touched.province}
-          >
-            <FormLabel htmlFor="province">Province</FormLabel>
-            <Input
-              id="province"
-              name="province"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.province}
-            />
-            <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
           </FormControl>
           <FormControl
             isInvalid={formik.errors.postal_code && formik.touched.postal_code}
@@ -243,18 +309,32 @@ const EditUserAddress = () => {
             />
             <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
           </FormControl>
-          <HStack>
-            <Switch
-              id="primary_data"
-              name="primary_data"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              isChecked={formik.values.primary_data}
-            />
-            <FormLabel htmlFor="primary_data" mb="0">
-              Primary Address
-            </FormLabel>
-          </HStack>
+          <FormControl 
+            isInvalid={
+              formik.errors.is_primary && formik.touched.is_primary
+            }
+          >
+           <FormLabel htmlFor="is_primary">Primary Address</FormLabel> 
+           <Select 
+           id="is_primary"
+           name="is_primary"
+           type="number"
+           placeholder=" " 
+           {...formik.getFieldProps("is_primary")}
+           onChange={formik.handleChange}>
+              {[
+                { value: 1, label: "Yes" },
+                { value: 0, label: "No" },
+              ].map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+              
+            </Select>
+            <FormErrorMessage>{formik.errors.is_primary}</FormErrorMessage>
+          </FormControl> 
+    
           <Button
             type="submit"
             colorScheme="blue"
@@ -264,43 +344,9 @@ const EditUserAddress = () => {
           </Button>
         </VStack>
       </form>
-      <VStack mt={8} w="100%" spacing={4}>
-        {addresses.map((address) => (
-          <Box
-            key={address.id}
-            borderWidth="1px"
-            borderRadius="lg"
-            p={4}
-            w="100%"
-          >
-            <Text>
-              {address.recipient} - {address.phone_number}
-            </Text>
-            <Text>
-              {address.address}, {address.district}, {address.city},{" "}
-              {address.province}, {address.postal_code}
-            </Text>
-            <Flex justify="flex-end">
-              <IconButton
-                onClick={() => handleEditAddress(address.id, formik.values)}
-                icon={<EditIcon />}
-                colorScheme="blue"
-                aria-label="Edit Address"
-                isRound
-                mr={2}
-              />
-              <IconButton
-                onClick={() => handleDeleteAddress(address.id)}
-                icon={<DeleteIcon />}
-                colorScheme="red"
-                aria-label="Delete Address"
-                isRound
-              />
-            </Flex>
-          </Box>
-        ))}
-      </VStack>
+      
     </Box>
+    </>
   );
 };
 

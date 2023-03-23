@@ -1,25 +1,34 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  VStack,
   Heading,
   FormControl,
   FormLabel,
   Input,
   FormErrorMessage,
+  VStack,
   Button,
-  useToast,
-  Switch,
   HStack,
+  Switch,
   Text,
-  IconButton,
   Flex,
+  IconButton,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   Select,
-} from "@chakra-ui/react";
+  useToast
+} from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { Link } from "react-router-dom";
 const token = localStorage.getItem("token");
 
 
@@ -35,31 +44,50 @@ const UserAddress = () => {
    const [province, setProvince] = useState("");
    const [city, setCity] = useState("");
 
+   //modal delete address
+   const { isOpen, onOpen, onClose } = useDisclosure();
+   const [addressToDelete, setAddressToDelete] = React.useState(null);
+
+   const handleDeleteButtonClick = (addressId) => {
+    setAddressToDelete(addressId);
+    onOpen();
+  };
+
+  const handleConfirmDelete = async () => {
+    await handleDeleteAddress(addressToDelete);
+    setAddressToDelete(null);
+    onClose();
+  };
+
    const getProvinceData = () => {
     axios.get(`http://localhost:8000/warehouses/getProvinceData`)
       .then((response) => {
-        console.log(response.data);
         setProvinceData(response.data);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        toast({
+          title: "Error fetching data.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       });
   };
-
-  
 
   const onGetCity = (province_id) => {
     // console.log("province_id:", province_id)
     axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
-        console.log("dari onGetCity: ", response.data);
+        
         setCityData(response.data);
-
-        // setProvince("");
-        // setCity("");
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        toast({
+          title: "Error fetching data.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       });
   };
 
@@ -119,7 +147,7 @@ const UserAddress = () => {
   const handleEditAddress = async (id, values) => {
     try {
       // Replace with your API endpoint to update an address
-      await axios.put(`http://localhost:8000/address/edit-address${id}`, values);
+      await axios.put(`http://localhost:8000/address/edit-address/${id}`, values);
       toast({
         title: "Address updated.",
         status: "success",
@@ -140,7 +168,7 @@ const UserAddress = () => {
   const handleDeleteAddress = async (id) => {
     try {
       // Replace with your API endpoint to delete an address
-      await axios.delete(`/api/addresses/${id}`);
+      await axios.delete(`http://localhost:8000/address/delete-address/${id}`);
       toast({
         title: "Address deleted.",
         status: "success",
@@ -183,6 +211,7 @@ const UserAddress = () => {
   });
 
   return (
+    <>
     <Box>
       <Heading>User Addresses</Heading>
       <form onSubmit={formik.handleSubmit}>
@@ -365,16 +394,18 @@ const UserAddress = () => {
               {address.province}, {address.postal_code}
             </Text>
             <Flex justify="flex-end">
+              <Link to={`/user/address/${address.id}`}>
               <IconButton
-                onClick={() => handleEditAddress(address.id, formik.values)}
+                // onClick={() => handleEditAddress(address.id, formik.values)}
                 icon={<EditIcon />}
                 colorScheme="blue"
                 aria-label="Edit Address"
                 isRound
                 mr={2}
-              />
+                />
+              </Link>
               <IconButton
-                onClick={() => handleDeleteAddress(address.id)}
+                onClick={() => handleDeleteButtonClick(address.id)}
                 icon={<DeleteIcon />}
                 colorScheme="red"
                 aria-label="Delete Address"
@@ -385,6 +416,26 @@ const UserAddress = () => {
         ))}
       </VStack>
     </Box>
+    <Modal isOpen={isOpen} onClose={onClose}>
+    <ModalOverlay />
+    <ModalContent>
+      <ModalHeader>Delete Address</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        Are you sure you want to delete this address? This action cannot be undone.
+      </ModalBody>
+
+      <ModalFooter>
+        <Button colorScheme="red" mr={3} onClick={handleConfirmDelete}>
+          Delete
+        </Button>
+        <Button variant="ghost" onClick={onClose}>
+          Cancel
+        </Button>
+      </ModalFooter>
+    </ModalContent>
+  </Modal>
+    </>
   );
 };
 

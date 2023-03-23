@@ -129,8 +129,7 @@ module.exports = {
   deleteAddress: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const { user_id } = req.dataDecode
-      let { id } = req.body
+      let { id } = req.params
 
       let deleteAdress = await user_addresses.destroy({ where: { id } }, { transaction: t })
 
@@ -153,16 +152,17 @@ module.exports = {
   getAddressById : async (req, res) => {
     const { id } = req.params;
     try {
-      const admin = await admins.findByPk(id);
-      if (!admin) {
-        return res.status(404).json({ message: "Admin not found" });
+      const address = await user_addresses.findByPk(id);
+      if (!address) {
+        return res.status(404).json({ message: "Address not found" });
       }
-      return res.status(200).json(admin);
+      return res.status(200).json(address);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal server error" });
     }
   },
+
   getProvinceData: async (req, res) => {
     let options = {
       method: "GET",
@@ -173,7 +173,6 @@ module.exports = {
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
 
-      console.log(body);
       fs.writeFileSync("./src/dbProvince.json", body);
       let data = JSON.parse(fs.readFileSync("./src/dbProvince.json"));
       res.status(200).send(data.rajaongkir.results);

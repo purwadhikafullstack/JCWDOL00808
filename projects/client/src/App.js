@@ -68,7 +68,7 @@ function App() {
         />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
         <Route path="/user/address" element={<UserAddress />} />
-        {/* <Route path="/user/address/ :id" element={<EditUserAddress />} /> */}
+        <Route path="/user/address/:id" element={<EditUserAddress />} />
 
         <Route
           path="/product-details/:productId"
