@@ -26,6 +26,7 @@ import AddCategoryProduct from "./pages/admin/addCategoryProduct";
 import PatchCategoryProduct from "./pages/admin/patchCategory";
 import PatchProductForm from "./pages/admin/patchProduct";
 import ProductDetails from "./pages/ProductDetails";
+import Cart from "./pages/user/Cart";
 
 function App() {
   return (
@@ -54,14 +55,21 @@ function App() {
         <Route path="/admin/manageproducts" element={<ManageProducts />} />
         <Route path="/admin/addProducts" element={<ProductForm />} />
         <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
-        <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
+        <Route
+          path="/admin/managecategory"
+          element={<ManageCategoryProducts />}
+        />
         <Route path="/admin/addcategory" element={<AddCategoryProduct />} />
-        <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
+        <Route
+          path="/admin/patch-category/:id"
+          element={<PatchCategoryProduct />}
+        />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
         <Route
           path="/product-details/:productId"
           element={<ProductDetails />}
         />
+        <Route path="/user/cart" element={<Cart />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
