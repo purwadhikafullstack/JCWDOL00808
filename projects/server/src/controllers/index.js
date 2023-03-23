@@ -6,7 +6,6 @@ const productController = require("./productController");
 const categoryProductController = require("./categoryProductController");
 const warehousesController = require("./warehouses");
 const productsController = require("./productsController");
-// const productController = require("./productController");
 const addressesController = require("./addressesController")
 
 
