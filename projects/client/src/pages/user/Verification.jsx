@@ -81,6 +81,9 @@ export default function Verification() {
 
   useEffect(() => {
     isVerified();
+    if (!email && !token) {
+      navigate("/user/login");
+    }
   });
 
   const validationSchema = Yup.object().shape({

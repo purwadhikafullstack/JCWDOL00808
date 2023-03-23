@@ -6,7 +6,7 @@ import { FaShoppingCart, FaSearch } from "react-icons/fa";
 import HamburgerMenuButton from "./HamburgerMenu";
 import AvatarButton from "./AvatarButton";
 
-export default function Navbar() {
+export default function Navbar(props) {
   const [profile, setProfile] = useState([]);
   const navigate = useNavigate();
 
@@ -33,7 +33,12 @@ export default function Navbar() {
                 <FaSearch className="w-5 h-5 text-gray-500" />
               </div>
               <input
-                type="text"
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    props.func(event.target.value);
+                  }
+                }}
+                type="search"
                 className="md:block md:w-full w-28 mr-4 p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Search..."
               />
