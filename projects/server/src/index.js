@@ -89,9 +89,13 @@ app.use(express.static("."));
 //#endregion
 
 // #region CLIENT
-const clientPath = "../../client/build";
-app.use(express.static(join(__dirname, clientPath)));
-// res.sendFile(join(__dirname, clientPath, "index.html"));
+// const clientPath = "../../client/build";
+// app.use(express.static(join(__dirname, clientPath)));
+
+// Serve the HTML page
+// app.get("*", (req, res) => {
+//   res.sendFile(join(__dirname, clientPath, "index.html"));
+// });
 
 //#endregion
 

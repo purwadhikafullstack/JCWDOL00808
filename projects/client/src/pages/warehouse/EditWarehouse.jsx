@@ -1,12 +1,13 @@
-import { Text, Input, InputGroup, Button, InputRightElement, Select } from "@chakra-ui/react";
-import { Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup, MenuOptionGroup, MenuDivider } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { Text, Input, InputGroup, Button, InputRightElement, Select, useToast } from "@chakra-ui/react";
 import Axios from "axios";
 import React from "react";
 import { API_url } from "../../helper";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const EditWarehouse = (props) => {
+  const navigate = useNavigate();
+
   const [name, setName] = React.useState("");
   const [address, setAddress] = React.useState("");
 
@@ -17,6 +18,9 @@ const EditWarehouse = (props) => {
   // nampung province dan city pilihan admin
   const [province, setProvince] = React.useState("");
   const [city, setCity] = React.useState("");
+  const [district, setDistrict] = React.useState("");
+
+  const toast = useToast();
 
   const getProvinceData = () => {
     Axios.get(API_url + `/warehouses/getProvinceData`)
@@ -45,12 +49,36 @@ const EditWarehouse = (props) => {
       });
   };
 
-  const buttonEditWarehouse = () => {};
+  const urlParams = new URLSearchParams(window.location.search);
+  const warehouse_id = urlParams.get("id"); // "id" didapat dari yang ditulis di navigate
+
+  const buttonEditWarehouse = () => {
+    Axios.patch(API_url + `/warehouses/updateWarehouseData`, {
+      id: warehouse_id,
+      name,
+      address,
+      province,
+      city,
+      district,
+    })
+      .then((response) => {
+        console.log(response.data);
+        // alert(response.data.message);
+        toast({
+          title: `${response.data.message}`,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+        setTimeout(navigate("/warehouse/list", { replace: true }), 9000);
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
-    <div className="d-flex flex-column shadow-lg">
-      <div className="d-flex flex-row justify-content-center">
-        <div className="my-5 mx-5 px-5 text-start">
+    <div className="d-flex flex-column">
+      {/* <div className="d-flex flex-row justify-content-center"> */}
+        <div className="mt-5 mx-5 px-5 text-start">
           <div>
             <Text fontSize="xl" as="b">
               Edit warehouse data
@@ -67,32 +95,61 @@ const EditWarehouse = (props) => {
             </InputGroup>
           </div>
         </div>
-        <div className="my-5 mx-5 px-5">
-          <div className="mt-5 pt-5 text-muted fw-bold text-start">
+        <div className="mx-5 px-5">
+          <div className="mt-4 text-muted fw-bold text-start">
             <Text fontSize="md">Province</Text>
-            <Select placeholder="Select province" onChange={(element) => onGetCity(element.target.value)}>
+            <Select
+              placeholder="Select province"
+              onChange={(element) => {
+                onGetCity(element.target.value);
+                setProvince(element.target.value.split(",")[1]);
+              }}
+            >
               {provinceData.map((value) => {
-                return <option value={value.province_id} key={value.province_id}>{value.province}</option>;
+                return (
+                  <option value={value.province_id + "," + value.province} key={value.province_id}>
+                    {value.province}
+                  </option>
+                );
               })}
             </Select>
           </div>
           <div>
             <div className="mt-4 text-muted fw-bold text-start">
               <Text fontSize="md">City</Text>
-              <Select placeholder="Select city">
-                {cityData.map((value, index) => {
+              <Select placeholder="Select city" onChange={(element) => setCity(element.target.value)}>
+                {cityData.map((value) => {
                   return (
-                    <option value={value.city_id} key={value.city_id}>
+                    <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
                       {value.type} {value.city_name}
                     </option>
                   );
                 })}
               </Select>
             </div>
+            <div className="mt-4 text-muted fw-bold text-start">
+              <Text fontSize="md">District (Kecamatan)</Text>
+              <Input
+                placeholder="Input district"
+                // onChange={(element) => {
+                // setProvince(element.target.value.split(",")[1]);
+                // onGetCity(element.target.value.split(",")[0]);
+                // }}
+                onChange={(element) => setDistrict(element.target.value)}
+              >
+                {/* {provinceData.map((value) => {
+                  return (
+                    <option value={value.province_id + "," + value.province} key={value.province_id}>
+                      {value.province}
+                    </option>
+                  );
+                })} */}
+              </Input>
+            </div>
           </div>
         </div>
-      </div>
-      <Button colorScheme="facebook" style={{ width: "15%", marginInline: "auto", marginBottom: 50 }} onClick={buttonEditWarehouse}>
+      {/* </div> */}
+      <Button colorScheme="facebook" style={{ width: "15%", marginInline: "auto", marginBottom: 50, marginTop: 50 }} onClick={buttonEditWarehouse}>
         Save changes
       </Button>
     </div>

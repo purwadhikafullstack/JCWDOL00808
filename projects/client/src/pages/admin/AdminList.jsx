@@ -1,23 +1,11 @@
 import { Avatar, Image, Container, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Button, ButtonGroup } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { API_url } from "../../helper";
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const AdminList = (props) => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
-
-  // const { id, email, full_name, phone_number, role } = useSelector((state) => {
-  //   return {
-  //     id: state.adminsReducer.id,
-  //     email: state.adminsReducer.email,
-  //     full_name: state.adminsReducer.full_name,
-  //     phone_number: state.adminsReducer.phone_number,
-  //     role: state.adminsReducer.role
-  //   }
-  // })
 
   const [adminsData, setAdminsData] = useState([]);
 
@@ -25,7 +13,6 @@ const AdminList = (props) => {
     Axios.get(API_url + `/admins/getAdminsData`)
       .then((response) => {
         console.log(response.data);
-        // dispatch(getAdminsAction(response.data))
         setAdminsData(response.data);
       })
       .catch((err) => console.log(err));
@@ -66,7 +53,7 @@ const AdminList = (props) => {
       })
       .catch((err) => {
         console.error(err);
-        alert("Error guys");
+        alert("Something is wrong");
       });
   };
 
@@ -87,13 +74,6 @@ const AdminList = (props) => {
             </Tr>
           </Thead>
           <Tbody>{showAdminsData()}</Tbody>
-          {/* <Tfoot>
-            <Tr>
-              <Th>To convert</Th>
-              <Th>into</Th>
-              <Th isNumeric>multiply by</Th>
-            </Tr>
-          </Tfoot> */}
         </Table>
       </TableContainer>
       <Button colorScheme="orange" className="mt-5">

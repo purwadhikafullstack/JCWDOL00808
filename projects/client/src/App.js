@@ -12,7 +12,7 @@ import VerificationNewPassword from "./pages/user/VerificationNewPassword";
 import Sidebar from "./components/sidebar";
 import UserList from "./pages/admin/userList";
 import AdminList from "./pages/admin/AdminList";
-// import WarehouseList from "./pages/warehouse/WarehouseList";
+import WarehouseList from "./pages/warehouse/WarehouseList";
 import AddWarehouse from "./pages/warehouse/AddWarehouse";
 import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import AssignAdmin from "./pages/admin/AssignAdmin";
@@ -26,6 +26,7 @@ import AddCategoryProduct from "./pages/admin/addCategoryProduct";
 import PatchCategoryProduct from "./pages/admin/patchCategory";
 import PatchProductForm from "./pages/admin/patchProduct";
 import ProductDetails from "./pages/ProductDetails";
+import Cart from "./pages/user/Cart";
 import UserAddress from "./pages/user/UserAddress";
 import EditUserAddress from "./pages/user/EditUserAddress";
 
@@ -48,7 +49,7 @@ function App() {
         <Route path="/admin/list" element={<AdminList />} />
         <Route path="/admin/assign" element={<AssignAdmin />} />
         <Route path="/admin/adminuserlist" element={<UserList />} />
-        {/* <Route path="/warehouse/list" element={<WarehouseList />} /> */}
+        <Route path="/warehouse/list" element={<WarehouseList />} />
         <Route path="/warehouse/add" element={<AddWarehouse />} />
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
@@ -56,9 +57,15 @@ function App() {
         <Route path="/admin/manageproducts" element={<ManageProducts />} />
         <Route path="/admin/addProducts" element={<ProductForm />} />
         <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
-        <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
+        <Route
+          path="/admin/managecategory"
+          element={<ManageCategoryProducts />}
+        />
         <Route path="/admin/addcategory" element={<AddCategoryProduct />} />
-        <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
+        <Route
+          path="/admin/patch-category/:id"
+          element={<PatchCategoryProduct />}
+        />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
         <Route path="/user/address" element={<UserAddress />} />
         {/* <Route path="/user/address/ :id" element={<EditUserAddress />} /> */}
@@ -67,6 +74,7 @@ function App() {
           path="/product-details/:productId"
           element={<ProductDetails />}
         />
+        <Route path="/user/cart" element={<Cart />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />
