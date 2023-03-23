@@ -152,5 +152,28 @@ module.exports = {
       return res.status(500).json({ message: "Internal server error" });
     }
   },
+  getProvinceData: async (req, res) => {
+    let options = {
+      method: "GET",
+      url: "https://api.rajaongkir.com/starter/province",
+      headers: { key: "c80fa8beeb5eeb737ca76afcf8939a56" },
+    };
 
-};
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+
+      console.log(body);
+      fs.writeFileSync("./src/dbProvince.json", body);
+      let data = JSON.parse(fs.readFileSync("./src/dbProvince.json"));
+      res.status(200).send(data.rajaongkir.results);
+    });
+  },
+  getCityData: async (req, res) => {
+    let options = {
+      method: "GET",
+      url: "https://api.rajaongkir.com/starter/city",
+      qs: { province: req.query.province_id },
+      headers: { key: "c80fa8beeb5eeb737ca76afcf8939a56" },
+    };
+}
+}

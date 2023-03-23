@@ -14,6 +14,7 @@ import {
   Text,
   IconButton,
   Flex,
+  Select,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
@@ -21,12 +22,52 @@ import * as Yup from "yup";
 import axios from "axios";
 const token = localStorage.getItem("token");
 
+
 const UserAddress = () => {
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
 
+   // nampung hasil get dari raja ongkir
+   const [provinceData, setProvinceData] = useState([]);
+   const [cityData, setCityData] = useState([]);
+ 
+   // nampung province dan city pilihan admin
+   const [province, setProvince] = useState("");
+   const [city, setCity] = useState("");
+
+   const getProvinceData = () => {
+    axios.get(`http://localhost:8000/warehouses/getProvinceData`)
+      .then((response) => {
+        console.log(response.data);
+        setProvinceData(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // useEffect(() => {
+  //   getProvinceData();
+  // }, []);
+
+  const onGetCity = (province_id) => {
+    // console.log("province_id:", province_id)
+    axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
+      .then((response) => {
+        console.log("dari onGetCity: ", response.data);
+        setCityData(response.data);
+
+        // setProvince("");
+        // setCity("");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
       fetchAddresses();
+      getProvinceData();
   }, []);
 
   const fetchAddresses = async () => {
@@ -50,6 +91,7 @@ const UserAddress = () => {
 
   const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
     try {
+      
       // Replace with your API endpoint to add an address
       const response = await axios.post("http://localhost:8000/address/add-address", values,
       {
@@ -176,28 +218,56 @@ const UserAddress = () => {
           </FormControl>
           <FormControl isInvalid={formik.errors.city && formik.touched.city}>
             <FormLabel htmlFor="city">City</FormLabel>
-            <Input
+            <Select
               id="city"
               name="city"
-              type="text"
-              onChange={formik.handleChange}
+              placeholder="Select city"
+              // type="text"
+              // onChange={formik.handleChange}
+              onChange={(element) => {
+                setCity(element.target.value)
+                formik.handleChange(element)
+              }}
               onBlur={formik.handleBlur}
               value={formik.values.city}
-            />
+              
+            >
+              {cityData.map((value) => {
+                  return (
+                    <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                      {value.type} {value.city_name}
+                    </option>
+                  );
+                })}
+              </Select>
             <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
           </FormControl>
           <FormControl
             isInvalid={formik.errors.province && formik.touched.province}
           >
             <FormLabel htmlFor="province">Province</FormLabel>
-            <Input
+            <Select
               id="province"
               name="province"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              placeholder="Select province"
+              // type="text"
+              // onChange={formik.handleChange}
+              onChange={(element) => {
+                setProvince(element.target.value.split(",")[1]);
+                onGetCity(element.target.value.split(","[0]));
+                formik.handleChange(element)
+              }}
+              // onBlur={formik.handleBlur}
               value={formik.values.province}
-            />
+            >
+               {provinceData.map((value) => {
+                return (
+                  <option value={value.province_id + "," + value.province} key={value.province_id}>
+                    {value.province}
+                  </option>
+                );
+              })}
+            </Select>
             <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
           </FormControl>
           <FormControl
