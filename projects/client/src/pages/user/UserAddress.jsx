@@ -319,7 +319,12 @@ const UserAddress = () => {
             }
           >
            <FormLabel htmlFor="is_primary">Primary Address</FormLabel> 
-           <Select  {...formik.getFieldProps("is_primary")}
+           <Select 
+           id="is_primary"
+           name="is_primary"
+           type="number"
+           placeholder=" " 
+           {...formik.getFieldProps("is_primary")}
            onChange={formik.handleChange}>
               {[
                 { value: 1, label: "Yes" },

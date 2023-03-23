@@ -43,8 +43,19 @@ module.exports = {
       //     data: null,
       //   });
       // } else {
+      if (is_primary == 1) {
+        const removePrimary = await user_addresses.update({is_primary: 0}, { where: { users_id: id } }, { transaction: t })
+        const createNewAddress = await user_addresses.create({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
+        t.commit();
+      res.status(201).send({
+        isError: false,
+        message: "Address created.",
+        data: createNewAddress,
+        dataAPI: response.results[0].geometry
+      });
+      } else {
       const createNewAddress = await user_addresses.create({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
-
+     
       t.commit();
       res.status(201).send({
         isError: false,
@@ -52,7 +63,7 @@ module.exports = {
         data: createNewAddress,
         dataAPI: response.results[0].geometry
       });
-      // }
+      }
 
     } catch (error) {
       t.rollback();
