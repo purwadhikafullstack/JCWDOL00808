@@ -37,6 +37,7 @@ const UserAddress = () => {
         headers: { Authorization: token },
       });
       setAddresses(response.data.result);
+      
     } catch (error) {
       toast({
         title: "Error fetching addresses.",
@@ -78,7 +79,7 @@ const UserAddress = () => {
   const handleEditAddress = async (id, values) => {
     try {
       // Replace with your API endpoint to update an address
-      await axios.put(`http://localhost:8000/address/edit-address/${id}`, values);
+      await axios.put(`http://localhost:8000/address/edit-address${id}`, values);
       toast({
         title: "Address updated.",
         status: "success",

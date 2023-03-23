@@ -71,7 +71,7 @@ module.exports = {
       const getAllAddress = await user_addresses.findAll({ where: { users_id: id } })
       
       res.json({
-        data: getAllAddress
+        result: getAllAddress
       });
       // res.status(200).send({
       //   isError: false,
