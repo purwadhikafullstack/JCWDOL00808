@@ -21,7 +21,7 @@ import * as Yup from "yup";
 import axios from "axios";
 const token = localStorage.getItem("token");
 
-const UserAddress = () => {
+const EditUserAddress = () => {
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
 
@@ -304,4 +304,4 @@ const UserAddress = () => {
   );
 };
 
-export default UserAddress;
+export default EditUserAddress;

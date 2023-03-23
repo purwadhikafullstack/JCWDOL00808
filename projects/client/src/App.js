@@ -27,6 +27,7 @@ import PatchCategoryProduct from "./pages/admin/patchCategory";
 import PatchProductForm from "./pages/admin/patchProduct";
 import ProductDetails from "./pages/ProductDetails";
 import UserAddress from "./pages/user/UserAddress";
+import EditUserAddress from "./pages/user/EditUserAddress";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
         <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
         <Route path="/user/address" element={<UserAddress />} />
+        <Route path="/user/address/ :id" element={<EditUserAddress />} />
 
         <Route
           path="/product-details/:productId"

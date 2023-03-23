@@ -28,7 +28,7 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      let { user_id } = req.dataDecode
+      let { id } = req.dataDecode
       let { address, province, city, district, postal_code, recipient, phone_number, is_primary } = req.body
 
       let response = await geocode({ q: `${address}, ${district}, ${city}, ${province}`, countrycode: 'id', limit: 1, key: process.env.API_KEY })
@@ -43,7 +43,7 @@ module.exports = {
       //     data: null,
       //   });
       // } else {
-      const createNewAddress = await user_addresses.create({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, user_id }, { transaction: t })
+      const createNewAddress = await user_addresses.create({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
 
       t.commit();
       res.status(201).send({
@@ -67,14 +67,17 @@ module.exports = {
   getAddress: async (req, res) => {
     try {
 
-      let {user_id} = req.dataDecode
-      let getAllAddress = await user_addresses.findAll({ where: { user_id } })
-
-      res.status(200).send({
-        isError: false,
-        message: "Get User Addresses",
-        data: getAllAddress,
+      let {id} = req.dataDecode
+      const getAllAddress = await user_addresses.findAll({ where: { users_id: id } })
+      
+      res.json({
+        data: getAllAddress
       });
+      // res.status(200).send({
+      //   isError: false,
+      //   message: "Get User Addresses",
+      //   data: getAllAddress,
+      // });
 
     } catch (error) {
       res.status(409).send({
@@ -88,7 +91,7 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      const { user_id } = req.dataDecode
+      // const { user_id } = req.dataDecode
       let { address, province, city, district, postal_code, recipient, phone_number, is_primary, id } = req.body
 
       let response = await geocode({ q: `${address}, ${district}, ${city}, ${province}`, countrycode: 'id', limit: 1, key: process.env.API_KEY })
@@ -134,6 +137,19 @@ module.exports = {
         message: error.message,
         data: null,
       });
+    }
+  },
+  getAddressById : async (req, res) => {
+    const { id } = req.params;
+    try {
+      const admin = await admins.findByPk(id);
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+      return res.status(200).json(admin);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 
