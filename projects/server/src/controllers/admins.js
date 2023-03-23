@@ -115,8 +115,8 @@ module.exports = {
     // kalau pake sequelize:
     try {
       console.log("req.body: ", req.body);
-      let data = await AdminsModel.findAll({where: { id: req.body.id}})
-      if(data.length > 0){
+      let data = await AdminsModel.findAll({ where: { id: req.body.id } });
+      if (data.length > 0) {
         let update = await AdminsModel.update(
           {
             role: 2,
@@ -125,13 +125,13 @@ module.exports = {
         );
         return res.status(200).send({
           success: true,
-          message: "Admin has been assigned!"
-        })
+          message: "Admin has been assigned!",
+        });
       } else {
         return res.status(200).send({
           success: false,
-          message: "Admin not found!"
-        })
+          message: "Admin not found!",
+        });
       }
     } catch (err) {
       console.log(err);

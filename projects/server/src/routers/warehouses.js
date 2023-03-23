@@ -9,6 +9,6 @@ route.delete("/deleteWarehouseData", warehousesController.deleteWarehouseData);
 route.get("/getProvinceData", warehousesController.getProvinceData);
 route.get("/getCityData", warehousesController.getCityData);
 route.patch("/assignAdmin", warehousesController.assignAdmin);
-route.get("/getDistrictData", warehousesController.getDistrictData);
+// route.get("/getDistrictData", warehousesController.getDistrictData);
 
 module.exports = route;

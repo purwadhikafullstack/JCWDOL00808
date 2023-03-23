@@ -44,7 +44,7 @@ module.exports = {
         totalRows: totalRows,
         totalPage: totalPage,
       });
-      
+
       console.log("req.query: ", req.query);
     } catch (error) {
       console.error(error);
@@ -82,14 +82,6 @@ module.exports = {
       res.status(200).send(data);
     });
   },
-  getDistrictData: async (req, res) => {
-    try {
-      let data = await JSON.parse(fs.readFileSync("../districts.json"));
-      console.log("masuk");
-    } catch (error) {
-      console.log(error);
-    }
-  },
   getWarehouseData: async (req, res) => {
     try {
       console.log(req.query.page);
@@ -125,7 +117,10 @@ module.exports = {
     try {
       console.log("req.body update warehouse:", req.body);
       const { id, name, address, province, city, district } = req.body;
-      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district }, { where: { id: req.body.id } });
+      let response = await geocode({ q: `${address}, ${district}, ${province}, ${city}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2" });
+      let { lat, lng } = response.results[0].geometry;
+
+      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district, latitude: lat, longitude: lng }, { where: { id: req.body.id } });
 
       res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {

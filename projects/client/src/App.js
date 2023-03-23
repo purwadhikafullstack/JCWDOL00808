@@ -26,6 +26,8 @@ import AddCategoryProduct from "./pages/admin/addCategoryProduct";
 import PatchCategoryProduct from "./pages/admin/patchCategory";
 import PatchProductForm from "./pages/admin/patchProduct";
 import ProductDetails from "./pages/ProductDetails";
+import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
+import StockHistory from "./pages/warehouse/StockHistory";
 
 function App() {
   return (
@@ -49,6 +51,8 @@ function App() {
         <Route path="/warehouse/list" element={<WarehouseList />} />
         <Route path="/warehouse/add" element={<AddWarehouse />} />
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
+        <Route path="/warehouse/details" element={<WarehouseDetails />} />
+        <Route path="/warehouse/history" element={<StockHistory />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
         <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
         <Route path="/admin/manageproducts" element={<ManageProducts />} />

@@ -73,44 +73,6 @@ const WarehouseList = (props) => {
     getWarehouseData();
   }, [page]);
 
-  const detailsButton = () => {
-    return (
-      <Card>
-        <CardHeader>
-          <Heading size="md">Client Report</Heading>
-        </CardHeader>
-
-        <CardBody>
-          <Stack divider={<StackDivider />} spacing="4">
-            <Box>
-              <Heading size="xs" textTransform="uppercase">
-                Summary
-              </Heading>
-              <Text pt="2" fontSize="sm">
-                View a summary of all your clients over the last month.
-              </Text>
-            </Box>
-            <Box>
-              <Heading size="xs" textTransform="uppercase">
-                Overview
-              </Heading>
-              <Text pt="2" fontSize="sm">
-                Check out the overview of your clients.
-              </Text>
-            </Box>
-            <Box>
-              <Heading size="xs" textTransform="uppercase">
-                Analysis
-              </Heading>
-              <Text pt="2" fontSize="sm">
-                See a detailed analysis of all your business clients.
-              </Text>
-            </Box>
-          </Stack>
-        </CardBody>
-      </Card>
-    );
-  };
 
   const deleteButton = (value) => {
     Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${value}`)
@@ -138,7 +100,7 @@ const WarehouseList = (props) => {
           <Td>{value.province}</Td>
           <Td>{value.city}</Td>
           <Td isNumeric>
-            <Button colorScheme="teal" className="mr-2" onClick={detailsButton}>
+            <Button colorScheme="teal" className="mr-2" onClick={() => navigate(`/warehouse/details?id=${value.id}`)}>
               Details
             </Button>
             <Button colorScheme="blue" className="mr-2" onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>

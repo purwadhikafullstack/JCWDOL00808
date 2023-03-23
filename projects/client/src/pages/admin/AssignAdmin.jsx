@@ -15,8 +15,6 @@ const AssignAdmin = (props) => {
   const [warehouse, setWarehouse] = useState("");
 
   const urlParams = new URLSearchParams(window.location.search);
-
-  // To get the value of a specific query parameter:
   const admin_id = urlParams.get("id");
 
   const getWarehouseData = () => {
@@ -34,7 +32,7 @@ const AssignAdmin = (props) => {
       id: warehouse,
     })
       .then((response) => {
-        console.log(response.data);
+        console.log("cek:", response.data);
         alert(response.data.message);
       })
       .catch((err) => {
@@ -79,15 +77,6 @@ const AssignAdmin = (props) => {
             <div className="mt-4 text-muted fw-bold text-start">
               <Text fontSize="md">City</Text>
               <Text fontSize="md">{city}</Text>
-              {/* <Select placeholder="(insert nama city here)"> */}
-              {/* {cityData.map((value, index) => {
-                  return (
-                    <option value={value.city_id} key={value.city_id}>
-                      {value.type} {value.city_name}
-                    </option>
-                  );
-                })} */}
-              {/* </Select> */}
             </div>
           </div>
         </div>
