@@ -9,11 +9,11 @@ const products = db.products;
 module.exports = {
   getCartData: async (req, res) => {
     try {
-      const { id } = req.dataDecode;
+      const users_id = req.dataDecode.id;
 
       //Get all carts data owned by specific user and merged with products data
       const cartsData = await carts.findAll({
-        where: { users_id: id },
+        where: { users_id },
         include: [
           {
             model: products,
@@ -42,6 +42,26 @@ module.exports = {
         isError: false,
         message: "Get carts data success",
         data: cartsData,
+      });
+    } catch (error) {
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+  updateCartData: async (req, res) => {
+    try {
+      const users_id = req.dataDecode.id;
+      const { id, quantity } = req.body;
+
+      await carts.update({ quantity }, { where: { users_id, id } });
+
+      res.status(200).send({
+        isError: false,
+        message: "Update cart data success",
+        data: null,
       });
     } catch (error) {
       res.status(404).send({
