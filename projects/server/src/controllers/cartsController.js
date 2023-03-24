@@ -71,4 +71,24 @@ module.exports = {
       });
     }
   },
+  deleteCartData: async (req, res) => {
+    try {
+      const users_id = req.dataDecode.id;
+      const { id } = req.body;
+
+      await carts.destroy({ where: { users_id, id } });
+
+      res.status(200).send({
+        isError: false,
+        message: "Product deleted",
+        data: null,
+      });
+    } catch (error) {
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
 };
