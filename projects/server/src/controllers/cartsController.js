@@ -17,25 +17,30 @@ module.exports = {
         include: [
           {
             model: products,
-            attributes: [
-              [sequelize.literal("`carts`.`id`"), "id"],
-              [sequelize.literal("`carts`.`quantity`"), "quantity"],
-              [sequelize.literal("`carts`.`createdAt`"), "createdAt"],
-              [sequelize.literal("`carts`.`updatedAt`"), "updatedAt"],
-              "id",
-              "name",
-              "description",
-              "price",
-              "weight",
-              "imageUrl",
-              "createdAt",
-              "updatedAt",
-              "product_categories_id",
-            ],
-            required: true,
           },
         ],
-        attributes: [], // Add this line to exclude carts attributes
+        // include: [
+        //   {
+        //     model: products,
+        //     attributes: [
+        //       [sequelize.literal("`carts`.`id`"), "id"],
+        //       [sequelize.literal("`carts`.`quantity`"), "quantity"],
+        //       [sequelize.literal("`carts`.`createdAt`"), "createdAt"],
+        //       [sequelize.literal("`carts`.`updatedAt`"), "updatedAt"],
+        //       "id",
+        //       "name",
+        //       "description",
+        //       "price",
+        //       "weight",
+        //       "imageUrl",
+        //       "createdAt",
+        //       "updatedAt",
+        //       "product_categories_id",
+        //     ],
+        //     required: true,
+        //   },
+        // ],
+        // attributes: [], // Add this line to exclude carts attributes
       });
 
       res.status(200).send({
@@ -56,12 +61,25 @@ module.exports = {
       const users_id = req.dataDecode.id;
       const { id, quantity } = req.body;
 
-      await carts.update({ quantity }, { where: { users_id, id } });
+      if (quantity <= 0) {
+        await carts.destroy({ where: { users_id, id } });
+      } else {
+        await carts.update({ quantity }, { where: { users_id, id } });
+      }
+
+      const cartsData = await carts.findAll({
+        where: { users_id },
+        include: [
+          {
+            model: products,
+          },
+        ],
+      });
 
       res.status(200).send({
         isError: false,
         message: "Update cart data success",
-        data: null,
+        data: cartsData,
       });
     } catch (error) {
       res.status(404).send({
