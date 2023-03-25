@@ -26,6 +26,8 @@ import AddCategoryProduct from "./pages/admin/addCategoryProduct";
 import PatchCategoryProduct from "./pages/admin/patchCategory";
 import PatchProductForm from "./pages/admin/patchProduct";
 import ProductDetails from "./pages/ProductDetails";
+import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
+import StockHistory from "./pages/warehouse/StockHistory";
 import Cart from "./pages/user/Cart";
 import UserAddress from "./pages/user/UserAddress";
 import EditUserAddress from "./pages/user/EditUserAddress";
@@ -38,21 +40,20 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/user/register" element={<Registration />} />
         <Route path="/user/verify" element={<Verification />} />
-        <Route
-          path="/user/verify-new-password"
-          element={<VerificationNewPassword />}
-        />
+        <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/profile" element={<EditProfile />} />
         <Route path="/user/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/list" element={<AdminList />} />
-        <Route path="/admin/assign" element={<AssignAdmin />} />
+        <Route path="/admin/assign/:id" element={<AssignAdmin />} />
         <Route path="/admin/adminuserlist" element={<UserList />} />
         <Route path="/warehouse/list" element={<WarehouseList />} />
         <Route path="/warehouse/add" element={<AddWarehouse />} />
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
+        <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
+        <Route path="/warehouse/history" element={<StockHistory />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
         <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
         <Route path="/admin/manageproducts" element={<ManageProducts />} />

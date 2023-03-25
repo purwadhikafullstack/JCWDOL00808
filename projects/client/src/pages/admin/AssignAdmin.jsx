@@ -5,6 +5,7 @@ import Axios from "axios";
 import React, { useState } from "react";
 import { API_url } from "../../helper";
 import { useEffect } from "react";
+import {useParams} from "react-router-dom"
 
 const AssignAdmin = (props) => {
   // nampung hasil get data warehouse
@@ -14,13 +15,10 @@ const AssignAdmin = (props) => {
   // nampung pilihan admin
   const [warehouse, setWarehouse] = useState("");
 
-  const urlParams = new URLSearchParams(window.location.search);
-
-  // To get the value of a specific query parameter:
-  const admin_id = urlParams.get("id");
+  const {id} = useParams();
 
   const getWarehouseData = () => {
-    Axios.get(API_url + `/warehouses/getWarehouseData`)
+    Axios.get(API_url + `/warehouses/getAllWarehouse`)
       .then((response) => {
         console.log(response.data);
         setWarehouseData(response.data);
@@ -28,13 +26,17 @@ const AssignAdmin = (props) => {
       .catch((err) => console.log(err));
   };
 
+  useEffect(() => {
+    getWarehouseData();
+  }, []);
+
   const assignButton = () => {
-    Axios.patch(API_url + `/warehouses/assignAdmin`, {
-      admins_id: admin_id,
+    Axios.patch(API_url + `/admins/assignNewAdmin`, {
+      admins_id: id,
       id: warehouse,
     })
       .then((response) => {
-        console.log(response.data);
+        console.log("cek:", response.data);
         alert(response.data.message);
       })
       .catch((err) => {
@@ -42,12 +44,8 @@ const AssignAdmin = (props) => {
       });
   };
 
-  useEffect(() => {
-    getWarehouseData();
-  }, []);
-
   return (
-    <div className="d-flex flex-column shadow-lg">
+    <div className="d-flex flex-column">
       <div className="d-flex flex-row justify-content-center">
         <div className="my-5 mx-5 px-5 text-start">
           <div>
@@ -79,15 +77,6 @@ const AssignAdmin = (props) => {
             <div className="mt-4 text-muted fw-bold text-start">
               <Text fontSize="md">City</Text>
               <Text fontSize="md">{city}</Text>
-              {/* <Select placeholder="(insert nama city here)"> */}
-              {/* {cityData.map((value, index) => {
-                  return (
-                    <option value={value.city_id} key={value.city_id}>
-                      {value.type} {value.city_name}
-                    </option>
-                  );
-                })} */}
-              {/* </Select> */}
             </div>
           </div>
         </div>

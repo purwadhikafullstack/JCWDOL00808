@@ -1,7 +1,7 @@
 const db = require("../../models/index");
 const AdminsModel = db.admins;
 const UsersModel = db.users;
-const WarehouseModel = db.warehouse;
+const WarehouseModel = db.warehouses;
 
 const { sequelize } = require("../../models");
 const { Op, where } = require("sequelize");
@@ -114,24 +114,25 @@ module.exports = {
 
     // kalau pake sequelize:
     try {
+      // const {id} = req.params; // ini id admin
+      let { id, admins_id } = req.body;
+
       console.log("req.body: ", req.body);
-      let data = await AdminsModel.findAll({where: { id: req.body.id}})
-      if(data.length > 0){
-        let update = await AdminsModel.update(
-          {
-            role: 2,
-          },
-          { where: { id: req.body.id } }
-        );
-        return res.status(200).send({
-          success: true,
-          message: "Admin has been assigned!"
-        })
+      let data = await AdminsModel.findAll({ where: { id: admins_id } });
+      if (data.length > 0) {
+      let update = await WarehouseModel.update(
+        { admins_id },
+        { where: { id } }
+      );
+      return res.status(200).send({
+        success: true,
+        message: "Admin has been assigned!",
+      });
       } else {
         return res.status(200).send({
           success: false,
-          message: "Admin not found!"
-        })
+          message: "Admin not found!",
+        });
       }
     } catch (err) {
       console.log(err);
