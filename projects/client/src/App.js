@@ -29,6 +29,7 @@ import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/user/Cart";
 import UserAddress from "./pages/user/UserAddress";
 import EditUserAddress from "./pages/user/EditUserAddress";
+import AddUserAddress from "./pages/user/AddUserAddress";
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
         />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
         <Route path="/user/address" element={<UserAddress />} />
+        <Route path="/user/add-address" element={<AddUserAddress />} />
         <Route path="/user/address/:id" element={<EditUserAddress />} />
 
         <Route

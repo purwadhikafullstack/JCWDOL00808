@@ -1,5 +1,6 @@
 // Import Sequelize
 const { sequelize } = require("../../models");
+const { Op } = require("sequelize");
 
 // Import models
 const db = require("../../models/index");
@@ -22,6 +23,7 @@ const { error } = require("console");
 
 //import opencage api
 const { geocode } = require('opencage-api-client')
+
 
 module.exports = {
   addAddress: async (req, res) => {
@@ -77,12 +79,53 @@ module.exports = {
   },
   getAddress: async (req, res) => {
     try {
-
+      const search = req.query.search_query || "";
       let {id} = req.dataDecode
+      const result = await user_addresses.findAll({
+        where: {
+          [Op.or]: [
+            {
+              address: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              province: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              city: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              district: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              postal_code: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              recipient: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              phone_number: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        }
+      })
       const getAllAddress = await user_addresses.findAll({ where: { users_id: id } })
       
       res.json({
-        result: getAllAddress
+        result: result
       });
       // res.status(200).send({
       //   isError: false,
@@ -102,20 +145,36 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      // const { user_id } = req.dataDecode
-      let { address, province, city, district, postal_code, recipient, phone_number, is_primary, id } = req.body
+      let { id } = req.dataDecode
+      const  idAddress  = req.params;
+      let { address, province, city, district, postal_code, recipient, phone_number, is_primary } = req.body
 
       let response = await geocode({ q: `${address}, ${district}, ${city}, ${province}`, countrycode: 'id', limit: 1, key: process.env.API_KEY })
       let { lat, lng } = response.results[0].geometry
 
-      let updateAdress = await user_addresses.update({ address, province, city, district, postal_code, recipient, phone_number,latitude: lat, longitude: lng, is_primary }, { where: { id } }, { transaction: t })
+      // let updateAdress = await user_addresses.update({ address, province, city, district, postal_code, recipient, phone_number,latitude: lat, longitude: lng, is_primary }, { where: { id } }, { transaction: t })
 
-      t.commit()
+      if (is_primary == 1) {
+        const removePrimary = await user_addresses.update({is_primary: 0}, { where: { users_id: id } }, { transaction: t })
+        const updateAddress = await user_addresses.update({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { where: { id: idAddress.id } }, { transaction: t })
+        t.commit();
       res.status(201).send({
         isError: false,
-        message: "Address updated",
-        data: { address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng },
-      })
+        message: "Address updated.",
+        data: updateAddress,
+        dataAPI: response.results[0].geometry
+      });
+      } else {
+      const updateAddress = await user_addresses.update({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { where: { id: idAddress.id } }, { transaction: t })
+     
+      t.commit();
+      res.status(201).send({
+        isError: false,
+        message: "Address updated.",
+        data: updateAddress,
+        dataAPI: response.results[0].geometry
+      });
+      }
 
     } catch (error) {
       t.rollback();

@@ -24,7 +24,7 @@ import {
   Select,
   useToast
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { EditIcon, DeleteIcon, CloseIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -52,6 +52,14 @@ const UserAddress = () => {
     setAddressToDelete(addressId);
     onOpen();
   };
+
+  // search state
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    fetchAddresses();
+    getProvinceData();
+}, [searchTerm]);
 
   const handleConfirmDelete = async () => {
     await handleDeleteAddress(addressToDelete);
@@ -91,15 +99,15 @@ const UserAddress = () => {
       });
   };
 
-  useEffect(() => {
-      fetchAddresses();
-      getProvinceData();
-  }, []);
+  // useEffect(() => {
+  //     fetchAddresses();
+  //     getProvinceData();
+  // }, []);
 
   const fetchAddresses = async () => {
     try {
       // Replace with your API endpoint to get all addresses
-      const response = await axios.get("http://localhost:8000/address/get-address", 
+      const response = await axios.get(`http://localhost:8000/address/get-address?search_query=${searchTerm}`, 
       {
         headers: { Authorization: token },
       });
@@ -213,170 +221,25 @@ const UserAddress = () => {
   return (
     <>
     <Box>
-      <Heading>User Addresses</Heading>
-      <form onSubmit={formik.handleSubmit}>
-        <VStack spacing={4} mt={4} mx="auto" maxW="480px">
-          <FormControl
-            isInvalid={formik.errors.address && formik.touched.address}
-          >
-            <FormLabel htmlFor="address">Address</FormLabel>
-            <Input
-              id="address"
-              name="address"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.address}
-            />
-            <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isInvalid={formik.errors.province && formik.touched.province}
-          >
-            <FormLabel htmlFor="province">Province</FormLabel>
-            <Select
-              id="province"
-              name="province"
-              placeholder=" "
-              // type="text"
-              // onChange={formik.handleChange}
-              onChange={(element) => {
-                setProvince(element.target.value.split(",")[1]);
-                onGetCity(element.target.value.split(","[0]));
-                formik.handleChange(element)
-              }}
-              // onBlur={formik.handleBlur}
-              value={formik.values.province}
-            >
-               {provinceData.map((value) => {
-                return (
-                  <option value={value.province_id + "," + value.province} key={value.province_id}>
-                    {value.province}
-                  </option>
-                );
-              })}
-            </Select>
-            <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={formik.errors.city && formik.touched.city}>
-            <FormLabel htmlFor="city">City</FormLabel>
-            <Select
-              id="city"
-              name="city"
-              placeholder=" "
-              // type="text"
-              // onChange={formik.handleChange}
-              onChange={(element) => {
-                setCity(element.target.value)
-                formik.handleChange(element)
-              }}
-              onBlur={formik.handleBlur}
-              value={formik.values.city}
-              
-            >
-              {cityData.map((value) => {
-                  return (
-                    <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
-                      {value.type} {value.city_name}
-                    </option>
-                  );
-                })}
-              </Select>
-            <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isInvalid={formik.errors.district && formik.touched.district}
-          >
-            <FormLabel htmlFor="district">District</FormLabel>
-            <Input
-              id="district"
-              name="district"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.district}
-            />
-            <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isInvalid={formik.errors.postal_code && formik.touched.postal_code}
-          >
-            <FormLabel htmlFor="postal_code">Postal Code</FormLabel>
-            <Input
-              id="postal_code"
-              name="postal_code"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.postal_code}
-            />
-            <FormErrorMessage>{formik.errors.postal_code}</FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isInvalid={formik.errors.recipient && formik.touched.recipient}
-          >
-            <FormLabel htmlFor="recipient">Recipient</FormLabel>
-            <Input
-              id="recipient"
-              name="recipient"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.recipient}
-            />
-            <FormErrorMessage>{formik.errors.recipient}</FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isInvalid={
-              formik.errors.phone_number && formik.touched.phone_number
-            }
-          >
-            <FormLabel htmlFor="phone_number">Phone Number</FormLabel>
-            <Input
-              id="phone_number"
-              name="phone_number"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.phone_number}
-            />
-            <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
-          </FormControl>
-          <FormControl 
-            isInvalid={
-              formik.errors.is_primary && formik.touched.is_primary
-            }
-          >
-           <FormLabel htmlFor="is_primary">Primary Address</FormLabel> 
-           <Select 
-           id="is_primary"
-           name="is_primary"
-           type="number"
-           placeholder=" " 
-           {...formik.getFieldProps("is_primary")}
-           onChange={formik.handleChange}>
-              {[
-                { value: 1, label: "Yes" },
-                { value: 0, label: "No" },
-              ].map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-              
-            </Select>
-            <FormErrorMessage>{formik.errors.is_primary}</FormErrorMessage>
-          </FormControl> 
-    
-          <Button
-            type="submit"
-            colorScheme="blue"
-            isLoading={formik.isSubmitting}
-          >
-            Add Address
-          </Button>
-        </VStack>
-      </form>
+    <HStack mb={4} mt= {2} mr={4} justify="flex-end">
+      <Link to="/">
+        <IconButton icon={<CloseIcon />} aria-label="Back Button" colorScheme="blue" />
+      </Link>
+    </HStack>
+    <Heading mb={10}>Address List</Heading>
+    <HStack mb={4} mt={2} mr={4} justify="center">
+          <Input
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            maxW="200px"
+          />
+          {/* <IconButton icon={<SearchIcon />} aria-label="Search" colorScheme="blue" /> */}
+          <Link to="/user/add-address">
+            <IconButton icon={<AddIcon />} aria-label="Add Address" colorScheme="blue" />
+          </Link>
+        </HStack>
       <VStack mt={8} w="100%" spacing={4}>
         {addresses.map((address) => (
           <Box

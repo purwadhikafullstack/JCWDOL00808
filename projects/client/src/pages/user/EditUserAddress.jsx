@@ -16,11 +16,11 @@ import {
   Flex,
   Select
 } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { EditIcon, DeleteIcon, ArrowBackIcon, CloseIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 const token = localStorage.getItem("token");
 
 const EditUserAddress = () => {
@@ -37,8 +37,8 @@ const EditUserAddress = () => {
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
 
-  const getProvinceData = () => {
-    axios.get(`http://localhost:8000/warehouses/getProvinceData`)
+  const getProvinceData = async () => {
+   await axios.get(`http://localhost:8000/warehouses/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -52,9 +52,10 @@ const EditUserAddress = () => {
       });
   };
 
-  const onGetCity = (province_id) => {
+  const onGetCity = async (province_id) => {
     // console.log("province_id:", province_id)
-    axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
+    
+    await axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
         
         setCityData(response.data);
@@ -72,6 +73,7 @@ const EditUserAddress = () => {
   useEffect(() => {
       fetchAddresses();
       getProvinceData();
+      onGetCity()
   }, []);;
 
   const fetchAddresses = async () => {
@@ -104,38 +106,42 @@ const EditUserAddress = () => {
     }
   };
 
-  const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
+  // const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
+  //   try {
+  //     // Replace with your API endpoint to add an address
+  //     const response = await axios.post("http://localhost:8000/address/add-address", values,
+  //     {
+  //       headers: { Authorization: token },
+  //     });
+  //     setAddresses([...addresses, response.data]);
+  //     fetchAddresses()
+  //     toast({
+  //       title: "Address added.",
+  //       status: "success",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //     resetForm();
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error adding address.",
+  //       status: "error",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
+
+  const handleEditAddress = async (values) => {
     try {
-      // Replace with your API endpoint to add an address
-      const response = await axios.post("http://localhost:8000/address/add-address", values,
+      console.log();
+      // Replace with your API endpoint to update an address
+      await axios.patch(`http://localhost:8000/address/edit-address/${id}`, values,
       {
         headers: { Authorization: token },
       });
-      setAddresses([...addresses, response.data]);
-      fetchAddresses()
-      toast({
-        title: "Address added.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      resetForm();
-    } catch (error) {
-      toast({
-        title: "Error adding address.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleEditAddress = async (id, values) => {
-    try {
-      // Replace with your API endpoint to update an address
-      await axios.put(`http://localhost:8000/address/edit-address/${id}`, values);
       toast({
         title: "Address updated.",
         status: "success",
@@ -172,7 +178,7 @@ const EditUserAddress = () => {
       postal_code: Yup.string().required("Required"),
       recipient: Yup.string().required("Required"),
       phone_number: Yup.string().required("Required"),
-      is_primary: Yup.number().required("Required"),
+      is_primary: Yup.string().required("Required"),
     }),
     onSubmit: handleEditAddress,
   });
@@ -180,6 +186,11 @@ const EditUserAddress = () => {
   return (
     <>
     <Box>
+    <HStack mb={4} mt= {2} mr={4} justify="flex-end">
+      <Link to="/user/address">
+        <IconButton icon={<CloseIcon />} aria-label="Back Button" colorScheme="blue" />
+      </Link>
+    </HStack>
       <Heading>User Addresses</Heading>
       <form onSubmit={formik.handleSubmit}>
         <VStack spacing={4} mt={4} mx="auto" maxW="480px">
@@ -340,7 +351,7 @@ const EditUserAddress = () => {
             colorScheme="blue"
             isLoading={formik.isSubmitting}
           >
-            Add Address
+            Edit Address
           </Button>
         </VStack>
       </form>
