@@ -10,45 +10,11 @@ const { Op } = require("sequelize");
 module.exports = {
   getAllWarehouse: async (req, res) => {
     try {
-      const search = req.query.search_query || "";
-      const sort = req.query.sort || "id"; //default sorting by id
-      const order = req.query.order || "DESC"; //default order DESC
-
-      const { count: totalRows, rows: result } = await WarehousesModel.findAndCountAll({
-        where: {
-          [Op.or]: [
-            {
-              name: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              province: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              city: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-          ],
-        },
-        order: [[sort, order]], // add order clause with the sort and order parameters
-      });
-
-      const totalPage = Math.ceil(totalRows / result.length);
-
-      res.json({
-        result: result,
-        totalRows: totalRows,
-        totalPage: totalPage,
-      });
-
-      console.log("req.query: ", req.query);
+      let data = await WarehousesModel.findAll()
+      return res.status(200).send(data)
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Something is wrong." });
+      console.log(error);
+      return res.status(500).send(error)
     }
   },
   getProvinceData: async (req, res) => {
@@ -163,6 +129,22 @@ module.exports = {
     } catch (err) {
       console.log(err);
       return res.status(500).send(err);
+    }
+  },
+  getWarehouseDetails: async (req, res) => {
+    try {
+      const { id } = req.params;
+      let data = await WarehousesModel.findOne({ where: { id } });
+      // let details = data[0].dataValues;
+      console.log("data details: ", data);
+
+      res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: "Get warehouse details error",
+      });
     }
   },
 };

@@ -36,22 +36,19 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/user/register" element={<Registration />} />
         <Route path="/user/verify" element={<Verification />} />
-        <Route
-          path="/user/verify-new-password"
-          element={<VerificationNewPassword />}
-        />
+        <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/profile" element={<EditProfile />} />
         <Route path="/user/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/list" element={<AdminList />} />
-        <Route path="/admin/assign" element={<AssignAdmin />} />
+        <Route path="/admin/assign/:id" element={<AssignAdmin />} />
         <Route path="/admin/adminuserlist" element={<UserList />} />
         <Route path="/warehouse/list" element={<WarehouseList />} />
         <Route path="/warehouse/add" element={<AddWarehouse />} />
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
-        <Route path="/warehouse/details" element={<WarehouseDetails />} />
+        <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
         <Route path="/warehouse/history" element={<StockHistory />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
         <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
@@ -62,10 +59,7 @@ function App() {
         <Route path="/admin/addcategory" element={<AddCategoryProduct />} />
         <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
-        <Route
-          path="/product-details/:productId"
-          element={<ProductDetails />}
-        />
+        <Route path="/product-details/:productId" element={<ProductDetails />} />
 
         {/* Fallback route */}
         <Route path="*" element={<NotFound />} />

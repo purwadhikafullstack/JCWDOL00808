@@ -33,6 +33,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
@@ -45,25 +52,26 @@ import ReactPaginate from "react-paginate";
 
 const WarehouseList = (props) => {
   const toast = useToast();
+  const cancelRef = React.useRef();
   const navigate = useNavigate();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = React.useRef();
+  const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
+  const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
 
   const [warehouseData, setWarehouseData] = useState([]);
-  
+  const [warehouseId, setWarehouseId] = useState();
+
   // buat ngirimin nilai page ke backend
   const [page, setPage] = useState(0);
 
   // buat nerima dari backend
-  const [totalPage, setTotalPage] = useState(0)
-
+  const [totalPage, setTotalPage] = useState(0);
 
   const getWarehouseData = () => {
     Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}`)
       .then((response) => {
         console.log(response.data);
-        setTotalPage(response.data.totalPage)
+        setTotalPage(response.data.totalPage);
         setWarehouseData(response.data.rows);
       })
       .catch((err) => console.log(err));
@@ -72,7 +80,6 @@ const WarehouseList = (props) => {
   useEffect(() => {
     getWarehouseData();
   }, [page]);
-
 
   const deleteButton = (value) => {
     Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${value}`)
@@ -88,6 +95,48 @@ const WarehouseList = (props) => {
       .catch((err) => console.log(err));
   };
 
+  // const WarehouseRow = () => {
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  // }
+
+  const handleDetailsClick = () => {
+    setIsDetailsOpen(true);
+    // onModalOpen()
+    // showDetails()
+    // alert("warehouseId: ", warehouseId)
+  };
+  const handleDetailsClose = () => {
+    setIsDetailsOpen(false);
+  };
+
+  const showDetails = (warehouseId) => {
+    alert("siap show details: ", warehouseId);
+    // return (
+    //   <>
+    //     {/* <Button onClick={onOpen}>Open Modal</Button> */}
+
+    //     <Modal isOpen={isModalOpen} onClose={onModalClose}>
+    //       <ModalOverlay />
+    //       <ModalContent>
+    //         <ModalHeader>{element.name}</ModalHeader>
+    //         <ModalCloseButton />
+    //         <ModalBody>
+    //           <Text>{element.address} {element.province} {element.city}</Text>
+    //         </ModalBody>
+
+    //         <ModalFooter>
+    //           <Button colorScheme="blue" mr={3} onClick={onModalClose}>
+    //             Close
+    //           </Button>
+    //           <Button variant="ghost">Stock History</Button>
+    //         </ModalFooter>
+    //       </ModalContent>
+    //     </Modal>
+    //   </>
+    // );
+    // navigate(`/warehouse/details/${value.id}`, { replace: true });
+  };
+
   const showWarehouseData = () => {
     let count = 0;
     return warehouseData.map((value) => {
@@ -100,18 +149,28 @@ const WarehouseList = (props) => {
           <Td>{value.province}</Td>
           <Td>{value.city}</Td>
           <Td isNumeric>
-            <Button colorScheme="teal" className="mr-2" onClick={() => navigate(`/warehouse/details?id=${value.id}`)}>
+            <Button
+              colorScheme="teal"
+              className="mr-2"
+              onClick={() => navigate(`/warehouse/details/${value.id}`)}
+              // onClick={showDetails}
+              // onClick={() => {
+              //   handleDetailsClick();
+                // setWarehouseId(value.id);
+                // showDetails();
+              // }}
+            >
               Details
             </Button>
             <Button colorScheme="blue" className="mr-2" onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
               Edit
             </Button>
             <>
-              <Button colorScheme="red" onClick={onOpen}>
+              <Button colorScheme="red" onClick={onAlertOpen}>
                 Delete
               </Button>
 
-              <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+              <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
                 <AlertDialogOverlay>
                   <AlertDialogContent>
                     <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -121,7 +180,7 @@ const WarehouseList = (props) => {
                     <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
 
                     <AlertDialogFooter>
-                      <Button ref={cancelRef} onClick={onClose}>
+                      <Button ref={cancelRef} onClick={onAlertClose}>
                         Cancel
                       </Button>
                       <Button colorScheme="red" onClick={() => deleteButton(value.id)} ml={3}>
@@ -185,7 +244,9 @@ const WarehouseList = (props) => {
               <Th>Address</Th>
               <Th>Province</Th>
               <Th>City</Th>
-              <Th isNumeric className="mr-5">Action</Th>
+              <Th isNumeric className="mr-5">
+                Action
+              </Th>
             </Tr>
           </Thead>
           <Tbody>{showWarehouseData()}</Tbody>
@@ -203,7 +264,7 @@ const WarehouseList = (props) => {
           containerClassName={"pagination justify-content-center"}
           pageClassName={"page-item"}
           pageLinkClassName={"page-link"}
-          previousClassName={'page-item'}
+          previousClassName={"page-item"}
           previousLinkClassName={"page-link"}
           nextClassName={"page-item"}
           nextLinkClassName={"page-link"}
@@ -220,13 +281,3 @@ const WarehouseList = (props) => {
 };
 
 export default WarehouseList;
-
-{
-  /* <Tfoot>
-  <Tr>
-    <Th>To convert</Th>
-    <Th>into</Th>
-    <Th isNumeric>multiply by</Th>
-  </Tr>
-</Tfoot> */
-}

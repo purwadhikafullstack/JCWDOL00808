@@ -71,25 +71,7 @@ const ManageAdmin = () => {
     setPage(0);
   };
 
-  // const urlParams = new URLSearchParams(window.location.search);
-  // const admin_id = urlParams.get("id");
-
   const navigate = useNavigate()
-
-  // const assignButton = () => {
-  //   axios
-  //     .patch(API_url + `/warehouses/assignAdmin`, {
-  //       admins_id: admin_id,
-  //       // id: warehouse,
-  //     })
-  //     .then((response) => {
-  //       console.log(response.data);
-  //       alert(response.data.message);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
 
   return (
     <div class="container mx-auto mt-5">
@@ -165,7 +147,7 @@ const ManageAdmin = () => {
                       <Link to={`/admin/patch-admin/${user.id}`}>
                         <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Edit</button>
                       </Link>
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  onClick={() => navigate(`/admin/assign?id=${user.id}`)}>Assign</button>
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  onClick={() => navigate(`/admin/assign/${user.id}`)}>Assign</button>
                       <button
                         class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                         onClick={() => {
