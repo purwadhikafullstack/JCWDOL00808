@@ -46,10 +46,7 @@ const WarehouseDetails = () => {
       <Divider />
       <CardFooter>
         <ButtonGroup spacing="7">
-          <Button variant="solid" colorScheme="blue" onClick={() => navigate(`/admin/assign/${id}`)}>
-            Assign an admin
-          </Button>
-          <Button variant="ghost" colorScheme="blue" onClick={() => navigate("/warehouse/list", { replace: true })}>
+          <Button variant="solid" colorScheme="blue" onClick={() => navigate("/warehouse/list", { replace: true })}>
             Back
           </Button>
         </ButtonGroup>
