@@ -45,7 +45,9 @@ export default function Navbar(props) {
             </div>
             {profile ? (
               <div className="grid grid-cols-2 gap-1 place-items-center">
-                <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                <Link to={"/user/cart"}>
+                  <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                </Link>
                 <AvatarButton profile={profile} />
               </div>
             ) : (
@@ -88,14 +90,16 @@ export default function Navbar(props) {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/user/login"
-                  className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Login
-                </Link>
-              </li>
+              {profile ? null : (
+                <li>
+                  <Link
+                    to="/user/login"
+                    className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  >
+                    Login
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>
