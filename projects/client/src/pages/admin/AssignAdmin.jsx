@@ -15,9 +15,7 @@ const AssignAdmin = (props) => {
   // nampung pilihan admin
   const [warehouse, setWarehouse] = useState("");
 
-
   const {id} = useParams();
-  console.log("id admin: ", id);
 
   const getWarehouseData = () => {
     Axios.get(API_url + `/warehouses/getAllWarehouse`)
