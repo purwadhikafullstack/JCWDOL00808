@@ -55,9 +55,30 @@ module.exports = {
       const limit = 5;
       const offset = limit * page;
 
+      const sort = req.query.sort || "id";
+      const order = req.query.order || "ASC"
+      const keyword = req.query.keyword || ""
+
       let WarehouseData = await WarehousesModel.findAndCountAll({
         limit,
         offset,
+        order: [[sort, order]],
+        where: {
+          [Op.or]: [
+            { name: {
+              [Op.like]: "%" + keyword + "%"
+            }},
+            { address: {
+              [Op.like]: "%" + keyword + "%"
+            }},
+            { city: {
+              [Op.like]: "%" + keyword + "%"
+            }},
+            { province: {
+              [Op.like]: "%" + keyword + "%"
+            }},
+          ]
+        }
       });
       res.status(200).send({ ...WarehouseData, totalPage: Math.ceil(WarehouseData.count / limit) });
     } catch (error) {

@@ -40,6 +40,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Select,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
@@ -61,6 +62,11 @@ const WarehouseList = (props) => {
   const [warehouseData, setWarehouseData] = useState([]);
   const [warehouseId, setWarehouseId] = useState();
 
+  const [sort, setSort] = useState("id");
+  const [order, setOrder] = useState("ASC");
+  const [search, setSearch] = useState("");
+  const [keyword, setKeyword] = useState("");
+
   // buat ngirimin nilai page ke backend
   const [page, setPage] = useState(0);
 
@@ -68,7 +74,7 @@ const WarehouseList = (props) => {
   const [totalPage, setTotalPage] = useState(0);
 
   const getWarehouseData = () => {
-    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}`)
+    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
       .then((response) => {
         console.log(response.data);
         setTotalPage(response.data.totalPage);
@@ -79,7 +85,7 @@ const WarehouseList = (props) => {
 
   useEffect(() => {
     getWarehouseData();
-  }, [page]);
+  }, [page, sort, order, keyword]);
 
   const deleteButton = (value) => {
     Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${value}`)
@@ -156,8 +162,8 @@ const WarehouseList = (props) => {
               // onClick={showDetails}
               // onClick={() => {
               //   handleDetailsClick();
-                // setWarehouseId(value.id);
-                // showDetails();
+              // setWarehouseId(value.id);
+              // showDetails();
               // }}
             >
               Details
@@ -197,40 +203,56 @@ const WarehouseList = (props) => {
     });
   };
 
-  const searchData = () => {};
-
   const handlePageClick = (data) => {
     setPage(data.selected);
   };
 
+  const handleSearchButton = () => {
+    setPage(0)
+    setKeyword(search)
+  }
+
   return (
     <>
-      <Container className="my-5">
-        <FormControl onSubmit={searchData}>
+      <Container className="my-5" maxW={600}>
+        <FormControl>
           <FormLabel>Search</FormLabel>
-          <Input placeholder="type warehouse name, city, or province..." className="mb-5" />
+          <Input placeholder="type warehouse name, city, or province..." className="mb-5" onChange={(element) => setSearch(element.target.value)} />
+          <Button onClick={handleSearchButton}>Search</Button>
         </FormControl>
-        <FormControl as="fieldset">
-          <FormLabel as="legend">Sort data by:</FormLabel>
-          <RadioGroup defaultValue="Itachi">
+        <FormControl>
+          <FormLabel>Sort data by:</FormLabel>
+          <RadioGroup>
             <HStack spacing="24px">
-              <Radio value="Sasuke">Name</Radio>
-              <Radio value="Nagato">Province</Radio>
-              <Radio value="Itachi">City</Radio>
-              <Radio value="Sage of the six Paths">Date added</Radio>
-              <Menu>
+              <Radio value="name" onChange={(element) => setSort(element.target.value)}>
+                Name
+              </Radio>
+              <Radio value="province" onChange={(element) => setSort(element.target.value)}>
+                Province
+              </Radio>
+              <Radio value="city" onChange={(element) => setSort(element.target.value)}>
+                City
+              </Radio>
+              <Radio value="updatedAt" onChange={(element) => setSort(element.target.value)}>
+                Date added
+              </Radio>
+              {/* <Menu>
                 {({ isOpen }) => (
                   <>
                     <MenuButton isActive={isOpen} as={Button} rightIcon={<ChevronDownIcon />}>
                       {isOpen ? "A/Z" : "A/Z"}
                     </MenuButton>
                     <MenuList>
-                      <MenuItem>Ascending (A-Z)</MenuItem>
-                      <MenuItem onClick={() => alert("Kagebunshin")}>Descending (Z-A)</MenuItem>
+                      <MenuItem value="ASC" onClick={(element) => setOrder(element.target.value)}>Ascending (A-Z)</MenuItem>
+                      <MenuItem value="DESC" onClick={(element) => setOrder(element.target.value)}>Descending (Z-A)</MenuItem>
                     </MenuList>
                   </>
                 )}
-              </Menu>
+              </Menu> */}
+              <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
+                <option value="ASC">Ascending</option>
+                <option value="DESC">Descending</option>
+              </Select>
             </HStack>
           </RadioGroup>
         </FormControl>
