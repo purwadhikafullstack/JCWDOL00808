@@ -9,6 +9,12 @@ import {
 import { Link } from "react-router-dom";
 
 export default function Footer() {
+  const isLoggedIn = () => {
+    if (localStorage.getItem("token")) {
+      return true;
+    } else return false;
+  };
+
   return (
     <footer className="p-4 bg-white sm:p-6 dark:bg-gray-900">
       <div className="md:flex md:justify-between">
@@ -38,9 +44,15 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="mb-4">
-                <Link to="/user/login" className="hover:underline">
-                  Login as user
-                </Link>
+                {isLoggedIn() ? (
+                  <Link to="/user/profile" className="hover:underline">
+                    Edit profile
+                  </Link>
+                ) : (
+                  <Link to="/user/login" className="hover:underline">
+                    Login as user
+                  </Link>
+                )}
               </li>
               <li>
                 <Link to="/admin/login" className="hover:underline">
