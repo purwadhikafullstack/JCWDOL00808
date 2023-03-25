@@ -60,7 +60,7 @@ const AddUserAddress = () => {
   };
 
    const getProvinceData = () => {
-    axios.get(`http://localhost:8000/warehouses/getProvinceData`)
+    axios.get(`http://localhost:8000/address/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -76,7 +76,7 @@ const AddUserAddress = () => {
 
   const onGetCity = (province_id) => {
     // console.log("province_id:", province_id)
-    axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
+    axios.get(`http://localhost:8000/address/getCityData?province_id=${province_id}`)
       .then((response) => {
         
         setCityData(response.data);
@@ -247,12 +247,12 @@ const AddUserAddress = () => {
               // onChange={formik.handleChange}
               onChange={(element) => {
                 setProvince(element.target.value.split(",")[1]);
-                onGetCity(element.target.value.split(","[0]));
+                onGetCity(element.target.value.split(",")[0]);
                 formik.handleChange(element)
               }}
               // onBlur={formik.handleBlur}
+              >
               value={formik.values.province}
-            >
                {provinceData.map((value) => {
                 return (
                   <option value={value.province_id + "," + value.province} key={value.province_id}>

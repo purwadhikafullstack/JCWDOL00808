@@ -24,6 +24,8 @@ const { error } = require("console");
 //import opencage api
 const { geocode } = require('opencage-api-client')
 
+const request = require("request");
+
 
 module.exports = {
   addAddress: async (req, res) => {
@@ -226,15 +228,15 @@ module.exports = {
     let options = {
       method: "GET",
       url: "https://api.rajaongkir.com/starter/province",
-      headers: { key: "c80fa8beeb5eeb737ca76afcf8939a56" },
+      headers: { key: "ad56687941df3108ced06eb27098deea" },
     };
 
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
 
-      fs.writeFileSync("./src/dbProvince.json", body);
-      let data = JSON.parse(fs.readFileSync("./src/dbProvince.json"));
-      res.status(200).send(data.rajaongkir.results);
+      // console.log(body);
+      let data = JSON.parse(body).rajaongkir.results;
+      res.status(200).send(data);
     });
   },
   getCityData: async (req, res) => {
@@ -242,7 +244,15 @@ module.exports = {
       method: "GET",
       url: "https://api.rajaongkir.com/starter/city",
       qs: { province: req.query.province_id },
-      headers: { key: "c80fa8beeb5eeb737ca76afcf8939a56" },
+      headers: { key: "ad56687941df3108ced06eb27098deea" },
     };
-}
+
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+
+      // console.log(body);
+      let data = JSON.parse(body).rajaongkir.results;
+      res.status(200).send(data);
+    });
+  },
 }

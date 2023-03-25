@@ -11,5 +11,7 @@ Router.get("/get-address", verifyToken, addressesController.getAddress);
 Router.get("/get-address/:id", addressesController.getAddressById);
 Router.patch("/edit-address/:id", verifyToken, addressesController.editAddress);
 Router.delete("/delete-address/:id", addressesController.deleteAddress);
+Router.get("/getProvinceData", addressesController.getProvinceData);
+Router.get("/getCityData", addressesController.getCityData);
 
 module.exports = Router;
