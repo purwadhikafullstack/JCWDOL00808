@@ -18,6 +18,7 @@ export const loginUser = async (email, password) => {
         password: password,
       }
     );
+    window.location.reload()
     toast(response.data.message);
     // toastChakra({
     //     title: response?.data?.message,
@@ -44,7 +45,8 @@ export const isAuth = async (navigate, isRestricted = false) => {
   try {
     if (!localStorage.getItem("token")) {
       if (isRestricted === true) {
-        navigate("/user/login");
+        navigate("/");
+        // navigate("/user/login");
       }
     } else {
       const token = localStorage.getItem("token");
@@ -63,5 +65,7 @@ export const isAuth = async (navigate, isRestricted = false) => {
 export const logout = (navigate) => {
   localStorage.clear();
   navigate("/user/login");
-  toast.success("Account logged out.");
+  setTimeout(() => {
+    toast.success("Account logged out.");
+  }, 500);
 };

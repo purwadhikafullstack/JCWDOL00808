@@ -119,7 +119,7 @@ export default function EditProfile() {
   };
 
   useEffect(() => {
-    isAuth(navigate).then((data) => setProfile(data));
+    isAuth(navigate, true).then((data) => setProfile(data));
   }, [refresh]);
 
   const validationSchema = Yup.object().shape({
