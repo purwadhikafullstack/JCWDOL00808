@@ -38,19 +38,11 @@ module.exports = {
       let response = await geocode({ q: `${address}, ${district}, ${city}, ${province}`, countrycode: 'id', limit: 1, key: process.env.API_KEY })
       let { lat, lng } = response.results[0].geometry
 
-      // validation user_id still bug
-      // const findUserId = await users.findOne({ where: { user_id } });
-      // if (!findUserId) {
-      //   res.status(409).send({
-      //     isError: true,
-      //     message: "User ID not found, please re-login.",
-      //     data: null,
-      //   });
-      // } else {
       if (is_primary == 1) {
         const removePrimary = await user_addresses.update({is_primary: 0}, { where: { users_id: id } }, { transaction: t })
-        const createNewAddress = await user_addresses.create({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
+        const createNewAddress = await user_addresses.create({ address, province: province.split(",")[1], city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
         t.commit();
+        navigate("/user/address");
       res.status(201).send({
         isError: false,
         message: "Address created.",
@@ -58,9 +50,9 @@ module.exports = {
         dataAPI: response.results[0].geometry
       });
       } else {
-      const createNewAddress = await user_addresses.create({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
-     
+      const createNewAddress = await user_addresses.create({ address, province: province.split(",")[1], city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
       t.commit();
+      navigate("/user/address");
       res.status(201).send({
         isError: false,
         message: "Address created.",
@@ -158,7 +150,7 @@ module.exports = {
 
       if (is_primary == 1) {
         const removePrimary = await user_addresses.update({is_primary: 0}, { where: { users_id: id } }, { transaction: t })
-        const updateAddress = await user_addresses.update({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { where: { id: idAddress.id } }, { transaction: t })
+        const updateAddress = await user_addresses.update({ address, province: province.split(",")[1], city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { where: { id: idAddress.id } }, { transaction: t })
         t.commit();
       res.status(201).send({
         isError: false,
@@ -167,7 +159,7 @@ module.exports = {
         dataAPI: response.results[0].geometry
       });
       } else {
-      const updateAddress = await user_addresses.update({ address, province, city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { where: { id: idAddress.id } }, { transaction: t })
+      const updateAddress = await user_addresses.update({ address, province: province.split(",")[1], city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { where: { id: idAddress.id } }, { transaction: t })
      
       t.commit();
       res.status(201).send({

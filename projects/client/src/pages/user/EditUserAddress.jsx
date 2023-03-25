@@ -37,8 +37,8 @@ const EditUserAddress = () => {
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
 
-  const getProvinceData = async () => {
-   await axios.get(`http://localhost:8000/warehouses/getProvinceData`)
+  const getProvinceData = () => {
+    axios.get(`http://localhost:8000/address/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -52,10 +52,8 @@ const EditUserAddress = () => {
       });
   };
 
-  const onGetCity = async (province_id) => {
-    // console.log("province_id:", province_id)
-    
-    await axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
+  const onGetCity = (province_id) => {
+    axios.get(`http://localhost:8000/address/getCityData?province_id=${province_id}`)
       .then((response) => {
         
         setCityData(response.data);
@@ -78,7 +76,7 @@ const EditUserAddress = () => {
 
   const fetchAddresses = async () => {
     try {
-      // Replace with your API endpoint to get all addresses
+     
       const response = await axios.get(`http://localhost:8000/address/get-address/${id}`, 
       {
         headers: { Authorization: token },
@@ -106,34 +104,6 @@ const EditUserAddress = () => {
     }
   };
 
-  // const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
-  //   try {
-  //     // Replace with your API endpoint to add an address
-  //     const response = await axios.post("http://localhost:8000/address/add-address", values,
-  //     {
-  //       headers: { Authorization: token },
-  //     });
-  //     setAddresses([...addresses, response.data]);
-  //     fetchAddresses()
-  //     toast({
-  //       title: "Address added.",
-  //       status: "success",
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
-  //     resetForm();
-  //   } catch (error) {
-  //     toast({
-  //       title: "Error adding address.",
-  //       status: "error",
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
-
   const handleEditAddress = async (values) => {
     try {
       console.log();
@@ -142,6 +112,7 @@ const EditUserAddress = () => {
       {
         headers: { Authorization: token },
       });
+      navigate("/user/address");
       toast({
         title: "Address updated.",
         status: "success",
@@ -223,7 +194,7 @@ const EditUserAddress = () => {
                 onGetCity(element.target.value.split(","[0]));
                 formik.handleChange(element)
               }}
-              // onBlur={formik.handleBlur}
+              onBlur={formik.handleBlur}
               value={formik.values.province}
             >
                {provinceData.map((value) => {

@@ -59,7 +59,7 @@ const AddUserAddress = () => {
     onClose();
   };
 
-   const getProvinceData = () => {
+  const getProvinceData = () => {
     axios.get(`http://localhost:8000/address/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
@@ -75,7 +75,6 @@ const AddUserAddress = () => {
   };
 
   const onGetCity = (province_id) => {
-    // console.log("province_id:", province_id)
     axios.get(`http://localhost:8000/address/getCityData?province_id=${province_id}`)
       .then((response) => {
         
@@ -98,7 +97,7 @@ const AddUserAddress = () => {
 
   const fetchAddresses = async () => {
     try {
-      // Replace with your API endpoint to get all addresses
+      
       const response = await axios.get("http://localhost:8000/address/get-address", 
       {
         headers: { Authorization: token },
@@ -118,7 +117,7 @@ const AddUserAddress = () => {
   const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
     try {
       
-      // Replace with your API endpoint to add an address
+      
       const response = await axios.post("http://localhost:8000/address/add-address", values,
       {
         headers: { Authorization: token },
@@ -146,7 +145,7 @@ const AddUserAddress = () => {
 
   const handleEditAddress = async (id, values) => {
     try {
-      // Replace with your API endpoint to update an address
+      
       await axios.put(`http://localhost:8000/address/edit-address/${id}`, values);
       toast({
         title: "Address updated.",
@@ -167,7 +166,7 @@ const AddUserAddress = () => {
 
   const handleDeleteAddress = async (id) => {
     try {
-      // Replace with your API endpoint to delete an address
+      
       await axios.delete(`http://localhost:8000/address/delete-address/${id}`);
       toast({
         title: "Address deleted.",
@@ -246,13 +245,13 @@ const AddUserAddress = () => {
               // type="text"
               // onChange={formik.handleChange}
               onChange={(element) => {
-                setProvince(element.target.value.split(",")[1]);
-                onGetCity(element.target.value.split(",")[0]);
+                setProvince(element.target.value);
+                onGetCity(element.target.value);
                 formik.handleChange(element)
               }}
-              // onBlur={formik.handleBlur}
-              >
+              onBlur={formik.handleBlur}
               value={formik.values.province}
+              >
                {provinceData.map((value) => {
                 return (
                   <option value={value.province_id + "," + value.province} key={value.province_id}>
@@ -382,64 +381,7 @@ const AddUserAddress = () => {
           </Button>
         </VStack>
       </form>
-      {/* <VStack mt={8} w="100%" spacing={4}>
-        {addresses.map((address) => (
-          <Box
-            key={address.id}
-            borderWidth="1px"
-            borderRadius="lg"
-            p={4}
-            w="100%"
-          >
-            <Text>
-              {address.recipient} - {address.phone_number}
-            </Text>
-            <Text>
-              {address.address}, {address.district}, {address.city},{" "}
-              {address.province}, {address.postal_code}
-            </Text>
-            <Flex justify="flex-end">
-              <Link to={`/user/address/${address.id}`}>
-              <IconButton
-                // onClick={() => handleEditAddress(address.id, formik.values)}
-                icon={<EditIcon />}
-                colorScheme="blue"
-                aria-label="Edit Address"
-                isRound
-                mr={2}
-                />
-              </Link>
-              <IconButton
-                onClick={() => handleDeleteButtonClick(address.id)}
-                icon={<DeleteIcon />}
-                colorScheme="red"
-                aria-label="Delete Address"
-                isRound
-              />
-            </Flex>
-          </Box>
-        ))}
-      </VStack> */}
     </Box>
-    {/* <Modal isOpen={isOpen} onClose={onClose}>
-    <ModalOverlay />
-    <ModalContent>
-      <ModalHeader>Delete Address</ModalHeader>
-      <ModalCloseButton />
-      <ModalBody>
-        Are you sure you want to delete this address? This action cannot be undone.
-      </ModalBody>
-
-      <ModalFooter>
-        <Button colorScheme="red" mr={3} onClick={handleConfirmDelete}>
-          Delete
-        </Button>
-        <Button variant="ghost" onClick={onClose}>
-          Cancel
-        </Button>
-      </ModalFooter>
-    </ModalContent>
-  </Modal> */}
     </>
   );
 };

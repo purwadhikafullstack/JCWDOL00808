@@ -83,7 +83,6 @@ const UserAddress = () => {
   };
 
   const onGetCity = (province_id) => {
-    // console.log("province_id:", province_id)
     axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
         
@@ -98,11 +97,6 @@ const UserAddress = () => {
         });
       });
   };
-
-  // useEffect(() => {
-  //     fetchAddresses();
-  //     getProvinceData();
-  // }, []);
 
   const fetchAddresses = async () => {
     try {
