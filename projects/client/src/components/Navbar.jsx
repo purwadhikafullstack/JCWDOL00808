@@ -5,9 +5,12 @@ import { useState, useEffect } from "react";
 import { FaShoppingCart, FaSearch } from "react-icons/fa";
 import HamburgerMenuButton from "./HamburgerMenu";
 import AvatarButton from "./AvatarButton";
+import { useSelector } from "react-redux";
+import { getTotalProductsInCart } from "./../reducers/cartSlice";
 
 export default function Navbar(props) {
   const [profile, setProfile] = useState(null);
+  const totalProductsInCart = useSelector(getTotalProductsInCart);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,7 +49,12 @@ export default function Navbar(props) {
             {profile ? (
               <div className="grid grid-cols-2 gap-1 place-items-center">
                 <Link to={"/user/cart"}>
-                  <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                  <div className="relative">
+                    <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                    <p className="absolute -top-2 -right-2 md:-right-2 dark:text-white text-xs bg-red-600 rounded-full p-0.5">
+                      {totalProductsInCart}
+                    </p>
+                  </div>
                 </Link>
                 <AvatarButton profile={profile} />
               </div>
