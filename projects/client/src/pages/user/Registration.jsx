@@ -1,24 +1,23 @@
 import {
-  Flex,
   Box,
+  Button,
+  Flex,
   FormControl,
-  FormLabel,
   FormErrorMessage,
+  FormLabel,
+  Heading,
   Input,
   Link,
   Stack,
-  Button,
-  Heading,
   Text,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import * as Yup from "yup";
 
 export default function Registration() {
   const [isLoading, setIsLoading] = useState(false);

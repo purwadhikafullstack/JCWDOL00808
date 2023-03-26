@@ -1,19 +1,19 @@
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import ScrollToTopButton from "../components/ScrollToTopButton";
-import CategoryCard from "../components/CategoryCard";
+import axios from "axios";
+import Carousel from "nuka-carousel";
+import { useEffect, useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
+import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
+import { isAuth } from "../apis/userAPIs";
 import Carousel1 from "../assets/carousel/carousel1.jpg";
 import Carousel2 from "../assets/carousel/carousel2.jpg";
 import Carousel3 from "../assets/carousel/carousel3.jpg";
 import Carousel4 from "../assets/carousel/carousel4.jpg";
-import Carousel from "nuka-carousel";
-import { isAuth } from "../apis/userAPIs";
-import { useNavigate } from "react-router-dom";
+import CategoryCard from "../components/CategoryCard";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 import { ProductCard } from "../components/ProductCard";
-import { useState, useEffect } from "react";
-import { toast, Toaster } from "react-hot-toast";
-import axios from "axios";
-import ReactPaginate from "react-paginate";
+import ScrollToTopButton from "../components/ScrollToTopButton";
 
 export default function Home() {
   const [profile, setProfile] = useState(null);
@@ -117,7 +117,7 @@ export default function Home() {
         </select>
       </div>
       <div className="grid md:grid-cols-4 grid-cols-1">
-        <div className="mx-2 my-4 p-2 border-2 border-black dark:bg-gray-800 dark:text-white shadow rounded-lg">
+        <div className="mx-2 my-4 p-2 border-2 border-gray-200 dark:bg-gray-800 dark:text-white shadow rounded-lg">
           <p>Filter</p>
           <p className="text-left">Price</p>
           <div className="py-4">

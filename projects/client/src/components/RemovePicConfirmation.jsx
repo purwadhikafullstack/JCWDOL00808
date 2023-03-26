@@ -1,16 +1,16 @@
+import { SmallCloseIcon } from "@chakra-ui/icons";
 import {
   AlertDialog,
   AlertDialogBody,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
   AvatarBadge,
   Button,
   IconButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
 import React from "react";
 
 export default function RemovePicConfirmation(props) {

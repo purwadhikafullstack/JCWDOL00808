@@ -1,8 +1,7 @@
-import { CircularProgress } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { CircularProgress, useToast } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { addProduct } from "../reducers/cartSlice";
-import { useToast } from "@chakra-ui/react";
 
 export const ProductCard = (props) => {
   const dispatch = useDispatch();
