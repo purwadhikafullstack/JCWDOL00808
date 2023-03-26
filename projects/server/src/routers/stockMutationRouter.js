@@ -7,7 +7,10 @@ const { stockMutation } = require("../controllers");
 // import validator
 const { validateRequestStock } = require("../middleware/validator");
 
-Router.post("/request-stock", validateRequestStock, stockMutation.requestStock);
-Router.patch("/confirm-mutation/:id", stockMutation.confirmRequest);
+//import verify Token
+const {verifyRoleAdmin, verifyToken} = require("../middleware/verifyToken")
+
+Router.post("/request-stock", verifyRoleAdmin, validateRequestStock, stockMutation.requestStock);
+Router.patch("/confirm-mutation/:id", verifyToken, stockMutation.confirmRequest);
 
 module.exports = Router;

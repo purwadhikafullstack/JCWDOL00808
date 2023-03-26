@@ -1,21 +1,11 @@
 // Import Sequelize
 const { sequelize } = require("../../models");
-const { Op } = require("sequelize");
 
 // Import models
 const db = require("../../models/index");
-const products = db.products;
-const product_categories = db.product_categories;
 const stocks = db.stocks;
-const warehouses = db.warehouses;
 const stock_mutations = db.stock_mutations;
-const admin = db.admins;
-
-// Import verification token function
-const { createVerificationToken, validateVerificationToken } = require("../helper/verificationToken");
-
-// import validation schema
-const requestStockSchema = require;
+const stock_histories = db.stock_histories;
 
 module.exports = {
   requestStock: async (req, res) => {
@@ -38,7 +28,7 @@ module.exports = {
           to_warehouse_id,
           products_id,
           quantity,
-          mutation_type: "Manual",
+          mutation_type: "Pending",
         },
         { transaction: t }
       );
@@ -76,10 +66,11 @@ module.exports = {
           return res.status(400).json({ message: "Insufficient stock" });
         }
 
+        const fromStockBefore = fromStock.stock;
         fromStock.stock -= stockMutation.quantity;
-        await fromStock.save();
+        await fromStock.save({ transaction: t });
 
-        const [toStock, created] = await stocks.findOrCreate({
+        const toStock = await stocks.findOrCreate({
           where: {
             warehouses_id: stockMutation.to_warehouse_id,
             products_id: stockMutation.products_id,
@@ -87,22 +78,51 @@ module.exports = {
           defaults: { stock: 0 },
         });
 
+        const toStockBefore = toStock.stock;
         toStock.stock += stockMutation.quantity;
-        await toStock.save();
+        await toStock.save({ transaction: t });
+
+        // Create new stock history for the fromStock
+        await stock_histories.create(
+          {
+            stock_before: fromStockBefore,
+            stock_after: fromStock.stock,
+            products_id: stockMutation.products_id,
+            warehouses_id: stockMutation.from_warehouse_id,
+          },
+          { transaction: t }
+        );
+
+        // Create new stock history for toStock
+        await stock_histories.create(
+          {
+            stock_before: toStockBefore,
+            stock_after: toStock.stock,
+            products_id: stockMutation.products_id,
+            warehouses_id: stockMutation.to_warehouse_id,
+          },
+          { transaction: t }
+        );
 
         stockMutation.mutation_type = "TRANSFER";
-        await stockMutation.save();
+        stockMutation.approvedAt = new Date();
+        await stockMutation.save({ transaction: t });
 
+        //commit transaction
+        await t.commit();
         res.status(200).json({ message: "Stock request accepted", stockMutation });
       } else if (status === "REJECT") {
         stockMutation.mutation_type = "REJECTED";
-        await stockMutation.save();
+        stockMutation.approvedAt = new Date();
+
+        await stockMutation.save({ transaction: t });
 
         res.status(200).json({ message: "Stock request rejected", stockMutation });
       } else {
         res.status(400).json({ message: "Invalid status" });
       }
     } catch (error) {
+      await t.rollback();
       res.status(500).json({ message: "Server error", error });
     }
   },
