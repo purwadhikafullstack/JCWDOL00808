@@ -1,26 +1,26 @@
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
-  Flex,
   Box,
+  Button,
+  Flex,
   FormControl,
-  FormLabel,
   FormErrorMessage,
+  FormLabel,
+  Heading,
   Input,
   InputGroup,
   InputRightElement,
   Link,
   Stack,
-  Button,
-  Heading,
   Text,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import * as Yup from "yup";
 
 export default function Verification() {
   //Get value from url query

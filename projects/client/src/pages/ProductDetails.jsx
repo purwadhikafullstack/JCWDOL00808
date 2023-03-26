@@ -1,26 +1,26 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import {
   Box,
+  Button,
+  CircularProgress,
   Flex,
+  HStack,
   Image,
-  Text,
-  VStack,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Button,
-  HStack,
   Spacer,
-  CircularProgress,
+  Text,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 import { addProduct } from "../reducers/cartSlice";
 
 export default function ProductDetails() {

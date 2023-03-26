@@ -1,26 +1,28 @@
-import Big4Logo from "../assets/Big4Logo.svg";
-import { isAuth } from "../apis/userAPIs";
+import { useEffect, useState } from "react";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { FaShoppingCart, FaSearch } from "react-icons/fa";
-import HamburgerMenuButton from "./HamburgerMenu";
+import { isAuth } from "../apis/userAPIs";
+import Big4Logo from "../assets/Big4Logo.svg";
+import { getCarts, getTotalProductsInCart } from "./../reducers/cartSlice";
 import AvatarButton from "./AvatarButton";
-import { useSelector } from "react-redux";
-import { getTotalProductsInCart } from "./../reducers/cartSlice";
+import HamburgerMenuButton from "./HamburgerMenu";
 
 export default function Navbar(props) {
   const [profile, setProfile] = useState(null);
   const totalProductsInCart = useSelector(getTotalProductsInCart);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     isAuth(navigate).then((data) => setProfile(data));
-  }, []);
+    dispatch(getCarts());
+  }, [dispatch, navigate]);
 
   return (
     <>
       <nav
-        className="bg-white mb-1 px-2 sm:px-4 py-2.5 dark:bg-gray-900 w-full border-b border-gray-200 dark:border-gray-600" /* fixed z-20 top-0 left-0 */
+        className="bg-gray-300 mb-1 px-2 sm:px-4 py-2.5 dark:bg-gray-900 w-full border-b border-gray-200 dark:border-gray-600" /* fixed z-20 top-0 left-0 */
       >
         <div className="container flex flex-wrap items-center justify-between mx-auto">
           <Link to="/" className="flex items-center">
@@ -51,7 +53,7 @@ export default function Navbar(props) {
                 <Link to={"/user/cart"}>
                   <div className="relative">
                     <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
-                    <p className="absolute -top-2 -right-2 md:-right-2 dark:text-white text-xs bg-red-600 rounded-full p-0.5">
+                    <p className="absolute -top-2 -right-2 md:-right-2 text-white text-xs font-medium bg-red-600 rounded-full py-0.5 px-1 border border-white dark:border-gray-900">
                       {totalProductsInCart}
                     </p>
                   </div>
@@ -72,7 +74,7 @@ export default function Navbar(props) {
             <HamburgerMenuButton profile={profile} />
           </div>
           <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
-            <ul className="flex flex-col p-1 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <ul className="flex flex-col p-1 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
               <li>
                 <Link
                   to="/"
