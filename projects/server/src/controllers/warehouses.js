@@ -67,16 +67,20 @@ module.exports = {
           [Op.or]: [
             { name: {
               [Op.like]: "%" + keyword + "%"
-            }},
+            }
+          },
             { address: {
               [Op.like]: "%" + keyword + "%"
-            }},
+            }
+          },
             { city: {
               [Op.like]: "%" + keyword + "%"
-            }},
+            }
+          },
             { province: {
               [Op.like]: "%" + keyword + "%"
-            }},
+            }
+          },
           ]
         }
       });
@@ -156,7 +160,6 @@ module.exports = {
     try {
       const { id } = req.params;
       let data = await WarehousesModel.findOne({ where: { id } });
-      // let details = data[0].dataValues;
       console.log("data details: ", data);
 
       res.status(200).send(data);
