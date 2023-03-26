@@ -70,7 +70,7 @@ export default function Home() {
 
   return (
     <div className="container flex flex-col justify-between">
-      <Navbar profile={profile} func={getSearch} />
+      <Navbar func={getSearch} />
       <div className="p-2 md:p-4" /*mt-16 */>
         <Carousel
           wrapAround={true}
