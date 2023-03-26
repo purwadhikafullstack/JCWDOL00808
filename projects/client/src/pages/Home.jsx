@@ -7,6 +7,8 @@ import Carousel2 from "../assets/carousel/carousel2.jpg";
 import Carousel3 from "../assets/carousel/carousel3.jpg";
 import Carousel4 from "../assets/carousel/carousel4.jpg";
 import Carousel from "nuka-carousel";
+import { isAuth } from "../apis/userAPIs";
+import { useNavigate } from "react-router-dom";
 import { ProductCard } from "../components/ProductCard";
 import { useState, useEffect } from "react";
 import { toast, Toaster } from "react-hot-toast";
@@ -14,6 +16,7 @@ import axios from "axios";
 import ReactPaginate from "react-paginate";
 
 export default function Home() {
+  const [profile, setProfile] = useState(null);
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState();
@@ -24,6 +27,7 @@ export default function Home() {
   const [pageCount, setPageCount] = useState(0);
   const [limit] = useState(12);
   const [offset, setOffset] = useState(0);
+  const navigate = useNavigate();
 
   const getSearch = (keyword) => {
     setSearch(keyword);
@@ -60,12 +64,13 @@ export default function Home() {
   };
 
   useEffect(() => {
+    isAuth(navigate).then((data) => setProfile(data));
     fetchProducts();
   }, [search, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
   return (
     <div className="container flex flex-col justify-between">
-      <Navbar func={getSearch} />
+      <Navbar profile={profile} func={getSearch} />
       <div className="p-2 md:p-4" /*mt-16 */>
         <Carousel
           wrapAround={true}
@@ -144,7 +149,7 @@ export default function Home() {
         </div>
 
         <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4">
-          <ProductCard products={products} />
+          <ProductCard profile={profile} products={products} />
           <div className="grid md:col-span-4 col-span-2 place-items-center">
             <ReactPaginate
               previousLabel={"<"}

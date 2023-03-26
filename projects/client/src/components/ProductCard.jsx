@@ -1,18 +1,12 @@
 import { CircularProgress } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 
 export const ProductCard = (props) => {
-  const { products } = props;
-  const [profile, setProfile] = useState(null);
+  const { products, profile } = props;
 
   // const handleAddToCart = () => {
   //   // Add the product to the cart with the selected quantity
   // };
-
-  useEffect(() => {
-    setProfile(JSON.parse(localStorage.getItem("user")));
-  }, []);
 
   if (!props) {
     return (

@@ -1,18 +1,11 @@
 import Big4Logo from "../assets/Big4Logo.svg";
-import { Link, useNavigate } from "react-router-dom";
-import { isAuth } from "../apis/userAPIs";
-import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { FaShoppingCart, FaSearch } from "react-icons/fa";
 import HamburgerMenuButton from "./HamburgerMenu";
 import AvatarButton from "./AvatarButton";
 
 export default function Navbar(props) {
-  const [profile, setProfile] = useState([]);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    isAuth(navigate).then((data) => setProfile(data));
-  }, []);
+  const { profile } = props;
 
   return (
     <>
