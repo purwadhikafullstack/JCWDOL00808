@@ -5,16 +5,18 @@ import { useState, useEffect } from "react";
 import { FaShoppingCart, FaSearch } from "react-icons/fa";
 import HamburgerMenuButton from "./HamburgerMenu";
 import AvatarButton from "./AvatarButton";
-import { useSelector } from "react-redux";
-import { getTotalProductsInCart } from "./../reducers/cartSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { getCarts, getTotalProductsInCart } from "./../reducers/cartSlice";
 
 export default function Navbar(props) {
   const [profile, setProfile] = useState(null);
   const totalProductsInCart = useSelector(getTotalProductsInCart);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     isAuth(navigate).then((data) => setProfile(data));
+    dispatch(getCarts());
   }, []);
 
   return (
