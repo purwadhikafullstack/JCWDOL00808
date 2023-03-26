@@ -117,7 +117,7 @@ export default function Home() {
         </select>
       </div>
       <div className="grid md:grid-cols-4 grid-cols-1">
-        <div className="mx-2 my-4 p-2 border-2 border-black dark:bg-gray-800 dark:text-white shadow rounded-lg">
+        <div className="mx-2 my-4 p-2 border-2 border-gray-200 dark:bg-gray-800 dark:text-white shadow rounded-lg">
           <p>Filter</p>
           <p className="text-left">Price</p>
           <div className="py-4">
