@@ -1,25 +1,25 @@
-import { isAuth } from "../../apis/userAPIs";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  getCarts,
-  updateCarts,
-  deleteProduct,
-  cartSelector,
-  getTotalPriceInCart,
-} from "../../reducers/cartSlice";
+import { isAuth } from "../../apis/userAPIs";
 import DeleteProductAlert from "../../components/DeleteProductAlert";
+import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
 import ScrollToTopButton from "../../components/ScrollToTopButton";
+import {
+  cartSelector,
+  deleteProduct,
+  getCarts,
+  getTotalPriceInCart,
+  updateCarts,
+} from "../../reducers/cartSlice";
 
 export default function Cart() {
   const dispatch = useDispatch();
   const carts = useSelector(cartSelector.selectAll);
   const subtotal = useSelector(getTotalPriceInCart);
   //Dummy shipping cost
-  const [shippingCost, setShippingCost] = useState(15000);
+  const [shippingCost] = useState(15000);
   const total = subtotal + shippingCost;
 
   const navigate = useNavigate();

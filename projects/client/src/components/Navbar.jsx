@@ -1,12 +1,12 @@
-import Big4Logo from "../assets/Big4Logo.svg";
-import { isAuth } from "../apis/userAPIs";
+import { useEffect, useState } from "react";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { FaShoppingCart, FaSearch } from "react-icons/fa";
-import HamburgerMenuButton from "./HamburgerMenu";
-import AvatarButton from "./AvatarButton";
-import { useSelector, useDispatch } from "react-redux";
+import { isAuth } from "../apis/userAPIs";
+import Big4Logo from "../assets/Big4Logo.svg";
 import { getCarts, getTotalProductsInCart } from "./../reducers/cartSlice";
+import AvatarButton from "./AvatarButton";
+import HamburgerMenuButton from "./HamburgerMenu";
 
 export default function Navbar(props) {
   const [profile, setProfile] = useState(null);
@@ -17,7 +17,7 @@ export default function Navbar(props) {
   useEffect(() => {
     isAuth(navigate).then((data) => setProfile(data));
     dispatch(getCarts());
-  }, []);
+  }, [dispatch, navigate]);
 
   return (
     <>
@@ -53,7 +53,7 @@ export default function Navbar(props) {
                 <Link to={"/user/cart"}>
                   <div className="relative">
                     <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
-                    <p className="absolute -top-2 -right-2 md:-right-2 text-white text-xs font-medium bg-red-600 rounded-full py-0.5 px-1 border border-white">
+                    <p className="absolute -top-2 -right-2 md:-right-2 text-white text-xs font-medium bg-red-600 rounded-full py-0.5 px-1 border border-white dark:border-gray-900">
                       {totalProductsInCart}
                     </p>
                   </div>
