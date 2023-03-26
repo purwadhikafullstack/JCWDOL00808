@@ -16,6 +16,18 @@ export const getCarts = createAsyncThunk("cart/getCarts", async () => {
   return response?.data?.data;
 });
 
+export const addProduct = createAsyncThunk(
+  "cart/addProduct",
+  async ({ products_id, quantity }) => {
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/cart`,
+      { products_id, quantity },
+      { headers: { Authorization: token } }
+    );
+    return response?.data?.data;
+  }
+);
+
 export const updateCarts = createAsyncThunk(
   "cart/updateCarts",
   async ({ id, quantity }) => {
@@ -28,17 +40,28 @@ export const updateCarts = createAsyncThunk(
   }
 );
 
-export const deleteCarts = createAsyncThunk(
-  "carts/deleteCarts",
-  async ({ id }) => {
-    const response = await axios.delete(
-      `${process.env.REACT_APP_API_BASE_URL}/cart`,
-      id,
-      { headers: { Authorization: token } }
-    );
-    return response?.data?.data;
+export const deleteProduct = createAsyncThunk(
+  "carts/deleteProduct",
+  async (id) => {
+    await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/cart/${id}`, {
+      headers: { Authorization: token },
+    });
+    return id;
   }
 );
+
+export const getTotalProductsInCart = (state) => {
+  const cartItems = cartSelector.selectAll(state);
+  return cartItems.reduce((total, cartItem) => total + cartItem.quantity, 0);
+};
+
+export const getTotalPriceInCart = (state) => {
+  const cartItems = cartSelector.selectAll(state);
+  return cartItems.reduce(
+    (total, cartItem) => total + cartItem.quantity * cartItem.product.price,
+    0
+  );
+};
 
 const cartEntity = createEntityAdapter({ selectId: (cart) => cart.id });
 
@@ -49,6 +72,14 @@ const cartSlice = createSlice({
     [getCarts.fulfilled]: (state, action) => {
       cartEntity.setAll(state, action.payload);
     },
+    [addProduct.fulfilled]: (state, action) => {
+      action.payload.forEach((cartItem) => {
+        cartEntity.updateOne(state, {
+          id: cartItem.id,
+          changes: cartItem,
+        });
+      });
+    },
     [updateCarts.fulfilled]: (state, action) => {
       action.payload.forEach((cartItem) => {
         cartEntity.updateOne(state, {
@@ -57,7 +88,7 @@ const cartSlice = createSlice({
         });
       });
     },
-    [deleteCarts.fulfilled]: (state, action) => {
+    [deleteProduct.fulfilled]: (state, action) => {
       cartEntity.removeOne(state, action.payload);
     },
   },

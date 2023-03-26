@@ -1,10 +1,11 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { Sequelize } = require("../../models");
 
 // Import models
 const db = require("../../models/index");
 const carts = db.carts;
 const products = db.products;
+const stocks = db.stocks;
 
 module.exports = {
   getCartData: async (req, res) => {
@@ -17,8 +18,30 @@ module.exports = {
         include: [
           {
             model: products,
+            include: [
+              {
+                model: stocks,
+                attributes: [],
+                required: true,
+              },
+            ],
+            //Add total stock from all the warehouse
+            attributes: {
+              include: [
+                [
+                  Sequelize.literal(`(
+                    SELECT SUM(stock)
+                    FROM stocks
+                    WHERE
+                      stocks.products_id = carts.products_id
+                  )`),
+                  "totalStock",
+                ],
+              ],
+            },
           },
         ],
+
         // include: [
         //   {
         //     model: products,
@@ -56,15 +79,24 @@ module.exports = {
       });
     }
   },
-  updateCartData: async (req, res) => {
+  addProduct: async (req, res) => {
     try {
       const users_id = req.dataDecode.id;
-      const { id, quantity } = req.body;
+      const { products_id, quantity } = req.body;
 
-      if (quantity <= 0) {
-        await carts.destroy({ where: { users_id, id } });
+      const findProduct = await carts.findOne({
+        where: { users_id, products_id },
+      });
+
+      if (findProduct) {
+        await carts.update(
+          {
+            quantity: Sequelize.literal(`quantity + ${quantity}`),
+          },
+          { where: { id: findProduct.dataValues.id } }
+        );
       } else {
-        await carts.update({ quantity }, { where: { users_id, id } });
+        await carts.create({ quantity, users_id, products_id });
       }
 
       const cartsData = await carts.findAll({
@@ -72,6 +104,77 @@ module.exports = {
         include: [
           {
             model: products,
+            include: [
+              {
+                model: stocks,
+                attributes: [],
+                required: true,
+              },
+            ],
+            //Add total stock from all the warehouse
+            attributes: {
+              include: [
+                [
+                  Sequelize.literal(`(
+                    SELECT SUM(stock)
+                    FROM stocks
+                    WHERE
+                      stocks.products_id = carts.products_id
+                  )`),
+                  "totalStock",
+                ],
+              ],
+            },
+          },
+        ],
+      });
+
+      res.status(201).send({
+        isError: false,
+        message: "Add product success",
+        data: cartsData,
+      });
+    } catch (error) {
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+  updateCartData: async (req, res) => {
+    try {
+      const users_id = req.dataDecode.id;
+      const { id, quantity } = req.body;
+
+      await carts.update({ quantity }, { where: { users_id, id } });
+
+      const cartsData = await carts.findAll({
+        where: { users_id },
+        include: [
+          {
+            model: products,
+            include: [
+              {
+                model: stocks,
+                attributes: [],
+                required: true,
+              },
+            ],
+            //Add total stock from all the warehouse
+            attributes: {
+              include: [
+                [
+                  Sequelize.literal(`(
+                    SELECT SUM(stock)
+                    FROM stocks
+                    WHERE
+                      stocks.products_id = carts.products_id
+                  )`),
+                  "totalStock",
+                ],
+              ],
+            },
           },
         ],
       });
@@ -92,14 +195,23 @@ module.exports = {
   deleteCartData: async (req, res) => {
     try {
       const users_id = req.dataDecode.id;
-      const { id } = req.body;
+      const { id } = req.params;
 
       await carts.destroy({ where: { users_id, id } });
+
+      const cartsData = await carts.findAll({
+        where: { users_id },
+        include: [
+          {
+            model: products,
+          },
+        ],
+      });
 
       res.status(200).send({
         isError: false,
         message: "Product deleted",
-        data: null,
+        data: cartsData,
       });
     } catch (error) {
       res.status(404).send({
