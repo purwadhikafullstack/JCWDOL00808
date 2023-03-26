@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
+import { API_url } from "../../helper";
+import { useNavigate } from "react-router-dom"
 
 const ManageAdmin = () => {
   const [users, setUsers] = useState([]);
@@ -68,6 +70,8 @@ const ManageAdmin = () => {
     setOrder(e.target.value);
     setPage(0);
   };
+
+  const navigate = useNavigate()
 
   return (
     <div class="container mx-auto mt-5">
@@ -143,6 +147,7 @@ const ManageAdmin = () => {
                       <Link to={`/admin/patch-admin/${user.id}`}>
                         <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Edit</button>
                       </Link>
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  onClick={() => navigate(`/admin/assign/${user.id}`)}>Assign</button>
                       <button
                         class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                         onClick={() => {

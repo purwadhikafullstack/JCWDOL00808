@@ -51,8 +51,6 @@ const AddWarehouse = (props) => {
       });
   };
 
-  const getDistrictData = () => {}
-
   const buttonAddWarehouse = () => {
     // alert(province + city)
     Axios.post(API_url + `/warehouses/addWarehouse`, {

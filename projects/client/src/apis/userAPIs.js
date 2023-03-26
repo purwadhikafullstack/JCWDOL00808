@@ -18,6 +18,7 @@ export const loginUser = async (email, password) => {
         password: password,
       }
     );
+    window.location.reload()
     toast(response.data.message);
     // toastChakra({
     //     title: response?.data?.message,

@@ -10,45 +10,11 @@ const { Op } = require("sequelize");
 module.exports = {
   getAllWarehouse: async (req, res) => {
     try {
-      const search = req.query.search_query || "";
-      const sort = req.query.sort || "id"; //default sorting by id
-      const order = req.query.order || "DESC"; //default order DESC
-
-      const { count: totalRows, rows: result } = await WarehousesModel.findAndCountAll({
-        where: {
-          [Op.or]: [
-            {
-              name: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              province: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              city: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-          ],
-        },
-        order: [[sort, order]], // add order clause with the sort and order parameters
-      });
-
-      const totalPage = Math.ceil(totalRows / result.length);
-
-      res.json({
-        result: result,
-        totalRows: totalRows,
-        totalPage: totalPage,
-      });
-      
-      console.log("req.query: ", req.query);
+      let data = await WarehousesModel.findAll()
+      return res.status(200).send(data)
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Something is wrong." });
+      console.log(error);
+      return res.status(500).send(error)
     }
   },
   getProvinceData: async (req, res) => {
@@ -82,14 +48,6 @@ module.exports = {
       res.status(200).send(data);
     });
   },
-  getDistrictData: async (req, res) => {
-    try {
-      let data = await JSON.parse(fs.readFileSync("../districts.json"));
-      console.log("masuk");
-    } catch (error) {
-      console.log(error);
-    }
-  },
   getWarehouseData: async (req, res) => {
     try {
       console.log(req.query.page);
@@ -97,9 +55,34 @@ module.exports = {
       const limit = 5;
       const offset = limit * page;
 
+      const sort = req.query.sort || "id";
+      const order = req.query.order || "ASC"
+      const keyword = req.query.keyword || ""
+
       let WarehouseData = await WarehousesModel.findAndCountAll({
         limit,
         offset,
+        order: [[sort, order]],
+        where: {
+          [Op.or]: [
+            { name: {
+              [Op.like]: "%" + keyword + "%"
+            }
+          },
+            { address: {
+              [Op.like]: "%" + keyword + "%"
+            }
+          },
+            { city: {
+              [Op.like]: "%" + keyword + "%"
+            }
+          },
+            { province: {
+              [Op.like]: "%" + keyword + "%"
+            }
+          },
+          ]
+        }
       });
       res.status(200).send({ ...WarehouseData, totalPage: Math.ceil(WarehouseData.count / limit) });
     } catch (error) {
@@ -125,7 +108,10 @@ module.exports = {
     try {
       console.log("req.body update warehouse:", req.body);
       const { id, name, address, province, city, district } = req.body;
-      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district }, { where: { id: req.body.id } });
+      let response = await geocode({ q: `${address}, ${district}, ${province}, ${city}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2" });
+      let { lat, lng } = response.results[0].geometry;
+
+      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district, latitude: lat, longitude: lng }, { where: { id: req.body.id } });
 
       res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
@@ -152,22 +138,19 @@ module.exports = {
       });
     }
   },
-  assignAdmin: async (req, res) => {
+  getWarehouseDetails: async (req, res) => {
     try {
-      console.log("req.body: ", req.body);
-      let update = await WarehousesModel.update(
-        {
-          admins_id: req.body.admins_id,
-        },
-        { where: { id: req.body.id } }
-      );
-      return res.status(200).send({
-        success: true,
-        message: "Admin has been assigned!",
+      const { id } = req.params;
+      let data = await WarehousesModel.findOne({ where: { id } });
+      console.log("data details: ", data);
+
+      res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: "Get warehouse details error",
       });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send(err);
     }
   },
 };
