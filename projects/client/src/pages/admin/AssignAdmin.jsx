@@ -1,11 +1,11 @@
-import { Text, Input, InputGroup, Button, InputRightElement, Select } from "@chakra-ui/react";
+import { Text, Input, InputGroup, Button, InputRightElement, Select, useToast } from "@chakra-ui/react";
 import { Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup, MenuOptionGroup, MenuDivider } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import Axios from "axios";
 import React, { useState } from "react";
 import { API_url } from "../../helper";
 import { useEffect } from "react";
-import {useParams} from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom";
 
 const AssignAdmin = (props) => {
   // nampung hasil get data warehouse
@@ -15,7 +15,9 @@ const AssignAdmin = (props) => {
   // nampung pilihan admin
   const [warehouse, setWarehouse] = useState("");
 
-  const {id} = useParams();
+  const { id } = useParams();
+  const toast = useToast();
+  const navigate = useNavigate();
 
   const getWarehouseData = () => {
     Axios.get(API_url + `/warehouses/getAllWarehouse`)
@@ -36,11 +38,24 @@ const AssignAdmin = (props) => {
       id: warehouse,
     })
       .then((response) => {
-        console.log("cek:", response.data);
-        alert(response.data.message);
+        console.log(response.data);
+        toast({
+          title: "Admin assigned!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          onCloseComplete: () => navigate("/admin/manageadmin", { replace: true }),
+        });
       })
       .catch((err) => {
         console.log(err);
+        toast({
+          title: `Error`,
+          status: "warning",
+          duration: 9000,
+          isClosable: true,
+          onCloseComplete: () => navigate("/admin/manageadmin", { replace: true }),
+        });
       });
   };
 

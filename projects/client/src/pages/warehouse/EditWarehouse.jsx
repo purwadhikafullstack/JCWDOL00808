@@ -63,7 +63,6 @@ const EditWarehouse = (props) => {
     })
       .then((response) => {
         console.log(response.data);
-        // alert(response.data.message);
         toast({
           title: `${response.data.message}`,
           status: "success",
