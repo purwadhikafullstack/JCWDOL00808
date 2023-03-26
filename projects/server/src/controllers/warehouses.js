@@ -55,9 +55,34 @@ module.exports = {
       const limit = 5;
       const offset = limit * page;
 
+      const sort = req.query.sort || "id";
+      const order = req.query.order || "ASC"
+      const keyword = req.query.keyword || ""
+
       let WarehouseData = await WarehousesModel.findAndCountAll({
         limit,
         offset,
+        order: [[sort, order]],
+        where: {
+          [Op.or]: [
+            { name: {
+              [Op.like]: "%" + keyword + "%"
+            }
+          },
+            { address: {
+              [Op.like]: "%" + keyword + "%"
+            }
+          },
+            { city: {
+              [Op.like]: "%" + keyword + "%"
+            }
+          },
+            { province: {
+              [Op.like]: "%" + keyword + "%"
+            }
+          },
+          ]
+        }
       });
       res.status(200).send({ ...WarehouseData, totalPage: Math.ceil(WarehouseData.count / limit) });
     } catch (error) {
@@ -113,29 +138,10 @@ module.exports = {
       });
     }
   },
-  assignAdmin: async (req, res) => {
-    try {
-      console.log("req.body: ", req.body);
-      let update = await WarehousesModel.update(
-        {
-          admins_id: req.body.admins_id,
-        },
-        { where: { id: req.body.id } }
-      );
-      return res.status(200).send({
-        success: true,
-        message: "Admin has been assigned!",
-      });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send(err);
-    }
-  },
   getWarehouseDetails: async (req, res) => {
     try {
       const { id } = req.params;
       let data = await WarehousesModel.findOne({ where: { id } });
-      // let details = data[0].dataValues;
       console.log("data details: ", data);
 
       res.status(200).send(data);
