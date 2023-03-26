@@ -1,13 +1,16 @@
 import Big4Logo from "../assets/Big4Logo.svg";
-import { Link, useNavigate } from "react-router-dom";
 import { isAuth } from "../apis/userAPIs";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaShoppingCart, FaSearch } from "react-icons/fa";
 import HamburgerMenuButton from "./HamburgerMenu";
 import AvatarButton from "./AvatarButton";
+import { useSelector } from "react-redux";
+import { getTotalProductsInCart } from "./../reducers/cartSlice";
 
 export default function Navbar(props) {
-  const [profile, setProfile] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const totalProductsInCart = useSelector(getTotalProductsInCart);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +48,14 @@ export default function Navbar(props) {
             </div>
             {profile ? (
               <div className="grid grid-cols-2 gap-1 place-items-center">
-                <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                <Link to={"/user/cart"}>
+                  <div className="relative">
+                    <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                    <p className="absolute -top-2 -right-2 md:-right-2 dark:text-white text-xs bg-red-600 rounded-full p-0.5">
+                      {totalProductsInCart}
+                    </p>
+                  </div>
+                </Link>
                 <AvatarButton profile={profile} />
               </div>
             ) : (
@@ -88,14 +98,16 @@ export default function Navbar(props) {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/user/login"
-                  className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Login
-                </Link>
-              </li>
+              {profile ? null : (
+                <li>
+                  <Link
+                    to="/user/login"
+                    className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  >
+                    Login
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>
