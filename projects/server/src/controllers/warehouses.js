@@ -138,24 +138,6 @@ module.exports = {
       });
     }
   },
-  assignAdmin: async (req, res) => {
-    try {
-      console.log("req.body: ", req.body);
-      let update = await WarehousesModel.update(
-        {
-          admins_id: req.body.admins_id,
-        },
-        { where: { id: req.body.id } }
-      );
-      return res.status(200).send({
-        success: true,
-        message: "Admin has been assigned!",
-      });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send(err);
-    }
-  },
   getWarehouseDetails: async (req, res) => {
     try {
       const { id } = req.params;

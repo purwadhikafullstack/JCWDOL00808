@@ -67,10 +67,7 @@ const WarehouseList = (props) => {
   const [search, setSearch] = useState("");
   const [keyword, setKeyword] = useState("");
 
-  // buat ngirimin nilai page ke backend
   const [page, setPage] = useState(0);
-
-  // buat nerima dari backend
   const [totalPage, setTotalPage] = useState(0);
 
   const getWarehouseData = () => {
@@ -101,9 +98,7 @@ const WarehouseList = (props) => {
       .catch((err) => console.log(err));
   };
 
-  // const WarehouseRow = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  // }
 
   const handleDetailsClick = () => {
     setIsDetailsOpen(true);
@@ -159,12 +154,6 @@ const WarehouseList = (props) => {
               colorScheme="teal"
               className="mr-2"
               onClick={() => navigate(`/warehouse/details/${value.id}`)}
-              // onClick={showDetails}
-              // onClick={() => {
-              //   handleDetailsClick();
-              // setWarehouseId(value.id);
-              // showDetails();
-              // }}
             >
               Details
             </Button>
@@ -236,19 +225,6 @@ const WarehouseList = (props) => {
               <Radio value="updatedAt" onChange={(element) => setSort(element.target.value)}>
                 Date added
               </Radio>
-              {/* <Menu>
-                {({ isOpen }) => (
-                  <>
-                    <MenuButton isActive={isOpen} as={Button} rightIcon={<ChevronDownIcon />}>
-                      {isOpen ? "A/Z" : "A/Z"}
-                    </MenuButton>
-                    <MenuList>
-                      <MenuItem value="ASC" onClick={(element) => setOrder(element.target.value)}>Ascending (A-Z)</MenuItem>
-                      <MenuItem value="DESC" onClick={(element) => setOrder(element.target.value)}>Descending (Z-A)</MenuItem>
-                    </MenuList>
-                  </>
-                )}
-              </Menu> */}
               <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
                 <option value="ASC">Ascending</option>
                 <option value="DESC">Descending</option>
