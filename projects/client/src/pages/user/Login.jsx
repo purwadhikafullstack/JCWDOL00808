@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { loginUser } from "../../apis/userAPIs";
 import { useNavigate } from "react-router";
 // import { useUserContext } from "../hooks/useUserContext";
@@ -26,6 +26,11 @@ const Login = () => {
   };
 
   const navigate = useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div className="flex justify-start items-center flex-col h-screen">

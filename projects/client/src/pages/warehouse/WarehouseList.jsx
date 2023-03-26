@@ -1,110 +1,281 @@
-// import { Avatar, Image, Container, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Button, ButtonGroup } from "@chakra-ui/react";
-// import Axios from "axios";
-// import { useDispatch, useSelector } from "react-redux"
-// import { getWarehousesAction } from "../../actions/warehousesAction";
-// import { API_url } from "../../helper";
-// import { useEffect } from "react";
-// // import warehouses from "../../../../server/src/controllers/warehouses";
+import {
+  Avatar,
+  Image,
+  Container,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+  Button,
+  ButtonGroup,
+  useToast,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Input,
+  Radio,
+  RadioGroup,
+  HStack,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Select,
+} from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
+import Axios from "axios";
+import { API_url } from "../../helper";
+import { useEffect, useState, useRef } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 
-// const WarehouseList = (props) => {
-//     const dispatch = useDispatch();
+const WarehouseList = (props) => {
+  const toast = useToast();
+  const cancelRef = React.useRef();
+  const navigate = useNavigate();
 
-//   const { id, name, address, province, city } = useSelector((state) => {
-//     return {
-//       id: state.warehousesReducer.id,
-//       name: state.warehousesReducer.name,
-//       address: state.warehousesReducer.address,
-//       province: state.warehousesReducer.province,
-//       city: state.warehousesReducer.city
-//     }
-//   })
+  const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
+  const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
 
-//   const getWarehouseData = () => {
-//     Axios.get(API_url + `/warehouses/getWarehousesData`)
-//     .then((response) => {
-//         console.log("response.data:", response.data);
-//         dispatch(getWarehousesAction(response.data))
-//     })
-//     .catch((err) => {
-//         console.log(err);
-//     })
-//   }
+  const [warehouseData, setWarehouseData] = useState([]);
+  const [warehouseId, setWarehouseId] = useState();
 
-//   useEffect(() => {
-//     getWarehouseData();
-//   }, []);
+  const [sort, setSort] = useState("id");
+  const [order, setOrder] = useState("ASC");
+  const [search, setSearch] = useState("");
+  const [keyword, setKeyword] = useState("");
 
-//   const detailsButton = () => {};
-//   const editButton = () => {};
-//   const deleteButton = () => {};
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
 
-//   return (
-//     <>
-//       <TableContainer className="mt-5">
-//         <Table size="sm">
-//           <Thead>
-//             <Tr>
-//               <Th>id</Th>
-//               <Th>Warehouse Name</Th>
-//               <Th>Address</Th>
-//               <Th>Province</Th>
-//               <Th>City</Th>
-//               <Th></Th>
-//               {/* <Th>Latitude</Th> */}
-//               {/* <Th>Longitude</Th> */}
-//             </Tr>
-//           </Thead>
-//           <Tbody>
-//             {warehouses.map((warehouse) => (
+  const getWarehouseData = () => {
+    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
+      .then((response) => {
+        console.log(response.data);
+        setTotalPage(response.data.totalPage);
+        setWarehouseData(response.data.rows);
+      })
+      .catch((err) => console.log(err));
+  };
 
-//             <Tr key={warehouse.id}>
-//               <Td>{warehouse.id}</Td>
-//               <Td>{warehouse.name}</Td>
-//               <Td>{warehouse.address}</Td>
-//               <Td>{warehouse.province}</Td>
-//               <Td>{warehouse.city}</Td>
-//               <Td isNumeric>
-//                 <Button colorScheme="teal" className="mr-2" onClick={detailsButton}>
-//                   Details
-//                 </Button>
-//                 <Button colorScheme="blue" className="mr-2" onClick={editButton}>
-//                   Edit
-//                 </Button>
-//                 <Button colorScheme="red" onClick={deleteButton}>Delete</Button>
-//               </Td>
-//             </Tr>
-//             ))}
-//             <Tr>
-//               <Td>{id}</Td>
-//               <Td>{name}</Td>
-//               <Td>{address}</Td>
-//               <Td>{province}</Td>
-//               <Td>{city}</Td>
-//               <Td isNumeric>
-//                 <Button colorScheme="teal" className="mr-2">
-//                   Details
-//                 </Button>
-//                 <Button colorScheme="blue" className="mr-2">
-//                   Edit
-//                 </Button>
-//                 <Button colorScheme="red">Delete</Button>
-//               </Td>
-//             </Tr>
-//           </Tbody>
-//           {/* <Tfoot>
-//             <Tr>
-//               <Th>To convert</Th>
-//               <Th>into</Th>
-//               <Th isNumeric>multiply by</Th>
-//             </Tr>
-//           </Tfoot> */}
-//         </Table>
-//       </TableContainer>
-//       <Button colorScheme="orange" className="mt-5">
-//         Add new warehouse
-//       </Button>
-//     </>
-//   );
-// };
+  useEffect(() => {
+    getWarehouseData();
+  }, [page, sort, order, keyword]);
 
-// export default WarehouseList;
+  const deleteButton = (value) => {
+    Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${value}`)
+      .then((response) => {
+        toast({
+          title: `${response.data.message}`,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          onCloseComplete: () => window.location.reload(false),
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  const handleDetailsClick = () => {
+    setIsDetailsOpen(true);
+    // onModalOpen()
+    // showDetails()
+    // alert("warehouseId: ", warehouseId)
+  };
+  const handleDetailsClose = () => {
+    setIsDetailsOpen(false);
+  };
+
+  const showDetails = (warehouseId) => {
+    alert("siap show details: ", warehouseId);
+    // return (
+    //   <>
+    //     {/* <Button onClick={onOpen}>Open Modal</Button> */}
+
+    //     <Modal isOpen={isModalOpen} onClose={onModalClose}>
+    //       <ModalOverlay />
+    //       <ModalContent>
+    //         <ModalHeader>{element.name}</ModalHeader>
+    //         <ModalCloseButton />
+    //         <ModalBody>
+    //           <Text>{element.address} {element.province} {element.city}</Text>
+    //         </ModalBody>
+
+    //         <ModalFooter>
+    //           <Button colorScheme="blue" mr={3} onClick={onModalClose}>
+    //             Close
+    //           </Button>
+    //           <Button variant="ghost">Stock History</Button>
+    //         </ModalFooter>
+    //       </ModalContent>
+    //     </Modal>
+    //   </>
+    // );
+    // navigate(`/warehouse/details/${value.id}`, { replace: true });
+  };
+
+  const showWarehouseData = () => {
+    let count = 0;
+    return warehouseData.map((value) => {
+      count++;
+      return (
+        <Tr key={value.id}>
+          <Td>{count}</Td>
+          <Td>{value.name}</Td>
+          <Td>{value.address}</Td>
+          <Td>{value.province}</Td>
+          <Td>{value.city}</Td>
+          <Td isNumeric>
+            <Button
+              colorScheme="teal"
+              className="mr-2"
+              onClick={() => navigate(`/warehouse/details/${value.id}`)}
+            >
+              Details
+            </Button>
+            <Button colorScheme="blue" className="mr-2" onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
+              Edit
+            </Button>
+            <>
+              <Button colorScheme="red" onClick={onAlertOpen}>
+                Delete
+              </Button>
+
+              <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
+                <AlertDialogOverlay>
+                  <AlertDialogContent>
+                    <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                      Delete Warehouse
+                    </AlertDialogHeader>
+
+                    <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
+
+                    <AlertDialogFooter>
+                      <Button ref={cancelRef} onClick={onAlertClose}>
+                        Cancel
+                      </Button>
+                      <Button colorScheme="red" onClick={() => deleteButton(value.id)} ml={3}>
+                        Delete
+                      </Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialogOverlay>
+              </AlertDialog>
+            </>
+          </Td>
+        </Tr>
+      );
+    });
+  };
+
+  const handlePageClick = (data) => {
+    setPage(data.selected);
+  };
+
+  const handleSearchButton = () => {
+    setPage(0)
+    setKeyword(search)
+  }
+
+  return (
+    <>
+      <Container className="my-5" maxW={600}>
+        <FormControl>
+          <FormLabel>Search</FormLabel>
+          <Input placeholder="type warehouse name, city, or province..." className="mb-5" onChange={(element) => setSearch(element.target.value)} />
+          <Button onClick={handleSearchButton}>Search</Button>
+        </FormControl>
+        <FormControl>
+          <FormLabel>Sort data by:</FormLabel>
+          <RadioGroup>
+            <HStack spacing="24px">
+              <Radio value="name" onChange={(element) => setSort(element.target.value)}>
+                Name
+              </Radio>
+              <Radio value="province" onChange={(element) => setSort(element.target.value)}>
+                Province
+              </Radio>
+              <Radio value="city" onChange={(element) => setSort(element.target.value)}>
+                City
+              </Radio>
+              <Radio value="updatedAt" onChange={(element) => setSort(element.target.value)}>
+                Date added
+              </Radio>
+              <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
+                <option value="ASC">Ascending</option>
+                <option value="DESC">Descending</option>
+              </Select>
+            </HStack>
+          </RadioGroup>
+        </FormControl>
+      </Container>
+      <TableContainer className="mt-5">
+        <Table size="sm">
+          <Thead>
+            <Tr>
+              <Th>No.</Th>
+              <Th>Warehouse Name</Th>
+              <Th>Address</Th>
+              <Th>Province</Th>
+              <Th>City</Th>
+              <Th isNumeric className="mr-5">
+                Action
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>{showWarehouseData()}</Tbody>
+        </Table>
+      </TableContainer>
+      <div className="mt-5">
+        <ReactPaginate
+          previousLabel={"previous"}
+          nextLabel={"next"}
+          breakLabel={"..."}
+          pageCount={totalPage}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={2}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination justify-content-center"}
+          pageClassName={"page-item"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-item"}
+          previousLinkClassName={"page-link"}
+          nextClassName={"page-item"}
+          nextLinkClassName={"page-link"}
+          breakClassName={"page-item"}
+          breakLinkClassName={"page-link"}
+          activeClassName={"active"}
+        />
+      </div>
+      <Button colorScheme="orange" className="mt-5" onClick={() => navigate(`/warehouse/add`)}>
+        Add new warehouse
+      </Button>
+    </>
+  );
+};
+
+export default WarehouseList;

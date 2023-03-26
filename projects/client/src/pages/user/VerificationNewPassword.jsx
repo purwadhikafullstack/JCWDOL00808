@@ -80,9 +80,12 @@ export default function VerificationNewPassword() {
     }
   };
 
-  // useEffect(() => {
-  //   isVerifiedNewPassword();
-  // });
+  useEffect(() => {
+    // isVerifiedNewPassword();
+    if (!email && !token) {
+      navigate("/");
+    }
+  });
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
