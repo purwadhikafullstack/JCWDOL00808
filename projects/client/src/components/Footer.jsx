@@ -1,12 +1,12 @@
-import Big4Logo from "../assets/Big4Logo.svg";
 import {
   FaFacebook,
   FaInstagram,
-  FaTwitter,
   FaTiktok,
+  FaTwitter,
   FaYoutube,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Big4Logo from "../assets/Big4Logo.svg";
 
 export default function Footer() {
   const isLoggedIn = () => {

@@ -1,16 +1,16 @@
 import {
   AlertDialog,
   AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
-  AlertDialogCloseButton,
-  useDisclosure,
   Button,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { FaRegTrashAlt } from "react-icons/fa";
 import React from "react";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 export default function DeleteProductAlert(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();

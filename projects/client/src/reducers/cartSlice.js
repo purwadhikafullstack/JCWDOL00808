@@ -1,7 +1,7 @@
 import {
-  createSlice,
   createAsyncThunk,
   createEntityAdapter,
+  createSlice,
 } from "@reduxjs/toolkit";
 import axios from "axios";
 const token = localStorage.getItem("token");

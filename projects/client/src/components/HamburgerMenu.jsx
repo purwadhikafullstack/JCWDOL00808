@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../apis/userAPIs";
 
 function HamburgerMenuButton(props) {
