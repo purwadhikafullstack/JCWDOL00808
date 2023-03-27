@@ -8,9 +8,9 @@ const { stockMutation } = require("../controllers");
 const { validateRequestStock } = require("../middleware/validator");
 
 //import verify Token
-const {verifyRoleAdmin, verifyToken} = require("../middleware/verifyToken")
+const { verifyRoleAdmin, verifyToken } = require("../middleware/verifyToken");
 
-Router.post("/request-stock", verifyRoleAdmin, validateRequestStock, stockMutation.requestStock);
-Router.patch("/confirm-mutation/:id", verifyToken, stockMutation.confirmRequest);
+Router.post("/request-stock", validateRequestStock, stockMutation.requestStock);
+Router.patch("/confirm-mutation/:id", stockMutation.confirmRequest);
 
 module.exports = Router;

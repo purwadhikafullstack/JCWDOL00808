@@ -70,7 +70,7 @@ module.exports = {
         fromStock.stock -= stockMutation.quantity;
         await fromStock.save({ transaction: t });
 
-        const toStock = await stocks.findOrCreate({
+        const [toStock, created] = await stocks.findOrCreate({
           where: {
             warehouses_id: stockMutation.to_warehouse_id,
             products_id: stockMutation.products_id,
@@ -89,6 +89,7 @@ module.exports = {
             stock_after: fromStock.stock,
             products_id: stockMutation.products_id,
             warehouses_id: stockMutation.from_warehouse_id,
+            description: "Stock Mutation",
           },
           { transaction: t }
         );
@@ -100,6 +101,7 @@ module.exports = {
             stock_after: toStock.stock,
             products_id: stockMutation.products_id,
             warehouses_id: stockMutation.to_warehouse_id,
+            description: "Stock Mutation",
           },
           { transaction: t }
         );
@@ -116,6 +118,7 @@ module.exports = {
         stockMutation.approvedAt = new Date();
 
         await stockMutation.save({ transaction: t });
+        await t.commit();
 
         res.status(200).json({ message: "Stock request rejected", stockMutation });
       } else {

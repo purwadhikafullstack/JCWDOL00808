@@ -32,6 +32,7 @@ import Cart from "./pages/user/Cart";
 import UserAddress from "./pages/user/UserAddress";
 import EditUserAddress from "./pages/user/EditUserAddress";
 import AddUserAddress from "./pages/user/AddUserAddress";
+import StockMutations from "./pages/warehouse/manageMutation";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
         <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
         <Route path="/warehouse/history" element={<StockHistory />} />
+        <Route path="/warehouse/requeststockmutation" element={<StockMutations />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
         <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
         <Route path="/admin/manageproducts" element={<ManageProducts />} />

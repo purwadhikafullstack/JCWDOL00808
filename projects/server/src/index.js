@@ -72,11 +72,7 @@ app.use(express.json());
 
 //Import router for controller from index.js inside routers folder
 
-<<<<<<< HEAD
-const { usersRouter, authRouter, adminsRouter, warehousesRouter, adminRouter, productsRouter, productRouter, productCategoryRouter, stockMutationRouter } = require("./routers"); //refer to index.js in routers folder
-=======
-const { usersRouter, authRouter, adminsRouter, warehousesRouter, adminRouter, productsRouter, productRouter, productCategoryRouter, addressesRouter } = require("./routers"); //refer to index.js in routers folder
->>>>>>> 00ab9e576dd2302492825ae8f0f45fc6fca97149
+const { usersRouter, authRouter, adminsRouter, warehousesRouter, adminRouter, productsRouter, productRouter, productCategoryRouter, addressesRouter, stockMutationRouter } = require("./routers"); //refer to index.js in routers folder
 
 app.use("/user", usersRouter);
 app.use("/auth", authRouter);
@@ -86,11 +82,8 @@ app.use("/admin", adminRouter);
 app.use("/products", productsRouter);
 app.use("/product", productRouter);
 app.use("/productcategory", productCategoryRouter);
-<<<<<<< HEAD
 app.use("/mutations", stockMutationRouter);
-=======
 app.use("/address", addressesRouter);
->>>>>>> 00ab9e576dd2302492825ae8f0f45fc6fca97149
 
 app.use(express.static("."));
 
