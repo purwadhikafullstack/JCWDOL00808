@@ -1,8 +1,9 @@
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,
-  FormLabel,
   FormErrorMessage,
+  FormLabel,
   Heading,
   Input,
   InputGroup,
@@ -10,13 +11,12 @@ import {
   Stack,
   useToast,
 } from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import ChangePasswordConfirmation from "./ChangePasswordConfirmation";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import axios from "axios";
+import { useFormik } from "formik";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import ChangePasswordConfirmation from "./ChangePasswordConfirmation";
 
 export default function ChangePassword(props) {
   const [showOldPassword, setShowOldPassword] = useState(false);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 
 export default function CategoryCard(props) {

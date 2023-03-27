@@ -1,5 +1,7 @@
 const db = require("../../models/index");
 const WarehousesModel = db.warehouses;
+const stocks = db.stocks;
+const stock_histories = db.stock_histories
 const request = require("request");
 
 // 1. import library geocode
@@ -162,4 +164,98 @@ module.exports = {
       });
     }
   },
+  addWarehouseProduct: async (req, res) => {
+    const t = await sequelize.transaction();
+
+    try {
+      const { stock, products_id, warehouses_id } = req.body
+
+      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id}, {transaction: t })
+      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "New Product added to warehouse"});
+      t.commit();
+
+      res.status(201).send({
+        isError: false,
+        message: "Product added to warehouse.",
+        data: addedProductToWarehouse,
+      });
+
+    } catch (error) {
+      t.rollback();
+      res.status(409).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+      
+    }
+  },
+  getWarehouseProduct: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const data = await stocks.findAll({ where: { warehouses_id: id } });
+      res.status(200).send(data);
+    } catch (error) {
+      res.status(500).send({
+        success: false,
+        message: "Get warehouse product error",
+      });
+    }
+  },
+  updateWarehouseProduct: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      const { id } = req.params;
+      const { stock, products_id, warehouses_id } = req.body;
+      // const updatedWarehouseProduct = await stocks.update({ stock, products_id, warehouses_id }, { where: { id }, transaction: t });
+      // const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "Stock updated."});
+      t.commit();
+
+      res.status(200).send({
+        isError: false,
+        message: "Warehouse product updated.",
+        data: updatedWarehouseProduct,
+      });
+    } catch (error) {
+      t.rollback();
+      res.status(409).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+  deleteWarehouseProduct: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deletedWarehouseProduct = await stocks.findAll({ where: { id } });
+      await stocks.destroy({ where: { id } });
+      res.status(200).send({
+        success: true,
+        message: `Warehouse product ${deletedWarehouseProduct[0].name} has been deleted!`,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Something is wrong.",
+      });
+    }
+  },
+  getWarehouseProductById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      let data = await stocks.findOne({ where: { id } });
+      console.log("data details: ", data);
+
+      res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: "Get warehouse product details error",
+      });
+    }
+  },
+
 };

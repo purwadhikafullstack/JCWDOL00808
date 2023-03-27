@@ -1,23 +1,28 @@
-import Big4Logo from "../assets/Big4Logo.svg";
+import { useEffect, useState } from "react";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { isAuth } from "../apis/userAPIs";
-import { useState, useEffect } from "react";
-import { FaShoppingCart, FaSearch } from "react-icons/fa";
-import HamburgerMenuButton from "./HamburgerMenu";
+import Big4Logo from "../assets/Big4Logo.svg";
+import { getCarts, getTotalProductsInCart } from "./../reducers/cartSlice";
 import AvatarButton from "./AvatarButton";
+import HamburgerMenuButton from "./HamburgerMenu";
 
 export default function Navbar(props) {
-  const [profile, setProfile] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const totalProductsInCart = useSelector(getTotalProductsInCart);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     isAuth(navigate).then((data) => setProfile(data));
-  }, []);
+    dispatch(getCarts());
+  }, [dispatch, navigate]);
 
   return (
     <>
       <nav
-        className="bg-white mb-1 px-2 sm:px-4 py-2.5 dark:bg-gray-900 w-full border-b border-gray-200 dark:border-gray-600" /* fixed z-20 top-0 left-0 */
+        className="bg-gray-300 mb-1 px-2 sm:px-4 py-2.5 dark:bg-gray-900 w-full border-b border-gray-200 dark:border-gray-600" /* fixed z-20 top-0 left-0 */
       >
         <div className="container flex flex-wrap items-center justify-between mx-auto">
           <Link to="/" className="flex items-center">
@@ -45,7 +50,14 @@ export default function Navbar(props) {
             </div>
             {profile ? (
               <div className="grid grid-cols-2 gap-1 place-items-center">
-                <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                <Link to={"/user/cart"}>
+                  <div className="relative">
+                    <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                    <p className="absolute -top-2 -right-2 md:-right-2 text-white text-xs font-medium bg-red-600 rounded-full py-0.5 px-1 border border-white dark:border-gray-900">
+                      {totalProductsInCart}
+                    </p>
+                  </div>
+                </Link>
                 <AvatarButton profile={profile} />
               </div>
             ) : (
@@ -62,7 +74,7 @@ export default function Navbar(props) {
             <HamburgerMenuButton profile={profile} />
           </div>
           <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
-            <ul className="flex flex-col p-1 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <ul className="flex flex-col p-1 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
               <li>
                 <Link
                   to="/"
@@ -88,14 +100,16 @@ export default function Navbar(props) {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/user/login"
-                  className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Login
-                </Link>
-              </li>
+              {profile ? null : (
+                <li>
+                  <Link
+                    to="/user/login"
+                    className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  >
+                    Login
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

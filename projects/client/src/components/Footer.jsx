@@ -1,16 +1,22 @@
-import Big4Logo from "../assets/Big4Logo.svg";
 import {
   FaFacebook,
   FaInstagram,
-  FaTwitter,
   FaTiktok,
+  FaTwitter,
   FaYoutube,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Big4Logo from "../assets/Big4Logo.svg";
 
 export default function Footer() {
+  const isLoggedIn = () => {
+    if (localStorage.getItem("token")) {
+      return true;
+    } else return false;
+  };
+
   return (
-    <footer className="p-4 bg-white sm:p-6 dark:bg-gray-900">
+    <footer className="p-4 bg-gray-300 sm:p-6 dark:bg-gray-900">
       <div className="md:flex md:justify-between">
         <div className="mb-6 md:mb-0">
           <Link to="/" className="flex items-center">
@@ -38,9 +44,15 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="mb-4">
-                <Link to="/user/login" className="hover:underline">
-                  Login as user
-                </Link>
+                {isLoggedIn() ? (
+                  <Link to="/user/profile" className="hover:underline">
+                    Edit profile
+                  </Link>
+                ) : (
+                  <Link to="/user/login" className="hover:underline">
+                    Login as user
+                  </Link>
+                )}
               </li>
               <li>
                 <Link to="/admin/login" className="hover:underline">
