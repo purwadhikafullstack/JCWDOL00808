@@ -1,4 +1,4 @@
-import { CircularProgress, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { addProduct } from "../reducers/cartSlice";
@@ -24,10 +24,22 @@ export const ProductCard = (props) => {
     });
   };
 
-  if (!props) {
+  if (products.length === 0) {
     return (
-      <div classNameName="my-8">
-        <CircularProgress isIndeterminate color="blue" />
+      <div className="flex flex-col col-span-4 justify-center items-center my-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          Product Not Found
+        </h1>
+        <p className="text-gray-700 text-lg mb-8">
+          We're sorry, the product you're looking for cannot be found. Please
+          check your keyword or try again later.
+        </p>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          onClick={() => props.func("")}
+        >
+          Go Back
+        </button>
       </div>
     );
   }

@@ -18,7 +18,8 @@ import ScrollToTopButton from "../components/ScrollToTopButton";
 export default function Home() {
   const [profile, setProfile] = useState(null);
   const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState("");
+  const queryParams = new URLSearchParams(window.location.search);
+  const search = queryParams.get("search");
   const [category, setCategory] = useState();
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -28,11 +29,6 @@ export default function Home() {
   const [limit] = useState(12);
   const [offset, setOffset] = useState(0);
   const navigate = useNavigate();
-
-  const getSearch = (keyword) => {
-    setSearch(keyword);
-    setOffset(0);
-  };
 
   const getCategory = (category_id) => {
     setCategory(category_id);
@@ -70,7 +66,7 @@ export default function Home() {
 
   return (
     <div className="container flex flex-col justify-between">
-      <Navbar func={getSearch} />
+      <Navbar />
       <div className="p-2 md:p-4" /*mt-16 */>
         <Carousel
           wrapAround={true}
@@ -149,7 +145,11 @@ export default function Home() {
         </div>
 
         <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4">
-          <ProductCard profile={profile} products={products} />
+          <ProductCard
+            profile={profile}
+            products={products}
+            func={getCategory}
+          />
           <div className="grid md:col-span-4 col-span-2 place-items-center">
             <ReactPaginate
               previousLabel={"<"}
