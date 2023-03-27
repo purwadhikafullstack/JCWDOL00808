@@ -3,6 +3,8 @@ const WarehousesModel = db.warehouses;
 const stocks = db.stocks;
 const stock_histories = db.stock_histories
 const request = require("request");
+
+// 1. import library geocode
 const { geocode } = require("opencage-api-client");
 const fs = require("fs");
 
@@ -94,11 +96,18 @@ module.exports = {
   },
   addWarehouse: async (req, res) => {
     try {
+      // 2. destructure object request body
       let { name, address, province, city, district } = req.body;
+
+      // 3. q wajib ada buat ngirimin nilai address, district, province, city
+      // fungsi geocode tuh ngolah parameter yang dikasih (bisa alamat, kode negara, API key)
       let response = await geocode({ q: `${address}, ${district}, ${province}, ${city}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2" });
-      console.log(response);
+      console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
+
+      // 4. destructure response dari geocode
       let { lat, lng } = response.results[0].geometry;
 
+      // 5. gunakan latitude & longitude sesuai kebutuhan
       let createNewWarehouse = await WarehousesModel.create({ name, address, province, city, district, latitude: lat, longitude: lng });
 
       res.status(200).send({ success: true, message: "New warehouse data added", dataAPI: response.results[0].geometry });
