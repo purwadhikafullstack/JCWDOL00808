@@ -18,9 +18,6 @@ export default function Cart() {
   const dispatch = useDispatch();
   const carts = useSelector(cartSelector.selectAll);
   const subtotal = useSelector(getTotalPriceInCart);
-  //Dummy shipping cost
-  const [shippingCost] = useState(15000);
-  const total = subtotal + shippingCost;
 
   const navigate = useNavigate();
 
@@ -158,16 +155,16 @@ export default function Cart() {
                   })}
                 </p>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <p className="text-gray-700">Shipping</p>
                 <p className="text-gray-700">Rp 15.000,00</p>
-              </div>
+              </div> */}
               <hr className="my-4" />
               <div className="flex justify-between">
-                <p className="text-lg font-bold">Total</p>
+                <p className="text-lg font-bold">Subtotal</p>
                 <div className="">
                   <p className="mb-1 text-lg font-bold">
-                    {total.toLocaleString("id-ID", {
+                    {subtotal.toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
                     })}
