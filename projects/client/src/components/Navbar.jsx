@@ -8,9 +8,11 @@ import { getCarts, getTotalProductsInCart } from "./../reducers/cartSlice";
 import AvatarButton from "./AvatarButton";
 import HamburgerMenuButton from "./HamburgerMenu";
 
-export default function Navbar(props) {
+export default function Navbar() {
   const [profile, setProfile] = useState(null);
   const totalProductsInCart = useSelector(getTotalProductsInCart);
+  const queryParams = new URLSearchParams(window.location.search);
+  const search = queryParams.get("search");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -38,9 +40,13 @@ export default function Navbar(props) {
                 <FaSearch className="w-5 h-5 text-gray-500" />
               </div>
               <input
+                defaultValue={search}
+                onBlur={(event) => {
+                  navigate(`/?search=${event.target.value}`);
+                }}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
-                    props.func(event.target.value);
+                    navigate(`/?search=${event.target.value}`);
                   }
                 }}
                 type="search"

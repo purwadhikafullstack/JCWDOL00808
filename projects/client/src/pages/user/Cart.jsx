@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { isAuth } from "../../apis/userAPIs";
 import DeleteProductAlert from "../../components/DeleteProductAlert";
 import Footer from "../../components/Footer";
@@ -11,6 +11,7 @@ import {
   deleteProduct,
   getCarts,
   getTotalPriceInCart,
+  getTotalProductsInCart,
   updateCarts,
 } from "../../reducers/cartSlice";
 
@@ -18,6 +19,7 @@ export default function Cart() {
   const dispatch = useDispatch();
   const carts = useSelector(cartSelector.selectAll);
   const subtotal = useSelector(getTotalPriceInCart);
+  const totalProductsInCart = useSelector(getTotalProductsInCart);
 
   const navigate = useNavigate();
 
@@ -83,7 +85,7 @@ export default function Cart() {
                                   })
                                 )
                               }
-                              className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
+                              className="cursor-pointer font-bold rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
                             >
                               {" "}
                               -{" "}
@@ -118,7 +120,7 @@ export default function Cart() {
                                 })
                               )
                             }
-                            className="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 enabled:hover:text-blue-50 disabled:text-gray-100 disabled:bg-gray-100"
+                            className="cursor-pointer font-bold rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 enabled:hover:text-blue-50 disabled:text-gray-100 disabled:bg-gray-100"
                           >
                             {" "}
                             +{" "}
@@ -145,9 +147,11 @@ export default function Cart() {
                 );
               })}
             </div>
-            <div className="sticky top-[7.4rem] mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3">
+            <div className="sticky top-[5.7rem] mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3">
               <div className="mb-2 flex justify-between">
-                <p className="text-gray-700">Subtotal</p>
+                <p className="text-gray-700">
+                  Subtotal ({totalProductsInCart} items)
+                </p>
                 <p className="text-gray-700">
                   {subtotal.toLocaleString("id-ID", {
                     style: "currency",
@@ -155,10 +159,6 @@ export default function Cart() {
                   })}
                 </p>
               </div>
-              {/* <div className="flex justify-between">
-                <p className="text-gray-700">Shipping</p>
-                <p className="text-gray-700">Rp 15.000,00</p>
-              </div> */}
               <hr className="my-4" />
               <div className="flex justify-between">
                 <p className="text-lg font-bold">Subtotal</p>
@@ -171,9 +171,11 @@ export default function Cart() {
                   </p>
                 </div>
               </div>
-              <button className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
-                Check out
-              </button>
+              <Link to="/user/checkout">
+                <button className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
+                  Check out
+                </button>
+              </Link>
             </div>
           </div>
         </div>
