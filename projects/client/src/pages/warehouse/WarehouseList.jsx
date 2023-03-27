@@ -150,6 +150,9 @@ const WarehouseList = (props) => {
           <Td>{value.province}</Td>
           <Td>{value.city}</Td>
           <Td isNumeric>
+          <Button colorScheme="yellow" className="mr-2" onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
+              Stock
+            </Button>
             <Button
               colorScheme="teal"
               className="mr-2"

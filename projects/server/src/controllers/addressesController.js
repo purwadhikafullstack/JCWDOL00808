@@ -42,22 +42,20 @@ module.exports = {
         const removePrimary = await user_addresses.update({is_primary: 0}, { where: { users_id: id } }, { transaction: t })
         const createNewAddress = await user_addresses.create({ address, province: province.split(",")[1], city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
         t.commit();
-        navigate("/user/address");
       res.status(201).send({
         isError: false,
         message: "Address created.",
         data: createNewAddress,
-        dataAPI: response.results[0].geometry
+        dataAPI: response?.results[0]?.geometry
       });
       } else {
       const createNewAddress = await user_addresses.create({ address, province: province.split(",")[1], city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { transaction: t })
       t.commit();
-      navigate("/user/address");
       res.status(201).send({
         isError: false,
         message: "Address created.",
         data: createNewAddress,
-        dataAPI: response.results[0].geometry
+        dataAPI: response?.results[0]?.geometry
       });
       }
 
@@ -144,7 +142,7 @@ module.exports = {
       let { address, province, city, district, postal_code, recipient, phone_number, is_primary } = req.body
 
       let response = await geocode({ q: `${address}, ${district}, ${city}, ${province}`, countrycode: 'id', limit: 1, key: process.env.API_KEY })
-      let { lat, lng } = response.results[0].geometry
+      let { lat, lng } = response?.results[0]?.geometry
 
       // let updateAdress = await user_addresses.update({ address, province, city, district, postal_code, recipient, phone_number,latitude: lat, longitude: lng, is_primary }, { where: { id } }, { transaction: t })
 
@@ -156,7 +154,7 @@ module.exports = {
         isError: false,
         message: "Address updated.",
         data: updateAddress,
-        dataAPI: response.results[0].geometry
+        dataAPI: response?.results[0]?.geometry
       });
       } else {
       const updateAddress = await user_addresses.update({ address, province: province.split(",")[1], city, district, postal_code, recipient, phone_number, is_primary, latitude: lat, longitude: lng, users_id: id }, { where: { id: idAddress.id } }, { transaction: t })
@@ -166,7 +164,7 @@ module.exports = {
         isError: false,
         message: "Address updated.",
         data: updateAddress,
-        dataAPI: response.results[0].geometry
+        dataAPI: response?.results[0]?.geometry
       });
       }
 
