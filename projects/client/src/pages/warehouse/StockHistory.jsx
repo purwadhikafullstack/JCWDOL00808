@@ -66,7 +66,7 @@ const StockHistory = () => {
 
   return (
     <>
-      <Flex minWidth="max-content" alignItems="center" gap="2">
+      <Flex minWidth="max-content" alignItems="center" gap="10" paddingX={250} paddingY={100}>
         <Card>
           <CardHeader>
             <Heading size="md" textTransform="uppercase">
@@ -77,7 +77,7 @@ const StockHistory = () => {
           <CardBody>
             <Stack divider={<StackDivider />} spacing="4">
               <Box>
-                <Text pt="2" fontSize="md">
+                <Text fontSize="md">
                   View a history of your products over the last month.
                 </Text>
 
