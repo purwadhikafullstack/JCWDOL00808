@@ -25,6 +25,11 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
+  NumberInput, 
+  NumberInputField, 
+  NumberInputStepper, 
+  NumberIncrementStepper, 
+  NumberDecrementStepper
 } from "@chakra-ui/react";
 
 import { EditIcon, DeleteIcon, CloseIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
@@ -154,7 +159,12 @@ const WarehouseStock = () => {
             <ModalBody>
               <FormControl>
                 <FormLabel>Total Stock</FormLabel>
-                <Input type="number" placeholder="Enter new stock amount" />
+                <NumberInput placeholder="Enter new stock amount" />
+                  <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
               </FormControl>
             </ModalBody>
             <ModalFooter>
