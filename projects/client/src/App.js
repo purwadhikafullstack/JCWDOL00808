@@ -32,7 +32,8 @@ import Cart from "./pages/user/Cart";
 import UserAddress from "./pages/user/UserAddress";
 import EditUserAddress from "./pages/user/EditUserAddress";
 import AddUserAddress from "./pages/user/AddUserAddress";
-import StockMutations from "./pages/warehouse/manageMutation";
+import StockMutations from "./pages/warehouse/RequestMutation";
+import StockRequestList from "./pages/warehouse/GetRequestMutation"
 
 function App() {
   return (
@@ -56,29 +57,21 @@ function App() {
         <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
         <Route path="/warehouse/history" element={<StockHistory />} />
         <Route path="/warehouse/requeststockmutation" element={<StockMutations />} />
+        <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
         <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
         <Route path="/admin/manageproducts" element={<ManageProducts />} />
         <Route path="/admin/addProducts" element={<ProductForm />} />
         <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
-        <Route
-          path="/admin/managecategory"
-          element={<ManageCategoryProducts />}
-        />
+        <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
         <Route path="/admin/addcategory" element={<AddCategoryProduct />} />
-        <Route
-          path="/admin/patch-category/:id"
-          element={<PatchCategoryProduct />}
-        />
+        <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
         <Route path="/user/address" element={<UserAddress />} />
         <Route path="/user/add-address" element={<AddUserAddress />} />
         <Route path="/user/address/:id" element={<EditUserAddress />} />
 
-        <Route
-          path="/product-details/:productId"
-          element={<ProductDetails />}
-        />
+        <Route path="/product-details/:productId" element={<ProductDetails />} />
         <Route path="/user/cart" element={<Cart />} />
 
         {/* Fallback route */}

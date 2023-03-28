@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
-const admins = require("../controllers/admins");
+const { sequelize } = require("../../models");
+const db = require("../../models/index");
+const admins = db.admins;
 require("dotenv").config();
 
 const verifyToken = (req, res, next) => {

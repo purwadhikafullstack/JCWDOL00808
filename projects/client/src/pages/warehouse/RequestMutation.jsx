@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import AddAdminConfirmation from "../../components/AddAdminConfirmation";
 import { useNavigate } from "react-router-dom";
+const token = localStorage.getItem("token");
 
 const validationSchema = Yup.object().shape({
   from_warehouse_id: Yup.number().min(1, "please select warehouse").required("Warehouse Name is required"),
@@ -34,7 +35,7 @@ const StockMutations = () => {
       try {
         await axios.post("http://localhost:8000/mutations/request-stock", values, {
           headers: {
-            "Content-Type": "application/json",
+            Authorization: token,
           },
         });
         setIsSubmitting(false);
@@ -49,11 +50,12 @@ const StockMutations = () => {
       } catch (error) {
         setIsSubmitting(false);
         toast({
-          title: `${error.message}`,
+          title: `${error.response.data.message}`,
           status: "error",
           duration: 9000,
           isClosable: true,
         });
+        console.log(error);
       }
     },
   });

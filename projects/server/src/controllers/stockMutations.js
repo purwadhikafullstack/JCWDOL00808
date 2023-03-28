@@ -6,6 +6,8 @@ const db = require("../../models/index");
 const stocks = db.stocks;
 const stock_mutations = db.stock_mutations;
 const stock_histories = db.stock_histories;
+const warehouses = db.warehouses;
+const products = db.products;
 
 module.exports = {
   requestStock: async (req, res) => {
@@ -127,6 +129,70 @@ module.exports = {
     } catch (error) {
       await t.rollback();
       res.status(500).json({ message: "Server error", error });
+    }
+  },
+
+  // getStockRequest: async (req, res) => {
+  //   try {
+  //     const adminId = req.dataDecode.id; // ambil id dari verifiyToken
+
+  //     // Dapatkan warehouse yang diatur untuk user saat ini sebagai admin
+  //     const adminWarehouse = await warehouses.findOne({
+  //       where: { admin_id: adminId },
+  //     });
+
+  //     if (!adminWarehouse) {
+  //       return res.status(404).json({ message: "Warehouse not found for the current admin" });
+  //     }
+
+  //     // Dapatkan permintaan stok yang ditujukan untuk warehouse ini
+  //     const stockRequests = await stock_mutations.findAll({
+  //       where: { to_warehouse_id: userWarehouse.id },
+  //     });
+
+  //     return res.status(200).json({ stockRequests });
+  //   } catch (error) {
+  //     console.error(error);
+  //     return res.status(500).json({ message: "Server error", error });
+  //   }
+  // },
+
+  getStockRequest: async (req, res) => {
+    try {
+      //get id from token login
+      const id = req.dataDecode.id;
+
+      // to find warehouse according admin place at warehouse
+      const warehouse = await warehouses.findOne({ where: { admins_id: id } });
+
+      const warehouse_id = warehouse.id;
+
+      const stockRequests = await stock_mutations.findAll({
+        where: {
+          from_warehouse_id: warehouse_id,
+        },
+        include: [
+          {
+            model: warehouses,
+            as: "from_warehouse",
+            attributes: ["name"],
+          },
+          {
+            model: warehouses,
+            as: "to_warehouse",
+            attributes: ["name"],
+          },
+          {
+            model: products,
+            attributes: ["name"],
+          },
+        ],
+      });
+
+      res.status(200).json(stockRequests);
+    } catch (error) {
+      console.error("Error getting stock mutation requests:", error);
+      res.status(500).json({ message: "Server error" });
     }
   },
 };
