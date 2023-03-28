@@ -25,18 +25,19 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
-  NumberInput, 
-  NumberInputField, 
-  NumberInputStepper, 
-  NumberIncrementStepper, 
-  NumberDecrementStepper
+  useToast,
+  NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
 } from "@chakra-ui/react";
 
 import { EditIcon, DeleteIcon, CloseIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+
+import axios from "axios";
 
 const WarehouseStock = () => {
   const [searchTerm, setSearchTerm] = useState("");
+
+  const toast = useToast();
 
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -45,13 +46,14 @@ const WarehouseStock = () => {
   const { isOpen: isDeleteProductOpen, onOpen: onDeleteProductOpen, onClose: onDeleteProductClose } = useDisclosure();
 
   const [addressToDelete, setAddressToDelete] = React.useState(null);
+  const [updatedStock, setUpdatedStock] = useState();
+
+  const { id } = useParams();
 
   // Fetch products from the server (replace the URL with your API endpoint)
   useEffect(() => {
-    // fetch("https://api.example.com/products")
-    //   .then((response) => response.json())
-    //   .then((data) => setProducts(data));
-  }, []);
+    fetchProducts();
+}, [searchTerm]);
 
 //   const handleDeleteProduct = (id) => {
   const handleDeleteProduct = () => {
@@ -77,6 +79,21 @@ const WarehouseStock = () => {
     setSelectedProduct();
     onEditStockOpen();
   };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/warehouses/get-warehouse-product/${id}?search_query=${searchTerm}`)
+      console.log(response);
+      setProducts(response?.data?.data)
+    } catch (error) {
+      toast({
+        title: "Error fetching addresses.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
 
   return (
     <>
@@ -114,12 +131,13 @@ const WarehouseStock = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {/* {products.map((product) => (
-            <Tr key={product.id}>
-              <Td>{product.product_name}</Td>
-              <Td>{product.product_categories}</Td>
-              <Td>{product.total_stock}</Td>
-              <Td>{product.warehouse_id}</Td>
+          {products.map((product) => {
+            return(
+            <Tr key={product?.id}>
+              <Td>{product?.product.name}</Td>
+              <Td>{product?.product.product_category.name}</Td>
+              <Td>{product?.stock}</Td>
+              <Td>{product?.warehouse.name}</Td>
               <Td>
                 <Button onClick={() => handleEditStock(product.id)}>
                   Edit Stock
@@ -129,23 +147,8 @@ const WarehouseStock = () => {
                 </Button>
               </Td>
             </Tr>
-          ))} */}
-          <Tr >
-              <Td>Celana Jeans</Td>
-              <Td>Celana</Td>
-              <Td>10</Td>
-              <Td>Warehouse Bandung</Td>
-              <Td isNumeric>
-                {/* <Button onClick={() => handleEditStock(product.id)}> */}
-                <Button onClick={() => handleEditStock()}>
-                  Edit Stock
-                </Button>
-                {/* <Button onClick={() => handleDeleteProduct(product.id)}> */}
-                <Button onClick={() => handleDeleteProduct()}>
-                  Delete
-                </Button>
-              </Td>
-            </Tr>
+          )})}
+          
         </Tbody>
       </Table>
     </Box>
@@ -157,16 +160,21 @@ const WarehouseStock = () => {
             <ModalHeader>Update Stock for Celana</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <FormControl>
-                <FormLabel>Total Stock</FormLabel>
-                <NumberInput placeholder="Enter new stock amount" />
-                  <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-              </FormControl>
-            </ModalBody>
+          <FormControl>
+            <FormLabel>Total Stock</FormLabel>
+            <NumberInput
+              min={0}
+              value={updatedStock}
+              onChange={(value) => setUpdatedStock(value)}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </FormControl>
+        </ModalBody>
             <ModalFooter>
               <Button colorScheme="blue" mr={3} onClick={handleUpdateStock}>
                 Update Stock

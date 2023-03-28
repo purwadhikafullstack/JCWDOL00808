@@ -5,7 +5,8 @@ const stock_histories = db.stock_histories
 const request = require("request");
 const { geocode } = require("opencage-api-client");
 const fs = require("fs");
-
+const products = db.products;
+const product_categories = db.product_categories;
 const { sequelize } = require("../../models");
 const { Op } = require("sequelize");
 
@@ -159,10 +160,11 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      const { stock, products_id, warehouses_id } = req.body
+      const { warehouse_id } = req.params;
+      const { stock, products_id, } = req.body
 
-      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id}, {transaction: t })
-      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "New Product added to warehouse"});
+      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id: warehouse_id.id}, {transaction: t })
+      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id: warehouse_id.id, description: "New Product added to warehouse"});
       t.commit();
 
       res.status(201).send({
@@ -183,9 +185,77 @@ module.exports = {
   },
   getWarehouseProduct: async (req, res) => {
     try {
+      const search = req.query.search_query || "";
       const { id } = req.params;
-      const data = await stocks.findAll({ where: { warehouses_id: id } });
-      res.status(200).send(data);
+      // const data = await stocks.findAll({ where: { 
+      //   warehouses_id: id,
+      //  [Op.or]: [
+      //   { stock: {
+      //     [Op.like]: "%" + search + "%"
+      //   },
+      // },
+      //   { products_id: {
+      //     [Op.like]: "%" + search + "%"
+      //   },
+      // },
+      //  ]},
+      // include: [
+      //   {
+      //     model: products,
+      //     attributes: ["name"],
+      //   },
+      //   {
+      //     model: warehouses,
+      //     attributes: ["name"],
+      //   },
+      //   {
+      //     model: products,
+      //     attributes: ["category_id"],
+      //   },
+      // ],
+      //  });
+
+      const data = await stocks.findAll({
+        where: {
+          warehouses_id: id,
+          [Op.or]: [
+            { '$warehouse.name$': {
+                  [Op.like]: "%" + search + "%"
+                }, 
+            },
+            { '$product.name$':{
+              [Op.like]: "%" + search + "%"
+            },
+          },
+            { '$product.product_category.name$': {
+              [Op.like]: "%" + search + "%"
+            }, 
+          },
+          ]
+        },
+        include: [
+          {
+            model: products,
+            attributes: ['name'],
+            include: [
+              {
+                model: product_categories,
+                attributes: ['name'],
+                as: 'product_category'
+              },
+            ],
+          },
+          {
+            model: WarehousesModel,
+            attributes: ['name'],
+            as: 'warehouse'
+          },
+        ],
+      });
+      console.log(data)
+      res.status(200).json({
+        data: data
+      });
     } catch (error) {
       res.status(500).send({
         success: false,
