@@ -196,33 +196,6 @@ module.exports = {
     try {
       const search = req.query.search_query || "";
       const { id } = req.params;
-      // const data = await stocks.findAll({ where: { 
-      //   warehouses_id: id,
-      //  [Op.or]: [
-      //   { stock: {
-      //     [Op.like]: "%" + search + "%"
-      //   },
-      // },
-      //   { products_id: {
-      //     [Op.like]: "%" + search + "%"
-      //   },
-      // },
-      //  ]},
-      // include: [
-      //   {
-      //     model: products,
-      //     attributes: ["name"],
-      //   },
-      //   {
-      //     model: warehouses,
-      //     attributes: ["name"],
-      //   },
-      //   {
-      //     model: products,
-      //     attributes: ["category_id"],
-      //   },
-      // ],
-      //  });
 
       const data = await stocks.findAll({
         where: {

@@ -10,11 +10,13 @@ import {
   Button,
   Box,
   HStack,
+  VStack,
   IconButton,
   Heading,
   Input,
   Text,
   Tooltip,
+  FormErrorMessage,
   useDisclosure,
   Modal,
   ModalOverlay,
@@ -33,9 +35,12 @@ import { EditIcon, DeleteIcon, CloseIcon, SearchIcon, AddIcon } from "@chakra-ui
 import { Link, useParams } from "react-router-dom";
 
 import axios from "axios";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const WarehouseStock = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [warehouseName, setWarehouseName] = useState("");
 
   const toast = useToast();
 
@@ -43,6 +48,7 @@ const WarehouseStock = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const { isOpen: isEditStockOpen, onOpen: onEditStockOpen, onClose: onEditStockClose } = useDisclosure();
+  const { isOpen: isAddStockOpen, onOpen: onAddStockOpen, onClose: onAddStockClose } = useDisclosure();
   const { isOpen: isDeleteProductOpen, onOpen: onDeleteProductOpen, onClose: onDeleteProductClose } = useDisclosure();
 
   const [addressToDelete, setAddressToDelete] = React.useState(null);
@@ -53,6 +59,7 @@ const WarehouseStock = () => {
   // Fetch products from the server (replace the URL with your API endpoint)
   useEffect(() => {
     fetchProducts();
+    getSpecificWarehouse()
 }, [searchTerm]);
 
 //   const handleDeleteProduct = (id) => {
@@ -80,10 +87,26 @@ const WarehouseStock = () => {
     onEditStockOpen();
   };
 
+  const handleAddStock = () => {
+    // const product = products.find((p) => p.id === id);
+    // setSelectedProduct(product);
+    setSelectedProduct();
+    onAddStockOpen();
+  };
+
+  const getSpecificWarehouse = () => {
+    axios.get(`http://localhost:8000/warehouses/getWarehouseDetails/${id}`)
+      .then((response) => {
+        setWarehouseName(response.data.name);
+        
+      })
+      .catch((error) => console.log(error));
+  };
+
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/warehouses/get-warehouse-product/${id}?search_query=${searchTerm}`)
-
+      // setWarehouseName(response?.[0].warehouse?.name)
       setProducts(response?.data?.data)
     } catch (error) {
       toast({
@@ -95,6 +118,20 @@ const WarehouseStock = () => {
     }
   }
 
+  const formik = useFormik({
+    initialValues: {
+      stock: "",
+      products_id: "",
+      
+    },
+    validationSchema: Yup.object({
+      stock: Yup.number().required("Required"),
+      products_id: Yup.string().required("Required"),
+      
+    }),
+    onSubmit: handleAddStock,
+  });
+
   return (
     <>
     <Box width="100%" overflowX="auto">
@@ -104,7 +141,7 @@ const WarehouseStock = () => {
       </Link>
     </HStack>
     <Heading >Stock List</Heading>
-    <Text fontSize="xl" mb={10}> Warehouse Bandung</Text>
+    <Text fontSize="xl" mb={10}> {warehouseName}</Text>
     <HStack mb={4} mt={2} mr={4} justify="center">
           <Input
             type="text"
@@ -114,11 +151,11 @@ const WarehouseStock = () => {
             maxW="200px"
           />
           {/* <IconButton icon={<SearchIcon />} aria-label="Search" colorScheme="blue" /> */}
-          <Link to={`/warehouse/stock/${1}/add-product`}>
+          
           <Tooltip hasArrow label='Add Product to Warehouse'>
-            <IconButton icon={<AddIcon />} aria-label="Add Address" colorScheme="blue" />
+            <IconButton icon={<AddIcon />} aria-label="Add Address" colorScheme="blue" onClick={() => handleAddStock()}/>
           </Tooltip>
-          </Link>
+          
         </HStack>
       <Table variant="striped" colorScheme="twitter">
         <Thead>
@@ -126,7 +163,7 @@ const WarehouseStock = () => {
             <Th>Product Name</Th>
             <Th>Product Categories</Th>
             <Th>Total Stock</Th>
-            <Th>Warehouse ID</Th>
+            <Th>Warehouse Name</Th>
             <Th isNumeric>Actions</Th>
           </Tr>
         </Thead>
@@ -138,8 +175,8 @@ const WarehouseStock = () => {
               <Td>{product?.product.product_category.name}</Td>
               <Td>{product?.stock}</Td>
               <Td>{product?.warehouse.name}</Td>
-              <Td>
-                <Button onClick={() => handleEditStock(product.id)}>
+              <Td isNumeric>
+                <Button onClick={() => handleEditStock(product.id)} mr={2}>
                   Edit Stock
                 </Button>
                 <Button onClick={() => handleDeleteProduct(product.id)}>
@@ -152,6 +189,54 @@ const WarehouseStock = () => {
         </Tbody>
       </Table>
     </Box>
+
+    <Modal isOpen={isAddStockOpen} onClose={onAddStockClose}>
+          <ModalOverlay />
+          <ModalContent>
+            {/* <ModalHeader>Update Stock for {selectedProduct.product_name}</ModalHeader> */}
+            <ModalHeader>Add Stock</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+            <form onSubmit={formik.handleSubmit}>
+            <VStack spacing={4} mt={4} mx="auto" maxW="480px">
+              <FormControl isInvalid={formik.errors.address && formik.touched.address}>
+              <FormLabel htmlFor="address">Product</FormLabel>
+              <Input
+                id="products_id"
+                name="products_id"
+                type="text"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.products_id}
+                />
+                  <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
+              </FormControl>
+              
+          <FormControl>
+            <FormLabel>Total Stock</FormLabel>
+            <NumberInput
+              min={0}
+              value={updatedStock}
+              onChange={(value) => setUpdatedStock(value)}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </FormControl>
+          </VStack>
+              </form>
+        </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} onClick={handleUpdateStock}>
+                Add Stock
+              </Button>
+              <Button onClick={onAddStockClose}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
     
         <Modal isOpen={isEditStockOpen} onClose={onEditStockClose}>
           <ModalOverlay />
