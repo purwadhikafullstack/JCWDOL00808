@@ -83,7 +83,7 @@ const WarehouseStock = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/warehouses/get-warehouse-product/${id}?search_query=${searchTerm}`)
-      console.log(response);
+
       setProducts(response?.data?.data)
     } catch (error) {
       toast({

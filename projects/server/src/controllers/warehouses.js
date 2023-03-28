@@ -261,7 +261,7 @@ module.exports = {
           },
         ],
       });
-      console.log(data)
+      
       res.status(200).json({
         data: data
       });
@@ -316,7 +316,7 @@ module.exports = {
     try {
       const { id } = req.params;
       let data = await stocks.findOne({ where: { id } });
-      console.log("data details: ", data);
+      // console.log("data details: ", data);
 
       res.status(200).send(data);
     } catch (error) {
