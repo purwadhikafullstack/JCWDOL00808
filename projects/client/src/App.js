@@ -32,8 +32,7 @@ import Cart from "./pages/user/Cart";
 import UserAddress from "./pages/user/UserAddress";
 import EditUserAddress from "./pages/user/EditUserAddress";
 import AddUserAddress from "./pages/user/AddUserAddress";
-import StockMutations from "./pages/warehouse/RequestMutation";
-import StockRequestList from "./pages/warehouse/GetRequestMutation"
+import StockRequestList from "./pages/warehouse/GetRequestMutation";
 import ManageMutations from "./pages/warehouse/manageMutations";
 
 function App() {
@@ -57,7 +56,6 @@ function App() {
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
         <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
         <Route path="/warehouse/history" element={<StockHistory />} />
-        <Route path="/warehouse/requeststockmutation" element={<StockMutations />} />
         <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
         <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />

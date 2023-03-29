@@ -7,7 +7,7 @@ export default function AddAdminConfirmation(props) {
 
   return (
     <>
-      <Button type="button" colorScheme="purple" onClick={onOpen}>
+      <Button type="button" colorScheme="teal" onClick={onOpen}>
         Submit
       </Button>
 
@@ -25,7 +25,7 @@ export default function AddAdminConfirmation(props) {
                 Cancel
               </Button>
               <Button
-                colorScheme="purple"
+                colorScheme="teal"
                 onClick={() => {
                   props.onSave();
                   onClose();

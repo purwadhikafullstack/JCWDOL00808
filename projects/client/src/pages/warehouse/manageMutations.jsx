@@ -5,17 +5,20 @@ import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import RequestMutationModal from "../../components/RequestMutationModal";
 
 function ManageMutations() {
   const [mutation, setMutation] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [pages, setPages] = useState(0);
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("id");
+  const [sort, setSort] = useState("quantity");
+  const [sortText, setSortText] = useState("quantity");
   const [order, setOrder] = useState("DESC");
   const toast = useToast();
   const token = localStorage.getItem("token");
@@ -25,20 +28,16 @@ function ManageMutations() {
   }, [page, keyword, sort, order]);
 
   const getListMutations = async () => {
-    const response = await axios.get(`http://localhost:8000/mutations/getAllRequestMutation`, {
+    const response = await axios.get(`http://localhost:8000/mutations/getAllRequestMutation?search_query=${keyword}&page=${page}&limit=${limit}`, {
       params: {
-        search_query: keyword,
-        page: page,
-        limit: limit,
-        sort: sort,
-        order: order,
+        sort,
+        order,
       },
     });
     setMutation(response.data.result);
     setPage(response.data.page);
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
-    console.log(response.data.result);
   };
 
   const handleStatusUpdate = async (id, status) => {
@@ -56,6 +55,14 @@ function ManageMutations() {
     }
   };
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   const changePage = ({ selected }) => {
     setPage(selected);
   };
@@ -69,17 +76,29 @@ function ManageMutations() {
   const handleSort = (value) => {
     setSort(value);
     setPage(0);
+    // add switch case to convert value to readable text
+    switch (value) {
+      case "product_id":
+        setSortText("Product");
+        break;
+      case "quantity":
+        setSortText("Quantity");
+        break;
+      case "from_warehouse_id":
+        setSortText("From Warehouse");
+        break;
+      case "to_warehouse_id":
+        setSortText("To Warehouse");
+        break;
+      default:
+        setSortText(value);
+    }
   };
 
   const handleOrder = (value) => {
     setOrder(value);
     setPage(0);
   };
-
-  // membuat role admin warehouse hanya bisa read data saja
-  const role = localStorage.getItem("role");
-  const isButtonDisabled = role === "2";
-  const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
     <div style={{ margin: "auto", width: "70%" }}>
@@ -102,7 +121,7 @@ function ManageMutations() {
         <Text fontWeight="bold">Sort by:</Text>
         <Menu>
           <MenuButton ml={2} variant="ghost">
-            {sort}
+            {sortText}
           </MenuButton>
           <MenuList>
             <MenuItem value={sort} onClick={() => handleSort("product_id")}>
@@ -136,13 +155,11 @@ function ManageMutations() {
             </MenuItem>
           </MenuList>
         </Menu>
-        <Button colorScheme={buttonColorScheme} size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />}>
-          <Link to={isButtonDisabled ? "#" : "/admin/addproducts"} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
-            <Flex alignItems="center">
-              <Text mr={2}>Add Product</Text>
-            </Flex>
-          </Link>
+
+        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<FaPlus />} onClick={handleOpenModal}>
+          Request Stock Mutation
         </Button>
+        <RequestMutationModal isOpen={isModalOpen} onClose={handleCloseModal} />
       </Flex>
 
       {/* fitur table */}
@@ -173,7 +190,7 @@ function ManageMutations() {
               <Td>
                 <Box display="flex">
                   {mutation.mutation_type === "Pending" && (
-                    <div>
+                    <div key={mutation.id}>
                       <Select placeholder="Select status" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
                         <option value="ACCEPT">Accept</option>
                         <option value="REJECT">Reject</option>
