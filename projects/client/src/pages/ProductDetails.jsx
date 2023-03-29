@@ -1,25 +1,27 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import {
   Box,
+  Button,
+  CircularProgress,
   Flex,
+  HStack,
   Image,
-  Text,
-  VStack,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Button,
-  HStack,
   Spacer,
-  CircularProgress,
+  Text,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import { addProduct } from "../reducers/cartSlice";
 
 export default function ProductDetails() {
   const [profile, setProfile] = useState(null);
@@ -27,6 +29,7 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const { productId } = useParams();
   const toast = useToast();
+  const dispatch = useDispatch();
 
   const getProductsData = async () => {
     try {
@@ -44,9 +47,21 @@ export default function ProductDetails() {
     }
   };
 
-  // const handleAddToCart = () => {
-  //   // Add the product to the cart with the selected quantity
-  // };
+  const handleAddToCart = (products_id, quantity) => {
+    // Add the product to the cart with the selected quantity
+    dispatch(
+      addProduct({
+        products_id,
+        quantity,
+      })
+    );
+    toast({
+      title: "Product added to cart",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+  };
 
   useEffect(() => {
     getProductsData();
@@ -113,6 +128,7 @@ export default function ProductDetails() {
               </NumberInput>
             </HStack>
             <Button
+              onClick={() => handleAddToCart(product.id, quantity)}
               isDisabled={!profile?.is_verified || product.totalStock === "0"}
               colorScheme="blue"
               width="100%"

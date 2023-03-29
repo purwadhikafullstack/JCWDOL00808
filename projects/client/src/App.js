@@ -32,6 +32,7 @@ import Cart from "./pages/user/Cart";
 import UserAddress from "./pages/user/UserAddress";
 import EditUserAddress from "./pages/user/EditUserAddress";
 import AddUserAddress from "./pages/user/AddUserAddress";
+import WarehouseStock from "./pages/warehouse/WarehouseStock";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
         <Route path="/warehouse/add" element={<AddWarehouse />} />
         <Route path="/warehouse/edit" element={<EditWarehouse />} />
         <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
+        <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
         <Route path="/warehouse/history" element={<StockHistory />} />
         <Route path="/admin/manageadmin" element={<ManageAdmin />} />
         <Route path="/admin/registeradmin" element={<RegisterAdmin />} />

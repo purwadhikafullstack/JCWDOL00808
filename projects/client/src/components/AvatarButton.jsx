@@ -19,7 +19,7 @@ function AvatarButton(props) {
         display={{ base: "none", sm: "block" }}
         size="md"
         name={props.profile.full_name}
-        src={props.profile.profile_picture}
+        src={`${process.env.REACT_APP_API_BASE_URL}/${props.profile.profile_picture}`}
         className="border dark:border-white"
       />
 

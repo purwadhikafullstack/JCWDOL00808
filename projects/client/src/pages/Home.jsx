@@ -1,19 +1,22 @@
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import ScrollToTopButton from "../components/ScrollToTopButton";
-import CategoryCard from "../components/CategoryCard";
+import axios from "axios";
+import Carousel from "nuka-carousel";
+import { useEffect, useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
+import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
+import { isAuth } from "../apis/userAPIs";
 import Carousel1 from "../assets/carousel/carousel1.jpg";
 import Carousel2 from "../assets/carousel/carousel2.jpg";
 import Carousel3 from "../assets/carousel/carousel3.jpg";
 import Carousel4 from "../assets/carousel/carousel4.jpg";
-import Carousel from "nuka-carousel";
+import CategoryCard from "../components/CategoryCard";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 import { ProductCard } from "../components/ProductCard";
-import { useState, useEffect } from "react";
-import { toast, Toaster } from "react-hot-toast";
-import axios from "axios";
-import ReactPaginate from "react-paginate";
+import ScrollToTopButton from "../components/ScrollToTopButton";
 
 export default function Home() {
+  const [profile, setProfile] = useState(null);
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState();
@@ -24,6 +27,7 @@ export default function Home() {
   const [pageCount, setPageCount] = useState(0);
   const [limit] = useState(12);
   const [offset, setOffset] = useState(0);
+  const navigate = useNavigate();
 
   const getSearch = (keyword) => {
     setSearch(keyword);
@@ -60,6 +64,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    isAuth(navigate).then((data) => setProfile(data));
     fetchProducts();
   }, [search, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
@@ -112,7 +117,7 @@ export default function Home() {
         </select>
       </div>
       <div className="grid md:grid-cols-4 grid-cols-1">
-        <div className="mx-2 my-4 p-2 border-2 border-black dark:bg-gray-800 dark:text-white shadow rounded-lg">
+        <div className="mx-2 my-4 p-2 border-2 border-gray-200 dark:bg-gray-800 dark:text-white shadow rounded-lg">
           <p>Filter</p>
           <p className="text-left">Price</p>
           <div className="py-4">
@@ -144,7 +149,7 @@ export default function Home() {
         </div>
 
         <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4">
-          <ProductCard products={products} />
+          <ProductCard profile={profile} products={products} />
           <div className="grid md:col-span-4 col-span-2 place-items-center">
             <ReactPaginate
               previousLabel={"<"}
