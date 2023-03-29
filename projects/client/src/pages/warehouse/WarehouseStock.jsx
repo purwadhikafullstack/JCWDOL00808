@@ -62,36 +62,49 @@ const WarehouseStock = () => {
     getSpecificWarehouse()
 }, [searchTerm]);
 
-//   const handleDeleteProduct = (id) => {
-  const handleDeleteProduct = () => {
+//   const handleDeleteModal = (id) => {
+  //BUKA MODAL DELETE
+  const handleDeleteModal = () => {
     // Handle deleting the product with the given ID
     onDeleteProductOpen()
   };
 
+  //API DELETE STOCK
   const handleConfirmDelete = () => {
     // await handleDeleteAddress(addressToDelete);
     // setAddressToDelete(null);
     onDeleteProductClose();
   };
 
-  const handleUpdateStock = () => {
+  //API UPDATE STOCK
+  const handleConfirmUpdateStock = () => {
     // Handle updating stock for the selected product
     onEditStockClose();
   };
 
-//   const handleEditStock = (id) => {
-  const handleEditStock = () => {
+  // const handleEditStock = (id) => {
+  // BUKA MODAL UPDATE
+  const handleUpdateModal = () => {
     // const product = products.find((p) => p.id === id);
     // setSelectedProduct(product);
     setSelectedProduct();
     onEditStockOpen();
   };
 
-  const handleAddStock = () => {
+  // BUKA MODAL CREATE
+  const handleCreateModal = () => {
     // const product = products.find((p) => p.id === id);
     // setSelectedProduct(product);
     setSelectedProduct();
     onAddStockOpen();
+  };
+
+  //API CREATE STOCK
+  const handleCreateStock = () => {
+    // const product = products.find((p) => p.id === id);
+    // setSelectedProduct(product);
+    // setSelectedProduct();
+    onAddStockClose();
   };
 
   const getSpecificWarehouse = () => {
@@ -129,7 +142,7 @@ const WarehouseStock = () => {
       products_id: Yup.string().required("Required"),
       
     }),
-    onSubmit: handleAddStock,
+    onSubmit: handleCreateStock,
   });
 
   return (
@@ -153,7 +166,7 @@ const WarehouseStock = () => {
           {/* <IconButton icon={<SearchIcon />} aria-label="Search" colorScheme="blue" /> */}
           
           <Tooltip hasArrow label='Add Product to Warehouse'>
-            <IconButton icon={<AddIcon />} aria-label="Add Address" colorScheme="blue" onClick={() => handleAddStock()}/>
+            <IconButton icon={<AddIcon />} aria-label="Add Address" colorScheme="blue" onClick={() => handleCreateModal()}/>
           </Tooltip>
           
         </HStack>
@@ -176,10 +189,10 @@ const WarehouseStock = () => {
               <Td>{product?.stock}</Td>
               <Td>{product?.warehouse.name}</Td>
               <Td isNumeric>
-                <Button onClick={() => handleEditStock(product.id)} mr={2}>
+                <Button onClick={() => handleUpdateModal(product.id)} mr={2}>
                   Edit Stock
                 </Button>
-                <Button onClick={() => handleDeleteProduct(product.id)}>
+                <Button onClick={() => handleDeleteModal(product.id)}>
                   Delete
                 </Button>
               </Td>
@@ -200,7 +213,20 @@ const WarehouseStock = () => {
             <form onSubmit={formik.handleSubmit}>
             <VStack spacing={4} mt={4} mx="auto" maxW="480px">
               <FormControl isInvalid={formik.errors.address && formik.touched.address}>
-              <FormLabel htmlFor="address">Product</FormLabel>
+              <FormLabel htmlFor="address">Product Category</FormLabel>
+              <Input
+                id="products_category"
+                name="products_category"
+                type="text"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.products_id}
+                />
+                  <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={formik.errors.address && formik.touched.address}>
+              <FormLabel htmlFor="address">Product ID</FormLabel>
               <Input
                 id="products_id"
                 name="products_id"
@@ -230,7 +256,7 @@ const WarehouseStock = () => {
               </form>
         </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={handleUpdateStock}>
+              <Button colorScheme="blue" mr={3} onClick={handleCreateStock}>
                 Add Stock
               </Button>
               <Button onClick={onAddStockClose}>Cancel</Button>
@@ -261,7 +287,7 @@ const WarehouseStock = () => {
           </FormControl>
         </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={handleUpdateStock}>
+              <Button colorScheme="blue" mr={3} onClick={handleConfirmUpdateStock}>
                 Update Stock
               </Button>
               <Button onClick={onEditStockClose}>Cancel</Button>
