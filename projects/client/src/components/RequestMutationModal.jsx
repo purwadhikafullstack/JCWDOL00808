@@ -3,8 +3,6 @@ import {
   FormControl,
   FormLabel,
   useToast,
-  Input,
-  Textarea,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -12,8 +10,6 @@ import {
   NumberDecrementStepper,
   Flex,
   Button,
-  Box,
-  Image,
   FormErrorMessage,
   Select,
   Modal,
@@ -27,7 +23,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import AddAdminConfirmation from "./AddAdminConfirmation";
-import { useNavigate } from "react-router-dom";
 
 const token = localStorage.getItem("token");
 
@@ -43,7 +38,6 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
   const [warehouse, setWarehouse] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
-  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -70,7 +64,6 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
           isClosable: true,
         });
         onClose();
-        // navigate("");
       } catch (error) {
         setIsSubmitting(false);
         toast({
@@ -103,7 +96,7 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Request Mutasi</ModalHeader>
+        <ModalHeader>Request Stock Mutation</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={formik.handleSubmit}>
@@ -166,6 +159,8 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
               >
                 Cancel
               </Button>
+
+              {/* {button for confirmation} */}
               <AddAdminConfirmation onSave={formik.handleSubmit} isLoading={isSubmitting} />
             </Flex>
           </form>

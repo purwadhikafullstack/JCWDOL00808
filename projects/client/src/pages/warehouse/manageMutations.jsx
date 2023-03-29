@@ -1,10 +1,9 @@
-import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, Select, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon, ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
-import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
+import { Table, Thead, Tbody, extendTheme, Tr, Th, Td, Flex, Box, Input, Button, Menu, Select, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast, ChakraProvider, IconButton } from "@chakra-ui/react";
+import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import { FaSort, FaFilter, FaPlus, FaCheck, FaTimes } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import RequestMutationModal from "../../components/RequestMutationModal";
 
 function ManageMutations() {
@@ -50,8 +49,19 @@ function ManageMutations() {
         }
       );
       getListMutations();
+      toast({
+        title: `Confirm Stock Mutation Success`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.error(error);
+      toast({
+        title: `${error.response.data.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     }
   };
 
@@ -174,6 +184,7 @@ function ManageMutations() {
             <Th>Quantity</Th>
             <Th>From Warehouse</Th>
             <Th>To Warehouse</Th>
+            <Th>Mutation Status</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
@@ -187,17 +198,25 @@ function ManageMutations() {
               <Td fontSize="sm">{mutation.quantity}</Td>
               <Td fontSize="sm">{mutation.from_warehouse.name}</Td>
               <Td fontSize="sm">{mutation.to_warehouse.name}</Td>
+              <Td fontSize="sm">{mutation.mutation_type}</Td>
               <Td>
                 <Box display="flex">
                   {mutation.mutation_type === "Pending" && (
                     <div key={mutation.id}>
-                      <Select placeholder="Select status" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
-                        <option value="ACCEPT">Accept</option>
-                        <option value="REJECT">Reject</option>
-                      </Select>
-                      <Button colorScheme="teal" size="sm" onClick={() => handleStatusUpdate(mutation.id, selectedStatus)}>
-                        Submit
-                      </Button>
+                      <Flex>
+                        <Box>
+                          <Select placeholder="Select status" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} display="none">
+                            <option value="ACCEPT">Accept</option>
+                            <option value="REJECT">Reject</option>
+                          </Select>
+                        </Box>
+                        <Box mr={2} cursor="pointer" onClick={() => handleStatusUpdate(mutation.id, "ACCEPT")}>
+                          <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} />
+                        </Box>
+                        <Box cursor="pointer" onClick={() => handleStatusUpdate(mutation.id, "REJECT")}>
+                          <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} />
+                        </Box>
+                      </Flex>
                     </div>
                   )}
                 </Box>
