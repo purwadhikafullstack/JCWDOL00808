@@ -31,7 +31,7 @@ export default function Sidebar() {
       submenuItems: [{ title: "Admin Account" }, { title: "List User" }],
     },
     { title: "Analytics", icon: <AiOutlineBarChart /> },
-    { title: "Warehouse", spacing: true, icon: <BsBuilding /> },
+    { title: "Warehouse", spacing: true, icon: <BsBuilding />, submenu: true, submenuItems: [{ title: "Stock Mutations" }] },
     { title: "Setting", icon: <AiOutlineSetting /> },
     { title: "Logout", icon: <AiOutlineLogout /> },
   ];
@@ -88,7 +88,7 @@ export default function Sidebar() {
                           } else if (submenuItem.title === "Manage Product") {
                             navigate("/admin/manageProducts");
                           } else if (menu.title === "Warehouse") {
-                            navigate("/warehouse/list")
+                            navigate("/warehouse/list");
                           } else if (menu.title === "Logout") {
                             // Handle logout functionality here
                           }

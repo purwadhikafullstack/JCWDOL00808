@@ -1,5 +1,6 @@
 // Import Sequelize
 const { sequelize } = require("../../models");
+const { Op } = require("sequelize");
 
 // Import models
 const db = require("../../models/index");
@@ -132,31 +133,6 @@ module.exports = {
     }
   },
 
-  // getStockRequest: async (req, res) => {
-  //   try {
-  //     const adminId = req.dataDecode.id; // ambil id dari verifiyToken
-
-  //     // Dapatkan warehouse yang diatur untuk user saat ini sebagai admin
-  //     const adminWarehouse = await warehouses.findOne({
-  //       where: { admin_id: adminId },
-  //     });
-
-  //     if (!adminWarehouse) {
-  //       return res.status(404).json({ message: "Warehouse not found for the current admin" });
-  //     }
-
-  //     // Dapatkan permintaan stok yang ditujukan untuk warehouse ini
-  //     const stockRequests = await stock_mutations.findAll({
-  //       where: { to_warehouse_id: userWarehouse.id },
-  //     });
-
-  //     return res.status(200).json({ stockRequests });
-  //   } catch (error) {
-  //     console.error(error);
-  //     return res.status(500).json({ message: "Server error", error });
-  //   }
-  // },
-
   getStockRequest: async (req, res) => {
     try {
       //get id from token login
@@ -193,6 +169,89 @@ module.exports = {
     } catch (error) {
       console.error("Error getting stock mutation requests:", error);
       res.status(500).json({ message: "Server error" });
+    }
+  },
+
+  getAllRequestMutation: async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search_query || "";
+      const offset = limit * page;
+      const sort = req.query.sort || "quantity"; //default sorting by from quantity
+      const order = req.query.order || "DESC"; //default order DESC
+      const totalRows = await stock_mutations.count({
+        where: {
+          [Op.or]: [
+            {
+              quantity: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              from_warehouse_id: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+      });
+      const totalPage = Math.ceil(totalRows / limit);
+      const result = await stock_mutations.findAll({
+        where: {
+          [Op.or]: [
+            {
+              quantity: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              "$product.name$": {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              "$from_warehouse.name$": {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              "$to_warehouse.name$": {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+        include: [
+          {
+            model: warehouses,
+            as: "from_warehouse",
+            attributes: ["name"],
+          },
+          {
+            model: warehouses,
+            as: "to_warehouse",
+            attributes: ["name"],
+          },
+          {
+            model: products,
+            attributes: ["name"],
+          },
+        ],
+        offset: offset,
+        limit: limit,
+        order: [[sort, order]], // add order clause with the sort and order parameters
+      });
+      res.json({
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
     }
   },
 };

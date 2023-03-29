@@ -13,5 +13,6 @@ const { verifyRoleAdmin, verifyToken } = require("../middleware/verifyToken");
 Router.post("/request-stock", verifyRoleAdmin, validateRequestStock, stockMutation.requestStock);
 Router.patch("/confirm-mutation/:id", verifyToken, stockMutation.confirmRequest);
 Router.get("/getrequest-stock", verifyToken, stockMutation.getStockRequest);
+Router.get("/getAllRequestMutation", stockMutation.getAllRequestMutation);
 
 module.exports = Router;
