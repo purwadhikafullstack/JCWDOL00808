@@ -172,6 +172,15 @@ module.exports = {
       const { id } = req.params;
       const { stock, products_id, } = req.body
 
+      const checkProductStock = await stocks.findOne({where: {products_id, warehouses_id: id}})
+      if(checkProductStock) {
+        return res.status(409).send({
+          isError: true,
+          message: "Product already exist in warehouse.",
+          data: null,
+        });
+      }
+
       const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id: id}, {transaction: t })
       const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id: id, description: "New Product added to warehouse"}, {transaction: t });
       t.commit();
@@ -249,8 +258,8 @@ module.exports = {
     const t = await sequelize.transaction();
     try {
       const { id } = req.params;
-      const { stock, products_id, warehouses_id } = req.body;
-      // const updatedWarehouseProduct = await stocks.update({ stock, products_id, warehouses_id }, { where: { id }, transaction: t });
+      const { stock } = req.body;
+      const updatedWarehouseProduct = await stocks.update({ stock }, { where: { id }, transaction: t });
       // const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "Stock updated."});
       t.commit();
 

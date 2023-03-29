@@ -45,6 +45,8 @@ const WarehouseStock = () => {
   const [stocks, setStocks] = useState([]);
   const [productsModal, setProductsModal] = useState([]);
   const [productsCategoryModal, setProductsCategoryModal] = useState([]);
+  const [stockToDelete, setStockToDelete] = useState(null);
+  const [stockToUpdate, setStockToUpdate] = useState(null);
   const toast = useToast();
 
   const [products, setProducts] = useState([]);
@@ -54,7 +56,7 @@ const WarehouseStock = () => {
   const { isOpen: isAddStockOpen, onOpen: onAddStockOpen, onClose: onAddStockClose } = useDisclosure();
   const { isOpen: isDeleteProductOpen, onOpen: onDeleteProductOpen, onClose: onDeleteProductClose } = useDisclosure();
 
-  const [addressToDelete, setAddressToDelete] = React.useState(null);
+  
   const [updatedStock, setUpdatedStock] = useState();
 
   const { id } = useParams();
@@ -66,18 +68,42 @@ const WarehouseStock = () => {
     fetchCategoryProductsModal()
 }, [searchTerm]);
 
-//   const handleDeleteModal = (id) => {
+  // CONFIRM DELETE
+  const handleConfirmDelete = async () => {
+    await handleDeleteStock(stockToDelete);
+    setStockToDelete(null);
+    onDeleteProductClose();
+  };
   //BUKA MODAL DELETE
-  const handleDeleteModal = () => {
+  const handleDeleteModal = (stockId) => {
     // Handle deleting the product with the given ID
+    setStockToDelete(stockId);
     onDeleteProductOpen()
   };
 
   //API DELETE STOCK
-  const handleConfirmDelete = () => {
+  const handleDeleteStock = async (id) => {
+    try {
+      
+      await axios.delete(`http://localhost:8000/warehouses//delete-warehouse-product/${id}`);
+      toast({
+        title: "Stock deleted.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      fetchWarehouseProducts();
+    } catch (error) {
+      toast({
+        title: "Error deleting Stock.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
     // await handleDeleteAddress(addressToDelete);
     // setAddressToDelete(null);
-    onDeleteProductClose();
+    
   };
 
   //API UPDATE STOCK
@@ -86,19 +112,17 @@ const WarehouseStock = () => {
     onEditStockClose();
   };
 
-  // const handleEditStock = (id) => {
+  
   // BUKA MODAL UPDATE
-  const handleUpdateModal = () => {
+  const handleUpdateModal = async (stockId) => {
     // const product = products.find((p) => p.id === id);
     // setSelectedProduct(product);
-    setSelectedProduct();
+    setStockToUpdate(stockId);
     onEditStockOpen();
   };
 
   // BUKA MODAL CREATE
   const handleCreateModal = () => {
-    // const product = products.find((p) => p.id === id);
-    // setSelectedProduct(product);
     setSelectedProduct();
     onAddStockOpen();
   };
@@ -108,7 +132,7 @@ const WarehouseStock = () => {
 
     try {
       const response = await axios.post(`http://localhost:8000/warehouses/add-warehouse-product/${id}`, values )
-
+      
       setStocks([...stocks, response.data])
       fetchWarehouseProducts()
       toast({
@@ -119,8 +143,9 @@ const WarehouseStock = () => {
       });
       resetForm()
     } catch (error) {
+      console.log(error)
       toast({
-        title: "Error adding stock.",
+        title: error?.response?.data?.message,
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -220,18 +245,18 @@ const WarehouseStock = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {products.map((product) => {
+          {products.map((stock) => {
             return(
-            <Tr key={product?.id}>
-              <Td>{product?.product.name}</Td>
-              <Td>{product?.product.product_category.name}</Td>
-              <Td>{product?.stock}</Td>
-              <Td>{product?.warehouse.name}</Td>
+            <Tr key={stock?.id}>
+              <Td>{stock?.product.name}</Td>
+              <Td>{stock?.product.product_category.name}</Td>
+              <Td>{stock?.stock}</Td>
+              <Td>{stock?.warehouse.name}</Td>
               <Td isNumeric>
-                <Button onClick={() => handleUpdateModal(product.id)} mr={2}>
+                <Button onClick={() => handleUpdateModal(stock.id)} mr={2}>
                   Edit Stock
                 </Button>
-                <Button onClick={() => handleDeleteModal(product.id)}>
+                <Button onClick={() => handleDeleteModal(stock.id)}>
                   Delete
                 </Button>
               </Td>
@@ -253,14 +278,6 @@ const WarehouseStock = () => {
             <VStack spacing={4} mt={4} mx="auto" maxW="480px">
               <FormControl isInvalid={formik.errors.stock && formik.touched.stock}>
               <FormLabel htmlFor="address">Product Category</FormLabel>
-              {/* <Input
-                id="products_category"
-                name="products_category"
-                type="text"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.products_category_id}
-                /> */}
                 <Select placeholder=" " {...formik.getFieldProps("product_category_id")}
                 onChange={(value) => {
                   fetchProductsModal(value.target.value);
@@ -277,14 +294,6 @@ const WarehouseStock = () => {
 
               <FormControl isInvalid={formik.errors.products_id && formik.touched.products_id}>
               <FormLabel htmlFor="address">Product Name</FormLabel>
-              {/* <Input
-                id="products_id"
-                name="products_id"
-                type="text"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.products_id}
-                /> */}
                 <Select placeholder=" " {...formik.getFieldProps("products_id")}
                 onChange={(value) => {
                   // fetchProductsModal(value.target.value);
@@ -303,10 +312,6 @@ const WarehouseStock = () => {
             <FormLabel>Total Stock</FormLabel>
             <NumberInput
               min={0}
-              // value={updatedStock}
-              // onChange={formik.handleChange}
-                // onBlur={formik.handleBlur}
-                // value={formik.values.stock}
                 value={formik.values.stock}
                 onChange={(value) => formik.setFieldValue('stock', value)}
             >
