@@ -101,13 +101,13 @@ app.get("*", (req, res) => {
 
 //#endregion
 
-// const { dbConf } = require("../config/config");
-// dbConf.getConnection((err, connection) => {
-//   if (err) {
-//     console.log(`Error: ${err.message}`);
-//   }
-//   console.log("Connected to mysql server ✅", connection.threadId);
-// });
+const { dbConf } = require("../config/config");
+dbConf.getConnection((err, connection) => {
+  if (err) {
+    console.log(`Error: ${err.message}`);
+  }
+  console.log("Connected to mysql server ✅", connection.threadId);
+});
 
 
 app.listen(PORT, (err) => {
