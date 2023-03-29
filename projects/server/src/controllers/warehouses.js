@@ -169,11 +169,11 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      const { warehouse_id } = req.params;
+      const { id } = req.params;
       const { stock, products_id, } = req.body
 
-      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id: warehouse_id.id}, {transaction: t })
-      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id: warehouse_id.id, description: "New Product added to warehouse"});
+      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id: id}, {transaction: t })
+      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id: id, description: "New Product added to warehouse"}, {transaction: t });
       t.commit();
 
       res.status(201).send({

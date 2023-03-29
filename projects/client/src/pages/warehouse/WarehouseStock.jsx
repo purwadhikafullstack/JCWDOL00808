@@ -28,6 +28,7 @@ import {
   FormControl,
   FormLabel,
   useToast,
+  Select,
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
 } from "@chakra-ui/react";
 
@@ -41,7 +42,9 @@ import * as Yup from "yup";
 const WarehouseStock = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [warehouseName, setWarehouseName] = useState("");
-
+  const [stocks, setStocks] = useState([]);
+  const [productsModal, setProductsModal] = useState([]);
+  const [productsCategoryModal, setProductsCategoryModal] = useState([]);
   const toast = useToast();
 
   const [products, setProducts] = useState([]);
@@ -58,8 +61,9 @@ const WarehouseStock = () => {
 
   // Fetch products from the server (replace the URL with your API endpoint)
   useEffect(() => {
-    fetchProducts();
+    fetchWarehouseProducts();
     getSpecificWarehouse()
+    fetchCategoryProductsModal()
 }, [searchTerm]);
 
 //   const handleDeleteModal = (id) => {
@@ -100,7 +104,31 @@ const WarehouseStock = () => {
   };
 
   //API CREATE STOCK
-  const handleCreateStock = () => {
+  const handleCreateStock = async (values, {setSubmitting, resetForm}) => {
+
+    try {
+      const response = await axios.post(`http://localhost:8000/warehouses/add-warehouse-product/${id}`, values )
+
+      setStocks([...stocks, response.data])
+      fetchWarehouseProducts()
+      toast({
+        title: "Stock added.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      resetForm()
+    } catch (error) {
+      toast({
+        title: "Error adding stock.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+      
+    }finally {
+      setSubmitting(false);
+    }
     // const product = products.find((p) => p.id === id);
     // setSelectedProduct(product);
     // setSelectedProduct();
@@ -116,7 +144,7 @@ const WarehouseStock = () => {
       .catch((error) => console.log(error));
   };
 
-  const fetchProducts = async () => {
+  const fetchWarehouseProducts = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/warehouses/get-warehouse-product/${id}?search_query=${searchTerm}`)
       // setWarehouseName(response?.[0].warehouse?.name)
@@ -130,11 +158,22 @@ const WarehouseStock = () => {
       });
     }
   }
+  const fetchCategoryProductsModal = async () => {
+    const response = await axios.get("http://localhost:8000/productcategory/listproductcategory");
+    setProductsCategoryModal(response.data.result);
+  };
+
+  const fetchProductsModal = async (product_category_id) => {
+    const response = await axios.get(`http://localhost:8000/product/listproductbycategory?search_query=${product_category_id}`);
+    setProductsModal(response.data.result);
+  };
+
 
   const formik = useFormik({
     initialValues: {
       stock: "",
       products_id: "",
+      product_category_id: "",
       
     },
     validationSchema: Yup.object({
@@ -166,7 +205,7 @@ const WarehouseStock = () => {
           {/* <IconButton icon={<SearchIcon />} aria-label="Search" colorScheme="blue" /> */}
           
           <Tooltip hasArrow label='Add Product to Warehouse'>
-            <IconButton icon={<AddIcon />} aria-label="Add Address" colorScheme="blue" onClick={() => handleCreateModal()}/>
+            <IconButton icon={<AddIcon />} aria-label="Add Stock" colorScheme="blue" onClick={() => handleCreateModal()}/>
           </Tooltip>
           
         </HStack>
@@ -212,38 +251,64 @@ const WarehouseStock = () => {
             <ModalBody>
             <form onSubmit={formik.handleSubmit}>
             <VStack spacing={4} mt={4} mx="auto" maxW="480px">
-              <FormControl isInvalid={formik.errors.address && formik.touched.address}>
+              <FormControl isInvalid={formik.errors.stock && formik.touched.stock}>
               <FormLabel htmlFor="address">Product Category</FormLabel>
-              <Input
+              {/* <Input
                 id="products_category"
                 name="products_category"
                 type="text"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                value={formik.values.products_id}
-                />
-                  <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
+                value={formik.values.products_category_id}
+                /> */}
+                <Select placeholder=" " {...formik.getFieldProps("product_category_id")}
+                onChange={(value) => {
+                  fetchProductsModal(value.target.value);
+                  formik.handleChange(value);
+                }}>
+                {productsCategoryModal.map((element) => (
+                  <option key={element.id} value={element.id}>
+                    {element.name}
+                  </option>
+                ))}
+              </Select>
+                  <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={formik.errors.address && formik.touched.address}>
-              <FormLabel htmlFor="address">Product ID</FormLabel>
-              <Input
+              <FormControl isInvalid={formik.errors.products_id && formik.touched.products_id}>
+              <FormLabel htmlFor="address">Product Name</FormLabel>
+              {/* <Input
                 id="products_id"
                 name="products_id"
                 type="text"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.products_id}
-                />
-                  <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
+                /> */}
+                <Select placeholder=" " {...formik.getFieldProps("products_id")}
+                onChange={(value) => {
+                  // fetchProductsModal(value.target.value);
+                  formik.handleChange(value);
+                }}>
+                {productsModal.map((element) => (
+                  <option key={element.id} value={element.id}>
+                    {element.name}
+                  </option>
+                ))}
+              </Select>
+                  <FormErrorMessage>{formik.errors.products_id}</FormErrorMessage>
               </FormControl>
               
           <FormControl>
             <FormLabel>Total Stock</FormLabel>
             <NumberInput
               min={0}
-              value={updatedStock}
-              onChange={(value) => setUpdatedStock(value)}
+              // value={updatedStock}
+              // onChange={formik.handleChange}
+                // onBlur={formik.handleBlur}
+                // value={formik.values.stock}
+                value={formik.values.stock}
+                onChange={(value) => formik.setFieldValue('stock', value)}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -252,14 +317,17 @@ const WarehouseStock = () => {
               </NumberInputStepper>
             </NumberInput>
           </FormControl>
+              <Button type="submit" colorScheme="blue" mr={3} 
+              // onClick={handleCreateStock}
+              isLoading={formik.isSubmitting}
+              >
+                Add Stock
+              </Button>
+              <Button onClick={onAddStockClose}>Cancel</Button>
           </VStack>
               </form>
         </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={handleCreateStock}>
-                Add Stock
-              </Button>
-              <Button onClick={onAddStockClose}>Cancel</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
