@@ -131,7 +131,7 @@ function ManageMutations() {
     setPage(0);
     // add switch case to convert value to readable text
     switch (value) {
-      case "product_id":
+      case "products_id":
         setSortText("Product");
         break;
       case "quantity":
@@ -188,7 +188,7 @@ function ManageMutations() {
             {sortText}
           </MenuButton>
           <MenuList>
-            <MenuItem value={sort} onClick={() => handleSort("product_id")}>
+            <MenuItem value={sort} onClick={() => handleSort("products_id")}>
               Product
             </MenuItem>
             <MenuItem value={sort} onClick={() => handleSort("quantity")}>
