@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { logout } from "../apis/userAPIs";
+import { useDispatch } from "react-redux";
 import { Avatar } from "@chakra-ui/react";
+import { logout } from "../apis/userAPIs";
 
 function AvatarButton(props) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   function handleMenuClick() {
     setIsOpen(!isOpen);
@@ -49,7 +51,9 @@ function AvatarButton(props) {
                   Edit Address
                 </Link>
                 <span
-                  onClick={() => logout(navigate)}
+                  onClick={() => {
+                    logout(navigate, dispatch);
+                  }}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Logout

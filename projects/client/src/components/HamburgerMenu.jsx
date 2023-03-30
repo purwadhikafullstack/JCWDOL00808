@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { logout } from "../apis/userAPIs";
 
 function HamburgerMenuButton(props) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   function handleMenuClick() {
     setIsOpen(!isOpen);
@@ -51,7 +53,7 @@ function HamburgerMenuButton(props) {
                   Edit Address
                 </Link>
                 <span
-                  onClick={() => logout(navigate)}
+                  onClick={() => logout(navigate, dispatch)}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Logout
