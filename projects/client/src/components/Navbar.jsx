@@ -9,6 +9,7 @@ import AvatarButton from "./AvatarButton";
 import HamburgerMenuButton from "./HamburgerMenu";
 
 export default function Navbar() {
+  const token = localStorage.getItem("token");
   const [profile, setProfile] = useState(null);
   const totalProductsInCart = useSelector(getTotalProductsInCart);
   const queryParams = new URLSearchParams(window.location.search);
@@ -17,9 +18,11 @@ export default function Navbar() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (token) {
+      dispatch(getCarts());
+    }
     isAuth(navigate).then((data) => setProfile(data));
-    dispatch(getCarts());
-  }, [dispatch, navigate]);
+  }, [token, dispatch, navigate]);
 
   return (
     <>

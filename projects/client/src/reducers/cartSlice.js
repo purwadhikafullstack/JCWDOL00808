@@ -4,9 +4,9 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 import axios from "axios";
-const token = localStorage.getItem("token");
 
 export const getCarts = createAsyncThunk("cart/getCarts", async () => {
+  const token = localStorage.getItem("token");
   const response = await axios.get(
     `${process.env.REACT_APP_API_BASE_URL}/cart`,
     {
@@ -19,6 +19,8 @@ export const getCarts = createAsyncThunk("cart/getCarts", async () => {
 export const addProduct = createAsyncThunk(
   "cart/addProduct",
   async ({ products_id, quantity }) => {
+    const token = localStorage.getItem("token");
+
     const response = await axios.post(
       `${process.env.REACT_APP_API_BASE_URL}/cart`,
       { products_id, quantity },
@@ -31,6 +33,8 @@ export const addProduct = createAsyncThunk(
 export const updateCarts = createAsyncThunk(
   "cart/updateCarts",
   async ({ id, quantity }) => {
+    const token = localStorage.getItem("token");
+
     const response = await axios.patch(
       `${process.env.REACT_APP_API_BASE_URL}/cart`,
       { id, quantity },
@@ -43,6 +47,8 @@ export const updateCarts = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   "carts/deleteProduct",
   async (id) => {
+    const token = localStorage.getItem("token");
+
     await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/cart/${id}`, {
       headers: { Authorization: token },
     });
