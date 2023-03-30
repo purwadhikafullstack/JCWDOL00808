@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { logout } from "../apis/userAPIs";
+import { useDispatch } from "react-redux";
 import { Avatar } from "@chakra-ui/react";
+import { logout } from "../apis/userAPIs";
 
 function AvatarButton(props) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   function handleMenuClick() {
     setIsOpen(!isOpen);
@@ -19,7 +21,7 @@ function AvatarButton(props) {
         display={{ base: "none", sm: "block" }}
         size="md"
         name={props.profile.full_name}
-        src={props.profile.profile_picture}
+        src={`${process.env.REACT_APP_API_BASE_URL}/${props.profile.profile_picture}`}
         className="border dark:border-white"
       />
 
@@ -49,7 +51,9 @@ function AvatarButton(props) {
                   Edit Address
                 </Link>
                 <span
-                  onClick={() => logout(navigate)}
+                  onClick={() => {
+                    logout(navigate, dispatch);
+                  }}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Logout

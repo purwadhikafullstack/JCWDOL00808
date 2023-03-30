@@ -1,130 +1,131 @@
-import { Button, Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup, MenuOptionGroup, MenuDivider, Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
+import { Select, Button, Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Flex, Spacer, Square, Center } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+import { useEffect, useState } from "react";
+import Axios from "axios";
+import { API_url } from "../../helper";
 
 const StockHistory = () => {
+  const [warehouseData, setWarehouseData] = useState([]);
+  const [productsData, setProductsData] = useState([]);
+
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const [sortProductsId, setSortProductsId] = useState(0);
+  const [sortWarehouseId, setSortWarehouseId] = useState(0);
+  // const [sortPeriod, setSortPeriod] = useState("");
+
+  const [stockHistories, setStockHistories] = useState([]);
+
+  const getWarehouseData = () => {
+    Axios.get(API_url + `/warehouses/getAllWarehouse`)
+      .then((response) => {
+        console.log(response.data);
+        setWarehouseData(response.data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getProductsData = () => {
+    Axios.get(API_url + `/histories/getAllProducts`).then((response) => {
+      console.log(response.data);
+      setProductsData(response.data);
+    });
+  };
+
+  const getStockHistories = () => {
+    Axios.get(API_url + `/histories/getStockHistories?sortProductsId=${sortProductsId}&sortWarehouseId=${sortWarehouseId}`)
+      .then((response) => {
+        console.log(response.data);
+        setStockHistories(response.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  useEffect(() => {
+    getWarehouseData();
+    getProductsData();
+    getStockHistories();
+  }, []);
+
+  const handleFilterButton = () => {
+    getStockHistories();
+  };
+
+  const showStockHistories = () => {
+    return stockHistories.map((value) => {
+      let difference = Math.abs(value.stock_after - value.stock_before);
+      return (
+        <Tr key={value.id}>
+          <Td>{value.description}</Td>
+          <Td>{value.stock_before}</Td>
+          <Td>{value.stock_after}</Td>
+          <Td isNumeric>{difference}</Td>
+        </Tr>
+      );
+    });
+  };
+
   return (
-    // <Card maxW="lg" mx="auto" my={8} px={4} py={8} rounded="md">
-    //    <CardHeader>
-    //      <Heading as="h2" size="md" textTransform="uppercase">Stock History</Heading>
-    //    </CardHeader>
+    <>
+      <Flex minWidth="max-content" alignItems="center" gap="10" paddingX={250} paddingY={100}>
+        <Card>
+          <CardHeader>
+            <Heading size="md" textTransform="uppercase">
+              Stock History
+            </Heading>
+          </CardHeader>
 
-    //    <CardBody>
-    //      <Stack divider={<Stack.Divider />} spacing={4}>
-    //        <Box>
-    //          <Text as="p" fontSize="md" fontWeight="medium" mb={2}>View a history of your products over the last month.</Text>
-    //          <Stack direction="row" alignItems="center">
-    //            <Text as="label" htmlFor="product" fontSize="md" fontWeight="medium">Product:</Text>
-    //            <Menu>
-    //              <MenuButton as={Button} rightIcon={<ChevronDownIcon />} variant="outline" size="sm" ml={4}>
-    //                Choose product name
-    //              </MenuButton>
-    //              <MenuList>
-    //                <MenuItem>Product 1</MenuItem>
-    //                <MenuItem>Product 2</MenuItem>
-    //                <MenuItem>Product 3</MenuItem>
-    //              </MenuList>
-    //            </Menu>
-    //          </Stack>
-    //          <Stack direction="row" alignItems="center" mt={4}>
-    //            <Text as="label" htmlFor="location" fontSize="md" fontWeight="medium">Location:</Text>
-    //            <Menu>
-    //              <MenuButton as={Button} rightIcon={<ChevronDownIcon />} variant="outline" size="sm" ml={4}>
-    //                Choose warehouse
-    //              </MenuButton>
-    //              <MenuList>
-    //                <MenuItem>Warehouse 1</MenuItem>
-    //                <MenuItem>Warehouse 2</MenuItem>
-    //                <MenuItem>Warehouse 3</MenuItem>
-    //              </MenuList>
-    //            </Menu>
-    //          </Stack>
-    //        </Box>
-    //        <Box>
-    //          <Heading as="h3" size="md">Stock Info</Heading>
-    //          <Text as="p" fontSize="md" fontWeight="medium" mb={2}>See a detailed analysis of all your business clients.</Text>
-    //          <Stack direction="row" justify="space-between" alignItems="center" mt={4}>
-    //            <Stack>
-    //              <Text as="label" htmlFor="quantity" fontSize="md" fontWeight="medium">Quantity on hand (pcs):</Text>
-    //              <Text fontSize="md">1400</Text>
-    //            </Stack>
-    //            <Stack>
-    //              <Text as="label" htmlFor="forecast" fontSize="md" fontWeight="medium">Forecast quantity (pcs):</Text>
-    //              <Text fontSize="md">800</Text>
-    //            </Stack>
-    //            <Stack>
-    //              <Text as="label" htmlFor="incoming" fontSize="md" fontWeight="medium">Incoming:</Text>
-    //              <Text fontSize="md">1400</Text>
-    //            </Stack>
-    //            <Stack>
-    //              <Text as="label" htmlFor="outcoming" fontSize="md" fontWeight="medium">Outcoming:</Text>
-    //              <Text fontSize="md">800</Text>
-    //            </Stack>
-    //          </Stack>
-    //          <Button mt={4}>Manage Stock</Button>
-    //        </Box>
-    //      </Stack>
-    //    </CardBody>
-    //  </Card>
-
-
-    <Card maxW="lg" style={{ marginInline: 525, marginTop: 80 }}>
-      <CardHeader>
-        <Heading size="md"  textTransform="uppercase">Stock History</Heading>
-      </CardHeader>
-
-      <CardBody>
-        <Stack divider={<StackDivider />} spacing="4">
-          <Box>
-            {/* <Heading size="xs" textTransform="uppercase">
-              History
-            </Heading> */}
-            <Text pt="2" fontSize="md">
-              View a history of your products over the last month.
-            </Text>
-            <div className="flex flex-row justify-center mt-5">
-              <div>
-                <Text pt="2" fontSize="md">
-                  Product:   
+          <CardBody>
+            <Stack divider={<StackDivider />} spacing="4">
+              <Box>
+                <Text fontSize="md">
+                  View a history of your products over the last month.
                 </Text>
-              </div>
-              <div>
-                <Menu>
-                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                    Choose product name
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>Download</MenuItem>
-                    <MenuItem>Create a Copy</MenuItem>
-                    <MenuItem>Mark as Draft</MenuItem>
-                    <MenuItem>Delete</MenuItem>
-                    <MenuItem>Attend a Workshop</MenuItem>
-                  </MenuList>
-                </Menu>
-              </div>
-            </div>
-            <div className="flex flex-row justify-center mt-5">
-              <div>
+
                 <Text pt="2" fontSize="md">
-                  Location:
+                  Product:
                 </Text>
-              </div>
-              <div>
-                <Menu>
-                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                    Choose warehouse
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>Download</MenuItem>
-                    <MenuItem>Create a Copy</MenuItem>
-                    <MenuItem>Mark as Draft</MenuItem>
-                    <MenuItem>Delete</MenuItem>
-                    <MenuItem>Attend a Workshop</MenuItem>
-                  </MenuList>
-                </Menu>
-              </div>
-            </div>
-          </Box>
-          {/* <Box>
+                <Select placeholder="Select product" onChange={(element) => setSortProductsId(element.target.value)}>
+                  {productsData.map((value) => {
+                    return (
+                      <option value={value.id}>
+                        [{value.id}] {value.name}
+                      </option>
+                    );
+                  })}
+                </Select>
+
+                <Text pt="2" fontSize="md">
+                  Warehouse location:
+                </Text>
+
+                <Select placeholder="Select warehouse" onChange={(element) => setSortWarehouseId(element.target.value)}>
+                  {warehouseData.map((value) => {
+                    return (
+                      <option value={value.id}>
+                        [{value.id}] {value.name}
+                      </option>
+                    );
+                  })}
+                </Select>
+
+                <Text pt="2" fontSize="md">
+                  Period:
+                </Text>
+
+                <Select
+                  placeholder="Select period"
+                  // onChange={(element) => setSortPeriod(element.target.value)}
+                >
+                  <option value="all">All</option>
+                  {months.map((month) => {
+                    return <option value={month}>{month}</option>;
+                  })}
+                </Select>
+                <Button className="mt-5" onClick={handleFilterButton}>
+                  Filter
+                </Button>
+              </Box>
+              {/* <Box>
             <Heading size="xs" textTransform="uppercase">
               Overview
             </Heading>
@@ -132,42 +133,33 @@ const StockHistory = () => {
               Check out the overview of your products.
             </Text>
           </Box> */}
-          <Box>
-            <Heading size="md">
-              Stock Info
-            </Heading>
-            <Text pt="2" fontSize="md">
-              See a detailed analysis of all your business clients.
-            </Text>
-            <div className="flex flex-row justify-center">
-              <div>
-                <div className="flex flex-row mt-4">
-                  <div>Quantity on hand (pcs): </div>
-                  <div> 1400</div>
-                </div>
-                <div className="flex flex-row mt-4">
-                  <div>Forecast quantity (pcs): </div>
-                  <div> 800</div>
-                </div>
-              </div>
-              <div>
-                <div className="flex flex-row mt-4">
-                  <div>Incoming: </div>
-                  <div> 1400</div>
-                </div>
-                <div className="flex flex-row mt-4">
-                  <div>Outcoming: </div>
-                  <div> 800</div>
-                </div>
-              </div>
-            </div>
-            <Button className="mt-5">
-              Manage Stock
-            </Button>
-          </Box>
-        </Stack>
-      </CardBody>
-    </Card>
+              <Box>
+                <Heading size="md">Stock Info</Heading>
+                <Text pt="2" fontSize="md">
+                  See a detailed analysis of all your product stocks.
+                </Text>
+                <Button className="mt-5">Manage Stock</Button>
+              </Box>
+            </Stack>
+          </CardBody>
+        </Card>
+        <Box>
+          <TableContainer>
+            <Table size="lg">
+              <Thead>
+                <Tr>
+                  <Th>Description</Th>
+                  <Th>Qty In</Th>
+                  <Th>Qty Out</Th>
+                  <Th isNumeric>Qty difference</Th>
+                </Tr>
+              </Thead>
+              <Tbody>{showStockHistories()}</Tbody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Flex>
+    </>
   );
 };
 

@@ -1,6 +1,3 @@
-// Import Sequelize
-const { sequelize } = require("../../models");
-
 // Import models
 const db = require("../../models/index");
 const users = db.users;

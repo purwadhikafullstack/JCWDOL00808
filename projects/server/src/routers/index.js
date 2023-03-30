@@ -7,7 +7,9 @@ const productsRouter = require("./productsRouter");
 const productRouter = require("./productRouter");
 const productCategoryRouter = require("./productCategoryRouter");
 const stockMutationRouter = require("./stockMutationRouter");
+const cartsRouter = require("./cartsRouter");
 const addressesRouter = require("./addresesRouter");
+const historiesRouter = require("./histories")
 
 module.exports = {
   usersRouter,
@@ -19,5 +21,7 @@ module.exports = {
   productRouter,
   productCategoryRouter,
   stockMutationRouter,
+  cartsRouter,
   addressesRouter,
+  historiesRouter,
 };

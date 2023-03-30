@@ -1,27 +1,27 @@
 import {
   Avatar,
   Button,
+  Center,
   Flex,
   FormControl,
-  FormLabel,
   FormErrorMessage,
+  FormLabel,
   Heading,
   Input,
   Stack,
-  useColorModeValue,
-  Center,
   Tooltip,
-  useToast,
+  useColorModeValue,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useFormik } from "formik";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import { isAuth } from "../../apis/userAPIs";
 import ChangePassword from "../../components/ChangePassword";
 import RemovePicConfirmation from "../../components/RemovePicConfirmation";
-import { useNavigate } from "react-router-dom";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import axios from "axios";
-import { useState, useRef, useEffect } from "react";
-import { isAuth } from "../../apis/userAPIs";
 
 export default function EditProfile() {
   const [profile, setProfile] = useState([]);
@@ -120,7 +120,7 @@ export default function EditProfile() {
 
   useEffect(() => {
     isAuth(navigate, true).then((data) => setProfile(data));
-  }, [refresh]);
+  }, [navigate, refresh]);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()

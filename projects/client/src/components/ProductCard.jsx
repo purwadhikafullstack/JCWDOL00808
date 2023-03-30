@@ -1,23 +1,45 @@
-import { CircularProgress } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { addProduct } from "../reducers/cartSlice";
 
 export const ProductCard = (props) => {
-  const { products } = props;
-  const [profile, setProfile] = useState(null);
+  const dispatch = useDispatch();
+  const toast = useToast();
+  const { products, profile } = props;
 
-  // const handleAddToCart = () => {
-  //   // Add the product to the cart with the selected quantity
-  // };
+  const handleAddToCart = (products_id, quantity) => {
+    // Add the product to the cart with the selected quantity
+    dispatch(
+      addProduct({
+        products_id,
+        quantity,
+      })
+    );
+    toast({
+      title: "Product added to cart",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+  };
 
-  useEffect(() => {
-    setProfile(JSON.parse(localStorage.getItem("user")));
-  }, []);
-
-  if (!props) {
+  if (products.length === 0) {
     return (
-      <div classNameName="my-8">
-        <CircularProgress isIndeterminate color="blue" />
+      <div className="flex flex-col col-span-4 justify-center items-center my-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          Product Not Found
+        </h1>
+        <p className="text-gray-700 text-lg mb-8">
+          We're sorry, the product you're looking for cannot be found. Please
+          check your keyword or try again later.
+        </p>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          onClick={() => props.func("")}
+        >
+          Go Back
+        </button>
       </div>
     );
   }
@@ -52,6 +74,7 @@ export const ProductCard = (props) => {
                   })}
                 </span>
                 <button
+                  onClick={() => handleAddToCart(product.id, 1)}
                   disabled={!profile?.is_verified || product.totalStock === "0"}
                   className="text-white bg-blue-700 hover:bg-blue-700 active:bg-blue-900 font-medium rounded-lg text-sm px-2 py-2 text-center dark:bg-blue-600 enabled:dark:hover:bg-blue-700 enabled:dark:active:bg-blue-900 disabled:dark:bg-gray-700 disabled:cursor-not-allowed disabled:dark:text-black disabled:bg-blue-300 disabled:text-white"
                 >
