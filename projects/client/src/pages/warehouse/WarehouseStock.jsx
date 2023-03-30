@@ -43,6 +43,7 @@ const WarehouseStock = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [warehouseName, setWarehouseName] = useState("");
   const [stocks, setStocks] = useState([]);
+  const [stocksToUpdate, setStocksToUpdate] = useState([]);
   const [productsModal, setProductsModal] = useState([]);
   const [productsCategoryModal, setProductsCategoryModal] = useState([]);
   const [stockToDelete, setStockToDelete] = useState(null);
@@ -107,16 +108,51 @@ const WarehouseStock = () => {
   };
 
   //API UPDATE STOCK
-  const handleConfirmUpdateStock = () => {
+  const handleUpdateStock = async (id, values) => {
+    
+    try {
+      const response = await axios.patch(`http://localhost:8000/warehouses/update-stock-product/${id}`, {
+        ...values,
+        stock: parseInt(values.stock),
+      });
+      
+      setStocksToUpdate([...stocksToUpdate, response.data])
+      fetchWarehouseProducts()
+      toast({
+        title: "Stock updated.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      // resetForm()
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: error?.response?.data?.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+      
+    }
+    // finally {
+    //   setSubmitting(false);
+    // }
+    
     // Handle updating stock for the selected product
     onEditStockClose();
   };
 
-  
+  // CONFIRM UPDATE
+  const handleConfirmUpdate = async () => {
+    await handleUpdateStock(stockToUpdate, formikUpdate.values);
+    setStockToUpdate(null);
+    onEditStockClose();
+  };
+
   // BUKA MODAL UPDATE
   const handleUpdateModal = async (stockId) => {
-    // const product = products.find((p) => p.id === id);
-    // setSelectedProduct(product);
+    // Handle updating the product with the given ID
     setStockToUpdate(stockId);
     onEditStockOpen();
   };
@@ -194,7 +230,7 @@ const WarehouseStock = () => {
   };
 
 
-  const formik = useFormik({
+  const formikAdd = useFormik({
     initialValues: {
       stock: "",
       products_id: "",
@@ -207,6 +243,19 @@ const WarehouseStock = () => {
       
     }),
     onSubmit: handleCreateStock,
+  });
+
+  const formikUpdate = useFormik({
+    initialValues: {
+      stock: "",
+      description: "",
+    },
+    validationSchema: Yup.object({
+      stock: Yup.number().required("Required"),
+      description: Yup.string().required("Required"),
+      
+    }),
+    onSubmit: handleUpdateStock,
   });
 
   return (
@@ -274,14 +323,14 @@ const WarehouseStock = () => {
             <ModalHeader>Add Stock</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-            <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={formikAdd.handleSubmit}>
             <VStack spacing={4} mt={4} mx="auto" maxW="480px">
-              <FormControl isInvalid={formik.errors.stock && formik.touched.stock}>
+              <FormControl isInvalid={formikAdd.errors.stock && formikAdd.touched.stock}>
               <FormLabel htmlFor="address">Product Category</FormLabel>
-                <Select placeholder=" " {...formik.getFieldProps("product_category_id")}
+                <Select placeholder=" " {...formikAdd.getFieldProps("product_category_id")}
                 onChange={(value) => {
                   fetchProductsModal(value.target.value);
-                  formik.handleChange(value);
+                  formikAdd.handleChange(value);
                 }}>
                 {productsCategoryModal.map((element) => (
                   <option key={element.id} value={element.id}>
@@ -289,15 +338,15 @@ const WarehouseStock = () => {
                   </option>
                 ))}
               </Select>
-                  <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
+                  <FormErrorMessage>{formikAdd.errors.stock}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={formik.errors.products_id && formik.touched.products_id}>
+              <FormControl isInvalid={formikAdd.errors.products_id && formikAdd.touched.products_id}>
               <FormLabel htmlFor="address">Product Name</FormLabel>
-                <Select placeholder=" " {...formik.getFieldProps("products_id")}
+                <Select placeholder=" " {...formikAdd.getFieldProps("products_id")}
                 onChange={(value) => {
                   // fetchProductsModal(value.target.value);
-                  formik.handleChange(value);
+                  formikAdd.handleChange(value);
                 }}>
                 {productsModal.map((element) => (
                   <option key={element.id} value={element.id}>
@@ -305,15 +354,15 @@ const WarehouseStock = () => {
                   </option>
                 ))}
               </Select>
-                  <FormErrorMessage>{formik.errors.products_id}</FormErrorMessage>
+                  <FormErrorMessage>{formikAdd.errors.products_id}</FormErrorMessage>
               </FormControl>
               
           <FormControl>
             <FormLabel>Total Stock</FormLabel>
             <NumberInput
               min={0}
-                value={formik.values.stock}
-                onChange={(value) => formik.setFieldValue('stock', value)}
+                value={formikAdd.values.stock}
+                onChange={(value) => formikAdd.setFieldValue('stock', value)}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -324,7 +373,7 @@ const WarehouseStock = () => {
           </FormControl>
               <Button type="submit" colorScheme="blue" mr={3} 
               // onClick={handleCreateStock}
-              isLoading={formik.isSubmitting}
+              isLoading={formikAdd.isSubmitting}
               >
                 Add Stock
               </Button>
@@ -341,15 +390,22 @@ const WarehouseStock = () => {
           <ModalOverlay />
           <ModalContent>
             {/* <ModalHeader>Update Stock for {selectedProduct.product_name}</ModalHeader> */}
-            <ModalHeader>Update Stock for Celana</ModalHeader>
+            <ModalHeader>Update Stock</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-          <FormControl>
-            <FormLabel>Total Stock</FormLabel>
+            {/* <form onSubmit={formikUpdate.handleSubmit}> */}
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              formikUpdate.handleSubmit();
+              handleUpdateStock(stockToUpdate, formikUpdate.values);
+              }}>
+            <VStack spacing={4} mt={4} mx="auto" maxW="480px">
+              <FormControl isInvalid={formikUpdate.errors.stock && formikUpdate.touched.stock}>
+            <FormLabel>Quantity Stock to Added</FormLabel>
             <NumberInput
-              min={0}
-              value={updatedStock}
-              onChange={(value) => setUpdatedStock(value)}
+              
+              value={formikUpdate.values.stock}
+                onChange={(value) => formikUpdate.setFieldValue('stock', value)}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -358,9 +414,23 @@ const WarehouseStock = () => {
               </NumberInputStepper>
             </NumberInput>
           </FormControl>
+
+          <FormControl isInvalid={formikUpdate.errors.stock && formikUpdate.touched.stock}>
+              <FormLabel htmlFor="address">Description</FormLabel>
+                <Input placeholder=" " {...formikUpdate.getFieldProps("description")}
+                onChange={formikUpdate.handleChange}
+                onBlur={formikUpdate.handleBlur}
+                value={formikUpdate.values.description}
+                >
+              </Input>
+                  <FormErrorMessage>{formikUpdate.errors.description}</FormErrorMessage>
+              </FormControl>
+
+          </VStack>
+              </form>
         </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={handleConfirmUpdateStock}>
+              <Button colorScheme="blue" mr={3} onClick={handleConfirmUpdate}>
                 Update Stock
               </Button>
               <Button onClick={onEditStockClose}>Cancel</Button>

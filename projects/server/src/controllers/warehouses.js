@@ -258,15 +258,30 @@ module.exports = {
     const t = await sequelize.transaction();
     try {
       const { id } = req.params;
-      const { stock } = req.body;
-      const updatedWarehouseProduct = await stocks.update({ stock }, { where: { id }, transaction: t });
-      // const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "Stock updated."});
+      const { stock, description } = req.body;
+      
+      const fromStock = await stocks.findByPk(id)
+
+      if (!fromStock) {
+        return res.status(404).send({
+          isError: true,
+          message: "Stock not found",
+          data: null,
+        });;
+      }
+
+      const fromStockBefore = fromStock.stock;
+      fromStock.stock += stock;
+        await fromStock.save({ transaction: t });
+
+      // const updatedWarehouseProduct = await stocks.update({ stock }, { where: { id }, transaction: t });
+      const updateHistories = await stock_histories.create({stock_before: fromStockBefore, stock_after: fromStock.stock, products_id: fromStock.products_id, warehouses_id: fromStock.warehouses_id, description}, {transaction: t });
       t.commit();
 
       res.status(200).send({
         isError: false,
         message: "Warehouse product updated.",
-        data: updatedWarehouseProduct,
+        data: fromStock,
       });
     } catch (error) {
       t.rollback();
