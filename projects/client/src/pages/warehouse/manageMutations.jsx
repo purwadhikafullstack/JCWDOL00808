@@ -23,8 +23,6 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverBody,
-  ChakraProvider,
-  extendTheme,
 } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus, FaCheck, FaTimes } from "react-icons/fa";
@@ -69,7 +67,6 @@ function ManageMutations() {
   };
 
   const handleStatusUpdate = async (id, status) => {
-    console.log(id, status);
     try {
       await axios.patch(
         `http://localhost:8000/mutations/confirm-mutation/${id}`,
@@ -253,7 +250,7 @@ function ManageMutations() {
           {mutation.map((mutation, index) => (
             <Tr key={mutation.id} align="center">
               <Td fontSize="sm" fontWeight="medium">
-                {index + 1}
+                {index + 1 + page * limit}
               </Td>
               <Td fontSize="sm">{mutation.product.name}</Td>
               <Td fontSize="sm">{mutation.quantity}</Td>
