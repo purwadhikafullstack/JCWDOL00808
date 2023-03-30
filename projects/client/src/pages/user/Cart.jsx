@@ -47,13 +47,21 @@ export default function Cart() {
                     className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
                   >
                     <img
+                      onClick={() =>
+                        navigate(`/product-details/${cart.product.id}`)
+                      }
                       src={`${process.env.REACT_APP_API_BASE_URL}/${cart.product.imageUrl}`}
                       alt={cart.product.name}
                       className="w-full rounded-lg sm:w-40"
                     />
                     <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                       <div className="mt-5 sm:mt-0">
-                        <h2 className="text-lg font-bold text-gray-900">
+                        <h2
+                          onClick={() =>
+                            navigate(`/product-details/${cart.product.id}`)
+                          }
+                          className="text-lg font-bold text-gray-900"
+                        >
                           {cart.product?.name}
                         </h2>
                         <p className="mt-1 text-xs text-gray-700 text-left">
