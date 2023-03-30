@@ -1,5 +1,4 @@
-import { Select, Button, Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Flex, Spacer, Square, Center } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { Select, Button, Card, CardHeader, CardBody, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Axios from "axios";
 import { API_url } from "../../helper";
@@ -7,11 +6,10 @@ import { API_url } from "../../helper";
 const StockHistory = () => {
   const [warehouseData, setWarehouseData] = useState([]);
   const [productsData, setProductsData] = useState([]);
-
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const [sortProductsId, setSortProductsId] = useState(0);
   const [sortWarehouseId, setSortWarehouseId] = useState(0);
-  // const [sortPeriod, setSortPeriod] = useState("");
+  const [sortMonth, setSortMonth] = useState(0);
+  const [sortYear, setSortYear] = useState(0);
 
   const [stockHistories, setStockHistories] = useState([]);
 
@@ -32,7 +30,7 @@ const StockHistory = () => {
   };
 
   const getStockHistories = () => {
-    Axios.get(API_url + `/histories/getStockHistories?sortProductsId=${sortProductsId}&sortWarehouseId=${sortWarehouseId}`)
+    Axios.get(API_url + `/histories/getStockHistories?sortProductsId=${sortProductsId}&sortWarehouseId=${sortWarehouseId}&sortMonth=${sortMonth}&sortYear=${sortYear}`)
       .then((response) => {
         console.log(response.data);
         setStockHistories(response.data);
@@ -52,15 +50,33 @@ const StockHistory = () => {
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {
-      let difference = Math.abs(value.stock_after - value.stock_before);
-      return (
-        <Tr key={value.id}>
-          <Td>{value.description}</Td>
-          <Td>{value.stock_before}</Td>
-          <Td>{value.stock_after}</Td>
-          <Td isNumeric>{difference}</Td>
-        </Tr>
-      );
+      let difference = value.stock_after - value.stock_before;
+      if (difference < 0) {
+        difference = Math.abs(difference);
+        return (
+          <Tr key={value.id}>
+            <Td>{value.stock_before}</Td>
+            <Td>{value.stock_after}</Td>
+            <Td>Berkurang sebanyak {difference}</Td>
+            <Td>{value.description}</Td>
+            <Td>
+              <Button colorScheme="blue">Details</Button>
+            </Td>
+          </Tr>
+        );
+      } else {
+        return (
+          <Tr key={value.id}>
+            <Td>{value.stock_before}</Td>
+            <Td>{value.stock_after}</Td>
+            <Td>Bertambah sebanyak {difference}</Td>
+            <Td>{value.description}</Td>
+            <Td>
+              <Button colorScheme="blue">Details</Button>
+            </Td>
+          </Tr>
+        );
+      }
     });
   };
 
@@ -77,9 +93,7 @@ const StockHistory = () => {
           <CardBody>
             <Stack divider={<StackDivider />} spacing="4">
               <Box>
-                <Text fontSize="md">
-                  View a history of your products over the last month.
-                </Text>
+                <Text fontSize="md">View a history of your products over the last month.</Text>
 
                 <Text pt="2" fontSize="md">
                   Product:
@@ -112,27 +126,19 @@ const StockHistory = () => {
                   Period:
                 </Text>
 
-                <Select
-                  placeholder="Select period"
-                  // onChange={(element) => setSortPeriod(element.target.value)}
-                >
-                  <option value="all">All</option>
-                  {months.map((month) => {
-                    return <option value={month}>{month}</option>;
-                  })}
-                </Select>
+                <Flex>
+                  <Select placeholder="Month" onChange={(element) => setSortMonth(element.target.value)}>
+                    <option value={1}>January</option>;<option value={2}>February</option>;<option value={3}>March</option>;<option value={4}>April</option>;<option value={5}>May</option>;<option value={6}>June</option>;
+                    <option value={7}>July</option>;<option value={8}>August</option>;<option value={9}>September</option>;<option value={10}>October</option>;<option value={11}>November</option>;<option value={12}>December</option>;
+                  </Select>
+                  <Select placeholder="Year" onChange={(element) => setSortYear(element.target.value)}>
+                    <option value={2021}>2021</option>;<option value={2022}>2022</option>;<option value={2023}>2023</option>;<option value={2024}>2024</option>;<option value={2025}>2025</option>;
+                  </Select>
+                </Flex>
                 <Button className="mt-5" onClick={handleFilterButton}>
                   Filter
                 </Button>
               </Box>
-              {/* <Box>
-            <Heading size="xs" textTransform="uppercase">
-              Overview
-            </Heading>
-            <Text pt="2" fontSize="sm">
-              Check out the overview of your products.
-            </Text>
-          </Box> */}
               <Box>
                 <Heading size="md">Stock Info</Heading>
                 <Text pt="2" fontSize="md">
@@ -143,15 +149,16 @@ const StockHistory = () => {
             </Stack>
           </CardBody>
         </Card>
-        <Box>
+        <Box rounded={"lg"}>
           <TableContainer>
-            <Table size="lg">
+            <Table variant="striped" size="lg">
               <Thead>
                 <Tr>
+                  <Th>Qty Before</Th>
+                  <Th>Qty After</Th>
+                  <Th>Qty difference</Th>
                   <Th>Description</Th>
-                  <Th>Qty In</Th>
-                  <Th>Qty Out</Th>
-                  <Th isNumeric>Qty difference</Th>
+                  <Th>Action</Th>
                 </Tr>
               </Thead>
               <Tbody>{showStockHistories()}</Tbody>
