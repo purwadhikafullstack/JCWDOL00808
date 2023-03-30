@@ -2,7 +2,6 @@ import {
   Table,
   Thead,
   Tbody,
-  extendTheme,
   Tr,
   Th,
   Td,
@@ -11,7 +10,6 @@ import {
   Input,
   Button,
   Menu,
-  Select,
   MenuButton,
   MenuList,
   MenuItem,
@@ -19,13 +17,14 @@ import {
   Text,
   TableCaption,
   useToast,
-  ChakraProvider,
   IconButton,
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverHeader,
   PopoverBody,
+  ChakraProvider,
+  extendTheme,
 } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus, FaCheck, FaTimes } from "react-icons/fa";
@@ -70,6 +69,7 @@ function ManageMutations() {
   };
 
   const handleStatusUpdate = async (id, status) => {
+    console.log(id, status);
     try {
       await axios.patch(
         `http://localhost:8000/mutations/confirm-mutation/${id}`,
@@ -103,8 +103,9 @@ function ManageMutations() {
     setIsModalOpen(false);
   };
 
-  function handleIconClick(action) {
-    setDialogAction(action);
+  function handleIconClick(id, status) {
+    setDialogAction(id);
+    setSelectedStatus(status);
     setIsPopoverOpen(true);
   }
 
@@ -114,7 +115,7 @@ function ManageMutations() {
   }
 
   function handleDialogConfirm() {
-    handleStatusUpdate(mutation.id, dialogAction);
+    handleStatusUpdate(dialogAction, selectedStatus);
     handlePopoverClose();
   }
 
@@ -264,37 +265,29 @@ function ManageMutations() {
                 <Box display="flex">
                   {mutation.mutation_type === "Pending" && (
                     <div key={mutation.id}>
-                      <Flex>
-                        <Box>
-                          <Select placeholder="Select status" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} display="none">
-                            <option value="ACCEPT">Accept</option>
-                            <option value="REJECT">Reject</option>
-                          </Select>
-                        </Box>
-                        <Box position="relative">
-                          <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} onClick={() => handleIconClick("ACCEPT")} />
-                          <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick("REJECT")} />
-                        </Box>
-                        <Box position="relative">
-                          <Popover isOpen={isPopoverOpen} onClose={handlePopoverClose} placement="bottom-start" closeOnBlur={false}>
-                            <PopoverContent>
-                              <PopoverHeader fontWeight="bold">{dialogAction === "ACCEPT" ? "Confirm Accept" : "Confirm Reject"}</PopoverHeader>
-                              <PopoverBody>Are you sure you want to {dialogAction === "ACCEPT" ? "accept" : "reject"}?</PopoverBody>
-                              <Flex justify="flex-end" mt={2}>
-                                <Button variant="ghost" onClick={handlePopoverClose}>
-                                  Cancel
-                                </Button>
-                                <Button colorScheme="teal" ml={3} onClick={handleDialogConfirm}>
-                                  Confirm
-                                </Button>
-                              </Flex>
-                            </PopoverContent>
-                            <PopoverTrigger>
-                              <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" onClick={() => handleIconClick("REJECT")} />
-                            </PopoverTrigger>
-                          </Popover>
-                        </Box>
-                      </Flex>
+                      <Box position="relative">
+                        <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} onClick={() => handleIconClick(mutation.id, "ACCEPT")} />
+                        <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick(mutation.id, "REJECT")} />
+                      </Box>
+                      <Box position="relative">
+                        <Popover isOpen={isPopoverOpen} onClose={handlePopoverClose} placement="bottom-start" closeOnBlur={false}>
+                          <PopoverContent>
+                            <PopoverHeader fontWeight="bold">{selectedStatus === "ACCEPT" ? "Confirm Accept" : "Confirm Reject"}</PopoverHeader>
+                            <PopoverBody>Are you sure you want to {selectedStatus === "ACCEPT" ? "accept" : "reject"}?</PopoverBody>
+                            <Flex justify="flex-end" mt={2}>
+                              <Button variant="ghost" onClick={handlePopoverClose}>
+                                Cancel
+                              </Button>
+                              <Button colorScheme="teal" ml={3} onClick={handleDialogConfirm}>
+                                Confirm
+                              </Button>
+                            </Flex>
+                          </PopoverContent>
+                          <PopoverTrigger>
+                            <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" onClick={() => handleIconClick("REJECT")} />
+                          </PopoverTrigger>
+                        </Popover>
+                      </Box>
                     </div>
                   )}
                 </Box>
