@@ -35,7 +35,7 @@ export default function Cart() {
   return (
     <>
       <div className="container flex flex-col justify-between">
-        <Navbar />
+        {/* <Navbar /> */}
         <div className=" bg-gray-100 py-5">
           <h1 className="mb-10 text-center text-2xl font-bold">Cart Items</h1>
           <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
@@ -47,13 +47,21 @@ export default function Cart() {
                     className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
                   >
                     <img
+                      onClick={() =>
+                        navigate(`/product-details/${cart.product.id}`)
+                      }
                       src={`${process.env.REACT_APP_API_BASE_URL}/${cart.product.imageUrl}`}
                       alt={cart.product.name}
                       className="w-full rounded-lg sm:w-40"
                     />
                     <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                       <div className="mt-5 sm:mt-0">
-                        <h2 className="text-lg font-bold text-gray-900">
+                        <h2
+                          onClick={() =>
+                            navigate(`/product-details/${cart.product.id}`)
+                          }
+                          className="text-lg font-bold text-gray-900"
+                        >
                           {cart.product?.name}
                         </h2>
                         <p className="mt-1 text-xs text-gray-700 text-left">
@@ -179,7 +187,7 @@ export default function Cart() {
             </div>
           </div>
         </div>
-        <Footer />
+        {/* <Footer /> */}
         <ScrollToTopButton />
       </div>
     </>

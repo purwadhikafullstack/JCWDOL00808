@@ -71,18 +71,18 @@ export default function ProductDetails() {
   if (!product) {
     return (
       <div className="container flex flex-col justify-between">
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="my-8">
           <CircularProgress isIndeterminate color="blue" />
         </div>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     );
   }
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="container mx-auto md:px-24 px-8 py-8">
         <Flex
           direction={{ base: "column", sm: "row" }}
@@ -138,7 +138,7 @@ export default function ProductDetails() {
           </VStack>
         </Flex>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

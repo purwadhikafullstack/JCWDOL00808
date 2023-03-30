@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { loginUser } from "../../apis/userAPIs";
 import { useNavigate } from "react-router";
-// import { useUserContext } from "../hooks/useUserContext";
+import { useDispatch, useSelector } from "react-redux";
+import { userLogin, clearState } from "../../reducers/authSlice";
 import { Toaster } from "react-hot-toast";
-// import shareVideo from "../assets/share.mp4";
 
 const Login = () => {
-  // const { dispatch } = useUserContext();
-  const token = localStorage.getItem("token");
+  const dispatch = useDispatch();
+  const { user, isSuccess, isError, message } = useSelector(
+    (state) => state.auth
+  );
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -27,10 +28,15 @@ const Login = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (isSuccess) {
+      setTimeout(() => {
+        navigate("/");
+        dispatch(clearState());
+      }, 2000);
+    } else if (user) {
       navigate("/");
     }
-  }, []);
+  }, [user, isSuccess, navigate, dispatch]);
 
   return (
     <div className="flex justify-start items-center flex-col h-screen">
@@ -81,8 +87,13 @@ const Login = () => {
                   className="bg-sky-500 text-center mx-8 text-sm py-1 rounded-sm text-white font-bold"
                   type="button"
                   onClick={() => {
-                    loginUser(loginData.email, loginData.password);
-                    //   dispatch({ type: "LOGIN", payload: token });
+                    // loginUser(loginData.email, loginData.password);
+                    dispatch(
+                      userLogin({
+                        email: loginData.email,
+                        password: loginData.password,
+                      })
+                    );
                   }}
                 >
                   Log in
@@ -114,10 +125,10 @@ const Login = () => {
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png" /> */}
               </div>
             </div>
-            <Toaster />
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Registration from "./pages/user/Registration";
 import Home from "./pages/Home";
 import Verification from "./pages/user/Verification";
@@ -33,18 +33,56 @@ import UserAddress from "./pages/user/UserAddress";
 import EditUserAddress from "./pages/user/EditUserAddress";
 import AddUserAddress from "./pages/user/AddUserAddress";
 import WarehouseStock from "./pages/warehouse/WarehouseStock";
+// import { useSelector } from "react-redux";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 function App() {
+  const location = useLocation();
+  // const { user } = useSelector((state) => state.auth);
+
+  const cleanRoute = [
+    "/user/register",
+    "/user/verify",
+    "/user/verify-new-password",
+    "/user/login",
+    "/user/reset-password",
+    "/admin/login",
+  ].includes(location.pathname);
+
   return (
     <div className="App">
+      {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
+      {cleanRoute ? null : location.pathname.startsWith(
+          "/admin" || "/warehouse"
+        ) ? (
+        <Sidebar />
+      ) : (
+        <Navbar />
+      )}
+
       <Routes>
+        {/*User's path */}
         <Route path="/" element={<Home />} />
         <Route path="/user/register" element={<Registration />} />
         <Route path="/user/verify" element={<Verification />} />
-        <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
+        <Route
+          path="/user/verify-new-password"
+          element={<VerificationNewPassword />}
+        />
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/profile" element={<EditProfile />} />
         <Route path="/user/reset-password" element={<ResetPassword />} />
+        <Route path="/user/address" element={<UserAddress />} />
+        <Route path="/user/add-address" element={<AddUserAddress />} />
+        <Route path="/user/address/:id" element={<EditUserAddress />} />
+        <Route
+          path="/product-details/:productId"
+          element={<ProductDetails />}
+        />
+        <Route path="/user/cart" element={<Cart />} />
+
+        {/*Admin's path */}
         <Route path="/admin" element={<Sidebar />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/list" element={<AdminList />} />
@@ -71,19 +109,17 @@ function App() {
           element={<PatchCategoryProduct />}
         />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
-        <Route path="/user/address" element={<UserAddress />} />
-        <Route path="/user/add-address" element={<AddUserAddress />} />
-        <Route path="/user/address/:id" element={<EditUserAddress />} />
-
-        <Route
-          path="/product-details/:productId"
-          element={<ProductDetails />}
-        />
-        <Route path="/user/cart" element={<Cart />} />
 
         {/* Fallback route */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="/*" element={<NotFound />} />
       </Routes>
+
+      {/*User path will have footer */}
+      {cleanRoute ? null : location.pathname.startsWith(
+          "/admin" || "/warehouse"
+        ) ? null : (
+        <Footer />
+      )}
     </div>
   );
 }

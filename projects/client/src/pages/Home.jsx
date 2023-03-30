@@ -10,8 +10,8 @@ import Carousel2 from "../assets/carousel/carousel2.jpg";
 import Carousel3 from "../assets/carousel/carousel3.jpg";
 import Carousel4 from "../assets/carousel/carousel4.jpg";
 import CategoryCard from "../components/CategoryCard";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
+// import Footer from "../components/Footer";
+// import Navbar from "../components/Navbar";
 import { ProductCard } from "../components/ProductCard";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
@@ -66,7 +66,7 @@ export default function Home() {
 
   return (
     <div className="container flex flex-col justify-between">
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="p-2 md:p-4" /*mt-16 */>
         <Carousel
           wrapAround={true}
@@ -87,11 +87,9 @@ export default function Home() {
           <img src={Carousel4} alt="carousel-4" className="w-full rounded-lg" />
         </Carousel>
       </div>
-      <div
-        className="flex gap-4 overflow-x-auto whitespace-nowrap py-4 px-4" /*my-4 px-2 grid md:grid-cols-4 grid-cols-2 gap-4*/
-      >
-        <CategoryCard func={getCategory} />
-      </div>
+
+      <CategoryCard func={getCategory} />
+
       <div className="flex justify-end items-center mt-4 px-4">
         <label htmlFor="sort" className="font-medium mr-1">
           Sort by :
@@ -176,7 +174,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
       <ScrollToTopButton />
       <Toaster />
     </div>
