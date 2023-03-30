@@ -10,6 +10,7 @@ const {
   createVerificationToken,
   validateVerificationToken,
 } = require("../helper/verificationToken");
+const { createToken } = require("../lib/jwt");
 // Import transporter function
 const transporter = require("../helper/transporter");
 const fs = require("fs").promises;
@@ -43,7 +44,7 @@ module.exports = {
         let registerTemplate = compiledTemplate({
           registrationLink: "http://localhost:3000/user/verify",
           email,
-          token: createVerificationToken({ id: createAccount.dataValues.id }),
+          token: createToken({ id: createAccount.dataValues.id }),
         });
         await transporter.sendMail({
           from: `Big4Commerce <${process.env.GMAIL}>`,
@@ -125,27 +126,32 @@ module.exports = {
           message: "Email not found.",
           data: null,
         });
-      }
+      } else {
+        let hasMatchResult = await hashMatch(
+          password,
+          findEmail.dataValues.password
+        );
 
-      let hasMatchResult = await hashMatch(
-        password,
-        findEmail.dataValues.password
-      );
+        if (hasMatchResult === false)
+          return res.status(404).send({
+            isError: true,
+            message: "Password not valid",
+            data: true,
+          });
 
-      if (hasMatchResult === false)
-        return res.status(404).send({
-          isError: true,
-          message: "Password not valid",
-          data: true,
+        const userData = await users.findOne({
+          where: { email },
+          attributes: { exclude: ["password"] },
         });
-
-      res.status(200).send({
-        isError: false,
-        message: "Login Success",
-        data: {
-          token: createVerificationToken({ id: findEmail.dataValues.id }),
-        },
-      });
+        res.status(200).send({
+          isError: false,
+          message: "Login Success",
+          data: {
+            user: userData,
+            token: createVerificationToken({ id: findEmail.dataValues.id }),
+          },
+        });
+      }
     } catch (error) {
       res.status(500).send({
         isError: true,
