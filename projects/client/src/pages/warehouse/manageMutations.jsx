@@ -1,4 +1,32 @@
-import { Table, Thead, Tbody, extendTheme, Tr, Th, Td, Flex, Box, Input, Button, Menu, Select, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast, ChakraProvider, IconButton } from "@chakra-ui/react";
+import {
+  Table,
+  Thead,
+  Tbody,
+  extendTheme,
+  Tr,
+  Th,
+  Td,
+  Flex,
+  Box,
+  Input,
+  Button,
+  Menu,
+  Select,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Icon,
+  Text,
+  TableCaption,
+  useToast,
+  ChakraProvider,
+  IconButton,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+} from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus, FaCheck, FaTimes } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
@@ -10,14 +38,16 @@ function ManageMutations() {
   const [mutation, setMutation] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [dialogAction, setDialogAction] = useState("");
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [pages, setPages] = useState(0);
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("quantity");
-  const [sortText, setSortText] = useState("quantity");
+  const [sort, setSort] = useState("createdAt");
+  const [sortText, setSortText] = useState("Date");
   const [order, setOrder] = useState("DESC");
   const toast = useToast();
   const token = localStorage.getItem("token");
@@ -73,6 +103,21 @@ function ManageMutations() {
     setIsModalOpen(false);
   };
 
+  function handleIconClick(action) {
+    setDialogAction(action);
+    setIsPopoverOpen(true);
+  }
+
+  function handlePopoverClose() {
+    setIsPopoverOpen(false);
+    setDialogAction("");
+  }
+
+  function handleDialogConfirm() {
+    handleStatusUpdate(mutation.id, dialogAction);
+    handlePopoverClose();
+  }
+
   const changePage = ({ selected }) => {
     setPage(selected);
   };
@@ -100,6 +145,9 @@ function ManageMutations() {
       case "to_warehouse_id":
         setSortText("To Warehouse");
         break;
+      case "createdAt":
+        setSortText("Date");
+        break;
       default:
         setSortText(value);
     }
@@ -108,6 +156,14 @@ function ManageMutations() {
   const handleOrder = (value) => {
     setOrder(value);
     setPage(0);
+  };
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = ("0" + (d.getMonth() + 1)).slice(-2);
+    const day = ("0" + d.getDate()).slice(-2);
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -146,6 +202,9 @@ function ManageMutations() {
             <MenuItem value={sort} onClick={() => handleSort("to_warehouse_id")}>
               To Warehouse
             </MenuItem>
+            <MenuItem value={sort} onClick={() => handleSort("createdAt")}>
+              Date
+            </MenuItem>
           </MenuList>
         </Menu>
         <Box mr={2} ml="4">
@@ -182,9 +241,10 @@ function ManageMutations() {
             <Th>No</Th>
             <Th>Product</Th>
             <Th>Quantity</Th>
-            <Th>From Warehouse</Th>
-            <Th>To Warehouse</Th>
-            <Th>Mutation Status</Th>
+            <Th>From</Th>
+            <Th>To</Th>
+            <Th>Status</Th>
+            <Th>Date</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
@@ -199,6 +259,7 @@ function ManageMutations() {
               <Td fontSize="sm">{mutation.from_warehouse.name}</Td>
               <Td fontSize="sm">{mutation.to_warehouse.name}</Td>
               <Td fontSize="sm">{mutation.mutation_type}</Td>
+              <Td fontSize="sm">{formatDate(mutation.createdAt)}</Td>
               <Td>
                 <Box display="flex">
                   {mutation.mutation_type === "Pending" && (
@@ -210,11 +271,28 @@ function ManageMutations() {
                             <option value="REJECT">Reject</option>
                           </Select>
                         </Box>
-                        <Box mr={2} cursor="pointer" onClick={() => handleStatusUpdate(mutation.id, "ACCEPT")}>
-                          <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} />
+                        <Box position="relative">
+                          <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} onClick={() => handleIconClick("ACCEPT")} />
+                          <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick("REJECT")} />
                         </Box>
-                        <Box cursor="pointer" onClick={() => handleStatusUpdate(mutation.id, "REJECT")}>
-                          <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} />
+                        <Box position="relative">
+                          <Popover isOpen={isPopoverOpen} onClose={handlePopoverClose} placement="bottom-start" closeOnBlur={false}>
+                            <PopoverContent>
+                              <PopoverHeader fontWeight="bold">{dialogAction === "ACCEPT" ? "Confirm Accept" : "Confirm Reject"}</PopoverHeader>
+                              <PopoverBody>Are you sure you want to {dialogAction === "ACCEPT" ? "accept" : "reject"}?</PopoverBody>
+                              <Flex justify="flex-end" mt={2}>
+                                <Button variant="ghost" onClick={handlePopoverClose}>
+                                  Cancel
+                                </Button>
+                                <Button colorScheme="teal" ml={3} onClick={handleDialogConfirm}>
+                                  Confirm
+                                </Button>
+                              </Flex>
+                            </PopoverContent>
+                            <PopoverTrigger>
+                              <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" onClick={() => handleIconClick("REJECT")} />
+                            </PopoverTrigger>
+                          </Popover>
                         </Box>
                       </Flex>
                     </div>

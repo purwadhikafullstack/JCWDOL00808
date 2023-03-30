@@ -178,7 +178,7 @@ module.exports = {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const sort = req.query.sort || "quantity"; //default sorting by from quantity
+      const sort = req.query.sort || "createdAt"; //default sorting by date
       const order = req.query.order || "DESC"; //default order DESC
       const totalRows = await stock_mutations.count({
         where: {
@@ -217,6 +217,11 @@ module.exports = {
             },
             {
               "$to_warehouse.name$": {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              createdAt: {
                 [Op.like]: "%" + search + "%",
               },
             },

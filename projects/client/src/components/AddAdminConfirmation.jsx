@@ -15,10 +15,10 @@ export default function AddAdminConfirmation(props) {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Add Data Admin
+              Confirmation
             </AlertDialogHeader>
 
-            <AlertDialogBody>Are you sure?</AlertDialogBody>
+            <AlertDialogBody>Are you sure you want to continue ?</AlertDialogBody>
 
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onClose}>
