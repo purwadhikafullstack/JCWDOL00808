@@ -23,37 +23,41 @@ export default function CategoryCard(props) {
   return (
     <>
       <div
-        onClick={() => props.func("")}
-        className="hover:animate-pulse flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
+        className="flex gap-4 overflow-x-auto py-4 px-4 mx-1" /*my-4 px-2 grid md:grid-cols-4 grid-cols-2 gap-4*/
       >
-        <div className="flex flex-col items-center justify-between p-4">
-          <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
-            All Categories
-          </p>
-          <p className=" dark:text-white dark:opacity-60 text-sm">
-            Show products on all categories
-          </p>
-        </div>
-      </div>
-      {categories.map((category, index) => {
-        return (
-          <div
-            key={index}
-            onClick={() => props.func(category.id)}
-            className="hover:animate-pulse flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
-          >
-            <div className="flex flex-col items-center justify-between p-4">
-              <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
-                {category.name}
-              </p>
-              <p className=" dark:text-white dark:opacity-60 text-sm">
-                {category.description}
-              </p>
-            </div>
+        <div
+          onClick={() => props.func("")}
+          className="hover:animate-pulse flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
+        >
+          <div className="flex flex-col items-center justify-between p-4">
+            <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
+              All Categories
+            </p>
+            <p className=" dark:text-white dark:opacity-60 text-sm">
+              Show products on all categories
+            </p>
           </div>
-        );
-      })}
-      <Toaster />
+        </div>
+        {categories.map((category, index) => {
+          return (
+            <div
+              key={index}
+              onClick={() => props.func(category.id)}
+              className="hover:animate-pulse flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
+            >
+              <div className="flex flex-col items-center justify-between p-4">
+                <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
+                  {category.name}
+                </p>
+                <p className=" dark:text-white dark:opacity-60 text-sm">
+                  {category.description}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+        <Toaster />
+      </div>
     </>
   );
 }

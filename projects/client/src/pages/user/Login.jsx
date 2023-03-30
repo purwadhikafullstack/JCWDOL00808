@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import { loginUser } from "../../apis/userAPIs";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogin, clearState } from "../../reducers/authSlice";
