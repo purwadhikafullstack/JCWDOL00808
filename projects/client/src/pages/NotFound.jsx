@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function NotFound() {
   const navigate = useNavigate();
   return (
-    <Box textAlign="center" py={10} px={6}>
+    <Box textAlign="center" py={10} px={6} minH={"18.5rem"}>
       <Heading
         display="inline-block"
         as="h2"
@@ -22,13 +22,13 @@ export default function NotFound() {
       </Text>
 
       <Button
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
         colorScheme="teal"
         bgGradient="linear(to-r, teal.400, teal.500, teal.600)"
         color="white"
         variant="solid"
       >
-        Go to Home
+        Go Back
       </Button>
     </Box>
   );

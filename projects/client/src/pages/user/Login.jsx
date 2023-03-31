@@ -6,9 +6,7 @@ import { Toaster } from "react-hot-toast";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const { user, isSuccess, isError, message } = useSelector(
-    (state) => state.auth
-  );
+  const { user, isSuccess } = useSelector((state) => state.auth);
 
   const [loginData, setLoginData] = useState({
     email: "",
