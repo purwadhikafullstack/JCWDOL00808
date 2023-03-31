@@ -96,7 +96,7 @@ app.use("/product", productRouter);
 app.use("/productcategory", productCategoryRouter);
 app.use("/cart", cartsRouter);
 app.use("/address", addressesRouter);
-app.use("/histories", historiesRouter)
+app.use("/histories", historiesRouter);
 
 app.use(express.static("."));
 
