@@ -10,8 +10,6 @@ import Carousel2 from "../assets/carousel/carousel2.jpg";
 import Carousel3 from "../assets/carousel/carousel3.jpg";
 import Carousel4 from "../assets/carousel/carousel4.jpg";
 import CategoryCard from "../components/CategoryCard";
-// import Footer from "../components/Footer";
-// import Navbar from "../components/Navbar";
 import { ProductCard } from "../components/ProductCard";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
@@ -62,11 +60,11 @@ export default function Home() {
   useEffect(() => {
     isAuth(navigate).then((data) => setProfile(data));
     fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
   return (
-    <div className="container flex flex-col justify-between">
-      {/* <Navbar /> */}
+    <div className="flex flex-col justify-between">
       <div className="p-2 md:p-4" /*mt-16 */>
         <Carousel
           wrapAround={true}
@@ -174,7 +172,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* <Footer /> */}
       <ScrollToTopButton />
       <Toaster />
     </div>

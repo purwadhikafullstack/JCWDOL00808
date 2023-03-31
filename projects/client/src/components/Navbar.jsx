@@ -61,7 +61,7 @@ export default function Navbar() {
               <div className="grid grid-cols-2 gap-1 place-items-center">
                 <Link to={"/user/cart"}>
                   <div className="relative">
-                    <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-300" />
+                    <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-700 active:text-black" />
                     <p className="absolute -top-2 -right-2 md:-right-2 text-white text-xs font-medium bg-red-600 rounded-full py-0.5 px-1 border border-white dark:border-gray-900">
                       {totalProductsInCart}
                     </p>

@@ -10,6 +10,7 @@ Router.patch("/patchproduct/:id", uploadImagesProduct, productController.patchPr
 Router.get("/listproduct", productController.getProducts);
 Router.get("/listproductbycategory", productController.getProductsByCategoryId);
 Router.get("/productId/:id", productController.getProductById);
+Router.get("/getProductOnWarehouse", productController.getProductOnWarehouse);
 
 Router.delete("/deleteproduct/:id", productController.deleteProduct);
 

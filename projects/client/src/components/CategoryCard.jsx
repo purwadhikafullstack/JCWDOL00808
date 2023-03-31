@@ -23,11 +23,11 @@ export default function CategoryCard(props) {
   return (
     <>
       <div
-        className="flex gap-4 overflow-x-auto py-4 px-4 mx-1" /*my-4 px-2 grid md:grid-cols-4 grid-cols-2 gap-4*/
+        className="flex gap-4 overflow-x-auto py-4 px-4 mx-2" /*my-4 px-2 grid md:grid-cols-4 grid-cols-2 gap-4*/
       >
         <div
           onClick={() => props.func("")}
-          className="hover:animate-pulse flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
+          className="hover:animate-pulse hover:bg-gray-300 border border-gray-200 flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
         >
           <div className="flex flex-col items-center justify-between p-4">
             <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
@@ -43,7 +43,7 @@ export default function CategoryCard(props) {
             <div
               key={index}
               onClick={() => props.func(category.id)}
-              className="hover:animate-pulse flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
+              className="hover:animate-pulse hover:bg-gray-300 border border-gray-200 flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
             >
               <div className="flex flex-col items-center justify-between p-4">
                 <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
