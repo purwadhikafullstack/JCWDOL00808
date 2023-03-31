@@ -297,9 +297,9 @@ module.exports = {
           model: stocks,
           where: {
             warehouses_id,
-            stock: {
-              [Op.gt]: 0,
-            },
+            // stock: {
+            //   [Op.gt]: 0,
+            // },
           },
         },
       });

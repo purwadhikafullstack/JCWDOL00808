@@ -125,6 +125,28 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
               <FormErrorMessage>{formik.errors.from_warehouse_id}</FormErrorMessage>
             </FormControl>
 
+            <FormControl mb={2} id="products_id" isInvalid={formik.touched.products_id && formik.errors.products_id}>
+              <FormLabel>Product Name</FormLabel>
+              <Select placeholder="Select Product Name" {...formik.getFieldProps("products_id")}>
+                {products.map((product) => {
+                  if (product.stocks.some((stock) => stock.stock > 0)) {
+                    return (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                    );
+                  } else {
+                    return (
+                      <option key={product.id} value={product.id} disabled>
+                        {product.name} - Out of Stock
+                      </option>
+                    );
+                  }
+                })}
+              </Select>
+              <FormErrorMessage>{formik.errors.products_id}</FormErrorMessage>
+            </FormControl>
+
             <FormControl mb={2} id="to_warehouse_id" isInvalid={formik.touched.to_warehouse_id && formik.errors.to_warehouse_id}>
               <FormLabel>Select to Warehouse Name</FormLabel>
               <Select placeholder="Select Warehouse name" {...formik.getFieldProps("to_warehouse_id")}>
@@ -147,28 +169,6 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
                 </NumberInputStepper>
               </NumberInput>
               <FormErrorMessage>{formik.errors.quantity}</FormErrorMessage>
-            </FormControl>
-
-            <FormControl mb={2} id="products_id" isInvalid={formik.touched.products_id && formik.errors.products_id}>
-              <FormLabel>Product Name</FormLabel>
-              <Select placeholder="Select Product Name" {...formik.getFieldProps("products_id")}>
-                {products.map((product) => {
-                  if (product.stocks.some((stock) => stock.stock > 0)) {
-                    return (
-                      <option key={product.id} value={product.id}>
-                        {product.name}
-                      </option>
-                    );
-                  } else {
-                    return (
-                      <option key={product.id} value={product.id} disabled>
-                        {product.name} - Out of Stock
-                      </option>
-                    );
-                  }
-                })}
-              </Select>
-              <FormErrorMessage>{formik.errors.products_id}</FormErrorMessage>
             </FormControl>
 
             <Flex justifyContent="flex-end">
