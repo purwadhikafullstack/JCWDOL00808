@@ -87,9 +87,9 @@ export default function Sidebar() {
                             navigate("/admin/managecategory");
                           } else if (submenuItem.title === "Manage Product") {
                             navigate("/admin/manageProducts");
-                          } else if (menu.title === "Warehouse") {
+                          } else if (submenuItem.title === "Warehouse") {
                             navigate("/warehouse/list")
-                          } else if (menu.title === "Logout") {
+                          } else if (submenuItem.title === "Logout") {
                             // Handle logout functionality here
                           }
                         }}

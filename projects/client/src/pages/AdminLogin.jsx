@@ -12,7 +12,7 @@ const AdminLogin = (props) => {
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
 
-  // const [inputEmail, setInputEmail] = React.useState("");
+  const [inputEmail, setInputEmail] = React.useState("");
   const [inputPassword, setInputPassword] = React.useState("");
 
   const dispatch = useDispatch();
@@ -21,51 +21,51 @@ const AdminLogin = (props) => {
   const toast = useToast();
 
   const loginButton = () => {
-    // Axios.post(API_url + "/admins/login", {
-    //   email: inputEmail,
-    //   password: inputPassword,
-    // })
-    //   .then((response) => {
-    //     console.log("response:", response.data);
-    //     if (response.data.success) {
-    //       dispatch(loginAction(response.data));
+    Axios.post(API_url + "/admins/login", {
+      email: inputEmail,
+      password: inputPassword,
+    })
+      .then((response) => {
+        console.log("response:", response.data);
+        if (response.data.success) {
+          dispatch(loginAction(response.data));
 
-    //       let a = JSON.stringify(response?.data?.data);
-    //       let b = JSON.parse(a);
+          let a = JSON.stringify(response?.data?.data);
+          let b = JSON.parse(a);
 
-    //       localStorage.setItem("token", b.token);
-    //       localStorage.setItem("role", b.role);
+          localStorage.setItem("token", b.token);
+          localStorage.setItem("role", b.role);
 
-    //       toast({
-    //         title: `${response.data.message}`,
-    //         status: "success",
-    //         duration: 9000,
-    //         isClosable: true,
-    //       });
-    //       setTimeout(() => (navigate("/admin", { replace: true }), 2000));
-    //     } else {
-    //       toast({
-    //         title: `${response.data.message}`,
-    //         duration: 9000,
-    //         isClosable: true,
-    //       });
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     toast({
-    //       title: `${error.message}`,
-    //       duration: 9000,
-    //       isClosable: true,
-    //     });
-    //   });
+          toast({
+            title: `${response.data.message}`,
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          });
+          setTimeout(() => (navigate("/admin", { replace: true }), 2000));
+        } else {
+          toast({
+            title: `${response.data.message}`,
+            duration: 9000,
+            isClosable: true,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: `${error.message}`,
+          duration: 9000,
+          isClosable: true,
+        });
+      });
   };
 
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-    }
-  })
+  // const formik = useFormik({
+  //   initialValues: {
+  //     email: "",
+  //   }
+  // })
 
   return (
     <>
@@ -78,8 +78,9 @@ const AdminLogin = (props) => {
             e-mail
           </Text>
           <Input placeholder="Enter your.email@mail.com"
-          value={formik.values.email}
-          onChange={formik.handleChange} />
+          // value={formik.values.email}
+          // onChange={formik.handleChange}
+          onChange={element => setInputEmail(element.target.value)} />
           <Text fontSize="lg">Password</Text>
           <InputGroup size="md">
             <Input pr="4.5rem" type={show ? "text" : "password"} placeholder="Enter password" onChange={(element) => setInputPassword(element.target.value)} />

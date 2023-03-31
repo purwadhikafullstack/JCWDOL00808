@@ -2,14 +2,10 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Heading,
-  FormControl,
-  FormLabel,
   Input,
-  FormErrorMessage,
   VStack,
   Button,
   HStack,
-  Switch,
   Text,
   Flex,
   IconButton,
@@ -21,12 +17,11 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Select,
   useToast
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon, CloseIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
-import { useFormik } from "formik";
-import * as Yup from "yup";
+import { EditIcon, DeleteIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
+// import { useFormik } from "formik";
+// import * as Yup from "yup";
 import axios from "axios";
 import { Link } from "react-router-dom";
 const token = localStorage.getItem("token");
@@ -40,10 +35,6 @@ const UserAddress = () => {
    const [provinceData, setProvinceData] = useState([]);
    const [cityData, setCityData] = useState([]);
  
-   // nampung province dan city pilihan admin
-   const [province, setProvince] = useState("");
-   const [city, setCity] = useState("");
-
    //modal delete address
    const { isOpen, onOpen, onClose } = useDisclosure();
    const [addressToDelete, setAddressToDelete] = React.useState(null);
@@ -82,22 +73,6 @@ const UserAddress = () => {
       });
   };
 
-  const onGetCity = (province_id) => {
-    axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
-      .then((response) => {
-        
-        setCityData(response.data);
-      })
-      .catch((error) => {
-        toast({
-          title: "Error fetching data.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      });
-  };
-
   const fetchAddresses = async () => {
     try {
       // Replace with your API endpoint to get all addresses
@@ -117,55 +92,34 @@ const UserAddress = () => {
     }
   };
 
-  const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
-    try {
+  // const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
+  //   try {
       
-      // Replace with your API endpoint to add an address
-      const response = await axios.post("http://localhost:8000/address/add-address", values,
-      {
-        headers: { Authorization: token },
-      });
-      setAddresses([...addresses, response.data]);
-      fetchAddresses()
-      toast({
-        title: "Address added.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      resetForm();
-    } catch (error) {
-      toast({
-        title: "Error adding address.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleEditAddress = async (id, values) => {
-    try {
-      // Replace with your API endpoint to update an address
-      await axios.put(`http://localhost:8000/address/edit-address/${id}`, values);
-      toast({
-        title: "Address updated.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      fetchAddresses();
-    } catch (error) {
-      toast({
-        title: "Error updating address.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+  //     // Replace with your API endpoint to add an address
+  //     const response = await axios.post("http://localhost:8000/address/add-address", values,
+  //     {
+  //       headers: { Authorization: token },
+  //     });
+  //     setAddresses([...addresses, response.data]);
+  //     fetchAddresses()
+  //     toast({
+  //       title: "Address added.",
+  //       status: "success",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //     resetForm();
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error adding address.",
+  //       status: "error",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
 
   const handleDeleteAddress = async (id) => {
     try {
@@ -188,33 +142,33 @@ const UserAddress = () => {
     }
   };
 
-  const formik = useFormik({
-    initialValues: {
-      address: "",
-      district: "",
-      city: "",
-      province: "",
-      postal_code: "",
-      recipient: "",
-      phone_number: "",
-      is_primary: "",
-    },
-    validationSchema: Yup.object({
-      address: Yup.string().required("Required"),
-      district: Yup.string().required("Required"),
-      city: Yup.string().required("Required"),
-      province: Yup.string().required("Required"),
-      postal_code: Yup.string().required("Required"),
-      recipient: Yup.string().required("Required"),
-      phone_number: Yup.string().required("Required"),
-      is_primary: Yup.number().required("Required"),
-    }),
-    onSubmit: handleAddAddress,
-  });
+  // const formik = useFormik({
+  //   initialValues: {
+  //     address: "",
+  //     district: "",
+  //     city: "",
+  //     province: "",
+  //     postal_code: "",
+  //     recipient: "",
+  //     phone_number: "",
+  //     is_primary: "",
+  //   },
+  //   validationSchema: Yup.object({
+  //     address: Yup.string().required("Required"),
+  //     district: Yup.string().required("Required"),
+  //     city: Yup.string().required("Required"),
+  //     province: Yup.string().required("Required"),
+  //     postal_code: Yup.string().required("Required"),
+  //     recipient: Yup.string().required("Required"),
+  //     phone_number: Yup.string().required("Required"),
+  //     is_primary: Yup.number().required("Required"),
+  //   }),
+  //   onSubmit: handleAddAddress,
+  // });
 
   return (
     <>
-    <Box>
+    <Box mb={4}>
     <HStack mb={4} mt= {2} mr={4} justify="flex-end">
       <Link to="/">
         <IconButton icon={<CloseIcon />} aria-label="Back Button" colorScheme="blue" />

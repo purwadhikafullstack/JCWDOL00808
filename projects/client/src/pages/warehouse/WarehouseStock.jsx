@@ -32,7 +32,7 @@ import {
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
 } from "@chakra-ui/react";
 
-import { EditIcon, DeleteIcon, CloseIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
+import {  CloseIcon,  AddIcon } from "@chakra-ui/icons";
 import { Link, useParams } from "react-router-dom";
 
 import axios from "axios";
@@ -56,9 +56,6 @@ const WarehouseStock = () => {
   const { isOpen: isEditStockOpen, onOpen: onEditStockOpen, onClose: onEditStockClose } = useDisclosure();
   const { isOpen: isAddStockOpen, onOpen: onAddStockOpen, onClose: onAddStockClose } = useDisclosure();
   const { isOpen: isDeleteProductOpen, onOpen: onDeleteProductOpen, onClose: onDeleteProductClose } = useDisclosure();
-
-  
-  const [updatedStock, setUpdatedStock] = useState();
 
   const { id } = useParams();
 
