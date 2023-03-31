@@ -82,7 +82,7 @@ const {
   productRouter,
   productCategoryRouter,
   cartsRouter,
-  addressesRouter,
+  addressesRouter, stockMutationRouter,
   historiesRouter
 } = require("./routers"); //refer to index.js in routers folder
 
@@ -94,6 +94,7 @@ app.use("/admin", adminRouter);
 app.use("/products", productsRouter);
 app.use("/product", productRouter);
 app.use("/productcategory", productCategoryRouter);
+app.use("/mutations", stockMutationRouter);
 app.use("/cart", cartsRouter);
 app.use("/address", addressesRouter);
 app.use("/histories", historiesRouter);
