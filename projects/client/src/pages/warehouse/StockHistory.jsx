@@ -29,6 +29,13 @@ const StockHistory = () => {
     });
   };
 
+  const autoGetStock = () => {
+    Axios.get(API_url + `/histories/autoGetStock`).then((response) => {
+      console.log(response.data);
+      setStockHistories(response.data);
+    });
+  };
+
   const getStockHistories = () => {
     Axios.get(API_url + `/histories/getStockHistories?sortProductsId=${sortProductsId}&sortWarehouseId=${sortWarehouseId}&sortMonth=${sortMonth}&sortYear=${sortYear}`)
       .then((response) => {
@@ -41,7 +48,8 @@ const StockHistory = () => {
   useEffect(() => {
     getWarehouseData();
     getProductsData();
-    getStockHistories();
+    // getStockHistories();
+    autoGetStock();
   }, []);
 
   const handleFilterButton = () => {
@@ -59,9 +67,9 @@ const StockHistory = () => {
             <Td>{value.stock_after}</Td>
             <Td>Berkurang sebanyak {difference}</Td>
             <Td>{value.description}</Td>
-            <Td>
+            {/* <Td>
               <Button colorScheme="blue">Details</Button>
-            </Td>
+            </Td> */}
           </Tr>
         );
       } else {
@@ -71,9 +79,9 @@ const StockHistory = () => {
             <Td>{value.stock_after}</Td>
             <Td>Bertambah sebanyak {difference}</Td>
             <Td>{value.description}</Td>
-            <Td>
+            {/* <Td>
               <Button colorScheme="blue">Details</Button>
-            </Td>
+            </Td> */}
           </Tr>
         );
       }
@@ -93,7 +101,7 @@ const StockHistory = () => {
           <CardBody>
             <Stack divider={<StackDivider />} spacing="4">
               <Box>
-                <Text fontSize="md">View a history of your products over the last month.</Text>
+                <Text fontSize="md">Get insights about your products over the last month.</Text>
 
                 <Text pt="2" fontSize="md">
                   Product:
@@ -136,7 +144,7 @@ const StockHistory = () => {
                   </Select>
                 </Flex>
                 <Button className="mt-5" onClick={handleFilterButton}>
-                  Filter
+                  View stock history
                 </Button>
               </Box>
               <Box>
@@ -158,7 +166,7 @@ const StockHistory = () => {
                   <Th>Qty After</Th>
                   <Th>Qty difference</Th>
                   <Th>Description</Th>
-                  <Th>Action</Th>
+                  {/* <Th>Action</Th> */}
                 </Tr>
               </Thead>
               <Tbody>{showStockHistories()}</Tbody>
