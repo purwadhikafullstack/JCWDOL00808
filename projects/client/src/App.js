@@ -53,11 +53,8 @@ function App() {
   return (
     <div className="App">
       {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
-      {cleanRoute ? null : location.pathname.startsWith(
-          "/admin" || "/warehouse"
-        ) ? (
-        <Sidebar />
-      ) : (
+      {cleanRoute ? null : location.pathname.startsWith("/admin") ||
+        location.pathname.startsWith("/warehouse") ? null /* <Sidebar />*/ : (
         <Navbar />
       )}
 
@@ -115,9 +112,8 @@ function App() {
       </Routes>
 
       {/*User path will have footer */}
-      {cleanRoute ? null : location.pathname.startsWith(
-          "/admin" || "/warehouse"
-        ) ? null : (
+      {cleanRoute ? null : location.pathname.startsWith("/admin") ||
+        location.pathname.startsWith("/warehouse") ? null : (
         <Footer />
       )}
     </div>
