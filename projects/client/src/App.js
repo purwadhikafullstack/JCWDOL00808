@@ -43,45 +43,39 @@ function App() {
   const location = useLocation();
   // const { user } = useSelector((state) => state.auth);
 
-  const cleanRoute = [
-    "/user/register",
-    "/user/verify",
-    "/user/verify-new-password",
-    "/user/login",
-    "/user/reset-password",
-    "/admin/login",
-  ].includes(location.pathname);
+  // const cleanRoute = [
+  //   "/user/register",
+  //   "/user/verify",
+  //   "/user/verify-new-password",
+  //   "/user/login",
+  //   "/user/reset-password",
+  //   "/admin/login",
+  // ].includes(location.pathname);
 
   return (
     <div className="App">
       {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
-      {cleanRoute ? null : location.pathname.startsWith(
+      {/* {cleanRoute ? null : location.pathname.startsWith(
           "/admin" || "/warehouse"
         ) ? (
         <Sidebar />
       ) : (
         <Navbar />
-      )}
+      )} */}
 
       <Routes>
         {/*User's path */}
         <Route path="/" element={<Home />} />
         <Route path="/user/register" element={<Registration />} />
         <Route path="/user/verify" element={<Verification />} />
-        <Route
-          path="/user/verify-new-password"
-          element={<VerificationNewPassword />}
-        />
+        <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/profile" element={<EditProfile />} />
         <Route path="/user/reset-password" element={<ResetPassword />} />
         <Route path="/user/address" element={<UserAddress />} />
         <Route path="/user/add-address" element={<AddUserAddress />} />
         <Route path="/user/address/:id" element={<EditUserAddress />} />
-        <Route
-          path="/product-details/:productId"
-          element={<ProductDetails />}
-        />
+        <Route path="/product-details/:productId" element={<ProductDetails />} />
         <Route path="/user/cart" element={<Cart />} />
 
         {/*Admin's path */}
@@ -118,11 +112,11 @@ function App() {
       </Routes>
 
       {/*User path will have footer */}
-      {cleanRoute ? null : location.pathname.startsWith(
+      {/* {cleanRoute ? null : location.pathname.startsWith(
           "/admin" || "/warehouse"
         ) ? null : (
         <Footer />
-      )}
+      )} */}
     </div>
   );
 }
