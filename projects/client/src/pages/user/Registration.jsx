@@ -71,7 +71,7 @@ export default function Registration() {
     if (localStorage.getItem("token")) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <Flex
