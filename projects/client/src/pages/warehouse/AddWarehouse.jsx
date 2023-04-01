@@ -87,15 +87,12 @@ const AddWarehouse = (props) => {
           <div className="mt-4 text-muted fw-bold text-start">
             <Text fontSize="md">Name</Text>
             <Input placeholder="Warehouse name" size="md" onChange={(element) => setName(element.target.value)} />
-            {/* </div> */}
             <div className="mt-4 text-muted fw-bold text-start">
               <Text fontSize="md">Address</Text>
               <InputGroup size="md">
                 <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
               </InputGroup>
-              {/* </div> */}
             </div>
-            {/* <div className="my-5 mx-5 px-5"> */}
             <div className="mt-4 text-muted fw-bold text-start">
               <Text fontSize="md">Province</Text>
               <Select
