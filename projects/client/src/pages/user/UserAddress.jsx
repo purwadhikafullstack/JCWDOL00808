@@ -17,7 +17,8 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useToast
+  useToast,
+  Tooltip
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
 // import { useFormik } from "formik";
@@ -49,7 +50,7 @@ const UserAddress = () => {
 
   useEffect(() => {
     fetchAddresses();
-    getProvinceData();
+    // getProvinceData();
 }, [searchTerm]);
 
   const handleConfirmDelete = async () => {
@@ -58,20 +59,20 @@ const UserAddress = () => {
     onClose();
   };
 
-   const getProvinceData = () => {
-    axios.get(`http://localhost:8000/warehouses/getProvinceData`)
-      .then((response) => {
-        setProvinceData(response.data);
-      })
-      .catch((error) => {
-        toast({
-          title: "Error fetching data.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      });
-  };
+  //  const getProvinceData = () => {
+  //   axios.get(`http://localhost:8000/warehouses/getProvinceData`)
+  //     .then((response) => {
+  //       setProvinceData(response.data);
+  //     })
+  //     .catch((error) => {
+  //       toast({
+  //         title: "Error fetching data.",
+  //         status: "error",
+  //         duration: 3000,
+  //         isClosable: true,
+  //       });
+  //     });
+  // };
 
   const fetchAddresses = async () => {
     try {
@@ -81,6 +82,7 @@ const UserAddress = () => {
         headers: { Authorization: token },
       });
       setAddresses(response.data.result);
+      console.log(response.data.result);
       
     } catch (error) {
       toast({
@@ -91,35 +93,6 @@ const UserAddress = () => {
       });
     }
   };
-
-  // const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
-  //   try {
-      
-  //     // Replace with your API endpoint to add an address
-  //     const response = await axios.post("http://localhost:8000/address/add-address", values,
-  //     {
-  //       headers: { Authorization: token },
-  //     });
-  //     setAddresses([...addresses, response.data]);
-  //     fetchAddresses()
-  //     toast({
-  //       title: "Address added.",
-  //       status: "success",
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
-  //     resetForm();
-  //   } catch (error) {
-  //     toast({
-  //       title: "Error adding address.",
-  //       status: "error",
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
 
   const handleDeleteAddress = async (id) => {
     try {
@@ -141,30 +114,6 @@ const UserAddress = () => {
       });
     }
   };
-
-  // const formik = useFormik({
-  //   initialValues: {
-  //     address: "",
-  //     district: "",
-  //     city: "",
-  //     province: "",
-  //     postal_code: "",
-  //     recipient: "",
-  //     phone_number: "",
-  //     is_primary: "",
-  //   },
-  //   validationSchema: Yup.object({
-  //     address: Yup.string().required("Required"),
-  //     district: Yup.string().required("Required"),
-  //     city: Yup.string().required("Required"),
-  //     province: Yup.string().required("Required"),
-  //     postal_code: Yup.string().required("Required"),
-  //     recipient: Yup.string().required("Required"),
-  //     phone_number: Yup.string().required("Required"),
-  //     is_primary: Yup.number().required("Required"),
-  //   }),
-  //   onSubmit: handleAddAddress,
-  // });
 
   return (
     <>
@@ -188,11 +137,18 @@ const UserAddress = () => {
             <IconButton icon={<AddIcon />} aria-label="Add Address" colorScheme="blue" />
           </Link>
         </HStack>
-      <VStack mt={8} w="100%" spacing={4}>
+      <VStack mt={8} w={"xl"} spacing={4} mx={"auto"} justify="center">
         {addresses.map((address) => (
+          <Tooltip
+          label={address.is_primary === true ? "Primary Address" : ""}
+          isDisabled={address.is_primary !== true}
+          placement="top-start"
+        >
+          
           <Box
             key={address.id}
-            borderWidth="1px"
+            borderWidth={address.is_primary === true ? "20px" : "1px"}
+            borderColor={address.is_primary === true ? "blue.500" : "gray.200"}
             borderRadius="lg"
             p={4}
             w="100%"
@@ -224,6 +180,7 @@ const UserAddress = () => {
               />
             </Flex>
           </Box>
+        </Tooltip>
         ))}
       </VStack>
     </Box>

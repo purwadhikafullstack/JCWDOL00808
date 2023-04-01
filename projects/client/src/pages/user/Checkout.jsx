@@ -99,3 +99,5 @@ const Checkout = () => {
 </Box>
 );
 };
+
+export default Checkout;

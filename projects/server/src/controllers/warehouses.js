@@ -293,8 +293,21 @@ module.exports = {
     }
   },
   deleteWarehouseProduct: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
       const { id } = req.params;
+      const fromStock = await stocks.findByPk(id)
+
+      if (!fromStock) {
+        return res.status(404).send({
+          isError: true,
+          message: "Stock not found",
+          data: null,
+        });;
+      }
+
+      const updateHistories = await stock_histories.create({stock_before: fromStock.stock, stock_after: 0, products_id: fromStock.products_id, warehouses_id: fromStock.warehouses_id, description: "Stock di delete oleh admin"}, {transaction: t });
+      t.commit();
       const deletedWarehouseProduct = await stocks.findAll({ where: { id } });
       await stocks.destroy({ where: { id } });
       res.status(200).send({

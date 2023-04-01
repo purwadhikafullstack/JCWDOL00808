@@ -38,6 +38,7 @@ import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import StockRequestList from "./pages/warehouse/GetRequestMutation";
 import ManageMutations from "./pages/warehouse/manageMutations";
+import Checkout from "./pages/user/Checkout";
 
 function App() {
   const location = useLocation();
@@ -80,6 +81,7 @@ function App() {
           element={<ProductDetails />}
         />
         <Route path="/user/cart" element={<Cart />} />
+        <Route path="/user/checkout" element={<Checkout />} />
 
         {/*Admin's path */}
         <Route path="/admin" element={<Sidebar />} />
