@@ -186,7 +186,7 @@ function ManageProducts() {
               <Td fontSize="sm">{formatRupiah(product.price)}</Td>
               <Td fontSize="sm">{formatWeight(product.weight)}</Td>
               <Td fontSize="sm">
-                <img src={`http://localhost:8000/${product.imageUrl}`} alt="Product image" width="100" />
+                <img src={`http://localhost:8000/${product.imageUrl}`} alt="Product image" width="50" />
                 {/* {`http://localhost:8000/${product.imageUrl}`} */}
               </Td>
               <Td>
