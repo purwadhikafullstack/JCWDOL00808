@@ -66,7 +66,7 @@ function App() {
         <Route path="/user/cart" element={<Cart />} />
 
         {/*Admin's path */}
-        <Route path="/admin" element={<Sidebar />} />
+        {/* <Route path="/admin" element={<Sidebar />} /> */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/list" element={<AdminList />} />
         <Route path="/admin/assign/:id" element={<AssignAdmin />} />

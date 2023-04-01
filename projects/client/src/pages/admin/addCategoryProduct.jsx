@@ -1,6 +1,6 @@
 import { Box, FormControl, FormLabel, Input, Select, Text, VStack, useToast, FormErrorMessage } from "@chakra-ui/react";
 import axios from "axios";
-import AddAdminConfirmation from "../../components/AddAdminConfirmation";
+import AddCategoryConfirmation from "../../components/AddConfirmation";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -71,7 +71,7 @@ const AddCategoryProduct = () => {
             <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
           </FormControl>
 
-          <AddAdminConfirmation onSave={formik.handleSubmit} />
+          <AddCategoryConfirmation onSave={formik.handleSubmit} />
         </VStack>
       </form>
     </Box>

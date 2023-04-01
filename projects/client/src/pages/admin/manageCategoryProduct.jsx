@@ -1,13 +1,15 @@
 import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon, InfoOutlineIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { FaSort, FaFilter, FaPlus, FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { EditIcon, DeleteIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import AddCategoryProductModal from "../../components/addCategoryProductModal";
 
 function ManageCategoryProducts() {
   const [category, setCategoryProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [pages, setPages] = useState(0);
@@ -54,6 +56,14 @@ function ManageCategoryProducts() {
         isClosable: true,
       });
     }
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   const changePage = ({ selected }) => {
@@ -139,13 +149,11 @@ function ManageCategoryProducts() {
             </MenuItem>
           </MenuList>
         </Menu>
-        <Button colorScheme={buttonColorScheme} size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />}>
-          <Link to={isButtonDisabled ? "#" : "/admin/addcategory"} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
-            <Flex alignItems="center">
-              <Text mr={2}>Add Product</Text>
-            </Flex>
-          </Link>
+
+        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />} onClick={handleOpenModal}>
+          Add Category Product
         </Button>
+        <AddCategoryProductModal isOpen={isModalOpen} onClose={handleCloseModal} />
       </Flex>
 
       {/* fitur table */}
