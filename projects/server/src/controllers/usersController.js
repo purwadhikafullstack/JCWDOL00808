@@ -6,6 +6,11 @@ const db = require("../../models/index");
 const users = db.users;
 
 // Import verification token function
+// const {
+//   createVerificationToken,
+//   validateVerificationToken,
+// } = require("../helper/verificationToken");
+
 const {
   createVerificationToken,
   validateVerificationToken,
@@ -73,7 +78,7 @@ module.exports = {
     const t = await sequelize.transaction();
     try {
       const { email, password, token } = req.body;
-      validateVerificationToken(token);
+      validateToken(token);
 
       await users.update(
         { password: await hashPassword(password), is_verified: 1 },
@@ -181,7 +186,7 @@ module.exports = {
         let resetPasswordTemplate = compiledTemplate({
           resetPasswordLink: "http://localhost:3000/user/verify-new-password",
           email,
-          token: createVerificationToken({ id: findEmail.dataValues.id }),
+          token: createToken({ id: findEmail.dataValues.id }),
         });
         await transporter.sendMail({
           from: `Big4Commerce <${process.env.GMAIL}>`,
@@ -211,7 +216,7 @@ module.exports = {
     const t = await sequelize.transaction();
     try {
       const { email, password, token } = req.body;
-      validateVerificationToken(token);
+      validateToken(token);
 
       await users.update(
         { password: await hashPassword(password) },

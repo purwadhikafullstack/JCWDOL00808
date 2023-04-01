@@ -9,14 +9,11 @@ import {
   FormErrorMessage,
   Button,
   useToast,
-  Switch,
   HStack,
-  Text,
   IconButton,
-  Flex,
   Select
 } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon, ArrowBackIcon, CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -37,8 +34,8 @@ const EditUserAddress = () => {
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
 
-  const getProvinceData = () => {
-    axios.get(`http://localhost:8000/address/getProvinceData`)
+  const getProvinceData = async () => {
+   await axios.get(`http://localhost:8000/warehouses/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -52,8 +49,10 @@ const EditUserAddress = () => {
       });
   };
 
-  const onGetCity = (province_id) => {
-    axios.get(`http://localhost:8000/address/getCityData?province_id=${province_id}`)
+  const onGetCity = async (province_id) => {
+    // console.log("province_id:", province_id)
+    
+    await axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
         
         setCityData(response.data);
@@ -76,7 +75,7 @@ const EditUserAddress = () => {
 
   const fetchAddresses = async () => {
     try {
-     
+      // Replace with your API endpoint to get all addresses
       const response = await axios.get(`http://localhost:8000/address/get-address/${id}`, 
       {
         headers: { Authorization: token },
@@ -112,13 +111,13 @@ const EditUserAddress = () => {
       {
         headers: { Authorization: token },
       });
-      navigate("/user/address");
       toast({
         title: "Address updated.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
+      navigate("/user/address");
       fetchAddresses();
     } catch (error) {
       toast({
@@ -156,7 +155,7 @@ const EditUserAddress = () => {
 
   return (
     <>
-    <Box>
+    <Box mb={4}>
     <HStack mb={4} mt= {2} mr={4} justify="flex-end">
       <Link to="/user/address">
         <IconButton icon={<CloseIcon />} aria-label="Back Button" colorScheme="blue" />
@@ -194,7 +193,7 @@ const EditUserAddress = () => {
                 onGetCity(element.target.value.split(","[0]));
                 formik.handleChange(element)
               }}
-              onBlur={formik.handleBlur}
+              // onBlur={formik.handleBlur}
               value={formik.values.province}
             >
                {provinceData.map((value) => {
