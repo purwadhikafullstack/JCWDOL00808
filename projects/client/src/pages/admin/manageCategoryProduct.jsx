@@ -6,17 +6,20 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import AddCategoryProductModal from "../../components/addCategoryProductModal";
+import PatchCategoryProduct from "../../components/patchCategoryProductModal";
 
 function ManageCategoryProducts() {
   const [category, setCategoryProducts] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [pages, setPages] = useState(0);
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("id");
+  const [sort, setSort] = useState("name");
   const [order, setOrder] = useState("DESC");
 
   const toast = useToast();
@@ -58,12 +61,17 @@ function ManageCategoryProducts() {
     }
   };
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleFirstModalOpen = () => {
+    setIsFirstModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleSecondModalOpen = () => {
+    setIsSecondModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsFirstModalOpen(false);
+    setIsSecondModalOpen(false);
   };
 
   const changePage = ({ selected }) => {
@@ -121,11 +129,11 @@ function ManageCategoryProducts() {
         <Text fontWeight="bold">Sort by:</Text>
         <Menu>
           <MenuButton ml={2} variant="ghost">
-            Name
+            {sort}
           </MenuButton>
           <MenuList>
-            <MenuItem value={sort} onClick={() => handleSort("category")}>
-              Category
+            <MenuItem value={sort} onClick={() => handleSort("name")}>
+              Name
             </MenuItem>
             <MenuItem value={sort} onClick={() => handleSort("description")}>
               Description
@@ -150,10 +158,10 @@ function ManageCategoryProducts() {
           </MenuList>
         </Menu>
 
-        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />} onClick={handleOpenModal}>
+        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />} onClick={handleFirstModalOpen}>
           Add Category Product
         </Button>
-        <AddCategoryProductModal isOpen={isModalOpen} onClose={handleCloseModal} />
+        <AddCategoryProductModal isOpen={isFirstModalOpen} onClose={handleModalClose} />
       </Flex>
 
       {/* fitur table */}
@@ -179,9 +187,22 @@ function ManageCategoryProducts() {
               <Td fontSize="sm">{truncateDescription(categoryProduct.description, 35)}</Td>
               <Td>
                 <Box display="flex">
-                  <Link to={isButtonDisabled ? "#" : `/admin/patch-category/${categoryProduct.id}`} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
-                    <IconButton size="sm" bgColor="green.500" aria-label="Edit" icon={<EditIcon />} mr={2} borderRadius="full" _hover={{ bg: "green.700" }} isDisabled={isButtonDisabled} />
-                  </Link>
+                  <IconButton
+                    size="sm"
+                    bgColor="green.500"
+                    aria-label="Edit"
+                    icon={<EditIcon />}
+                    mr={2}
+                    borderRadius="full"
+                    _hover={{ bg: "green.700" }}
+                    isDisabled={isButtonDisabled}
+                    onClick={() => {
+                      handleSecondModalOpen(true);
+                      setSelectedCategoryId(categoryProduct.id);
+                    }}
+                  />
+                  <PatchCategoryProduct categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} />
+
                   <IconButton
                     size="sm"
                     bgColor="red.500"

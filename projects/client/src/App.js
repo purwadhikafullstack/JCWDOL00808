@@ -7,7 +7,6 @@ import NotFound from "./pages/NotFound";
 import ProductDetails from "./pages/ProductDetails";
 import AdminList from "./pages/admin/AdminList";
 import AssignAdmin from "./pages/admin/AssignAdmin";
-import AddCategoryProduct from "./pages/admin/addCategoryProduct";
 import ProductForm from "./pages/admin/addProduct";
 import ManageAdmin from "./pages/admin/manageAdmin";
 import ManageCategoryProducts from "./pages/admin/manageCategoryProduct";
@@ -85,7 +84,6 @@ function App() {
         <Route path="/admin/addProducts" element={<ProductForm />} />
         <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
         <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
-        <Route path="/admin/addcategory" element={<AddCategoryProduct />} />
         <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
         <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
         <Route path="/user/address" element={<UserAddress />} />

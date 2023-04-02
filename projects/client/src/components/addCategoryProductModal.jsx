@@ -62,7 +62,7 @@ const AddCategoryProductModal = ({ isOpen, onClose }) => {
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
+        <ModalOverlay  />
         <ModalContent>
           <ModalHeader>Add Category</ModalHeader>
           <ModalCloseButton />
@@ -82,7 +82,7 @@ const AddCategoryProductModal = ({ isOpen, onClose }) => {
                   <FormControl id="description" isRequired isInvalid={formik.touched.description && formik.errors.description}>
                     <FormLabel>Description</FormLabel>
                     <Input type="text" {...formik.getFieldProps("description")} placeholder="Input Description" />
-                    <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
+                    <FormErrorMessage>{formik.errors.description}</FormErrorMessage>
                   </FormControl>
 
                   {/* button for cancel and submit */}

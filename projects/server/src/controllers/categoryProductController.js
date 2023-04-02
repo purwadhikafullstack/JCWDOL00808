@@ -38,6 +38,11 @@ module.exports = {
                 [Op.like]: "%" + search + "%",
               },
             },
+            {
+              description: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
           ],
         },
         offset: offset,
