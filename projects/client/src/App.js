@@ -1,4 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import "./App.css";
 import Sidebar from "./components/sidebar";
 import AdminLogin from "./pages/AdminLogin";
@@ -33,7 +34,6 @@ import StockHistory from "./pages/warehouse/StockHistory";
 import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
 import WarehouseList from "./pages/warehouse/WarehouseList";
 import WarehouseStock from "./pages/warehouse/WarehouseStock";
-// import { useSelector } from "react-redux";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import StockRequestList from "./pages/warehouse/GetRequestMutation";
@@ -46,7 +46,6 @@ import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
 
 function App() {
   const location = useLocation();
-  // const { user } = useSelector((state) => state.auth);
 
   const cleanRoute = [
     "/user/register",
@@ -147,6 +146,7 @@ function App() {
         location.pathname.startsWith("/warehouse") ? null : (
         <Footer />
       )}
+      <Toaster />
     </div>
   );
 }
