@@ -1,4 +1,4 @@
-import { Box, FormControl, FormLabel, Input, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, VStack, useToast, FormErrorMessage, Flex, Button } from "@chakra-ui/react";
+import { Box, FormControl, FormLabel, Input, Modal, ModalOverlay, Spinner, ModalContent, ModalHeader, ModalCloseButton, ModalBody, VStack, useToast, FormErrorMessage, Flex, Button } from "@chakra-ui/react";
 import axios from "axios";
 import AddCategoryConfirmation from "./AddConfirmation";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,6 +12,7 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId }) => {
   //   const { id } = useParams();
   const id = categoryId;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -44,6 +45,8 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId }) => {
       onClose();
       return;
     }
+
+    setIsLoading(true); // set loading state
     try {
       const response = await axios.get(`http://localhost:8000/productcategory/productcategory/${id}`);
       const categoryData = response.data;
@@ -52,7 +55,9 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId }) => {
         name: categoryData.name,
         description: categoryData.description,
       });
+      setIsLoading(false); // clear loading state
     } catch (error) {
+      setIsLoading(false); // clear loading state
       toast({
         title: `${error.message}`,
         status: "error",
@@ -95,42 +100,45 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId }) => {
         <ModalHeader>Update Category</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Box w="100%" maxW="600px" mx="auto" my="auto" mt="3" mb="10">
-            {/* <Text fontSize="xl" fontWeight="bold" mb="4">
-              Update Category
-            </Text> */}
-            <form onSubmit={formik.handleSubmit}>
-              <VStack spacing="1" align="stretch">
-                <FormControl id="name" isRequired isInvalid={formik.touched.name && formik.errors.name}>
-                  <FormLabel>Category Name</FormLabel>
-                  <Input type="text" {...formik.getFieldProps("name")} placeholder="Input Category" />
-                  <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
-                </FormControl>
+          {isLoading ? (
+            <Flex justify="center" align="center" h="200px">
+              <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" />
+            </Flex>
+          ) : (
+            <Box w="100%" maxW="600px" mx="auto" my="auto" mt="3" mb="10">
+              <form onSubmit={formik.handleSubmit}>
+                <VStack spacing="1" align="stretch">
+                  <FormControl id="name" isRequired isInvalid={formik.touched.name && formik.errors.name}>
+                    <FormLabel>Category Name</FormLabel>
+                    <Input type="text" {...formik.getFieldProps("name")} placeholder="Input Category" />
+                    <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
+                  </FormControl>
 
-                <FormControl id="description" isRequired isInvalid={formik.touched.description && formik.errors.description}>
-                  <FormLabel>Description</FormLabel>
-                  <Input type="text" {...formik.getFieldProps("description")} placeholder="Input Description" />
-                  <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
-                </FormControl>
+                  <FormControl id="description" isRequired isInvalid={formik.touched.description && formik.errors.description}>
+                    <FormLabel>Description</FormLabel>
+                    <Input type="text" {...formik.getFieldProps("description")} placeholder="Input Description" />
+                    <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
+                  </FormControl>
 
-                {/* button for cancel and submit */}
-                <Flex justifyContent="flex-end">
-                  <Button
-                    variant="ghost"
-                    mr={1}
-                    onClick={() => {
-                      onClose();
-                      //   formik.resetForm();
-                    }}
-                  >
-                    Cancel
-                  </Button>
+                  {/* button for cancel and submit */}
+                  <Flex justifyContent="flex-end">
+                    <Button
+                      variant="ghost"
+                      mr={1}
+                      onClick={() => {
+                        onClose();
+                        //   formik.resetForm();
+                      }}
+                    >
+                      Cancel
+                    </Button>
 
-                  <AddCategoryConfirmation onSave={formik.handleSubmit} isLoading={isSubmitting} />
-                </Flex>
-              </VStack>
-            </form>
-          </Box>
+                    <AddCategoryConfirmation onSave={formik.handleSubmit} isLoading={isSubmitting} />
+                  </Flex>
+                </VStack>
+              </form>
+            </Box>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -20,8 +20,8 @@ export default function Navbar() {
   useEffect(() => {
     if (token) {
       dispatch(getCarts());
+      isAuth().then((data) => setProfile(data));
     }
-    isAuth(navigate).then((data) => setProfile(data));
   }, [token, dispatch, navigate]);
 
   return (

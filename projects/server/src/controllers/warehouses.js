@@ -7,7 +7,8 @@ const request = require("request");
 // 1. import library geocode
 const { geocode } = require("opencage-api-client");
 const fs = require("fs");
-
+const products = db.products;
+const product_categories = db.product_categories;
 const { sequelize } = require("../../models");
 const { Op } = require("sequelize");
 
@@ -168,10 +169,20 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      const { stock, products_id, warehouses_id } = req.body
+      const { id } = req.params;
+      const { stock, products_id, } = req.body
 
-      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id}, {transaction: t })
-      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "New Product added to warehouse"});
+      const checkProductStock = await stocks.findOne({where: {products_id, warehouses_id: id}})
+      if(checkProductStock) {
+        return res.status(409).send({
+          isError: true,
+          message: "Product already exist in warehouse.",
+          data: null,
+        });
+      }
+
+      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id: id}, {transaction: t })
+      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id: id, description: "New Product added to warehouse"}, {transaction: t });
       t.commit();
 
       res.status(201).send({
@@ -192,9 +203,50 @@ module.exports = {
   },
   getWarehouseProduct: async (req, res) => {
     try {
+      const search = req.query.search_query || "";
       const { id } = req.params;
-      const data = await stocks.findAll({ where: { warehouses_id: id } });
-      res.status(200).send(data);
+
+      const data = await stocks.findAll({
+        where: {
+          warehouses_id: id,
+          [Op.or]: [
+            { '$warehouse.name$': {
+                  [Op.like]: "%" + search + "%"
+                }, 
+            },
+            { '$product.name$':{
+              [Op.like]: "%" + search + "%"
+            },
+          },
+            { '$product.product_category.name$': {
+              [Op.like]: "%" + search + "%"
+            }, 
+          },
+          ]
+        },
+        include: [
+          {
+            model: products,
+            attributes: ['name'],
+            include: [
+              {
+                model: product_categories,
+                attributes: ['name'],
+                as: 'product_category'
+              },
+            ],
+          },
+          {
+            model: WarehousesModel,
+            attributes: ['name'],
+            as: 'warehouse'
+          },
+        ],
+      });
+      
+      res.status(200).json({
+        data: data
+      });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -206,15 +258,30 @@ module.exports = {
     const t = await sequelize.transaction();
     try {
       const { id } = req.params;
-      const { stock, products_id, warehouses_id } = req.body;
-      // const updatedWarehouseProduct = await stocks.update({ stock, products_id, warehouses_id }, { where: { id }, transaction: t });
-      // const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "Stock updated."});
+      const { stock, description } = req.body;
+      
+      const fromStock = await stocks.findByPk(id)
+
+      if (!fromStock) {
+        return res.status(404).send({
+          isError: true,
+          message: "Stock not found",
+          data: null,
+        });;
+      }
+
+      const fromStockBefore = fromStock.stock;
+      fromStock.stock += stock;
+        await fromStock.save({ transaction: t });
+
+      // const updatedWarehouseProduct = await stocks.update({ stock }, { where: { id }, transaction: t });
+      const updateHistories = await stock_histories.create({stock_before: fromStockBefore, stock_after: fromStock.stock, products_id: fromStock.products_id, warehouses_id: fromStock.warehouses_id, description}, {transaction: t });
       t.commit();
 
       res.status(200).send({
         isError: false,
         message: "Warehouse product updated.",
-        data: updatedWarehouseProduct,
+        data: fromStock,
       });
     } catch (error) {
       t.rollback();
@@ -226,8 +293,21 @@ module.exports = {
     }
   },
   deleteWarehouseProduct: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
       const { id } = req.params;
+      const fromStock = await stocks.findByPk(id)
+
+      if (!fromStock) {
+        return res.status(404).send({
+          isError: true,
+          message: "Stock not found",
+          data: null,
+        });;
+      }
+
+      const updateHistories = await stock_histories.create({stock_before: fromStock.stock, stock_after: 0, products_id: fromStock.products_id, warehouses_id: fromStock.warehouses_id, description: "Stock di delete oleh admin"}, {transaction: t });
+      t.commit();
       const deletedWarehouseProduct = await stocks.findAll({ where: { id } });
       await stocks.destroy({ where: { id } });
       res.status(200).send({
@@ -246,7 +326,7 @@ module.exports = {
     try {
       const { id } = req.params;
       let data = await stocks.findOne({ where: { id } });
-      console.log("data details: ", data);
+      // console.log("data details: ", data);
 
       res.status(200).send(data);
     } catch (error) {

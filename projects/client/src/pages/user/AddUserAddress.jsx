@@ -9,22 +9,11 @@ import {
   VStack,
   Button,
   HStack,
-  Switch,
-  Text,
-  Flex,
   IconButton,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   Select,
   useToast
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon, CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -44,23 +33,8 @@ const AddUserAddress = () => {
    const [province, setProvince] = useState("");
    const [city, setCity] = useState("");
 
-   //modal delete address
-   const { isOpen, onOpen, onClose } = useDisclosure();
-   const [addressToDelete, setAddressToDelete] = React.useState(null);
-
-   const handleDeleteButtonClick = (addressId) => {
-    setAddressToDelete(addressId);
-    onOpen();
-  };
-
-  const handleConfirmDelete = async () => {
-    await handleDeleteAddress(addressToDelete);
-    setAddressToDelete(null);
-    onClose();
-  };
-
-  const getProvinceData = () => {
-    axios.get(`http://localhost:8000/address/getProvinceData`)
+   const getProvinceData = () => {
+    axios.get(`http://localhost:8000/warehouses/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -75,7 +49,8 @@ const AddUserAddress = () => {
   };
 
   const onGetCity = (province_id) => {
-    axios.get(`http://localhost:8000/address/getCityData?province_id=${province_id}`)
+    // console.log("province_id:", province_id)
+    axios.get(`http://localhost:8000/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
         
         setCityData(response.data);
@@ -97,7 +72,7 @@ const AddUserAddress = () => {
 
   const fetchAddresses = async () => {
     try {
-      
+      // Replace with your API endpoint to get all addresses
       const response = await axios.get("http://localhost:8000/address/get-address", 
       {
         headers: { Authorization: token },
@@ -117,7 +92,7 @@ const AddUserAddress = () => {
   const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
     try {
       
-      
+      // Replace with your API endpoint to add an address
       const response = await axios.post("http://localhost:8000/address/add-address", values,
       {
         headers: { Authorization: token },
@@ -143,47 +118,7 @@ const AddUserAddress = () => {
     }
   };
 
-  const handleEditAddress = async (id, values) => {
-    try {
-      
-      await axios.put(`http://localhost:8000/address/edit-address/${id}`, values);
-      toast({
-        title: "Address updated.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      fetchAddresses();
-    } catch (error) {
-      toast({
-        title: "Error updating address.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
 
-  const handleDeleteAddress = async (id) => {
-    try {
-      
-      await axios.delete(`http://localhost:8000/address/delete-address/${id}`);
-      toast({
-        title: "Address deleted.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      fetchAddresses();
-    } catch (error) {
-      toast({
-        title: "Error deleting address.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
 
   const formik = useFormik({
     initialValues: {
@@ -211,7 +146,7 @@ const AddUserAddress = () => {
 
   return (
     <>
-    <Box>
+    <Box mb={4}>
     <HStack mb={4} mt= {2} mr={4} justify="flex-end">
       <Link to="/user/address">
         <IconButton icon={<CloseIcon />} aria-label="Back Button" colorScheme="blue" />
@@ -245,13 +180,13 @@ const AddUserAddress = () => {
               // type="text"
               // onChange={formik.handleChange}
               onChange={(element) => {
-                setProvince(element.target.value);
-                onGetCity(element.target.value);
+                setProvince(element.target.value.split(",")[1]);
+                onGetCity(element.target.value.split(","[0]));
                 formik.handleChange(element)
               }}
-              onBlur={formik.handleBlur}
+              // onBlur={formik.handleBlur}
               value={formik.values.province}
-              >
+            >
                {provinceData.map((value) => {
                 return (
                   <option value={value.province_id + "," + value.province} key={value.province_id}>
@@ -381,7 +316,9 @@ const AddUserAddress = () => {
           </Button>
         </VStack>
       </form>
+      
     </Box>
+    
     </>
   );
 };

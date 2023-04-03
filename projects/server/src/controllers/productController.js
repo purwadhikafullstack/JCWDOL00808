@@ -310,4 +310,66 @@ module.exports = {
       res.status(500).json({ message: "Server error" });
     }
   },
+  getProductsByCategoryId: async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search_query || "";
+      const offset = limit * page;
+      const sort = req.query.sort || "name"; //default sorting by name
+      const order = req.query.order || "DESC"; //default order DESC
+      const totalRows = await products.count({
+        where: {
+          [Op.or]: [
+            {
+              name: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              price: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+      });
+      const totalPage = Math.ceil(totalRows / limit);
+      const result = await products.findAll({
+        where: {
+          [Op.or]: [
+            {
+              product_categories_id: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              product_categories_id: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+        offset: offset,
+        limit: limit,
+        order: [[sort, order]], // add order clause with the sort and order parameters
+      });
+
+      //replace '\' with '/'
+      result.forEach((product) => {
+        product.imageUrl = product.imageUrl.replace(/\\/g, "/");
+      });
+
+      res.json({
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
+    } catch (error) {
+      // console.error(error);
+      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
+    }
+  },
 };

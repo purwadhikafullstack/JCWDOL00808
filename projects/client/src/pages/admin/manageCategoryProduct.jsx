@@ -183,7 +183,7 @@ function ManageCategoryProducts() {
           {category.map((categoryProduct, index) => (
             <Tr key={categoryProduct.id} align="center">
               <Td fontSize="sm" fontWeight="medium">
-                {index + 1}
+                {index + 1 + page * limit}
               </Td>
               <Td fontSize="sm">{categoryProduct.name}</Td>
               <Td fontSize="sm">{truncateDescription(categoryProduct.description, 35)}</Td>

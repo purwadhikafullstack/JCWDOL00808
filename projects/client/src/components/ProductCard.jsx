@@ -1,12 +1,13 @@
 import { useToast } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { addProduct } from "../reducers/cartSlice";
 
 export const ProductCard = (props) => {
   const dispatch = useDispatch();
   const toast = useToast();
-  const { products, profile } = props;
+  const { user } = useSelector((state) => state.auth);
+  const { products } = props;
 
   const handleAddToCart = (products_id, quantity) => {
     // Add the product to the cart with the selected quantity
@@ -75,7 +76,7 @@ export const ProductCard = (props) => {
                 </span>
                 <button
                   onClick={() => handleAddToCart(product.id, 1)}
-                  disabled={!profile?.is_verified || product.totalStock === "0"}
+                  disabled={!user?.is_verified || product.totalStock === "0"}
                   className="text-white bg-blue-700 hover:bg-blue-700 active:bg-blue-900 font-medium rounded-lg text-sm px-2 py-2 text-center dark:bg-blue-600 enabled:dark:hover:bg-blue-700 enabled:dark:active:bg-blue-900 disabled:dark:bg-gray-700 disabled:cursor-not-allowed disabled:dark:text-black disabled:bg-blue-300 disabled:text-white"
                 >
                   {product.totalStock !== "0" ? "Add to cart" : "Out of stock"}
