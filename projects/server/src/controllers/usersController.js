@@ -6,11 +6,6 @@ const db = require("../../models/index");
 const users = db.users;
 
 // Import verification token function
-// const {
-//   createVerificationToken,
-//   validateVerificationToken,
-// } = require("../helper/verificationToken");
-
 const {
   createVerificationToken,
   validateVerificationToken,
@@ -153,7 +148,7 @@ module.exports = {
           message: "Login Success",
           data: {
             user: userData,
-            token: createVerificationToken({ id: findEmail.dataValues.id }),
+            token: createToken({ id: findEmail.dataValues.id }),
           },
         });
       }
