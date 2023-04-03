@@ -8,7 +8,10 @@ const verifyToken = (req, res, next) => {
   // Get token from headers with authorization as the key name, change accordingly
   const token = req.headers.authorization;
 
-  if (!token) return res.status(401).send({ error: true, message: "You must be logged In.", data: null });
+  if (!token || token === "null")
+    return res
+      .status(401)
+      .send({ error: true, message: "You must be logged In.", data: null });
 
   jwt.verify(token, process.env.JWT_KEY, (err, data) => {
     try {
@@ -37,7 +40,10 @@ const verifyRoleAdmin = async (req, res, next) => {
   // Get token from headers with authorization as the key name, change accordingly
   const token = req.headers.authorization;
 
-  if (!token) return res.status(401).send({ error: true, message: "You must be logged In.", data: null });
+  if (!token)
+    return res
+      .status(401)
+      .send({ error: true, message: "You must be logged In.", data: null });
 
   // const token = token.split(" ")[1];
 
@@ -53,14 +59,19 @@ const verifyRoleAdmin = async (req, res, next) => {
 
     // Check if the admin has the super admin role (role = 1)
     if (admin.role !== 1) {
-      return res.status(403).json({ message: "Unauthorized, only super admin can request stock mutation" });
+      return res.status(403).json({
+        message: "Unauthorized, only super admin can request stock mutation",
+      });
     }
 
     req.admin = admin;
 
     next();
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError || error instanceof jwt.JsonWebTokenError) {
+    if (
+      error instanceof jwt.TokenExpiredError ||
+      error instanceof jwt.JsonWebTokenError
+    ) {
       res.status(401).send({
         isError: true,
         message: "Your session has expired. Please Login again",
