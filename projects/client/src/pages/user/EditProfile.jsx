@@ -119,7 +119,9 @@ export default function EditProfile() {
   };
 
   useEffect(() => {
-    isAuth(navigate, true).then((data) => setProfile(data));
+    if (localStorage.getItem("token")) {
+      isAuth().then((data) => setProfile(data));
+    }
   }, [navigate, refresh]);
 
   const validationSchema = Yup.object().shape({

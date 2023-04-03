@@ -26,7 +26,6 @@ export default function Home() {
   const [pageCount, setPageCount] = useState(0);
   const [limit] = useState(12);
   const [offset, setOffset] = useState(0);
-  const navigate = useNavigate();
 
   const getCategory = (category_id) => {
     setCategory(category_id);
@@ -58,8 +57,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    isAuth(navigate).then((data) => setProfile(data));
     fetchProducts();
+    const token = localStorage.getItem("token");
+    if (token) {
+      isAuth().then((data) => setProfile(data));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
