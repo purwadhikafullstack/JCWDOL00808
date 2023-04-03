@@ -1,8 +1,7 @@
-import { useRef, useState } from "react";
+// import { useRef, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { userLogout } from "../reducers/authSlice";
-// import {useToast} from "@chakra-ui/react"
 
 // // const baseURL = process.env.REACT_APP_BACKEND_BASE_URL;
 // const userURL = process.env.REACT_APP_BACKEND_USER_URL;
@@ -52,11 +51,23 @@ export const isAuth = async () => {
     localStorage.setItem("user", JSON.stringify(userData?.data?.data));
     return userData?.data?.data;
   } catch (error) {
-    toast.error(error?.response?.data?.message || error?.message);
+    if (error.response.status === 401) {
+      toast.error(error?.response?.data?.message || error?.message);
+      setTimeout(() => {
+        sessionExpired();
+      }, 1000);
+    } else {
+      toast.error(error?.response?.data?.message || error?.message);
+    }
   }
 };
 
 export const logout = (navigate, dispatch) => {
   dispatch(userLogout());
   navigate("/user/login");
+};
+
+export const sessionExpired = () => {
+  localStorage.clear();
+  window.location.assign("/user/login");
 };
