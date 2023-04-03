@@ -121,7 +121,7 @@ function App() {
           <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
         </Route>
 
-        {/*Warehouse admin's route */}
+        {/*Super admin & Warehouse admin's route */}
         <Route element={<WarehouseAdminRoutes />}>
           <Route path="/admin" element={<Sidebar />} />
           <Route path="/admin/manageproducts" element={<ManageProducts />} />
