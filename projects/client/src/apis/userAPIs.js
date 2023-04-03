@@ -42,21 +42,15 @@ import { userLogout } from "../reducers/authSlice";
 //     //   });
 //   }
 // };
-export const isAuth = async (navigate, isRestricted = false) => {
+export const isAuth = async () => {
   try {
-    if (!localStorage.getItem("token")) {
-      if (isRestricted === true) {
-        navigate("/");
-      }
-    } else {
-      const token = localStorage.getItem("token");
-      const userData = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/auth`,
-        { headers: { Authorization: token } }
-      );
-      localStorage.setItem("user", JSON.stringify(userData?.data?.data));
-      return userData?.data?.data;
-    }
+    const token = localStorage.getItem("token");
+    const userData = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/auth`,
+      { headers: { Authorization: token } }
+    );
+    localStorage.setItem("user", JSON.stringify(userData?.data?.data));
+    return userData?.data?.data;
   } catch (error) {
     toast.error(error?.response?.data?.message || error?.message);
   }
