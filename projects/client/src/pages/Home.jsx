@@ -3,8 +3,6 @@ import Carousel from "nuka-carousel";
 import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import ReactPaginate from "react-paginate";
-import { useNavigate } from "react-router-dom";
-import { isAuth } from "../apis/userAPIs";
 import Carousel1 from "../assets/carousel/carousel1.jpg";
 import Carousel2 from "../assets/carousel/carousel2.jpg";
 import Carousel3 from "../assets/carousel/carousel3.jpg";
@@ -14,7 +12,6 @@ import { ProductCard } from "../components/ProductCard";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
 export default function Home() {
-  const [profile, setProfile] = useState(null);
   const [products, setProducts] = useState([]);
   const queryParams = new URLSearchParams(window.location.search);
   const search = queryParams.get("search");
@@ -58,10 +55,6 @@ export default function Home() {
 
   useEffect(() => {
     fetchProducts();
-    const token = localStorage.getItem("token");
-    if (token) {
-      isAuth().then((data) => setProfile(data));
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
@@ -143,11 +136,7 @@ export default function Home() {
         </div>
 
         <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4">
-          <ProductCard
-            profile={profile}
-            products={products}
-            func={getCategory}
-          />
+          <ProductCard products={products} func={getCategory} />
           <div className="grid md:col-span-4 col-span-2 place-items-center">
             <ReactPaginate
               previousLabel={"<"}

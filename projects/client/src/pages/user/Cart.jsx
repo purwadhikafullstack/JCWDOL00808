@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { isAuth } from "../../apis/userAPIs";
 import DeleteProductAlert from "../../components/DeleteProductAlert";
 import ScrollToTopButton from "../../components/ScrollToTopButton";
 import {
@@ -26,7 +25,6 @@ export default function Cart() {
   };
 
   useEffect(() => {
-    isAuth(navigate, true);
     dispatch(getCarts());
   }, [navigate, dispatch]);
 
