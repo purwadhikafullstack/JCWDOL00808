@@ -104,7 +104,8 @@ function ManageProducts() {
   const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
-    <div style={{ margin: "auto", width: "70%" }}>
+    // <div style={{ margin: "auto", width: "70%" }}>
+    <div className="container mx-auto px-4 mb-3">
       {/* fitur search */}
 
       <form onSubmit={searchData}>

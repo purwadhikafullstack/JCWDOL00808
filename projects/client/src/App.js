@@ -2,6 +2,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import Sidebar from "./components/sidebar";
 import AdminLogin from "./pages/AdminLogin";
+import Dashboard from "./pages/admin/dashboard";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import ProductDetails from "./pages/ProductDetails";
@@ -45,59 +46,66 @@ function App() {
   const cleanRoute = ["/user/register", "/user/verify", "/user/verify-new-password", "/user/login", "/user/reset-password", "/admin/login"].includes(location.pathname);
 
   return (
-    <div className="App" style={{ display: "flex", flex: 1 }}>
+    // <div className="App" style={{ display: "flex", flex: 1 }}>
+    //   {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
+    //   {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : <Navbar />}
+
+    <div className="App">
       {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
-      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : <Navbar />}
+      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Navbar />}
+      <div className="flex justify-between">
+        {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : null}
 
-      <Routes>
-        {/*User's path */}
-        <Route path="/" element={<Home />} />
-        <Route path="/user/register" element={<Registration />} />
-        <Route path="/user/verify" element={<Verification />} />
-        <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
-        <Route path="/user/login" element={<Login />} />
-        <Route path="/user/profile" element={<EditProfile />} />
-        <Route path="/user/reset-password" element={<ResetPassword />} />
-        <Route path="/user/address" element={<UserAddress />} />
-        <Route path="/user/add-address" element={<AddUserAddress />} />
-        <Route path="/user/address/:id" element={<EditUserAddress />} />
-        <Route path="/product-details/:productId" element={<ProductDetails />} />
-        <Route path="/user/cart" element={<Cart />} />
+        <Routes>
+          {/*User's path */}
+          <Route path="/" element={<Home />} />
+          <Route path="/user/register" element={<Registration />} />
+          <Route path="/user/verify" element={<Verification />} />
+          <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
+          <Route path="/user/login" element={<Login />} />
+          <Route path="/user/profile" element={<EditProfile />} />
+          <Route path="/user/reset-password" element={<ResetPassword />} />
+          <Route path="/user/address" element={<UserAddress />} />
+          <Route path="/user/add-address" element={<AddUserAddress />} />
+          <Route path="/user/address/:id" element={<EditUserAddress />} />
+          <Route path="/product-details/:productId" element={<ProductDetails />} />
+          <Route path="/user/cart" element={<Cart />} />
 
-        {/*Admin's path */}
-        {/* <Route path="/admin" element={<Sidebar />} /> */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/list" element={<AdminList />} />
-        <Route path="/admin/assign/:id" element={<AssignAdmin />} />
-        <Route path="/admin/adminuserlist" element={<UserList />} />
-        <Route path="/warehouse/list" element={<WarehouseList />} />
-        <Route path="/warehouse/add" element={<AddWarehouse />} />
-        <Route path="/warehouse/edit" element={<EditWarehouse />} />
-        <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
-        <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
-        <Route path="/warehouse/history" element={<StockHistory />} />
-        <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
-        <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
-        <Route path="/admin/manageadmin" element={<ManageAdmin />} />
-        <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
-        <Route path="/admin/manageproducts" element={<ManageProducts />} />
-        <Route path="/admin/addProducts" element={<ProductForm />} />
-        <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
-        <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
-        <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
-        <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
-        <Route path="/user/address" element={<UserAddress />} />
-        <Route path="/user/add-address" element={<AddUserAddress />} />
-        <Route path="/user/address/:id" element={<EditUserAddress />} />
-        <Route path="/product-details/:productId" element={<ProductDetails />} />
-        <Route path="/user/cart" element={<Cart />} />
+          {/*Admin's path */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/list" element={<AdminList />} />
+          <Route path="/admin/assign/:id" element={<AssignAdmin />} />
+          <Route path="/admin/adminuserlist" element={<UserList />} />
+          <Route path="/warehouse/list" element={<WarehouseList />} />
+          <Route path="/warehouse/add" element={<AddWarehouse />} />
+          <Route path="/warehouse/edit" element={<EditWarehouse />} />
+          <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
+          <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
+          <Route path="/warehouse/history" element={<StockHistory />} />
+          <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
+          <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
+          <Route path="/admin/manageadmin" element={<ManageAdmin />} />
+          <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
+          <Route path="/admin/manageproducts" element={<ManageProducts />} />
+          <Route path="/admin/addProducts" element={<ProductForm />} />
+          <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
+          <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
+          <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
+          <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
+          <Route path="/user/address" element={<UserAddress />} />
+          <Route path="/user/add-address" element={<AddUserAddress />} />
+          <Route path="/user/address/:id" element={<EditUserAddress />} />
+          <Route path="/product-details/:productId" element={<ProductDetails />} />
+          <Route path="/user/cart" element={<Cart />} />
 
-        {/* Fallback route */}
-        <Route path="/*" element={<NotFound />} />
-      </Routes>
+          {/* Fallback route */}
+          <Route path="/*" element={<NotFound />} />
+        </Routes>
 
-      {/*User path will have footer */}
-      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Footer />}
+        {/*User path will have footer */}
+        {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Footer />}
+      </div>
     </div>
   );
 }

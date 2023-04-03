@@ -7,6 +7,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import AddCategoryProductModal from "../../components/addCategoryProductModal";
 import PatchCategoryProduct from "../../components/patchCategoryProductModal";
+import DeleteConfirmation from "../../components/DeleteConfirmationDialog";
 
 function ManageCategoryProducts() {
   const [category, setCategoryProducts] = useState([]);
@@ -109,7 +110,8 @@ function ManageCategoryProducts() {
   const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
-    <div style={{ margin: "auto", width: "70%" }}>
+    // <div style={{ margin: "auto", width: "70%" }}>
+    <div className="container mx-auto px-4 mb-3">
       {/* fitur search */}
 
       <form onSubmit={searchData}>
@@ -203,7 +205,8 @@ function ManageCategoryProducts() {
                   />
                   <PatchCategoryProduct categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} />
 
-                  <IconButton
+                  {/* button icon for delete category product */}
+                  {/* <IconButton
                     size="sm"
                     bgColor="red.500"
                     aria-label="Delete"
@@ -211,12 +214,14 @@ function ManageCategoryProducts() {
                     borderRadius="full"
                     _hover={{ bg: "red.700" }}
                     isDisabled={isButtonDisabled}
-                    onClick={() => {
-                      if (window.confirm("Are you sure you want to delete this Category Product ?")) {
-                        deleteProducts(categoryProduct.id);
-                      }
-                    }}
-                  />
+                    // onClick={() => {
+                    //   if (window.confirm("Are you sure you want to delete this Category Product ?")) {
+                    //     deleteProducts(categoryProduct.id);
+                    //   }
+                    // }}
+                  /> */}
+
+                  <DeleteConfirmation onDelete={() => deleteProducts(categoryProduct.id)} isDisabled={isButtonDisabled} />
                 </Box>
               </Td>
             </Tr>

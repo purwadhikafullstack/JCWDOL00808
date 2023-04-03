@@ -6,7 +6,7 @@ import { API_url } from "../helper";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginAction } from "../actions/adminsAction";
-import {useFormik} from "formik";
+import { useFormik } from "formik";
 
 const AdminLogin = (props) => {
   const [show, setShow] = React.useState(false);
@@ -42,7 +42,7 @@ const AdminLogin = (props) => {
             duration: 9000,
             isClosable: true,
           });
-          setTimeout(() => (navigate("/admin", { replace: true }), 2000));
+          setTimeout(() => (navigate("/admin/dashboard", { replace: true }), 2000));
         } else {
           toast({
             title: `${response.data.message}`,
@@ -77,10 +77,12 @@ const AdminLogin = (props) => {
           <Text className="mt-3" fontSize="lg">
             e-mail
           </Text>
-          <Input placeholder="Enter your.email@mail.com"
-          // value={formik.values.email}
-          // onChange={formik.handleChange}
-          onChange={element => setInputEmail(element.target.value)} />
+          <Input
+            placeholder="Enter your.email@mail.com"
+            // value={formik.values.email}
+            // onChange={formik.handleChange}
+            onChange={(element) => setInputEmail(element.target.value)}
+          />
           <Text fontSize="lg">Password</Text>
           <InputGroup size="md">
             <Input pr="4.5rem" type={show ? "text" : "password"} placeholder="Enter password" onChange={(element) => setInputPassword(element.target.value)} />
