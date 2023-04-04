@@ -31,6 +31,7 @@ import {
   getTotalProductsInCart,
   updateCarts,
 } from "../../reducers/cartSlice";
+import ScrollToTopButton from "../../components/ScrollToTopButton";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -43,6 +44,7 @@ const Checkout = () => {
 
     const carts = useSelector(cartSelector.selectAll);
     const subtotal = useSelector(getTotalPriceInCart);
+    const totalProductsInCart = useSelector(getTotalProductsInCart);
 
     const dispatch = useDispatch();
 
@@ -84,18 +86,18 @@ const Checkout = () => {
         setNewAddress(e.target.value);
         };
         
-        const addNewAddress = async () => {
-        try {
-        const response = await axios.post('/api/addresses', { address: newAddress });
-        setAddresses([...addresses, response.data]);
-        setSelectedAddress(response.data.id);
-        setNewAddress('');
-        } catch (error) {
-        console.error('Error adding new address:', error);
-        }
-        };
+    const addNewAddress = async () => {
+    try {
+    const response = await axios.post('/api/addresses', { address: newAddress });
+    setAddresses([...addresses, response.data]);
+    setSelectedAddress(response.data.id);
+    setNewAddress('');
+    } catch (error) {
+    console.error('Error adding new address:', error);
+    }
+    };
 
-        const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleAddressSelect = (e) => {
       setSelectedAddress(e.target.value);
@@ -130,7 +132,7 @@ const Checkout = () => {
                 <ModalBody>
                   <Select placeholder="Select address" onChange={handleAddressSelect}>
                     {addresses.map((address) => (
-                      <option key={address.id} value={address.id}>
+                      <option key={address.id} value={[address.address, address.recipient]}>
                         {address.recipient}
                       </option>
                     ))}
@@ -194,19 +196,21 @@ const Checkout = () => {
         };
 
         return (
-          <Box width="100%" maxWidth="800px" mx="auto" py={8}>
+          <Box width="100%" maxWidth="1000px" mx="auto" py={8}>
             <Heading mb={6}>Checkout</Heading>
             <Flex justifyContent="space-between" alignItems="center" mb={6}>
               <Heading size="md">Shipping Address</Heading>
               {addresses.length === 0 && (
+                <Link to="/user/add-address">
                 <Button onClick={addNewAddress} colorScheme="teal" size="sm">
                   Add New Address
                 </Button>
+                </Link>
               )}
             </Flex>
             {addresses.length !== 0 ? (
               <Box>
-                <Text mb={4}>Selected Address: {selectedAddress}</Text>
+                <Text mb={4}>Aku {selectedAddress}</Text>
                 <Button onClick={onOpen} colorScheme="blue" size="sm">
                   Change Address
                 </Button>
@@ -220,21 +224,13 @@ const Checkout = () => {
                     Please add new address for process your order.
                   </p>
                   
-                {/* <FormControl>
-                  <FormLabel>New Address</FormLabel>
-                  <Input
-                    type="text"
-                    value={newAddress}
-                    onChange={handleNewAddressChange}
-                    placeholder="Enter your address"
-                  />
-                </FormControl>
-                <Button onClick={addNewAddress} colorScheme="teal">
-                  Save New Address
-                </Button> */}
               </Stack>
             )}
-            <div className="rounded-lg md:w-2/3 mt-4 justify-center mx-auto">
+
+<div className="flex flex-col justify-between w-full">
+        <div className="bg-white py-5">
+          <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
+            <div className="rounded-lg md:w-2/3">
               {carts.length !== 0 ? (
                 carts.map((cart, index) => {
                   return (
@@ -267,21 +263,14 @@ const Checkout = () => {
                             ).toLocaleString("ID")}{" "}
                             grams
                           </p>
-                          
-                        </div>
-                        <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
-                          <div className="flex items-center justify-end border-gray-100">
-                            
-                            <p className="mt-1 text-xs text-gray-700 text-left">
-                            Qty:{" "}
-                            {(
-                              cart.quantity 
-                            )}{" "}
-                            pcs
+                          <p className="mt-1 text-xs text-gray-700 text-left">
+                            Qty: {cart.quantity} Pcs
                           </p>
-                            
-                          </div>
-                          <div className="flex md:flex-col items-center space-x-4">
+                        </div>
+                        <div className="mt-4 flex justify-end sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
+                        <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
+                          
+                          <div className="flex md:flex-col items-center space-x-4 mt-2">
                             <p className="text-sm">
                               {(
                                 cart.product.price * cart.quantity
@@ -293,8 +282,8 @@ const Checkout = () => {
                             
                           </div>
                         </div>
+                        </div>
                       </div>
-                      
                     </div>
                   );
                 })
@@ -315,6 +304,44 @@ const Checkout = () => {
                 </div>
               )}
             </div>
+            <div
+              className={`sticky top-[5.7rem] mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
+                carts.length === 0 ? "hidden" : null
+              }`}
+            >
+              <div className="mb-2 flex justify-between">
+                <p className="text-gray-700">
+                  Subtotal ({totalProductsInCart} items)
+                </p>
+                <p className="text-gray-700">
+                  {subtotal.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+              </div>
+              <hr className="my-4" />
+              <div className="flex justify-between">
+                <p className="text-lg font-bold">Subtotal</p>
+                <div className="">
+                  <p className="mb-1 text-lg font-bold">
+                    {subtotal.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </p>
+                </div>
+              </div>
+              <Link to="/user/checkout">
+                <button className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
+                  Check out
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+        <ScrollToTopButton />
+      </div>
 
             <div className="flex justify-between">
                 <p className="text-lg font-bold">Subtotal</p>
