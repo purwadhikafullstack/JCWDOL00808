@@ -1,7 +1,7 @@
 const db = require("../../models/index");
 const WarehousesModel = db.warehouses;
 const stocks = db.stocks;
-const stock_histories = db.stock_histories
+const stock_histories = db.stock_histories;
 const request = require("request");
 
 // 1. import library geocode
@@ -14,11 +14,11 @@ const { Op } = require("sequelize");
 module.exports = {
   getAllWarehouse: async (req, res) => {
     try {
-      let data = await WarehousesModel.findAll()
-      return res.status(200).send(data)
+      let data = await WarehousesModel.findAll();
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      return res.status(500).send(error)
+      return res.status(500).send(error);
     }
   },
   getProvinceData: async (req, res) => {
@@ -60,8 +60,8 @@ module.exports = {
       const offset = limit * page;
 
       const sort = req.query.sort || "id";
-      const order = req.query.order || "ASC"
-      const keyword = req.query.keyword || ""
+      const order = req.query.order || "ASC";
+      const keyword = req.query.keyword || "";
 
       let WarehouseData = await WarehousesModel.findAndCountAll({
         limit,
@@ -69,24 +69,28 @@ module.exports = {
         order: [[sort, order]],
         where: {
           [Op.or]: [
-            { name: {
-              [Op.like]: "%" + keyword + "%"
-            }
-          },
-            { address: {
-              [Op.like]: "%" + keyword + "%"
-            }
-          },
-            { city: {
-              [Op.like]: "%" + keyword + "%"
-            }
-          },
-            { province: {
-              [Op.like]: "%" + keyword + "%"
-            }
-          },
-          ]
-        }
+            {
+              name: {
+                [Op.like]: "%" + keyword + "%",
+              },
+            },
+            {
+              address: {
+                [Op.like]: "%" + keyword + "%",
+              },
+            },
+            {
+              city: {
+                [Op.like]: "%" + keyword + "%",
+              },
+            },
+            {
+              province: {
+                [Op.like]: "%" + keyword + "%",
+              },
+            },
+          ],
+        },
       });
       res.status(200).send({ ...WarehouseData, totalPage: Math.ceil(WarehouseData.count / limit) });
     } catch (error) {
@@ -151,8 +155,8 @@ module.exports = {
   },
   getWarehouseDetails: async (req, res) => {
     try {
-      const { id } = req.params;
-      let data = await WarehousesModel.findOne({ where: { id } });
+      const id = req.query.id;
+      let data = await WarehousesModel.findAll({ where: { id } });
       console.log("data details: ", data);
 
       res.status(200).send(data);
@@ -168,10 +172,10 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      const { stock, products_id, warehouses_id } = req.body
+      const { stock, products_id, warehouses_id } = req.body;
 
-      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id}, {transaction: t })
-      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "New Product added to warehouse"});
+      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id }, { transaction: t });
+      const updateHistories = await stock_histories.create({ stock_before: 0, stock_after: stock, products_id, warehouses_id, description: "New Product added to warehouse" });
       t.commit();
 
       res.status(201).send({
@@ -179,7 +183,6 @@ module.exports = {
         message: "Product added to warehouse.",
         data: addedProductToWarehouse,
       });
-
     } catch (error) {
       t.rollback();
       res.status(409).send({
@@ -187,7 +190,6 @@ module.exports = {
         message: error.message,
         data: null,
       });
-      
     }
   },
   getWarehouseProduct: async (req, res) => {
@@ -257,5 +259,4 @@ module.exports = {
       });
     }
   },
-
 };

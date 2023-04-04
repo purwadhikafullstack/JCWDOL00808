@@ -31,7 +31,7 @@ const StockHistory = () => {
 
   const autoGetStock = () => {
     Axios.get(API_url + `/histories/autoGetStock`).then((response) => {
-      console.log(response.data);
+      console.log("autoGetStock: ", response.data);
       setStockHistories(response.data);
     });
   };
@@ -67,6 +67,7 @@ const StockHistory = () => {
             <Td>{value.stock_after}</Td>
             <Td>Berkurang sebanyak {difference}</Td>
             <Td>{value.description}</Td>
+            <Td>{value.product.name}</Td>
             {/* <Td>
               <Button colorScheme="blue">Details</Button>
             </Td> */}
@@ -79,6 +80,7 @@ const StockHistory = () => {
             <Td>{value.stock_after}</Td>
             <Td>Bertambah sebanyak {difference}</Td>
             <Td>{value.description}</Td>
+            <Td>{value.product.name}</Td>
             {/* <Td>
               <Button colorScheme="blue">Details</Button>
             </Td> */}
@@ -166,7 +168,7 @@ const StockHistory = () => {
                   <Th>Qty After</Th>
                   <Th>Qty difference</Th>
                   <Th>Description</Th>
-                  {/* <Th>Action</Th> */}
+                  <Th>Product</Th>
                 </Tr>
               </Thead>
               <Tbody>{showStockHistories()}</Tbody>

@@ -30,10 +30,6 @@ import {
   Radio,
   RadioGroup,
   HStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -82,11 +78,6 @@ const WarehouseList = (props) => {
   const [districtData, setDistrictData] = React.useState([]);
   const [district, setDistrict] = React.useState("");
 
-  const [detailsName, setDetailsName] = useState("");
-  const [detailsAddress, setDetailsAddress] = useState("");
-  const [detailsCity, setDetailsCity] = useState("");
-  const [detailsProvince, setDetailsProvince] = useState("");
-
   const getWarehouseData = () => {
     Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
       .then((response) => {
@@ -116,13 +107,14 @@ const WarehouseList = (props) => {
   };
 
   const getSpecificWarehouse = () => {
-    Axios.get(API_url + `/warehouses/getWarehouseDetails/${warehouseId}`)
+    Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${warehouseId}`)
       .then((response) => {
         console.log("response:", response.data.name);
-        setDetailsName(response.data.name);
-        setDetailsAddress(response.data.address);
-        setDetailsCity(response.data.city);
-        setDetailsProvince(response.data.province);
+        setName(response.data.name);
+        setAddress(response.data.address);
+        setCity(response.data.city);
+        setProvince(response.data.province);
+        // setDetailsDistrict(response.data.district)
       })
       .catch((error) => console.log(error));
   };
@@ -146,147 +138,12 @@ const WarehouseList = (props) => {
               colorScheme="teal"
               className="mr-2"
               onClick={() => {
-                  setWarehouseId(value.id);
-                  onDetailsOpen();
-                  getSpecificWarehouse();
-                }
-              }
+                setWarehouseId(value.id);
+                navigate(`/warehouse/details?id=${value.id}`);
+              }}
             >
               Details
             </Button>
-            <Modal isOpen={isDetailsOpen} onClose={onDetailsClose}>
-              <ModalOverlay />
-              <ModalContent>
-                <Image src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg" alt="Green double couch with wooden legs" borderRadius="lg" />
-                <ModalHeader>Warehouse name: {detailsName}</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <Text size="sm">Warehouse address: {detailsAddress}</Text>
-
-                  <Text color="blue.600" size="sm">
-                    {detailsCity}, {detailsProvince}
-                  </Text>
-                </ModalBody>
-
-                <ModalFooter>
-                  <Button colorScheme="blue" onClick={onDetailsClose}>
-                    Close
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
-            <Button
-              colorScheme="blue"
-              className="mr-2"
-              onClick={() => {
-                onEditOpen();
-                setWarehouseId(value.id);
-              }}
-            >
-              Edit
-            </Button>
-            <Modal isOpen={isEditOpen} onClose={onEditClose}>
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Edit warehouse data</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <div className="mt-4 text-muted fw-bold text-start">
-                    <Text fontSize="md">Name</Text>
-                    <Input placeholder="Warehouse name" size="md" onChange={(element) => setName(element.target.value)} />
-                    <div className="mt-4 text-muted fw-bold text-start">
-                      <Text fontSize="md">Address</Text>
-                      <InputGroup size="md">
-                        <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
-                      </InputGroup>
-                    </div>
-                    <div className="mt-4 text-muted fw-bold text-start">
-                      <Text fontSize="md">Province</Text>
-                      <Select
-                        placeholder="Select province"
-                        onChange={(element) => {
-                          setProvince(element.target.value.split(",")[1]);
-                          onGetCity(element.target.value.split(",")[0]);
-                        }}
-                      >
-                        {provinceData.map((value) => {
-                          return (
-                            <option value={value.province_id + "," + value.province} key={value.province_id}>
-                              {value.province}
-                            </option>
-                          );
-                        })}
-                      </Select>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="mt-4 text-muted fw-bold text-start">
-                      <Text fontSize="md">City</Text>
-                      <Select placeholder="Select city" value={city} onChange={(element) => setCity(element.target.value)}>
-                        {cityData.map((value) => {
-                          return (
-                            <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
-                              {value.type} {value.city_name}
-                            </option>
-                          );
-                        })}
-                      </Select>
-                    </div>
-                    <div className="mt-4 text-muted fw-bold text-start">
-                      <Text fontSize="md">District (Kecamatan)</Text>
-                      <Input placeholder="Input district" onChange={(element) => setDistrict(element.target.value)}></Input>
-                    </div>
-                  </div>
-                </ModalBody>
-
-                <ModalFooter>
-                  <Button mr={3} onClick={onEditClose}>
-                    Close
-                  </Button>
-                  <Button
-                    colorScheme="blue"
-                    onClick={() => {
-                      onEditClose();
-                      buttonEditWarehouse();
-                    }}
-                  >
-                    Edit warehouse data
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
-            <>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  setWarehouseId(value.id);
-                  onAlertOpen();
-                }}
-              >
-                Delete
-              </Button>
-
-              <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
-                <AlertDialogOverlay>
-                  <AlertDialogContent>
-                    <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                      Delete Warehouse
-                    </AlertDialogHeader>
-
-                    <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
-
-                    <AlertDialogFooter>
-                      <Button ref={cancelRef} onClick={onAlertClose}>
-                        Cancel
-                      </Button>
-                      <Button colorScheme="red" onClick={deleteButton} ml={3}>
-                        Delete
-                      </Button>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialogOverlay>
-              </AlertDialog>
-            </>
           </Td>
         </Tr>
       );
