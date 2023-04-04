@@ -1,5 +1,22 @@
-import { Text, Input, InputGroup, Button, InputRightElement, Select, useToast } from "@chakra-ui/react";
-import { Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup, MenuOptionGroup, MenuDivider } from "@chakra-ui/react";
+import {
+  Text,
+  Input,
+  InputGroup,
+  Button,
+  InputRightElement,
+  Select,
+  useToast,
+} from "@chakra-ui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuDivider,
+} from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import Axios from "axios";
 import React, { useState } from "react";
@@ -44,7 +61,8 @@ const AssignAdmin = (props) => {
           status: "success",
           duration: 9000,
           isClosable: true,
-          onCloseComplete: () => navigate("/admin/manageadmin", { replace: true }),
+          onCloseComplete: () =>
+            navigate("/admin/manageadmin", { replace: true }),
         });
       })
       .catch((err) => {
@@ -54,13 +72,14 @@ const AssignAdmin = (props) => {
           status: "warning",
           duration: 9000,
           isClosable: true,
-          onCloseComplete: () => navigate("/admin/manageadmin", { replace: true }),
+          onCloseComplete: () =>
+            navigate("/admin/manageadmin", { replace: true }),
         });
       });
   };
 
   return (
-    <div className="d-flex flex-column">
+    <div className="d-flex flex-col w-full">
       <div className="d-flex flex-row justify-content-center">
         <div className="my-5 mx-5 px-5 text-start">
           <div>
@@ -96,7 +115,11 @@ const AssignAdmin = (props) => {
           </div>
         </div>
       </div>
-      <Button colorScheme="facebook" style={{ width: "15%", marginInline: "auto", marginBottom: 50 }} onClick={assignButton}>
+      <Button
+        colorScheme="facebook"
+        style={{ width: "15%", marginInline: "auto", marginBottom: 50 }}
+        onClick={assignButton}
+      >
         Assign admin
       </Button>
     </div>

@@ -37,7 +37,7 @@ const Login = () => {
   }, [user, isSuccess, navigate, dispatch]);
 
   return (
-    <div className="flex justify-start items-center flex-col h-screen">
+    <div className="flex justify-start items-center flex-col h-screen w-full">
       <div className="relative w-full h-full">
         <video
           // src={shareVideo}

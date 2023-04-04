@@ -22,7 +22,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import AddAdminConfirmation from "./AddAdminConfirmation";
+import AddAdminConfirmation from "./AddConfirmation";
 
 const token = localStorage.getItem("token");
 

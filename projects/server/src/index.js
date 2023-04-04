@@ -82,8 +82,9 @@ const {
   productRouter,
   productCategoryRouter,
   cartsRouter,
-  addressesRouter, stockMutationRouter,
-  historiesRouter
+  addressesRouter,
+  stockMutationRouter,
+  historiesRouter,
 } = require("./routers"); //refer to index.js in routers folder
 
 app.use("/user", usersRouter);

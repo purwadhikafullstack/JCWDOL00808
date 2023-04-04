@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { isAuth } from "../../apis/userAPIs";
 import DeleteProductAlert from "../../components/DeleteProductAlert";
 import ScrollToTopButton from "../../components/ScrollToTopButton";
 import {
@@ -26,13 +25,12 @@ export default function Cart() {
   };
 
   useEffect(() => {
-    isAuth(navigate, true);
     dispatch(getCarts());
   }, [navigate, dispatch]);
 
   return (
     <>
-      <div className="flex flex-col justify-between">
+      <div className="flex flex-col justify-between w-full">
         <div className="bg-white py-5">
           <h1 className="mb-10 text-center text-2xl font-bold">Cart Items</h1>
           <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">

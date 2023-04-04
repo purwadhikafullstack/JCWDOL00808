@@ -104,7 +104,8 @@ function ManageProducts() {
   const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
-    <div style={{ margin: "auto", width: "70%" }}>
+    // <div style={{ margin: "auto", width: "70%" }}>
+    <div className="container mx-auto px-4 mb-3">
       {/* fitur search */}
 
       <form onSubmit={searchData}>
@@ -186,7 +187,7 @@ function ManageProducts() {
               <Td fontSize="sm">{formatRupiah(product.price)}</Td>
               <Td fontSize="sm">{formatWeight(product.weight)}</Td>
               <Td fontSize="sm">
-                <img src={`http://localhost:8000/${product.imageUrl}`} alt="Product image" width="100" />
+                <img src={`http://localhost:8000/${product.imageUrl}`} alt="Product image" width="50" />
                 {/* {`http://localhost:8000/${product.imageUrl}`} */}
               </Td>
               <Td>
