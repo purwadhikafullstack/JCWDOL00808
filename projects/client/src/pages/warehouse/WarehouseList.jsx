@@ -43,7 +43,17 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Heading,
+  Stack,
+  StackDivider,
+  Box,
+  Text,
+} from "@chakra-ui/react";
 import Axios from "axios";
 import { API_url } from "../../helper";
 import { useEffect, useState, useRef } from "react";
@@ -56,8 +66,16 @@ const WarehouseList = (props) => {
   const cancelRef = React.useRef();
   const navigate = useNavigate();
 
-  const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
-  const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
+  const {
+    isOpen: isAlertOpen,
+    onOpen: onAlertOpen,
+    onClose: onAlertClose,
+  } = useDisclosure();
+  const {
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onClose: onModalClose,
+  } = useDisclosure();
 
   const [warehouseData, setWarehouseData] = useState([]);
   const [warehouseId, setWarehouseId] = useState();
@@ -71,7 +89,10 @@ const WarehouseList = (props) => {
   const [totalPage, setTotalPage] = useState(0);
 
   const getWarehouseData = () => {
-    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
+    Axios.get(
+      API_url +
+        `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`
+    )
       .then((response) => {
         console.log(response.data);
         setTotalPage(response.data.totalPage);
@@ -150,7 +171,11 @@ const WarehouseList = (props) => {
           <Td>{value.province}</Td>
           <Td>{value.city}</Td>
           <Td isNumeric>
-          <Button colorScheme="yellow" className="mr-2" onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
+            <Button
+              colorScheme="yellow"
+              className="mr-2"
+              onClick={() => navigate(`/warehouse/stock/${value.id}`)}
+            >
               Stock
             </Button>
             <Button
@@ -160,7 +185,11 @@ const WarehouseList = (props) => {
             >
               Details
             </Button>
-            <Button colorScheme="blue" className="mr-2" onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
+            <Button
+              colorScheme="blue"
+              className="mr-2"
+              onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}
+            >
               Edit
             </Button>
             <>
@@ -168,20 +197,31 @@ const WarehouseList = (props) => {
                 Delete
               </Button>
 
-              <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
+              <AlertDialog
+                isOpen={isAlertOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={onAlertClose}
+              >
                 <AlertDialogOverlay>
                   <AlertDialogContent>
                     <AlertDialogHeader fontSize="lg" fontWeight="bold">
                       Delete Warehouse
                     </AlertDialogHeader>
 
-                    <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
+                    <AlertDialogBody>
+                      Are you sure you want to delete this data? This can't be
+                      undone.
+                    </AlertDialogBody>
 
                     <AlertDialogFooter>
                       <Button ref={cancelRef} onClick={onAlertClose}>
                         Cancel
                       </Button>
-                      <Button colorScheme="red" onClick={() => deleteButton(value.id)} ml={3}>
+                      <Button
+                        colorScheme="red"
+                        onClick={() => deleteButton(value.id)}
+                        ml={3}
+                      >
                         Delete
                       </Button>
                     </AlertDialogFooter>
@@ -200,83 +240,108 @@ const WarehouseList = (props) => {
   };
 
   const handleSearchButton = () => {
-    setPage(0)
-    setKeyword(search)
-  }
+    setPage(0);
+    setKeyword(search);
+  };
 
   return (
     <>
-      <Container className="my-5" maxW={600}>
-        <FormControl>
-          <FormLabel>Search</FormLabel>
-          <Input placeholder="type warehouse name, city, or province..." className="mb-5" onChange={(element) => setSearch(element.target.value)} />
-          <Button onClick={handleSearchButton}>Search</Button>
-        </FormControl>
-        <FormControl>
-          <FormLabel>Sort data by:</FormLabel>
-          <RadioGroup>
-            <HStack spacing="24px">
-              <Radio value="name" onChange={(element) => setSort(element.target.value)}>
-                Name
-              </Radio>
-              <Radio value="province" onChange={(element) => setSort(element.target.value)}>
-                Province
-              </Radio>
-              <Radio value="city" onChange={(element) => setSort(element.target.value)}>
-                City
-              </Radio>
-              <Radio value="updatedAt" onChange={(element) => setSort(element.target.value)}>
-                Date added
-              </Radio>
-              <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
-                <option value="ASC">Ascending</option>
-                <option value="DESC">Descending</option>
-              </Select>
-            </HStack>
-          </RadioGroup>
-        </FormControl>
-      </Container>
-      <TableContainer className="mt-5">
-        <Table size="sm">
-          <Thead>
-            <Tr>
-              <Th>No.</Th>
-              <Th>Warehouse Name</Th>
-              <Th>Address</Th>
-              <Th>Province</Th>
-              <Th>City</Th>
-              <Th isNumeric className="mr-5">
-                Action
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>{showWarehouseData()}</Tbody>
-        </Table>
-      </TableContainer>
-      <div className="mt-5">
-        <ReactPaginate
-          previousLabel={"previous"}
-          nextLabel={"next"}
-          breakLabel={"..."}
-          pageCount={totalPage}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={2}
-          onPageChange={handlePageClick}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousClassName={"page-item"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          breakLinkClassName={"page-link"}
-          activeClassName={"active"}
-        />
+      <div className="flex flex-col items-center w-full">
+        <Container className="my-5" maxW={600}>
+          <FormControl>
+            <FormLabel>Search</FormLabel>
+            <Input
+              placeholder="type warehouse name, city, or province..."
+              className="mb-5"
+              onChange={(element) => setSearch(element.target.value)}
+            />
+            <Button onClick={handleSearchButton}>Search</Button>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Sort data by:</FormLabel>
+            <RadioGroup>
+              <HStack spacing="24px">
+                <Radio
+                  value="name"
+                  onChange={(element) => setSort(element.target.value)}
+                >
+                  Name
+                </Radio>
+                <Radio
+                  value="province"
+                  onChange={(element) => setSort(element.target.value)}
+                >
+                  Province
+                </Radio>
+                <Radio
+                  value="city"
+                  onChange={(element) => setSort(element.target.value)}
+                >
+                  City
+                </Radio>
+                <Radio
+                  value="updatedAt"
+                  onChange={(element) => setSort(element.target.value)}
+                >
+                  Date added
+                </Radio>
+                <Select
+                  placeholder="Order"
+                  onChange={(element) => setOrder(element.target.value)}
+                >
+                  <option value="ASC">Ascending</option>
+                  <option value="DESC">Descending</option>
+                </Select>
+              </HStack>
+            </RadioGroup>
+          </FormControl>
+        </Container>
+        <TableContainer className="mt-5">
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>No.</Th>
+                <Th>Warehouse Name</Th>
+                <Th>Address</Th>
+                <Th>Province</Th>
+                <Th>City</Th>
+                <Th isNumeric className="mr-5">
+                  Action
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>{showWarehouseData()}</Tbody>
+          </Table>
+        </TableContainer>
+        <div className="mt-5">
+          <ReactPaginate
+            previousLabel={"previous"}
+            nextLabel={"next"}
+            breakLabel={"..."}
+            pageCount={totalPage}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={2}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination justify-content-center"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            previousClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextClassName={"page-item"}
+            nextLinkClassName={"page-link"}
+            breakClassName={"page-item"}
+            breakLinkClassName={"page-link"}
+            activeClassName={"active"}
+          />
+        </div>
+        <Button
+          colorScheme="orange"
+          className="mt-5"
+          onClick={() => navigate(`/warehouse/add`)}
+        >
+          Add new warehouse
+        </Button>
       </div>
-      <Button colorScheme="orange" className="mt-5" onClick={() => navigate(`/warehouse/add`)}>
-        Add new warehouse
-      </Button>
     </>
   );
 };
