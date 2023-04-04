@@ -15,7 +15,7 @@ const {
   createVerificationToken,
   validateVerificationToken,
 } = require("../helper/verificationToken");
-const { createToken } = require("../lib/jwt");
+const { validateToken, createToken } = require("../lib/jwt");
 // Import transporter function
 const transporter = require("../helper/transporter");
 const fs = require("fs").promises;
@@ -79,13 +79,14 @@ module.exports = {
     try {
       const { email, password, token } = req.body;
       validateToken(token);
-
+      
       await users.update(
         { password: await hashPassword(password), is_verified: 1 },
         { where: { email } },
         { transaction: t }
-      );
-
+        );
+        
+        console.log(token);
       t.commit();
       res.status(201).send({
         isError: false,

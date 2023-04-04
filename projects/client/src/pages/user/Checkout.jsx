@@ -22,6 +22,17 @@ import {
   Label
 } from '@chakra-ui/react';
 import axios from 'axios';
+import { useDispatch, useSelector } from "react-redux";
+import {
+  cartSelector,
+  deleteProduct,
+  getCarts,
+  getTotalPriceInCart,
+  getTotalProductsInCart,
+  updateCarts,
+} from "../../reducers/cartSlice";
+
+import { Link, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
     const [addresses, setAddresses] = useState([]);
@@ -30,7 +41,14 @@ const Checkout = () => {
 
     const token = localStorage.getItem("token");
 
+    const carts = useSelector(cartSelector.selectAll);
+    const subtotal = useSelector(getTotalPriceInCart);
+
+    const dispatch = useDispatch();
+
     const toast = useToast();
+
+    const navigate = useNavigate();
   
     useEffect(() => {
       fetchAddresses();
@@ -216,7 +234,124 @@ const Checkout = () => {
                 </Button> */}
               </Stack>
             )}
+            <div className="rounded-lg md:w-2/3 mt-4 justify-center mx-auto">
+              {carts.length !== 0 ? (
+                carts.map((cart, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="justify-between border border-gray-200 mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
+                    >
+                      <img
+                        onClick={() =>
+                          navigate(`/product-details/${cart.product.id}`)
+                        }
+                        src={`${process.env.REACT_APP_API_BASE_URL}/${cart.product.imageUrl}`}
+                        alt={cart.product.name}
+                        className="w-full rounded-lg sm:w-40"
+                      />
+                      <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
+                        <div className="mt-5 sm:mt-0">
+                          <h2
+                            onClick={() =>
+                              navigate(`/product-details/${cart.product.id}`)
+                            }
+                            className="text-lg font-bold text-gray-900"
+                          >
+                            {cart.product?.name}
+                          </h2>
+                          <p className="mt-1 text-xs text-gray-700 text-left">
+                            Weight:{" "}
+                            {(
+                              cart.quantity * cart.product.weight
+                            ).toLocaleString("ID")}{" "}
+                            grams
+                          </p>
+                          
+                        </div>
+                        <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
+                          <div className="flex items-center justify-end border-gray-100">
+                            
+                            <p className="mt-1 text-xs text-gray-700 text-left">
+                            Qty:{" "}
+                            {(
+                              cart.quantity 
+                            )}{" "}
+                            pcs
+                          </p>
+                            
+                          </div>
+                          <div className="flex md:flex-col items-center space-x-4">
+                            <p className="text-sm">
+                              {(
+                                cart.product.price * cart.quantity
+                              ).toLocaleString("id-ID", {
+                                style: "currency",
+                                currency: "IDR",
+                              })}
+                            </p>
+                            
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="flex flex-col col-span-4 justify-center items-center my-4">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                    No product in your cart
+                  </h1>
+                  <p className="text-gray-700 text-lg mb-8">
+                    Continue shopping and add some product to cart
+                  </p>
+                  <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => navigate("/")}
+                  >
+                    Go Shopping
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-between">
+                <p className="text-lg font-bold">Subtotal</p>
+                <div className="">
+                  <p className="mb-1 text-lg font-bold">
+                    {subtotal.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-between">
+                <p className="text-lg font-bold">Shipping Fee</p>
+                <div className="">
+                  <p className="mb-1 text-lg font-bold">
+                    Rp. 10.000,00
+                    {/* {subtotal.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })} */}
+                  </p>
+                </div>
+              </div>
       
+              <div className="flex justify-between mt-5">
+                <p className="text-3xl font-bold text-red-500">Grand Total</p>
+                <div className="">
+                  <p className="mb-1 text-3xl font-bold text-red-500">
+                    {(subtotal + 10000).toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </p>
+                </div>
+              </div>
             <ModalAddress
                isOpen={isOpen}
                onClose={onClose}
