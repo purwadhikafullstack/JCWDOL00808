@@ -3,7 +3,7 @@ import { FormControl, FormLabel, useToast, Input, Textarea, NumberInput, NumberI
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import AddAdminConfirmation from "../../components/AddAdminConfirmation";
+import AddAdminConfirmation from "../../components/AddConfirmation";
 import { useNavigate, useParams } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({

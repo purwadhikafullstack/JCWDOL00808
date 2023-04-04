@@ -1,6 +1,6 @@
 import { Box, FormControl, FormLabel, Input, Select, Text, VStack, useDisclosure, useToast, FormErrorMessage } from "@chakra-ui/react";
 import axios from "axios";
-import AddAdminConfirmation from "../../components/AddAdminConfirmation";
+import AddAdminConfirmation from "../../components/AddConfirmation";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
