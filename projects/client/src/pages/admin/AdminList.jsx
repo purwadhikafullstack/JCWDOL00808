@@ -1,4 +1,19 @@
-import { Avatar, Image, Container, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, Button, ButtonGroup } from "@chakra-ui/react";
+import {
+  Avatar,
+  Image,
+  Container,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+  Button,
+  ButtonGroup,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { API_url } from "../../helper";
 import Axios from "axios";
@@ -37,8 +52,13 @@ const AdminList = (props) => {
           <Td>{value.phone_number}</Td>
           <Td>{value.role}</Td>
           <Td isNumeric>
-                <Button className="mr-2" onClick={() => navigate(`/admin/assign?id=${value.id}`)}>Assign to warehouse</Button>
-                <Button colorScheme="red">Delete</Button>
+            <Button
+              className="mr-2"
+              onClick={() => navigate(`/admin/assign/${value.id}`)}
+            >
+              Assign to warehouse
+            </Button>
+            <Button colorScheme="red">Delete</Button>
           </Td>
         </Tr>
       );
@@ -61,24 +81,26 @@ const AdminList = (props) => {
 
   return (
     <>
-      <TableContainer className="mt-5">
-        <Table size="sm">
-          <Thead>
-            <Tr>
-              <Th>id</Th>
-              <Th>Name</Th>
-              <Th>e-mail</Th>
-              <Th>Phone number</Th>
-              <Th>Role</Th>
-              <Th isNumeric>Action</Th>
-            </Tr>
-          </Thead>
-          <Tbody>{showAdminsData()}</Tbody>
-        </Table>
-      </TableContainer>
-      <Button colorScheme="orange" className="mt-5">
-        Add new admin
-      </Button>
+      <div className="flex flex-col items-center w-full">
+        <TableContainer className="mt-5">
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>id</Th>
+                <Th>Name</Th>
+                <Th>e-mail</Th>
+                <Th>Phone number</Th>
+                <Th>Role</Th>
+                <Th isNumeric>Action</Th>
+              </Tr>
+            </Thead>
+            <Tbody>{showAdminsData()}</Tbody>
+          </Table>
+        </TableContainer>
+        <Button colorScheme="orange" className="mt-5">
+          Add new admin
+        </Button>
+      </div>
     </>
   );
 };

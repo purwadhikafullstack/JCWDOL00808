@@ -152,7 +152,7 @@ export default function EditProfile() {
   });
 
   return (
-    <Flex minH={"100vh"} align={"center"} justify={"center"}>
+    <Flex minH={"100vh"} align={"center"} justify={"center"} w={"100%"}>
       <Stack
         spacing={4}
         w={"full"}

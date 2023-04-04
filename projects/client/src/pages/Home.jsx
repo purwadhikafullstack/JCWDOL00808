@@ -59,7 +59,7 @@ export default function Home() {
   }, [search, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
   return (
-    <div className="flex flex-col justify-between">
+    <div className="flex flex-col justify-between w-full">
       <div className="p-2 md:p-4" /*mt-16 */>
         <Carousel
           wrapAround={true}
