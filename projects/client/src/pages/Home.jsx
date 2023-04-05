@@ -139,26 +139,20 @@ export default function Home() {
           <ProductCard products={products} func={getCategory} />
           <div className="grid md:col-span-4 col-span-2 place-items-center">
             <ReactPaginate
-              previousLabel={"<"}
-              nextLabel={">"}
+              previousLabel="<"
+              nextLabel=">"
+              breakLabel="..."
+              breakClassName="md:mx-2 md:bg-gray-200 md:hover:bg-gray-400 md:text-gray-800 md:font-bold md:-my-[0.42rem] md:pt-2 md:px-3.5 md:rounded"
+              pageRangeDisplayed={0}
+              marginPagesDisplayed={1}
               pageCount={pageCount}
               onPageChange={({ selected }) => setOffset(selected * limit)}
-              containerClassName={"flex"}
-              pageLinkClassName={
-                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              }
-              previousLinkClassName={
-                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              }
-              nextLinkClassName={
-                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              }
-              activeLinkClassName={
-                "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              }
-              disabledLinkClassName={
-                "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
-              }
+              containerClassName="flex"
+              pageLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              previousLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              nextLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              activeLinkClassName="mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              disabledLinkClassName="mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
             />
           </div>
         </div>
