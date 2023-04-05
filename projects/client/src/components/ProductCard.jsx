@@ -62,7 +62,7 @@ export const ProductCard = (props) => {
             </Link>
             <div className="px-5 pb-5">
               <Link to={`/product-details/${product.id}`}>
-                <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                <h5 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
                   {product?.name}
                 </h5>
               </Link>
