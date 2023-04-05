@@ -1,11 +1,13 @@
 // Import Sequelize
-const { Sequelize } = require("../../models");
+const { sequelize } = require("../../models");
 
 // Import models
 const db = require("../../models/index");
 const carts = db.carts;
 const products = db.products;
 const stocks = db.stocks;
+const orders = db.orders;
+const order_details = db.order_details;
 
 module.exports = {
   getCartData: async (req, res) => {
@@ -29,7 +31,7 @@ module.exports = {
             attributes: {
               include: [
                 [
-                  Sequelize.literal(`(
+                  sequelize.literal(`(
                     SELECT SUM(stock)
                     FROM stocks
                     WHERE
@@ -91,7 +93,7 @@ module.exports = {
       if (findProduct) {
         await carts.update(
           {
-            quantity: Sequelize.literal(`quantity + ${quantity}`),
+            quantity: sequelize.literal(`quantity + ${quantity}`),
           },
           { where: { id: findProduct.dataValues.id } }
         );
@@ -115,7 +117,7 @@ module.exports = {
             attributes: {
               include: [
                 [
-                  Sequelize.literal(`(
+                  sequelize.literal(`(
                     SELECT SUM(stock)
                     FROM stocks
                     WHERE
@@ -165,7 +167,7 @@ module.exports = {
             attributes: {
               include: [
                 [
-                  Sequelize.literal(`(
+                  sequelize.literal(`(
                     SELECT SUM(stock)
                     FROM stocks
                     WHERE
@@ -214,6 +216,55 @@ module.exports = {
         data: cartsData,
       });
     } catch (error) {
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+  deliverOrder: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      const { id } = req.params;
+
+      //Get order data
+      const findOrder = await orders.findByPK(id);
+
+      //Get all products_id from the orders
+      const findOrderDetails = await order_details.findAll({
+        where: { orders_id: id },
+      });
+
+      //Check if all product stocks are available
+      const checkStocks = await stocks.findOne({
+        where: {
+          products_id: findOrderDetails.dataValues.id,
+          warehouses_id: findOrder.dataValues.warehouse_id,
+        },
+      });
+      //If one or more products stock is not available, send error
+      if ("Products not available") {
+        res.status(404).send({
+          isError: true,
+          message: "Some products are not available",
+          data: null,
+        });
+      } else {
+        await orders.update(
+          { status: "Dikirim" },
+          { where: id },
+          { transaction: t }
+        );
+        t.commit();
+        res.status(200).send({
+          isError: false,
+          message: "Orders has been shipped",
+          data: null,
+        });
+      }
+    } catch (error) {
+      t.rollback();
       res.status(404).send({
         isError: true,
         message: error.message,
