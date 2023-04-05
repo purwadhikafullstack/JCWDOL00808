@@ -80,7 +80,7 @@ const Checkout = () => {
   
     const handleAddressChange = (e) => {
       const setSelectedAddressId = e.target.value;
-      const selectedAddress = address.find(address => address.id === setSelectedAddressId )
+      const selectedAddress = addresses.find(address => address.id === setSelectedAddressId )
       setSelectedAddress(selectedAddress);
     };
   
