@@ -37,7 +37,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
     const [addresses, setAddresses] = useState([]);
-    const [selectedAddress, setSelectedAddress] = useState('');
+    const [selectedAddress, setSelectedAddress] = useState({});
     const [newAddress, setNewAddress] = useState('');
 
     const token = localStorage.getItem("token");
@@ -79,7 +79,9 @@ const Checkout = () => {
   
   
     const handleAddressChange = (e) => {
-      setSelectedAddress(e.target.value);
+      const setSelectedAddressId = e.target.value;
+      const selectedAddress = address.find(address => address.id === setSelectedAddressId )
+      setSelectedAddress(selectedAddress);
     };
   
     const handleNewAddressChange = (e) => {
@@ -132,7 +134,7 @@ const Checkout = () => {
                 <ModalBody>
                   <Select placeholder="Select address" onChange={handleAddressSelect}>
                     {addresses.map((address) => (
-                      <option key={address.id} value={[address.address, address.recipient]}>
+                      <option key={address.id} value={address}>
                         {address.recipient}
                       </option>
                     ))}
@@ -210,7 +212,9 @@ const Checkout = () => {
             </Flex>
             {addresses.length !== 0 ? (
               <Box>
-                <Text mb={4}>Aku {selectedAddress}</Text>
+                <Text mb={4}>
+                  {selectedAddress.recipient} - {selectedAddress.address} - {selectedAddress.id}
+                  </Text>
                 <Button onClick={onOpen} colorScheme="blue" size="sm">
                   Change Address
                 </Button>
