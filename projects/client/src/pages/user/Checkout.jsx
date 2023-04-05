@@ -37,7 +37,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
     const [addresses, setAddresses] = useState([]);
-    const [selectedAddress, setSelectedAddress] = useState({});
+    const [selectedAddress, setSelectedAddress] = useState('');
     const [newAddress, setNewAddress] = useState('');
 
     const token = localStorage.getItem("token");
@@ -64,7 +64,7 @@ const Checkout = () => {
           headers: { Authorization: token },
         });
         setAddresses(response.data.result);
-        console.log(response.data.result);
+        // console.log(response.data.result);
         // console.log(addresses);
         
       } catch (error) {
@@ -79,9 +79,7 @@ const Checkout = () => {
   
   
     const handleAddressChange = (e) => {
-      const setSelectedAddressId = e.target.value;
-      const selectedAddress = addresses.find(address => address.id === setSelectedAddressId )
-      setSelectedAddress(selectedAddress);
+      setSelectedAddress(e.target.value);
     };
   
     const handleNewAddressChange = (e) => {
@@ -102,7 +100,8 @@ const Checkout = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleAddressSelect = (e) => {
-      setSelectedAddress(e.target.value);
+      setSelectedAddress(JSON.parse(e.target.value));
+      console.log(e.target.value);
       onClose();
       };
 
@@ -134,16 +133,20 @@ const Checkout = () => {
                 <ModalBody>
                   <Select placeholder="Select address" onChange={handleAddressSelect}>
                     {addresses.map((address) => (
-                      <option key={address.id} value={address}>
+                      <option key={address.id} value=
+                      // {[address.address, address.recipient, address.phone_number]}>
+                      {JSON.stringify(address)}>
                         {address.recipient}
                       </option>
                     ))}
                   </Select>
                 </ModalBody>
                 <ModalFooter>
-                  <Button colorScheme="blue" mr={3} onClick={onNewAddressOpen}>
+                  <Link to="/user/add-address">
+                  <Button colorScheme="blue" mr={3} onClick={(onNewAddressOpen)}>
                     Add New Address
                   </Button>
+                  </Link>
                   <Button onClick={onClose}>Close</Button>
                 </ModalFooter>
               </ModalContent>
@@ -198,10 +201,15 @@ const Checkout = () => {
         };
 
         return (
-          <Box width="100%" maxWidth="1000px" mx="auto" py={8}>
-            <Heading mb={6}>Checkout</Heading>
-            <Flex justifyContent="space-between" alignItems="center" mb={6}>
+          <Box width="100%" maxWidth="1000px" mx="auto" py={5}>
+            <h1 className="mb-10 text-center text-2xl font-bold">Checkout</h1>
+            <div className="flex flex-col justify-between w-full">
+            <div className="bg-white py-5">
+           <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
+            <div className="rounded-lg md:w-2/3">
+            <Flex justifyContent="space-between" alignItems="center" >
               <Heading size="md">Shipping Address</Heading>
+              
               {addresses.length === 0 && (
                 <Link to="/user/add-address">
                 <Button onClick={addNewAddress} colorScheme="teal" size="sm">
@@ -210,15 +218,18 @@ const Checkout = () => {
                 </Link>
               )}
             </Flex>
+            <hr className="my-4" />
             {addresses.length !== 0 ? (
-              <Box>
-                <Text mb={4}>
-                  {selectedAddress.recipient} - {selectedAddress.address} - {selectedAddress.id}
-                  </Text>
-                <Button onClick={onOpen} colorScheme="blue" size="sm">
+              <Flex>
+              <Box textAlign={'left'}>
+                <Text justifyContent="space-between">{selectedAddress.recipient}</Text>
+                <Text >{selectedAddress.address} {selectedAddress.district} {selectedAddress.city} {selectedAddress.province}   </Text>
+                <Text mb={4}>{selectedAddress.phone_number}</Text>
+                <Button onClick={onOpen} colorScheme="blue" size="sm" >
                   Change Address
                 </Button>
               </Box>
+              </Flex>
             ) : (
               <Stack spacing={4} mb={4}>
                 <h1 className="text-3xl font-bold text-gray-900 mb-4">
@@ -230,11 +241,7 @@ const Checkout = () => {
                   
               </Stack>
             )}
-
-<div className="flex flex-col justify-between w-full">
-        <div className="bg-white py-5">
-          <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
-            <div className="rounded-lg md:w-2/3">
+            <hr className="my-4" />
               {carts.length !== 0 ? (
                 carts.map((cart, index) => {
                   return (
@@ -324,46 +331,12 @@ const Checkout = () => {
                   })}
                 </p>
               </div>
-              <hr className="my-4" />
-              <div className="flex justify-between">
-                <p className="text-lg font-bold">Subtotal</p>
-                <div className="">
-                  <p className="mb-1 text-lg font-bold">
-                    {subtotal.toLocaleString("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    })}
-                  </p>
-                </div>
-              </div>
-              <Link to="/user/checkout">
-                <button className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
-                  Check out
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-        <ScrollToTopButton />
-      </div>
 
-            <div className="flex justify-between">
-                <p className="text-lg font-bold">Subtotal</p>
+              <div className="mb-2 flex justify-between">
+                <p className="text-gray-700">Shipping Fee</p>
                 <div className="">
-                  <p className="mb-1 text-lg font-bold">
-                    {subtotal.toLocaleString("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    })}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex justify-between">
-                <p className="text-lg font-bold">Shipping Fee</p>
-                <div className="">
-                  <p className="mb-1 text-lg font-bold">
-                    Rp. 10.000,00
+                  <p className="text-gray-700">
+                    Rp 10.000,00
                     {/* {subtotal.toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
@@ -371,11 +344,12 @@ const Checkout = () => {
                   </p>
                 </div>
               </div>
-      
-              <div className="flex justify-between mt-5">
-                <p className="text-3xl font-bold text-red-500">Grand Total</p>
+
+              <hr className="my-4" />
+              <div className="flex justify-between">
+                <p className="text-lg font-bold">Subtotal</p>
                 <div className="">
-                  <p className="mb-1 text-3xl font-bold text-red-500">
+                  <p className="mb-1 text-lg font-bold">
                     {(subtotal + 10000).toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
@@ -383,6 +357,14 @@ const Checkout = () => {
                   </p>
                 </div>
               </div>
+              
+            </div>
+            </div>
+           </div>
+           <ScrollToTopButton />
+            </div>
+
+            
             <ModalAddress
                isOpen={isOpen}
                onClose={onClose}

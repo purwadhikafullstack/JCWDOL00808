@@ -119,7 +119,7 @@ module.exports = {
           ],
         },
       })
-      const getAllAddress = await user_addresses.findAll({ where: { users_id: id } })
+      // const getAllAddress = await user_addresses.findAll({ where: { users_id: id } })
       
       res.json({
         result: result
