@@ -106,6 +106,7 @@ export default function Home() {
       <div className="grid md:grid-cols-4 grid-cols-1">
         <div className="mx-2 my-4 p-2 border-2 border-gray-200 dark:bg-gray-800 dark:text-white shadow rounded-lg">
           <p>Filter</p>
+          <hr className="border-2 my-2" />
           <p className="text-left">Price</p>
           <div className="py-4">
             <div className="flex">
@@ -133,6 +134,7 @@ export default function Home() {
               />
             </div>
           </div>
+          <hr className="border-2 my-4" />
         </div>
 
         <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4">
