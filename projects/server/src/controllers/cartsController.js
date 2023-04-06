@@ -224,47 +224,81 @@ module.exports = {
     }
   },
   deliverOrder: async (req, res) => {
-    const t = await sequelize.transaction();
+    // const t = await sequelize.transaction();
     try {
       const { id } = req.params;
 
       //Get order data
-      const findOrder = await orders.findByPK(id);
+      const findOrder = await orders.findByPk(id);
 
       //Get all products_id from the orders
-      const findOrderDetails = await order_details.findAll({
-        where: { orders_id: id },
-      });
+      const findOrderDetails = await order_details
+        .findAll({
+          attributes: ["products_id"],
+          where: { orders_id: id },
+        })
+        .then((products) => {
+          const productIds = products.map((product) => product.products_id);
+          stocks
+            .findAll({
+              where: {
+                warehouses_id: findOrder.dataValues.warehouses_id,
+                products_id: productIds,
+              },
+            })
+            .then((stocks) => {
+              // Do something with the stocks data
+              console.log(stocks);
+              // Check if any products have no data
+              const foundIds = stocks.map((stock) => stock.products_id);
+              const missingIds = productIds.filter(
+                (id) => !foundIds.includes(id)
+              );
+              if (missingIds.length > 0) {
+                console.log(
+                  `Stock for products ID ${missingIds.join(
+                    ", "
+                  )} is not available.`
+                );
+              }
+            });
+        });
 
       //Check if all product stocks are available
-      const checkStocks = await stocks.findOne({
-        where: {
-          products_id: findOrderDetails.dataValues.id,
-          warehouses_id: findOrder.dataValues.warehouse_id,
-        },
-      });
+      // const checkStocks = await stocks.findOne({
+      //   where: {
+      //     products_id: findOrderDetails.dataValues.id,
+      //     warehouses_id: findOrder.dataValues.warehouse_id,
+      //   },
+      // });
+
       //If one or more products stock is not available, send error
-      if ("Products not available") {
-        res.status(404).send({
-          isError: true,
-          message: "Some products are not available",
-          data: null,
-        });
-      } else {
-        await orders.update(
-          { status: "Dikirim" },
-          { where: id },
-          { transaction: t }
-        );
-        t.commit();
-        res.status(200).send({
-          isError: false,
-          message: "Orders has been shipped",
-          data: null,
-        });
-      }
+      // if ("Products not available") {
+      //   res.status(404).send({
+      //     isError: true,
+      //     message: "Some products are not available",
+      //     data: null,
+      //   });
+      // } else {
+      //   await orders.update(
+      //     { status: "Dikirim" },
+      //     { where: id },
+      //     { transaction: t }
+      //   );
+      //   t.commit();
+      //   res.status(200).send({
+      //     isError: false,
+      //     message: "Orders has been shipped",
+      //     data: null,
+      //   });
+      // }
+      // res.status(200).send({
+      //   isError: false,
+      //   message: "Orders has been shipped",
+      //   data: findOrderDetails,
+      // });
     } catch (error) {
-      t.rollback();
+      // t.rollback();
       res.status(404).send({
         isError: true,
         message: error.message,
