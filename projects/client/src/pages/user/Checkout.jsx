@@ -19,17 +19,15 @@ import {
   useDisclosure,
   Text,
   useToast,
-  Label
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import {
   cartSelector,
-  deleteProduct,
   getCarts,
   getTotalPriceInCart,
   getTotalProductsInCart,
-  updateCarts,
+  getTotalWeightInCart
 } from "../../reducers/cartSlice";
 import ScrollToTopButton from "../../components/ScrollToTopButton";
 
@@ -40,13 +38,17 @@ const Checkout = () => {
     const [warehouseAddresses, setWarehouseAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState('');
     const [newAddress, setNewAddress] = useState('');
+    const [shippingCost, setShippingCost] = useState('');
     const [nearestWarehouse, setNearestWarehouse] = useState(null);
+    const [provinceData, setProvinceData] = useState([]);
+    const [cityData, setCityData] = useState([]);
 
     const token = localStorage.getItem("token");
 
     const carts = useSelector(cartSelector.selectAll);
     const subtotal = useSelector(getTotalPriceInCart);
     const totalProductsInCart = useSelector(getTotalProductsInCart);
+    const totalWeightInCart = useSelector(getTotalWeightInCart);
 
     const dispatch = useDispatch();
 
@@ -99,6 +101,72 @@ const Checkout = () => {
     
       return nearestLocation;
     }
+
+    function extractCityTypeAndName(fullName) {
+      const match = fullName.match(/(Kabupaten|Kota) (.+)/i);
+      if (match) {
+        return [match[1], match[2]];
+      }
+      return [null, null];
+    }
+
+    const fetchShippingCost = async (originName, destinationName, totalWeight) => {
+      try {
+
+        const headers = { key: "ad56687941df3108ced06eb27098deea" };
+        const citiesResponse = await axios.get(`http://localhost:8000/warehouses/getCityData?province_id=`);
+        const cities = citiesResponse.data
+
+        console.log(cities)
+    
+        const [originType, originCityName] = extractCityTypeAndName(originName);
+        const [destinationType, destinationCityName] = extractCityTypeAndName(destinationName);
+    
+        const originId = cities.find((city) => city.type.toLowerCase() === originType.toLowerCase() && city.city_name.toLowerCase() === originCityName.toLowerCase()).city_id;
+        const destinationId = cities.find((city) => city.type.toLowerCase() === destinationType.toLowerCase() && city.city_name.toLowerCase() === destinationCityName.toLowerCase()).city_id;
+    
+        // Calculate shipping cost
+        const costUrl = `http://localhost:8000/warehouses/getCostData?originName=${originId}&destinationName=${destinationId}&totalWeight=${totalWeight}`;
+        const costResponse = await axios.get(costUrl)
+        // const costResponse = await axios.get(costUrl, new URLSearchParams({
+        //   origin: originId,
+        //   destination: destinationId,
+        //   weight : totalWeight,
+        //   courier: 'jne'
+        // }), { headers, 'content-type': 'application/x-www-form-urlencoded' });
+    
+        const shippingInfo = costResponse.data[0].costs[0].cost[0]?.value
+        console.log(shippingInfo);
+
+        setShippingCost(shippingInfo)
+    
+        // shippingInfo.forEach((cost) => {
+        //   console.log(`Service: ${cost.service} - Cost: ${cost.cost[0].value} - Estimated days: ${cost.cost[0].etd}`);
+        // });
+    
+      } catch (error) {
+        console.error('Error fetching shipping cost:', error);
+      }
+    };
+    
+    // fetchShippingCost(originName, destinationName);
+    
+
+    const getProvinceData = () => {
+      axios
+        .get(`http://localhost:8000/warehouses/getProvinceData`)
+        .then((response) => {
+          setProvinceData(response.data);
+        })
+        .catch((error) => {
+          toast({
+            title: "Error fetching data.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        });
+    };
 
     const fetchWarehouseData = async () => {
       try {
@@ -169,6 +237,10 @@ const Checkout = () => {
         warehouseAddresses
       );
       setNearestWarehouse(nearest);
+      // const shippingCost = fetchShippingCost(selected.city, nearest.city)
+      fetchShippingCost(selected.city, nearest.city, totalWeightInCart)
+      // setShippingCost(shippingCost)
+
       console.log(e.target.value);
       onClose();
       };
@@ -409,11 +481,10 @@ const Checkout = () => {
                 <p className="text-gray-700">Shipping Fee</p>
                 <div className="">
                   <p className="text-gray-700">
-                    Rp 10.000,00
-                    {/* {subtotal.toLocaleString("id-ID", {
+                    {(shippingCost).toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
-                    })} */}
+                    })}
                   </p>
                 </div>
               </div>
@@ -432,7 +503,7 @@ const Checkout = () => {
                 <p className="text-lg font-bold">Subtotal</p>
                 <div className="">
                   <p className="mb-1 text-lg font-bold">
-                    {(subtotal + 10000).toLocaleString("id-ID", {
+                    {(subtotal + shippingCost).toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
                     })}

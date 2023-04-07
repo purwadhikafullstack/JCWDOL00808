@@ -53,6 +53,24 @@ module.exports = {
       res.status(200).send(data);
     });
   },
+
+  getCostData: async (req, res) => {
+    let options = {
+      method: 'POST',
+      url: 'https://api.rajaongkir.com/starter/cost',
+      headers: {key: 'c80fa8beeb5eeb737ca76afcf8939a56', 'content-type': 'application/x-www-form-urlencoded'},
+      form: {origin: req.query.originName, destination: req.query.destinationName, weight: req.query.totalWeight, courier: 'jne'}
+    };
+
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+
+      console.log(body);
+      let data = JSON.parse(body).rajaongkir.results;
+      res.status(200).send(data);
+    });
+  },
+
   getWarehouseData: async (req, res) => {
     try {
       console.log(req.query.page);
