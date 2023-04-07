@@ -68,7 +68,7 @@ const AddUserAddress = () => {
   };
 
   useEffect(() => {
-    fetchAddresses();
+    // fetchAddresses();
     getProvinceData();
   }, []);
 

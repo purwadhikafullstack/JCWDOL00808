@@ -37,8 +37,10 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
     const [addresses, setAddresses] = useState([]);
+    const [warehouseAddresses, setWarehouseAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState('');
     const [newAddress, setNewAddress] = useState('');
+    const [nearestWarehouse, setNearestWarehouse] = useState(null);
 
     const token = localStorage.getItem("token");
 
@@ -54,7 +56,66 @@ const Checkout = () => {
   
     useEffect(() => {
       fetchAddresses();
+      fetchWarehouseData();
     }, []);
+
+    function haversineDistance(lat1, lon1, lat2, lon2) {
+      function toRad(x) {
+        return (x * Math.PI) / 180;
+      }
+    
+      const R = 6371; // Earth's radius in km
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) *
+          Math.cos(toRad(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+    
+      return distance;
+    }
+    
+    function findShortestDistance(baseLat, baseLon, locations) {
+      let shortestDistance = Infinity;
+      let nearestLocation;
+    
+      for (const location of locations) {
+        const distance = haversineDistance(
+          baseLat,
+          baseLon,
+          location.latitude,
+          location.longitude
+        );
+    
+        if (distance < shortestDistance) {
+          shortestDistance = distance;
+          nearestLocation = location;
+        }
+      }
+    
+      return nearestLocation;
+    }
+
+    const fetchWarehouseData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/warehouses/getAllWarehouse`)
+        
+        setWarehouseAddresses(response.data);
+        console.log(response.data);
+
+      } catch (error) {
+        toast({
+          title: "Error fetching addresses.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });        
+      }
+    };
   
     const fetchAddresses = async () => {
       try {
@@ -64,8 +125,8 @@ const Checkout = () => {
           headers: { Authorization: token },
         });
         setAddresses(response.data.result);
-        // console.log(response.data.result);
-        // console.log(addresses);
+        // console.log("log dari address" + response.data.result);
+        console.log(response.data.result);
         
       } catch (error) {
         toast({
@@ -100,7 +161,14 @@ const Checkout = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleAddressSelect = (e) => {
-      setSelectedAddress(JSON.parse(e.target.value));
+      const selected = JSON.parse(e.target.value);
+      setSelectedAddress(selected);
+      const nearest = findShortestDistance(
+        selected.latitude,
+        selected.longitude,
+        warehouseAddresses
+      );
+      setNearestWarehouse(nearest);
       console.log(e.target.value);
       onClose();
       };
@@ -228,6 +296,11 @@ const Checkout = () => {
                 <Button onClick={onOpen} colorScheme="blue" size="sm" >
                   Change Address
                 </Button>
+                <Link to="/user/add-address">
+                  <Button colorScheme="blue" mr={3} >
+                    Add New Address
+                  </Button>
+                  </Link>
               </Box>
               </Flex>
             ) : (
@@ -344,6 +417,15 @@ const Checkout = () => {
                   </p>
                 </div>
               </div>
+
+              {nearestWarehouse && (
+                <div className="mb-2 flex justify-between">
+                  <p className="text-gray-700">Nearest Warehouse</p>
+                  <div className="">
+                    <p className="text-gray-700">{nearestWarehouse.name}</p>
+                  </div>
+                </div>
+              )}
 
               <hr className="my-4" />
               <div className="flex justify-between">
