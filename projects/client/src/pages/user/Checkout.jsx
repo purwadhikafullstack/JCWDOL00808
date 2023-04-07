@@ -117,7 +117,7 @@ const Checkout = () => {
         const citiesResponse = await axios.get(`http://localhost:8000/warehouses/getCityData?province_id=`);
         const cities = citiesResponse.data
 
-        console.log(cities)
+        // console.log(cities)
     
         const [originType, originCityName] = extractCityTypeAndName(originName);
         const [destinationType, destinationCityName] = extractCityTypeAndName(destinationName);
@@ -136,6 +136,7 @@ const Checkout = () => {
         // }), { headers, 'content-type': 'application/x-www-form-urlencoded' });
     
         const shippingInfo = costResponse.data[0].costs[0].cost[0]?.value
+        console.log(costResponse.data[0]);
         console.log(shippingInfo);
 
         setShippingCost(shippingInfo)
@@ -173,7 +174,7 @@ const Checkout = () => {
         const response = await axios.get(`http://localhost:8000/warehouses/getAllWarehouse`)
         
         setWarehouseAddresses(response.data);
-        console.log(response.data);
+        // console.log(response.data);
 
       } catch (error) {
         toast({
@@ -194,7 +195,7 @@ const Checkout = () => {
         });
         setAddresses(response.data.result);
         // console.log("log dari address" + response.data.result);
-        console.log(response.data.result);
+        // console.log(response.data.result);
         
       } catch (error) {
         toast({
@@ -241,7 +242,7 @@ const Checkout = () => {
       fetchShippingCost(selected.city, nearest.city, totalWeightInCart)
       // setShippingCost(shippingCost)
 
-      console.log(e.target.value);
+      // console.log(e.target.value);
       onClose();
       };
 
