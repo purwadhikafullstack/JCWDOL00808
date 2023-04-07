@@ -210,7 +210,7 @@ const Checkout = () => {
                   </Select>
                 </ModalBody>
                 <ModalFooter>
-                  <Link to="/user/add-address">
+                  <Link to="/user/add-address/checkout">
                   <Button colorScheme="blue" mr={3} onClick={(onNewAddressOpen)}>
                     Add New Address
                   </Button>
@@ -279,7 +279,7 @@ const Checkout = () => {
               <Heading size="md">Shipping Address</Heading>
               
               {addresses.length === 0 && (
-                <Link to="/user/add-address">
+                <Link to="/user/add-address/checkout">
                 <Button onClick={addNewAddress} colorScheme="teal" size="sm">
                   Add New Address
                 </Button>
@@ -296,8 +296,8 @@ const Checkout = () => {
                 <Button onClick={onOpen} colorScheme="blue" size="sm" >
                   Change Address
                 </Button>
-                <Link to="/user/add-address">
-                  <Button colorScheme="blue" mr={3} >
+                <Link to="/user/add-address/checkout">
+                  <Button colorScheme="blue" ml={3} size="sm" >
                     Add New Address
                   </Button>
                   </Link>
