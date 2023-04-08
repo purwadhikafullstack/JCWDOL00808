@@ -7,9 +7,10 @@ const categoryProductController = require("./categoryProductController");
 const warehousesController = require("./warehouses");
 const productsController = require("./productsController");
 const stockMutation = require("./stockMutations");
-const addressesController = require("./addressesController");const historiesController = require("./histories")
+const addressesController = require("./addressesController");
+const historiesController = require("./histories");
 const cartsController = require("./cartsController");
-
+const confirmOrder = require("./confirmOrderController");
 
 module.exports = {
   usersController,
@@ -24,4 +25,5 @@ module.exports = {
   cartsController,
   addressesController,
   historiesController,
+  confirmOrder,
 };

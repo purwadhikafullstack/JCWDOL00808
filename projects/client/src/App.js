@@ -43,6 +43,7 @@ import Checkout from "./pages/user/Checkout";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import SuperAdminRoutes from "./utils/SuperAdminRoutes";
 import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
+import ManageConfirmationPayment from "./pages/admin/confirmationPayment";
 
 function App() {
   const location = useLocation();
@@ -97,6 +98,7 @@ function App() {
             <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
             <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
+            <Route path="/admin/ordersPaymentConfirmation" element={<ManageConfirmationPayment />} />
           </Route>
 
           {/*Super admin & Warehouse admin's route */}
