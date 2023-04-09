@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Flex,
@@ -37,11 +37,17 @@ const Checkout = () => {
     const [addresses, setAddresses] = useState([]);
     const [warehouseAddresses, setWarehouseAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState('');
+    const [selectedAddressID, setSelectedAddressId] = useState('');
     const [newAddress, setNewAddress] = useState('');
-    const [shippingCost, setShippingCost] = useState('');
+    // const [shippingCost, setShippingCost] = useState(null);
+    const [courierSelect, setCourierSelect] = useState(null);
+    const [shippingMethod, setShippingMethod] = useState(null);
+    const [finalCost, setFinalCost] = useState(null);
+    const [shippingCosts, setShippingCosts] = useState([]);
     const [nearestWarehouse, setNearestWarehouse] = useState(null);
-    const [provinceData, setProvinceData] = useState([]);
-    const [cityData, setCityData] = useState([]);
+
+    const courierRef = useRef(null);
+    const costRef = useRef(null);
 
     const token = localStorage.getItem("token");
 
@@ -110,10 +116,9 @@ const Checkout = () => {
       return [null, null];
     }
 
-    const fetchShippingCost = async (originName, destinationName, totalWeight) => {
+    const fetchShippingCost = async (originName, destinationName, totalWeight, courier) => {
       try {
 
-        const headers = { key: "ad56687941df3108ced06eb27098deea" };
         const citiesResponse = await axios.get(`http://localhost:8000/warehouses/getCityData?province_id=`);
         const cities = citiesResponse.data
 
@@ -126,20 +131,13 @@ const Checkout = () => {
         const destinationId = cities.find((city) => city.type.toLowerCase() === destinationType.toLowerCase() && city.city_name.toLowerCase() === destinationCityName.toLowerCase()).city_id;
     
         // Calculate shipping cost
-        const costUrl = `http://localhost:8000/warehouses/getCostData?originName=${originId}&destinationName=${destinationId}&totalWeight=${totalWeight}`;
+        const costUrl = `http://localhost:8000/warehouses/getCostData?originName=${originId}&destinationName=${destinationId}&totalWeight=${totalWeight}&courier=${courier}`;
         const costResponse = await axios.get(costUrl)
-        // const costResponse = await axios.get(costUrl, new URLSearchParams({
-        //   origin: originId,
-        //   destination: destinationId,
-        //   weight : totalWeight,
-        //   courier: 'jne'
-        // }), { headers, 'content-type': 'application/x-www-form-urlencoded' });
-    
-        const shippingInfo = costResponse.data[0].costs[0].cost[0]?.value
-        console.log(costResponse.data[0]);
-        console.log(shippingInfo);
-
-        setShippingCost(shippingInfo)
+            
+        
+        const shippingInfoResponse = costResponse.data[0]?.costs
+        
+        setShippingCosts(shippingInfoResponse)
     
         // shippingInfo.forEach((cost) => {
         //   console.log(`Service: ${cost.service} - Cost: ${cost.cost[0].value} - Estimated days: ${cost.cost[0].etd}`);
@@ -152,23 +150,6 @@ const Checkout = () => {
     
     // fetchShippingCost(originName, destinationName);
     
-
-    const getProvinceData = () => {
-      axios
-        .get(`http://localhost:8000/warehouses/getProvinceData`)
-        .then((response) => {
-          setProvinceData(response.data);
-        })
-        .catch((error) => {
-          toast({
-            title: "Error fetching data.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-        });
-    };
-
     const fetchWarehouseData = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/warehouses/getAllWarehouse`)
@@ -218,10 +199,10 @@ const Checkout = () => {
         
     const addNewAddress = async () => {
     try {
-    const response = await axios.post('/api/addresses', { address: newAddress });
-    setAddresses([...addresses, response.data]);
-    setSelectedAddress(response.data.id);
-    setNewAddress('');
+    // const response = await axios.post('/api/addresses', { address: newAddress });
+    // setAddresses([...addresses, response.data]);
+    // setSelectedAddress(response.data.id);
+    // setNewAddress('');
     } catch (error) {
     console.error('Error adding new address:', error);
     }
@@ -231,20 +212,52 @@ const Checkout = () => {
 
     const handleAddressSelect = (e) => {
       const selected = JSON.parse(e.target.value);
+      const selectedAddressID = JSON.parse(e.target.value).id;
       setSelectedAddress(selected);
+      setSelectedAddressId(selectedAddressID);
       const nearest = findShortestDistance(
         selected.latitude,
         selected.longitude,
         warehouseAddresses
       );
       setNearestWarehouse(nearest);
-      // const shippingCost = fetchShippingCost(selected.city, nearest.city)
-      fetchShippingCost(selected.city, nearest.city, totalWeightInCart)
-      // setShippingCost(shippingCost)
 
-      // console.log(e.target.value);
+      if (courierRef.current) {
+        courierRef.current.value = "";
+      }
+      if (costRef.current) {
+        costRef.current.value = "";
+      }
+
+      // const shippingCost = fetchShippingCost(selected.city, nearest.city)
+      // fetchShippingCost(selected.city, nearest.city, totalWeightInCart)
+      setFinalCost(null)
       onClose();
       };
+
+      const handleCostSelect = (e) => {
+        const selectedCost = JSON.parse(e.target.value).cost[0].value;
+        const selectedService = JSON.parse(e.target.value).service;
+       
+        setShippingMethod(`${courierSelect} - ${selectedService}` )
+        setFinalCost(selectedCost)
+        console.log(`${courierSelect} - ${selectedService}`)
+      };
+
+      const handleCourierSelect = (e) => {
+        const selectedCourier = e.target.value;
+
+        setCourierSelect(selectedCourier)
+        
+        fetchShippingCost(selectedAddress?.city, nearestWarehouse?.city, totalWeightInCart, selectedCourier)
+        setFinalCost(null)
+
+        if (costRef.current) {
+          costRef.current.value = "";
+        }
+  
+        onClose();
+        };
 
       const handleNewAddressSubmit = async (newAddress) => {
         try {
@@ -343,49 +356,98 @@ const Checkout = () => {
 
         return (
           <Box width="100%" maxWidth="1000px" mx="auto" py={5}>
-            <h1 className="mb-10 text-center text-2xl font-bold">Checkout</h1>
-            <div className="flex flex-col justify-between w-full">
-            <div className="bg-white py-5">
-           <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
-            <div className="rounded-lg md:w-2/3">
-            <Flex justifyContent="space-between" alignItems="center" >
-              <Heading size="md">Shipping Address</Heading>
-              
-              {addresses.length === 0 && (
-                <Link to="/user/add-address/checkout">
+  <h1 className="mb-10 text-center text-2xl font-bold">Checkout</h1>
+  <div className="flex flex-col justify-between w-full">
+    <div className="bg-white py-5">
+      <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
+        <div className="rounded-lg md:w-2/3">
+          <Flex justifyContent="space-between" alignItems="center" >
+            <Heading size="md">Shipping Address</Heading>
+            {addresses.length === 0 && (
+              <Link to="/user/add-address/checkout">
                 <Button onClick={addNewAddress} colorScheme="teal" size="sm">
                   Add New Address
                 </Button>
-                </Link>
-              )}
-            </Flex>
-            <hr className="my-4" />
-            {addresses.length !== 0 ? (
-              <Flex>
+              </Link>
+            )}
+          </Flex>
+          <hr className="my-4" />
+          {addresses.length !== 0 ? (
+            <Flex>
               <Box textAlign={'left'}>
                 <Text justifyContent="space-between">{selectedAddress.recipient}</Text>
-                <Text >{selectedAddress.address} {selectedAddress.district} {selectedAddress.city} {selectedAddress.province}   </Text>
+                <Text>{selectedAddress.address} {selectedAddress.district} {selectedAddress.city} {selectedAddress.province}</Text>
                 <Text mb={4}>{selectedAddress.phone_number}</Text>
-                <Button onClick={onOpen} colorScheme="blue" size="sm" >
+                <div className="flex items-center">
+                  <Link> 
+                <Button onClick={onOpen} colorScheme="blue" ml={1} mr={4} size="sm" >
                   Change Address
                 </Button>
+                </Link>
+                  <div className='w-auto'>
+
+                  {selectedAddress && (
+                  <Select size='sm'
+                    id="courier"
+                    name="courirer"
+                    type="text"
+                    placeholder="Select Courier"
+                    ref={courierRef}
+                    
+                    onChange={handleCourierSelect}
+                  >
+                    {[
+                      { value: 'jne', label: "JNE" },
+                      { value: 'tiki', label: "Tiki" },
+                      { value: 'pos', label: "POS Indonesia" },
+                    ].map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </Select>)}
+                  </div>
+
+                  <div className='w-auto'>
+                  {courierSelect && (
+                  <Select size='sm'
+                    id="cost"
+                    name="cost"
+                    type="text"
+                    placeholder="Select Cost"
+                    onChange={handleCostSelect}
+                    ref={costRef}
+                    // className='w-80'
+                  >
+                    {shippingCosts.map((shippingCost, index) => (
+                      <option key={index} value={JSON.stringify(shippingCost)}>
+                        {shippingCost.description} - {shippingCost.cost[0].value.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                      </option>
+                    ))}
+                  </Select>
+                  )}    
+                  </div>
+                  
+                </div>
                 <Link to="/user/add-address/checkout">
-                  <Button colorScheme="blue" ml={3} size="sm" >
-                    Add New Address
-                  </Button>
+                    <Button colorScheme="blue" mr={4} mt={2} size="sm" >
+                      Add New Address
+                    </Button>
                   </Link>
               </Box>
-              </Flex>
-            ) : (
-              <Stack spacing={4} mb={4}>
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                    No address founded.
-                  </h1>
-                  <p className="text-gray-700 text-lg mb-8">
-                    Please add new address for process your order.
-                  </p>
-                  
-              </Stack>
+            </Flex>
+          ) : (
+            <Stack spacing={4} mb={4}>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                No address founded.
+              </h1>
+              <p className="text-gray-700 text-lg mb-8">
+                Please add new address for process your order.
+              </p>
+            </Stack>
             )}
             <hr className="my-4" />
               {carts.length !== 0 ? (
@@ -478,40 +540,41 @@ const Checkout = () => {
                 </p>
               </div>
 
+              {finalCost && (
               <div className="mb-2 flex justify-between">
                 <p className="text-gray-700">Shipping Fee</p>
                 <div className="">
                   <p className="text-gray-700">
-                    {(shippingCost).toLocaleString("id-ID", {
+                    {finalCost.toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
                     })}
                   </p>
                 </div>
               </div>
+              )}
 
-              {nearestWarehouse && (
+              {/* {nearestWarehouse && (
                 <div className="mb-2 flex justify-between">
                   <p className="text-gray-700">Nearest Warehouse</p>
                   <div className="">
-                    <p className="text-gray-700">{nearestWarehouse.name}</p>
+                    <p className="text-gray-700">{nearestWarehouse.id}</p>
                   </div>
                 </div>
-              )}
+              )} */}
 
               <hr className="my-4" />
               <div className="flex justify-between">
-                <p className="text-lg font-bold">Subtotal</p>
+                <p className="text-lg font-bold">Grand Total</p>
                 <div className="">
                   <p className="mb-1 text-lg font-bold">
-                    {(subtotal + shippingCost).toLocaleString("id-ID", {
+                    {(subtotal + finalCost).toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
                     })}
                   </p>
                 </div>
               </div>
-              
             </div>
             </div>
            </div>

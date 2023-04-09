@@ -158,7 +158,7 @@ const AddUserAddress = () => {
     <>
       <Box mb={4} w={"full"}>
         <HStack mb={4} mt={2} mr={4} justify="flex-end">
-          <Link to="/user/address">
+          <Link  to={location.pathname === '/user/add-address/checkout' ? '/user/checkout' : '/user/address'}>
             <IconButton
               icon={<CloseIcon />}
               aria-label="Back Button"

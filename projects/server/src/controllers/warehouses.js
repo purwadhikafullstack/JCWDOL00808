@@ -59,7 +59,7 @@ module.exports = {
       method: 'POST',
       url: 'https://api.rajaongkir.com/starter/cost',
       headers: {key: 'c80fa8beeb5eeb737ca76afcf8939a56', 'content-type': 'application/x-www-form-urlencoded'},
-      form: {origin: req.query.originName, destination: req.query.destinationName, weight: req.query.totalWeight, courier: 'pos'}
+      form: {origin: req.query.originName, destination: req.query.destinationName, weight: req.query.totalWeight, courier: req.query.courier}
     };
 
     request(options, function (error, response, body) {
