@@ -1,7 +1,7 @@
 const db = require("../../models/index");
 const WarehousesModel = db.warehouses;
 const stocks = db.stocks;
-const stock_histories = db.stock_histories
+const stock_histories = db.stock_histories;
 const request = require("request");
 
 // 1. import library geocode
@@ -15,11 +15,11 @@ const { Op } = require("sequelize");
 module.exports = {
   getAllWarehouse: async (req, res) => {
     try {
-      let data = await WarehousesModel.findAll()
-      return res.status(200).send(data)
+      let data = await WarehousesModel.findAll();
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      return res.status(500).send(error)
+      return res.status(500).send(error);
     }
   },
   getProvinceData: async (req, res) => {
@@ -56,10 +56,18 @@ module.exports = {
 
   getCostData: async (req, res) => {
     let options = {
-      method: 'POST',
-      url: 'https://api.rajaongkir.com/starter/cost',
-      headers: {key: 'c80fa8beeb5eeb737ca76afcf8939a56', 'content-type': 'application/x-www-form-urlencoded'},
-      form: {origin: req.query.originName, destination: req.query.destinationName, weight: req.query.totalWeight, courier: req.query.courier}
+      method: "POST",
+      url: "https://api.rajaongkir.com/starter/cost",
+      headers: {
+        key: "c80fa8beeb5eeb737ca76afcf8939a56",
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      form: {
+        origin: req.query.originName,
+        destination: req.query.destinationName,
+        weight: req.query.totalWeight,
+        courier: req.query.courier,
+      },
     };
 
     request(options, function (error, response, body) {
@@ -79,8 +87,8 @@ module.exports = {
       const offset = limit * page;
 
       const sort = req.query.sort || "id";
-      const order = req.query.order || "ASC"
-      const keyword = req.query.keyword || ""
+      const order = req.query.order || "ASC";
+      const keyword = req.query.keyword || "";
 
       let WarehouseData = await WarehousesModel.findAndCountAll({
         limit,
@@ -88,26 +96,35 @@ module.exports = {
         order: [[sort, order]],
         where: {
           [Op.or]: [
-            { name: {
-              [Op.like]: "%" + keyword + "%"
-            }
-          },
-            { address: {
-              [Op.like]: "%" + keyword + "%"
-            }
-          },
-            { city: {
-              [Op.like]: "%" + keyword + "%"
-            }
-          },
-            { province: {
-              [Op.like]: "%" + keyword + "%"
-            }
-          },
-          ]
-        }
+            {
+              name: {
+                [Op.like]: "%" + keyword + "%",
+              },
+            },
+            {
+              address: {
+                [Op.like]: "%" + keyword + "%",
+              },
+            },
+            {
+              city: {
+                [Op.like]: "%" + keyword + "%",
+              },
+            },
+            {
+              province: {
+                [Op.like]: "%" + keyword + "%",
+              },
+            },
+          ],
+        },
       });
-      res.status(200).send({ ...WarehouseData, totalPage: Math.ceil(WarehouseData.count / limit) });
+      res
+        .status(200)
+        .send({
+          ...WarehouseData,
+          totalPage: Math.ceil(WarehouseData.count / limit),
+        });
     } catch (error) {
       console.error(error);
       res.status(500).send({ success: false, message: "Something is wrong." });
@@ -120,16 +137,35 @@ module.exports = {
 
       // 3. q wajib ada buat ngirimin nilai address, district, province, city
       // fungsi geocode tuh ngolah parameter yang dikasih (bisa alamat, kode negara, API key)
-      let response = await geocode({ q: `${address}, ${district}, ${province}, ${city}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2" });
+      let response = await geocode({
+        q: `${address}, ${district}, ${province}, ${city}`,
+        countrycode: "id",
+        limit: 1,
+        key: "3b50c98b083b4331ab5b460ac164e3c2",
+      });
       console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
 
       // 4. destructure response dari geocode
       let { lat, lng } = response.results[0].geometry;
 
       // 5. gunakan latitude & longitude sesuai kebutuhan
-      let createNewWarehouse = await WarehousesModel.create({ name, address, province, city, district, latitude: lat, longitude: lng });
+      let createNewWarehouse = await WarehousesModel.create({
+        name,
+        address,
+        province,
+        city,
+        district,
+        latitude: lat,
+        longitude: lng,
+      });
 
-      res.status(200).send({ success: true, message: "New warehouse data added", dataAPI: response.results[0].geometry });
+      res
+        .status(200)
+        .send({
+          success: true,
+          message: "New warehouse data added",
+          dataAPI: response.results[0].geometry,
+        });
     } catch (error) {
       res.status(400).send({ success: false, message: "Error" });
     }
@@ -138,19 +174,45 @@ module.exports = {
     try {
       console.log("req.body update warehouse:", req.body);
       const { id, name, address, province, city, district } = req.body;
-      let response = await geocode({ q: `${address}, ${district}, ${province}, ${city}`, countrycode: "id", limit: 1, key: "3b50c98b083b4331ab5b460ac164e3c2" });
+      let response = await geocode({
+        q: `${address}, ${district}, ${province}, ${city}`,
+        countrycode: "id",
+        limit: 1,
+        key: "3b50c98b083b4331ab5b460ac164e3c2",
+      });
       let { lat, lng } = response.results[0].geometry;
 
-      const updatedWarehouse = await WarehousesModel.update({ name, address, province, city, district, latitude: lat, longitude: lng }, { where: { id: req.body.id } });
+      const updatedWarehouse = await WarehousesModel.update(
+        {
+          name,
+          address,
+          province,
+          city,
+          district,
+          latitude: lat,
+          longitude: lng,
+        },
+        { where: { id: req.body.id } }
+      );
 
-      res.status(200).send({ success: true, message: "Warehouse data update success!" });
+      res
+        .status(200)
+        .send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
-      res.status(500).send({ success: false, message: "Error updating warehouse data", error: error });
+      res
+        .status(500)
+        .send({
+          success: false,
+          message: "Error updating warehouse data",
+          error: error,
+        });
     }
   },
   deleteWarehouseData: async (req, res) => {
     try {
-      let deletedWarehouse = await WarehousesModel.findAll({ where: { id: req.query.id } });
+      let deletedWarehouse = await WarehousesModel.findAll({
+        where: { id: req.query.id },
+      });
 
       await WarehousesModel.destroy({ where: { id: req.query.id } });
 
@@ -188,10 +250,12 @@ module.exports = {
 
     try {
       const { id } = req.params;
-      const { stock, products_id, } = req.body
+      const { stock, products_id } = req.body;
 
-      const checkProductStock = await stocks.findOne({where: {products_id, warehouses_id: id}})
-      if(checkProductStock) {
+      const checkProductStock = await stocks.findOne({
+        where: { products_id, warehouses_id: id },
+      });
+      if (checkProductStock) {
         return res.status(409).send({
           isError: true,
           message: "Product already exist in warehouse.",
@@ -199,8 +263,20 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create({stock, products_id, warehouses_id: id}, {transaction: t })
-      const updateHistories = await stock_histories.create({stock_before: 0, stock_after: stock, products_id, warehouses_id: id, description: "New Product added to warehouse"}, {transaction: t });
+      const addedProductToWarehouse = await stocks.create(
+        { stock, products_id, warehouses_id: id },
+        { transaction: t }
+      );
+      const updateHistories = await stock_histories.create(
+        {
+          stock_before: 0,
+          stock_after: stock,
+          products_id,
+          warehouses_id: id,
+          description: "New Product added to warehouse",
+        },
+        { transaction: t }
+      );
       t.commit();
 
       res.status(201).send({
@@ -208,7 +284,6 @@ module.exports = {
         message: "Product added to warehouse.",
         data: addedProductToWarehouse,
       });
-
     } catch (error) {
       t.rollback();
       res.status(409).send({
@@ -216,7 +291,6 @@ module.exports = {
         message: error.message,
         data: null,
       });
-      
     }
   },
   getWarehouseProduct: async (req, res) => {
@@ -228,42 +302,45 @@ module.exports = {
         where: {
           warehouses_id: id,
           [Op.or]: [
-            { '$warehouse.name$': {
-                  [Op.like]: "%" + search + "%"
-                }, 
+            {
+              "$warehouse.name$": {
+                [Op.like]: "%" + search + "%",
+              },
             },
-            { '$product.name$':{
-              [Op.like]: "%" + search + "%"
+            {
+              "$product.name$": {
+                [Op.like]: "%" + search + "%",
+              },
             },
-          },
-            { '$product.product_category.name$': {
-              [Op.like]: "%" + search + "%"
-            }, 
-          },
-          ]
+            {
+              "$product.product_category.name$": {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
         },
         include: [
           {
             model: products,
-            attributes: ['name'],
+            attributes: ["name"],
             include: [
               {
                 model: product_categories,
-                attributes: ['name'],
-                as: 'product_category'
+                attributes: ["name"],
+                as: "product_category",
               },
             ],
           },
           {
             model: WarehousesModel,
-            attributes: ['name'],
-            as: 'warehouse'
+            attributes: ["name"],
+            as: "warehouse",
           },
         ],
       });
-      
+
       res.status(200).json({
-        data: data
+        data: data,
       });
     } catch (error) {
       res.status(500).send({
@@ -277,23 +354,32 @@ module.exports = {
     try {
       const { id } = req.params;
       const { stock, description } = req.body;
-      
-      const fromStock = await stocks.findByPk(id)
+
+      const fromStock = await stocks.findByPk(id);
 
       if (!fromStock) {
         return res.status(404).send({
           isError: true,
           message: "Stock not found",
           data: null,
-        });;
+        });
       }
 
       const fromStockBefore = fromStock.stock;
       fromStock.stock += stock;
-        await fromStock.save({ transaction: t });
+      await fromStock.save({ transaction: t });
 
       // const updatedWarehouseProduct = await stocks.update({ stock }, { where: { id }, transaction: t });
-      const updateHistories = await stock_histories.create({stock_before: fromStockBefore, stock_after: fromStock.stock, products_id: fromStock.products_id, warehouses_id: fromStock.warehouses_id, description}, {transaction: t });
+      const updateHistories = await stock_histories.create(
+        {
+          stock_before: fromStockBefore,
+          stock_after: fromStock.stock,
+          products_id: fromStock.products_id,
+          warehouses_id: fromStock.warehouses_id,
+          description,
+        },
+        { transaction: t }
+      );
       t.commit();
 
       res.status(200).send({
@@ -314,17 +400,26 @@ module.exports = {
     const t = await sequelize.transaction();
     try {
       const { id } = req.params;
-      const fromStock = await stocks.findByPk(id)
+      const fromStock = await stocks.findByPk(id);
 
       if (!fromStock) {
         return res.status(404).send({
           isError: true,
           message: "Stock not found",
           data: null,
-        });;
+        });
       }
 
-      const updateHistories = await stock_histories.create({stock_before: fromStock.stock, stock_after: 0, products_id: fromStock.products_id, warehouses_id: fromStock.warehouses_id, description: "Stock di delete oleh admin"}, {transaction: t });
+      const updateHistories = await stock_histories.create(
+        {
+          stock_before: fromStock.stock,
+          stock_after: 0,
+          products_id: fromStock.products_id,
+          warehouses_id: fromStock.warehouses_id,
+          description: "Stock di delete oleh admin",
+        },
+        { transaction: t }
+      );
       t.commit();
       const deletedWarehouseProduct = await stocks.findAll({ where: { id } });
       await stocks.destroy({ where: { id } });
@@ -355,5 +450,4 @@ module.exports = {
       });
     }
   },
-
 };
