@@ -10,7 +10,7 @@ const INITIAL_STATE = {
 }
 
 export const warehousesReducer = (state = INITIAL_STATE, action) => {
-    console.log("data dari action: ", action);
+    // console.log("data dari action: ", action);
     switch (action.type){
         case "GET_WAREHOUSE":
             return {...state, ...action.payload}

@@ -17,7 +17,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 const token = localStorage.getItem("token");
 
 const AddUserAddress = () => {
@@ -31,6 +31,8 @@ const AddUserAddress = () => {
   // nampung province dan city pilihan admin
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
+
+  const location = useLocation();
 
   const getProvinceData = () => {
     axios
@@ -68,7 +70,7 @@ const AddUserAddress = () => {
   };
 
   useEffect(() => {
-    fetchAddresses();
+    // fetchAddresses();
     getProvinceData();
   }, []);
 
@@ -111,6 +113,11 @@ const AddUserAddress = () => {
         isClosable: true,
       });
       resetForm();
+
+      if (location.pathname === "/user/add-address/checkout") {
+        window.location.href = "/user/checkout";
+      }
+
     } catch (error) {
       toast({
         title: "Error adding address.",
@@ -151,7 +158,7 @@ const AddUserAddress = () => {
     <>
       <Box mb={4} w={"full"}>
         <HStack mb={4} mt={2} mr={4} justify="flex-end">
-          <Link to="/user/address">
+          <Link  to={location.pathname === '/user/add-address/checkout' ? '/user/checkout' : '/user/address'}>
             <IconButton
               icon={<CloseIcon />}
               aria-label="Back Button"

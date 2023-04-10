@@ -71,6 +71,7 @@ function App() {
             <Route path="/user/profile" element={<EditProfile />} />
             <Route path="/user/address" element={<UserAddress />} />
             <Route path="/user/add-address" element={<AddUserAddress />} />
+            <Route path="/user/add-address/checkout" element={<AddUserAddress />} />
             <Route path="/user/address/:id" element={<EditUserAddress />} />
             <Route path="/user/cart" element={<Cart />} />
             <Route path="/user/checkout" element={<Checkout />} />

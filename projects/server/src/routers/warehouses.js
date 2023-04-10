@@ -9,6 +9,7 @@ route.patch("/updateWarehouseData", warehousesController.updateWarehouseData);
 route.delete("/deleteWarehouseData", warehousesController.deleteWarehouseData);
 route.get("/getProvinceData", warehousesController.getProvinceData);
 route.get("/getCityData", warehousesController.getCityData);
+route.get("/getCostData", warehousesController.getCostData);
 route.get("/getWarehouseDetails/:id", warehousesController.getWarehouseDetails)
 route.post("/add-warehouse-product/:id", warehousesController.addWarehouseProduct)
 route.get("/get-warehouse-product/:id", warehousesController.getWarehouseProduct)
