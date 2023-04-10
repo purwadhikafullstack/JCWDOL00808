@@ -6,9 +6,7 @@ import { Toaster } from "react-hot-toast";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const { user, isSuccess, isError, message } = useSelector(
-    (state) => state.auth
-  );
+  const { user, isSuccess } = useSelector((state) => state.auth);
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -39,7 +37,7 @@ const Login = () => {
   }, [user, isSuccess, navigate, dispatch]);
 
   return (
-    <div className="flex justify-start items-center flex-col h-screen">
+    <div className="flex justify-start items-center flex-col h-screen w-full">
       <div className="relative w-full h-full">
         <video
           // src={shareVideo}

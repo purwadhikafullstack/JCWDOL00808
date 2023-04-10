@@ -10,7 +10,7 @@ const {
   createVerificationToken,
   validateVerificationToken,
 } = require("../helper/verificationToken");
-const { createToken } = require("../lib/jwt");
+const { createToken, validateToken } = require("../lib/jwt");
 // Import transporter function
 const transporter = require("../helper/transporter");
 const fs = require("fs").promises;
@@ -44,7 +44,7 @@ module.exports = {
         let registerTemplate = compiledTemplate({
           registrationLink: "http://localhost:3000/user/verify",
           email,
-          token: createToken({ id: createAccount.dataValues.id }),
+          token: createVerificationToken({ id: createAccount.dataValues.id }),
         });
         await transporter.sendMail({
           from: `Big4Commerce <${process.env.GMAIL}>`,
@@ -148,7 +148,7 @@ module.exports = {
           message: "Login Success",
           data: {
             user: userData,
-            token: createVerificationToken({ id: findEmail.dataValues.id }),
+            token: createToken({ id: findEmail.dataValues.id }),
           },
         });
       }
@@ -181,7 +181,7 @@ module.exports = {
         let resetPasswordTemplate = compiledTemplate({
           resetPasswordLink: "http://localhost:3000/user/verify-new-password",
           email,
-          token: createVerificationToken({ id: findEmail.dataValues.id }),
+          token: createToken({ id: findEmail.dataValues.id }),
         });
         await transporter.sendMail({
           from: `Big4Commerce <${process.env.GMAIL}>`,
@@ -199,7 +199,6 @@ module.exports = {
       }
     } catch (error) {
       t.rollback();
-      console.log(error);
       res.status(409).send({
         isError: true,
         message: error,
@@ -211,7 +210,7 @@ module.exports = {
     const t = await sequelize.transaction();
     try {
       const { email, password, token } = req.body;
-      validateVerificationToken(token);
+      validateToken(token);
 
       await users.update(
         { password: await hashPassword(password) },

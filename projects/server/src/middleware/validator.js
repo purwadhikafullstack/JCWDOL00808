@@ -56,10 +56,18 @@ const validate = (schema) => (req, res, next) => {
   next();
 };
 
+const requestStockSchema = Joi.object({
+  from_warehouse_id: Joi.number().integer().required(),
+  to_warehouse_id: Joi.number().integer().required(),
+  products_id: Joi.number().integer().required(),
+  quantity: Joi.number().integer().min(1).required(),
+});
+
 // Export the validator function
 module.exports = {
   validateRegister: validate(registerSchema),
   validateVerification: validate(verifySchema),
   validateEditProfile: validate(editProfileSchema),
   validateEditPassword: validate(editPasswordSchema),
+  validateRequestStock: validate(requestStockSchema),
 };

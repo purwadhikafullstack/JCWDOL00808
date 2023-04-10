@@ -1,20 +1,26 @@
 import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon, InfoOutlineIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { FaSort, FaFilter, FaPlus, FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { EditIcon, DeleteIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import AddCategoryProductModal from "../../components/addCategoryProductModal";
+import PatchCategoryProduct from "../../components/patchCategoryProductModal";
+import DeleteConfirmation from "../../components/DeleteConfirmationDialog";
 
 function ManageCategoryProducts() {
   const [category, setCategoryProducts] = useState([]);
+  const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [pages, setPages] = useState(0);
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("id");
+  const [sort, setSort] = useState("name");
   const [order, setOrder] = useState("DESC");
 
   const toast = useToast();
@@ -56,6 +62,19 @@ function ManageCategoryProducts() {
     }
   };
 
+  const handleFirstModalOpen = () => {
+    setIsFirstModalOpen(true);
+  };
+
+  const handleSecondModalOpen = () => {
+    setIsSecondModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsFirstModalOpen(false);
+    setIsSecondModalOpen(false);
+  };
+
   const changePage = ({ selected }) => {
     setPage(selected);
   };
@@ -91,7 +110,8 @@ function ManageCategoryProducts() {
   const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
-    <div style={{ margin: "auto", width: "70%" }}>
+    // <div style={{ margin: "auto", width: "70%" }}>
+    <div className="container mx-auto px-4 mb-3">
       {/* fitur search */}
 
       <form onSubmit={searchData}>
@@ -111,11 +131,11 @@ function ManageCategoryProducts() {
         <Text fontWeight="bold">Sort by:</Text>
         <Menu>
           <MenuButton ml={2} variant="ghost">
-            Name
+            {sort}
           </MenuButton>
           <MenuList>
-            <MenuItem value={sort} onClick={() => handleSort("category")}>
-              Category
+            <MenuItem value={sort} onClick={() => handleSort("name")}>
+              Name
             </MenuItem>
             <MenuItem value={sort} onClick={() => handleSort("description")}>
               Description
@@ -139,13 +159,11 @@ function ManageCategoryProducts() {
             </MenuItem>
           </MenuList>
         </Menu>
-        <Button colorScheme={buttonColorScheme} size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />}>
-          <Link to={isButtonDisabled ? "#" : "/admin/addcategory"} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
-            <Flex alignItems="center">
-              <Text mr={2}>Add Product</Text>
-            </Flex>
-          </Link>
+
+        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />} onClick={handleFirstModalOpen}>
+          Add Category Product
         </Button>
+        <AddCategoryProductModal isOpen={isFirstModalOpen} onClose={handleModalClose} />
       </Flex>
 
       {/* fitur table */}
@@ -165,16 +183,30 @@ function ManageCategoryProducts() {
           {category.map((categoryProduct, index) => (
             <Tr key={categoryProduct.id} align="center">
               <Td fontSize="sm" fontWeight="medium">
-                {index + 1}
+                {index + 1 + page * limit}
               </Td>
               <Td fontSize="sm">{categoryProduct.name}</Td>
               <Td fontSize="sm">{truncateDescription(categoryProduct.description, 35)}</Td>
               <Td>
                 <Box display="flex">
-                  <Link to={isButtonDisabled ? "#" : `/admin/patch-category/${categoryProduct.id}`} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
-                    <IconButton size="sm" bgColor="green.500" aria-label="Edit" icon={<EditIcon />} mr={2} borderRadius="full" _hover={{ bg: "green.700" }} isDisabled={isButtonDisabled} />
-                  </Link>
                   <IconButton
+                    size="sm"
+                    bgColor="green.500"
+                    aria-label="Edit"
+                    icon={<EditIcon />}
+                    mr={2}
+                    borderRadius="full"
+                    _hover={{ bg: "green.700" }}
+                    isDisabled={isButtonDisabled}
+                    onClick={() => {
+                      handleSecondModalOpen(true);
+                      setSelectedCategoryId(categoryProduct.id);
+                    }}
+                  />
+                  <PatchCategoryProduct categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} />
+
+                  {/* button icon for delete category product */}
+                  {/* <IconButton
                     size="sm"
                     bgColor="red.500"
                     aria-label="Delete"
@@ -182,12 +214,14 @@ function ManageCategoryProducts() {
                     borderRadius="full"
                     _hover={{ bg: "red.700" }}
                     isDisabled={isButtonDisabled}
-                    onClick={() => {
-                      if (window.confirm("Are you sure you want to delete this Category Product ?")) {
-                        deleteProducts(categoryProduct.id);
-                      }
-                    }}
-                  />
+                    // onClick={() => {
+                    //   if (window.confirm("Are you sure you want to delete this Category Product ?")) {
+                    //     deleteProducts(categoryProduct.id);
+                    //   }
+                    // }}
+                  /> */}
+
+                  <DeleteConfirmation onDelete={() => deleteProducts(categoryProduct.id)} isDisabled={isButtonDisabled} />
                 </Box>
               </Td>
             </Tr>

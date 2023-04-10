@@ -11,6 +11,7 @@ export const userLogin = createAsyncThunk(
         { email, password }
       );
       localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("user", response.data.data.user);
       //return response data to redux extra reducers
       return response?.data;
     } catch (error) {

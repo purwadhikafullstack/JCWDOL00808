@@ -1,6 +1,6 @@
 const express = require("express");
 const Router = express.Router();
-const verifyToken = require("../middleware/verifyToken");
+const { verifyToken } = require("../middleware/verifyToken");
 const { uploadImages, uploadImagesProduct } = require("../middleware/uploadImage");
 const { validateRegister, validateVerification, validateEditProfile, validateEditPassword } = require("../middleware/validator");
 

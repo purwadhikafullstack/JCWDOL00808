@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.products, { foreignKey: "products_id" });
+      this.belongsTo(models.warehouses, { foreignKey: "from_warehouse_id", as: "from_warehouse" });
+      this.belongsTo(models.warehouses, { foreignKey: "to_warehouse_id", as: "to_warehouse" });
     }
   }
   stock_mutations.init(

@@ -79,20 +79,22 @@ const cartSlice = createSlice({
       cartEntity.setAll(state, action.payload);
     },
     [addProduct.fulfilled]: (state, action) => {
-      action.payload.forEach((cartItem) => {
-        cartEntity.updateOne(state, {
-          id: cartItem.id,
-          changes: cartItem,
-        });
-      });
+      cartEntity.setAll(state, action.payload);
+      // action.payload.forEach((cartItem) => {
+      //   cartEntity.updateOne(state, {
+      //     id: cartItem.id,
+      //     changes: cartItem,
+      //   });
+      // });
     },
     [updateCarts.fulfilled]: (state, action) => {
-      action.payload.forEach((cartItem) => {
-        cartEntity.updateOne(state, {
-          id: cartItem.id,
-          changes: cartItem,
-        });
-      });
+      cartEntity.setAll(state, action.payload);
+      // action.payload.forEach((cartItem) => {
+      //   cartEntity.updateOne(state, {
+      //     id: cartItem.id,
+      //     changes: cartItem,
+      //   });
+      // });
     },
     [deleteProduct.fulfilled]: (state, action) => {
       cartEntity.removeOne(state, action.payload);

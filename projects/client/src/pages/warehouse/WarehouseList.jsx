@@ -40,7 +40,17 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Heading,
+  Stack,
+  StackDivider,
+  Box,
+  Text,
+} from "@chakra-ui/react";
 import Axios from "axios";
 import { API_url } from "../../helper";
 import { useEffect, useState, useRef } from "react";
@@ -79,7 +89,10 @@ const WarehouseList = (props) => {
   const [district, setDistrict] = React.useState("");
 
   const getWarehouseData = () => {
-    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
+    Axios.get(
+      API_url +
+        `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`
+    )
       .then((response) => {
         console.log(response.data);
         setTotalPage(response.data.totalPage);

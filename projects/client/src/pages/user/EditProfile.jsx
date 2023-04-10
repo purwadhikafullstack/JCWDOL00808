@@ -119,7 +119,9 @@ export default function EditProfile() {
   };
 
   useEffect(() => {
-    isAuth(navigate, true).then((data) => setProfile(data));
+    if (localStorage.getItem("token")) {
+      isAuth().then((data) => setProfile(data));
+    }
   }, [navigate, refresh]);
 
   const validationSchema = Yup.object().shape({
@@ -150,12 +152,7 @@ export default function EditProfile() {
   });
 
   return (
-    <Flex
-      minH={"100vh"}
-      align={"center"}
-      justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-    >
+    <Flex minH={"100vh"} align={"center"} justify={"center"} w={"100%"}>
       <Stack
         spacing={4}
         w={"full"}
@@ -165,6 +162,7 @@ export default function EditProfile() {
         boxShadow={"lg"}
         p={6}
         my={12}
+        className="border border-gray-200"
       >
         <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
           Edit profile
@@ -272,7 +270,7 @@ export default function EditProfile() {
 
         <Stack spacing={6} direction={["column", "row"]}>
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => navigate(-1)}
             bg={"red.400"}
             color={"white"}
             w="full"

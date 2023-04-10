@@ -1,4 +1,12 @@
-import { Text, Input, InputGroup, Button, InputRightElement, Select, useToast } from "@chakra-ui/react";
+import {
+  Text,
+  Input,
+  InputGroup,
+  Button,
+  InputRightElement,
+  Select,
+  useToast,
+} from "@chakra-ui/react";
 import Axios from "axios";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,12 +19,12 @@ const AddWarehouse = (props) => {
   // nampung hasil get dari raja ongkir
   const [provinceData, setProvinceData] = React.useState([]);
   const [cityData, setCityData] = React.useState([]);
-  const [districtData, setDistrictData] = React.useState([])
+  const [districtData, setDistrictData] = React.useState([]);
 
   // nampung province dan city pilihan admin
   const [province, setProvince] = React.useState("");
   const [city, setCity] = React.useState("");
-  const [district, setDistrict] = React.useState("")
+  const [district, setDistrict] = React.useState("");
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -76,7 +84,7 @@ const AddWarehouse = (props) => {
   };
 
   return (
-    <div className="d-flex flex-column shadow-lg">
+    <div className="d-flex flex-col shadow-lg w-full">
       <div className="d-flex flex-row justify-content-center">
         <div className="my-5 mx-5 px-5 text-start">
           <div>
@@ -86,11 +94,20 @@ const AddWarehouse = (props) => {
           </div>
           <div className="mt-4 text-muted fw-bold text-start">
             <Text fontSize="md">Name</Text>
-            <Input placeholder="Warehouse name" size="md" onChange={(element) => setName(element.target.value)} />
+            <Input
+              placeholder="Warehouse name"
+              size="md"
+              onChange={(element) => setName(element.target.value)}
+            />
+            {/* </div> */}
             <div className="mt-4 text-muted fw-bold text-start">
               <Text fontSize="md">Address</Text>
               <InputGroup size="md">
-                <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
+                <Input
+                  pr="4.5rem"
+                  placeholder="warehouse address"
+                  onChange={(element) => setAddress(element.target.value)}
+                />
               </InputGroup>
             </div>
             <div className="mt-4 text-muted fw-bold text-start">
@@ -104,7 +121,10 @@ const AddWarehouse = (props) => {
               >
                 {provinceData.map((value) => {
                   return (
-                    <option value={value.province_id + "," + value.province} key={value.province_id}>
+                    <option
+                      value={value.province_id + "," + value.province}
+                      key={value.province_id}
+                    >
                       {value.province}
                     </option>
                   );
@@ -115,10 +135,17 @@ const AddWarehouse = (props) => {
           <div>
             <div className="mt-4 text-muted fw-bold text-start">
               <Text fontSize="md">City</Text>
-              <Select placeholder="Select city" value={city} onChange={(element) => setCity(element.target.value)}>
+              <Select
+                placeholder="Select city"
+                value={city}
+                onChange={(element) => setCity(element.target.value)}
+              >
                 {cityData.map((value) => {
                   return (
-                    <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                    <option
+                      value={`${value.type} ${value.city_name}`}
+                      key={value.city_id}
+                    >
                       {value.type} {value.city_name}
                     </option>
                   );
@@ -147,7 +174,11 @@ const AddWarehouse = (props) => {
           </div>
         </div>
       </div>
-      <Button colorScheme="facebook" style={{ width: "15%", marginInline: "auto", marginBottom: 50 }} onClick={buttonAddWarehouse}>
+      <Button
+        colorScheme="facebook"
+        style={{ width: "15%", marginInline: "auto", marginBottom: 50 }}
+        onClick={buttonAddWarehouse}
+      >
         Add warehouse
       </Button>
     </div>

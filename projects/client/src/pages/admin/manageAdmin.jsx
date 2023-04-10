@@ -34,7 +34,7 @@ const ManageAdmin = () => {
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
   };
-  //blm dpet get query params
+ 
 
   const changePage = ({ selected }) => {
     setPage(selected);
