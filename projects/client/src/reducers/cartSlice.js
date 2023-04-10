@@ -69,6 +69,12 @@ export const getTotalPriceInCart = (state) => {
   );
 };
 
+export const getTotalWeightInCart = (state) => {
+  const cartItems = cartSelector.selectAll(state);
+  return cartItems.reduce((total, cartItem) => total + cartItem.quantity * cartItem.product.weight,
+   0);
+};
+
 const cartEntity = createEntityAdapter({ selectId: (cart) => cart.id });
 
 const cartSlice = createSlice({

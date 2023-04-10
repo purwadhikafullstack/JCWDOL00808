@@ -79,8 +79,9 @@ module.exports = {
         { password: await hashPassword(password), is_verified: 1 },
         { where: { email } },
         { transaction: t }
-      );
-
+        );
+        
+        console.log(token);
       t.commit();
       res.status(201).send({
         isError: false,

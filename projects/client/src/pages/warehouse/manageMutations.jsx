@@ -165,7 +165,7 @@ function ManageMutations() {
   };
 
   return (
-    <div style={{ margin: "auto", width: "70%" }}>
+    <div className="container mx-auto px-4 mb-3">
       {/* fitur search */}
 
       <form onSubmit={searchData}>
@@ -297,25 +297,16 @@ function ManageMutations() {
       {/* fitur paginate */}
       <Flex alignItems="center" justifyContent="center">
         <ReactPaginate
-          previousLabel={<ChevronLeftIcon />}
-          nextLabel={<ChevronRightIcon />}
+          previousLabel={"< Prev"}
+          nextLabel={"Next >"}
           pageCount={Math.min(10, pages)}
           onPageChange={changePage}
           containerClassName={"flex"}
-          pageLinkClassName={"mx-2"}
-          previousLinkClassName={"mx-2"}
-          nextLinkClassName={"mx-2"}
+          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
           activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
           disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
-          pageRangeDisplayed={2}
-          marginPagesDisplayed={1}
-          breakClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          breakLabel={"..."}
-          renderPageLink={({ selected, children }) => (
-            <Button key={children} variant="solid" size="md" mx={2} rounded="md" fontWeight="bold" bg={selected ? "blue.500" : "gray.200"} color={selected ? "white" : "gray.800"} _hover={{ bg: selected ? "blue.700" : "gray.400" }}>
-              {children}
-            </Button>
-          )}
         />
       </Flex>
     </div>

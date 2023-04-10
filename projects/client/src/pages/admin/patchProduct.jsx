@@ -180,7 +180,7 @@ const PatchProductForm = () => {
         <FormLabel>Image Product</FormLabel>
         <Flex>
           <Box w={16} h={16} mr={4}>
-            {image && <Image src={image} alt="Produk" />}
+            {image && <Image src={`http://localhost:8000/${image}`} alt="Produk" />}
           </Box>
           <Box>
             <Input type="file" accept="image/*" onChange={handleImageChange} />

@@ -75,46 +75,51 @@ module.exports = {
       let {id} = req.dataDecode
       const result = await user_addresses.findAll({
         where: {
-          [Op.or]: [
+          [Op.and]: [
             {
-              address: {
-                [Op.like]: "%" + search + "%",
-              },
+              [Op.or]: [
+                {
+                  address: {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+                {
+                  province: {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+                {
+                  city: {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+                {
+                  district: {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+                {
+                  postal_code: {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+                {
+                  recipient: {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+                {
+                  phone_number: {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+              ],
             },
-            {
-              province: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              city: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              district: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              postal_code: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              recipient: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              phone_number: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
+            { users_id: id }, // add this condition to filter by user_id
           ],
-        }
+        },
       })
-      const getAllAddress = await user_addresses.findAll({ where: { users_id: id } })
+      // const getAllAddress = await user_addresses.findAll({ where: { users_id: id } })
       
       res.json({
         result: result
