@@ -60,10 +60,16 @@ const StockRequestList = () => {
           order,
         },
       });
-      setStockRequests(response.data.result);
-      setPage(response.data.page);
-      setPages(response.data.totalPage);
-      setRows(response.data.totalRows);
+      if (response.data.result.length === 0) {
+        setStockRequests([]);
+        setPages(0);
+        setRows(0);
+      } else {
+        setStockRequests(response.data.result);
+        setPage(response.data.page);
+        setPages(response.data.totalPage);
+        setRows(response.data.totalRows);
+      }
     } catch (error) {
       toast({
         title: `${error.response.data.message}`,
@@ -83,13 +89,13 @@ const StockRequestList = () => {
           headers: { Authorization: token },
         }
       );
-      fetchStockRequests();
       toast({
         title: `Confirm Stock Mutation Success`,
         status: "success",
         duration: 9000,
         isClosable: true,
       });
+      fetchStockRequests();
     } catch (error) {
       toast({
         title: `${error.response.data.message}`,
@@ -242,50 +248,54 @@ const StockRequestList = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {stockRequests.map((mutation, index) => (
-            <Tr key={mutation.id} align="center">
-              <Td fontSize="sm" fontWeight="medium">
-                {index + 1 + page * limit}
-              </Td>
-              <Td fontSize="sm">{mutation.product.name}</Td>
-              <Td fontSize="sm">{mutation.quantity}</Td>
-              <Td fontSize="sm">{mutation.from_warehouse.name}</Td>
-              <Td fontSize="sm">{mutation.to_warehouse.name}</Td>
-              <Td fontSize="sm">{mutation.mutation_type}</Td>
-              <Td fontSize="sm">{formatDate(mutation.createdAt)}</Td>
-              <Td>
-                <Box display="flex">
-                  {mutation.mutation_type === "Pending" && (
-                    <div key={mutation.id}>
-                      <Box position="relative">
-                        <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} onClick={() => handleIconClick(mutation.id, "ACCEPT")} />
-                        <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick(mutation.id, "REJECT")} />
-                      </Box>
-                      <Box position="relative">
-                        <Popover isOpen={isPopoverOpen} onClose={handlePopoverClose} placement="bottom-start" closeOnBlur={false}>
-                          <PopoverContent>
-                            <PopoverHeader fontWeight="bold">{selectedStatus === "ACCEPT" ? "Confirm Accept" : "Confirm Reject"}</PopoverHeader>
-                            <PopoverBody>Are you sure you want to {selectedStatus === "ACCEPT" ? "accept" : "reject"}?</PopoverBody>
-                            <Flex justify="flex-end" mt={2}>
-                              <Button variant="ghost" onClick={handlePopoverClose}>
-                                Cancel
-                              </Button>
-                              <Button colorScheme="teal" ml={3} onClick={handleDialogConfirm}>
-                                Confirm
-                              </Button>
-                            </Flex>
-                          </PopoverContent>
-                          <PopoverTrigger>
-                            <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" onClick={() => handleIconClick("REJECT")} />
-                          </PopoverTrigger>
-                        </Popover>
-                      </Box>
-                    </div>
-                  )}
-                </Box>
-              </Td>
-            </Tr>
-          ))}
+          {stockRequests.length === 0 ? (
+            <Text>No Data Available</Text>
+          ) : (
+            stockRequests.map((mutation, index) => (
+              <Tr key={mutation.id} align="center">
+                <Td fontSize="sm" fontWeight="medium">
+                  {index + 1 + page * limit}
+                </Td>
+                <Td fontSize="sm">{mutation.product.name}</Td>
+                <Td fontSize="sm">{mutation.quantity}</Td>
+                <Td fontSize="sm">{mutation.from_warehouse.name}</Td>
+                <Td fontSize="sm">{mutation.to_warehouse.name}</Td>
+                <Td fontSize="sm">{mutation.mutation_type}</Td>
+                <Td fontSize="sm">{formatDate(mutation.createdAt)}</Td>
+                <Td>
+                  <Box display="flex">
+                    {mutation.mutation_type === "Pending" && (
+                      <div key={mutation.id}>
+                        <Box position="relative">
+                          <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} onClick={() => handleIconClick(mutation.id, "ACCEPT")} />
+                          <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick(mutation.id, "REJECT")} />
+                        </Box>
+                        <Box position="relative">
+                          <Popover isOpen={isPopoverOpen} onClose={handlePopoverClose} placement="bottom-start" closeOnBlur={false}>
+                            <PopoverContent>
+                              <PopoverHeader fontWeight="bold">{selectedStatus === "ACCEPT" ? "Confirm Accept" : "Confirm Reject"}</PopoverHeader>
+                              <PopoverBody>Are you sure you want to {selectedStatus === "ACCEPT" ? "accept" : "reject"}?</PopoverBody>
+                              <Flex justify="flex-end" mt={2}>
+                                <Button variant="ghost" onClick={handlePopoverClose}>
+                                  Cancel
+                                </Button>
+                                <Button colorScheme="teal" ml={3} onClick={handleDialogConfirm}>
+                                  Confirm
+                                </Button>
+                              </Flex>
+                            </PopoverContent>
+                            <PopoverTrigger>
+                              <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" onClick={() => handleIconClick("REJECT")} />
+                            </PopoverTrigger>
+                          </Popover>
+                        </Box>
+                      </div>
+                    )}
+                  </Box>
+                </Td>
+              </Tr>
+            ))
+          )}
         </Tbody>
       </Table>
 

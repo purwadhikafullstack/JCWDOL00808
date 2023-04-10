@@ -267,6 +267,9 @@ module.exports = {
 
       // to find warehouse according admin place at warehouse
       const warehouse = await warehouses.findOne({ where: { admins_id: id } });
+      if (!warehouse) {
+        return res.status(404).json({ message: "Admin is not assign in the Warehouses" });
+      }
       const warehouse_id = warehouse?.id;
 
       const page = parseInt(req.query.page) || 0;
