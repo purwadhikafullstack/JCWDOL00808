@@ -11,7 +11,7 @@ const INITIAL_STATE = {
 };
 
 export const adminsReducer = (state = INITIAL_STATE, action) => {
-  console.log("data dari action: ", action);
+  // console.log("data dari action: ", action);
   switch (action.type) {
     case "Admin login success":
       return { ...state, ...action.payload };
