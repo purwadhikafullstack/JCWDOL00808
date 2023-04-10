@@ -34,7 +34,6 @@ import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import StockHistory from "./pages/warehouse/StockHistory";
 import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
 import WarehouseList from "./pages/warehouse/WarehouseList";
-import TransactionList from "./pages/user/TransactionList";
 import WarehouseStock from "./pages/warehouse/WarehouseStock";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -45,6 +44,7 @@ import Checkout from "./pages/user/Checkout";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import SuperAdminRoutes from "./utils/SuperAdminRoutes";
 import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
+import OrderList from "./pages/user/OrderList";
 
 function App() {
   const location = useLocation();
@@ -77,6 +77,7 @@ function App() {
             <Route path="/user/address/:id" element={<EditUserAddress />} />
             <Route path="/user/cart" element={<Cart />} />
             <Route path="/user/checkout" element={<Checkout />} />
+            <Route path="/user/order-list" element={<OrderList />} />
           </Route>
 
           {/*Public admin's route */}

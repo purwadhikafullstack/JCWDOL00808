@@ -17,19 +17,9 @@ module.exports = {
 
     try {
       let { id } = req.dataDecode;
-      let {
-        total_price,
-        status,
-        shipping_method,
-        shipping_cost,
-        user_addresses_id,
-        warehouses_id,
-      } = req.body;
+      let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
       //Delete cart data based on users_id
-      const deleteCartData = await carts.destroy(
-        { where: { users_id: id } },
-        { transaction: t }
-      );
+      const deleteCartData = await carts.destroy({ where: { users_id: id } }, { transaction: t });
       const createNewOrder = await orders.create(
         {
           total_price,
@@ -56,6 +46,19 @@ module.exports = {
         message: error.message,
         data: null,
       });
+    }
+  },
+  getOrderList: async (req, res) => {
+    const users_id = req.dataDecode.id;
+    try {
+      let data = await orders.findAll({
+        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("createdAt"), "%Y-%m-%d"), "when"]],
+        where: { users_id },
+      });
+      res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
     }
   },
 };
