@@ -127,23 +127,33 @@ function ManageConfirmationPayment() {
           </MenuButton>
           <MenuList>
             <MenuItem>
-              <Checkbox isChecked={statusFilter === "waiting_payment_confirmation"} onChange={(e) => setStatusFilter(e.target.checked ? "Waiting For Payment" : "")}>
+              <Checkbox isChecked={statusFilter === "Waiting For Payment"} onChange={(e) => setStatusFilter(e.target.checked ? "Waiting For Payment" : "")}>
                 Waiting For Payment
               </Checkbox>
             </MenuItem>
             <MenuItem>
-              <Checkbox isChecked={statusFilter === "Waiting For Confirmation"} onChange={(e) => setStatusFilter(e.target.checked ? "Waiting For Confirmation" : "")}>
-                Waiting For Confirmation
+              <Checkbox isChecked={statusFilter === "Confirmed Payment"} onChange={(e) => setStatusFilter(e.target.checked ? "Confirmed Payment" : "")}>
+                Confirmed Payment
               </Checkbox>
             </MenuItem>
             <MenuItem>
-              <Checkbox isChecked={statusFilter === "diproses"} onChange={(e) => setStatusFilter(e.target.checked ? "diproses" : "")}>
+              <Checkbox isChecked={statusFilter === " On Process"} onChange={(e) => setStatusFilter(e.target.checked ? " On Process" : "")}>
                 On Process
               </Checkbox>
             </MenuItem>
             <MenuItem>
-              <Checkbox isChecked={statusFilter === "delivered"} onChange={(e) => setStatusFilter(e.target.checked ? "sampai di tujuan" : "")}>
-                Sampai tujuan
+              <Checkbox isChecked={statusFilter === "Shipped"} onChange={(e) => setStatusFilter(e.target.checked ? "Shipped" : "")}>
+                Shipped
+              </Checkbox>
+            </MenuItem>
+            <MenuItem>
+              <Checkbox isChecked={statusFilter === "Order Confirmed"} onChange={(e) => setStatusFilter(e.target.checked ? "Order Confirmed" : "")}>
+                Order Confirmed
+              </Checkbox>
+            </MenuItem>
+            <MenuItem>
+              <Checkbox isChecked={statusFilter === "Cancelled"} onChange={(e) => setStatusFilter(e.target.checked ? "Cancelled" : "")}>
+                Cancelled
               </Checkbox>
             </MenuItem>
             {statusFilter && (
@@ -180,7 +190,7 @@ function ManageConfirmationPayment() {
               <Td fontSize="sm">{order.status}</Td>
               <Td fontSize="sm">{order.shipping_method}</Td>
               <Td fontSize="sm">{formatRupiah(order.shipping_cost)}</Td>
-              <Td>{order.status === "Waiting For Confirmation" && <div key={order.id}>Button</div>}</Td>
+              <Td>{order.status === "Confirmed Payment" && <div key={order.id}>Button</div>}</Td>
             </Tr>
           ))}
         </Tbody>
