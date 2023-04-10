@@ -25,9 +25,9 @@ import { EditIcon, DeleteIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
 // import * as Yup from "yup";
 import axios from "axios";
 import { Link } from "react-router-dom";
-const token = localStorage.getItem("token");
 
 const UserAddress = () => {
+  const token = localStorage.getItem("token");
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
 
@@ -48,7 +48,9 @@ const UserAddress = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    if(token) {
     fetchAddresses();
+    }
     // getProvinceData();
   }, [searchTerm]);
 

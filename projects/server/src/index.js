@@ -85,6 +85,7 @@ const {
   addressesRouter,
   stockMutationRouter,
   historiesRouter,
+  ordersRouter,
 } = require("./routers"); //refer to index.js in routers folder
 
 app.use("/user", usersRouter);
@@ -99,6 +100,7 @@ app.use("/mutations", stockMutationRouter);
 app.use("/cart", cartsRouter);
 app.use("/address", addressesRouter);
 app.use("/histories", historiesRouter);
+app.use("/orders", ordersRouter);
 
 app.use(express.static("."));
 
