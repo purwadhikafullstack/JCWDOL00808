@@ -7,5 +7,6 @@ const uploadImages = require("../middleware/uploadImage");
 const { ordersController } = require("../controllers");
 
 Router.post("/add-order", verifyToken, ordersController.addOrder);
+Router.get("/get-order", ordersController.getOrders);
 
 module.exports = Router;

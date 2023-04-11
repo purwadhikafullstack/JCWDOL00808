@@ -10,6 +10,7 @@ const orders = db.orders;
 const carts = db.carts;
 const products = db.products;
 const order_details = db.order_details;
+const warehouses = db.warehouses;
 
 const request = require("request");
 
@@ -94,6 +95,69 @@ module.exports = {
         message: error.message,
         data: null,
       });
+    }
+  },
+  getOrders: async (req, res) => {
+    try {
+      // let { id } = req.dataDecode;
+
+      const page = parseInt(req.query.page) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search_query || "";
+      const offset = limit * page;
+      const sort = req.query.sort || "status"; //default sorting by name
+      const order = req.query.order || "DESC"; //default order DESC
+
+      const searchFilter = search
+        ? {
+            [Op.or]: [
+              {
+                total_price: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+            ],
+          }
+        : {};
+
+      const totalRows = await orders.count({
+        ...(Object.keys(searchFilter).length > 0 && { where: searchFilter }),
+      });
+
+      const totalPage = Math.ceil(totalRows / limit);
+      const result = await orders.findAll({
+        ...(Object.keys(searchFilter).length > 0 && { where: searchFilter }),
+        include: [
+          {
+            model: warehouses,
+            attributes: ["name", "admins_id"],
+          },
+          {
+            model: user_addresses,
+            attributes: ["recipient", "phone_number"],
+          },
+        ],
+        offset: offset,
+        limit: limit,
+        order: [[sort, order]], // add order clause with the sort and order parameters
+      });
+
+      // replace '\' with '/'
+      result.forEach((orderData) => {
+        if (orderData.payment_proof) {
+          orderData.payment_proof = orderData.payment_proof.replace(/\\/g, "/");
+        }
+      });
+      res.json({
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
     }
   },
 };

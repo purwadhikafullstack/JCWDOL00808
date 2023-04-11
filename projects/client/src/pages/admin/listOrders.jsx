@@ -1,0 +1,307 @@
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  IconButton,
+  Flex,
+  Box,
+  Input,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Icon,
+  Text,
+  TableCaption,
+  useToast,
+} from "@chakra-ui/react";
+import {
+  EditIcon,
+  DeleteIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@chakra-ui/icons";
+import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
+import ReactPaginate from "react-paginate";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+
+function ListOrders() {
+  const [orders, setOrders] = useState([]);
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [pages, setPages] = useState(0);
+  const [rows, setRows] = useState(0);
+  const [keyword, setKeyword] = useState("");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("id");
+  const [order, setOrder] = useState("DESC");
+  const toast = useToast();
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    getOrders();
+  }, [page, keyword, sort, order]);
+
+  const getOrders = async () => {
+    const response = await axios.get(
+      `http://localhost:8000/orders/get-order?search_query=${keyword}&page=${page}&limit=${limit}`,
+      {
+        params: {
+          sort,
+          order,
+        },
+        headers: { Authorization: token },
+      }
+    );
+    setOrders(response.data.result);
+    setPage(response.data.page);
+    setPages(response.data.totalPage);
+    setRows(response.data.totalRows);
+    console.log(response.data.result);
+  };
+
+  const deleteProducts = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8000/product/deleteproduct/${id}`);
+      getOrders();
+      toast({
+        title: `Product success deleted`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const changePage = ({ selected }) => {
+    setPage(selected);
+  };
+
+  const searchData = (e) => {
+    e.preventDefault();
+    setPage(0);
+    setKeyword(query);
+  };
+
+  const handleSort = (value) => {
+    setSort(value);
+
+    setPage(0);
+  };
+
+  const handleOrder = (value) => {
+    setOrder(value);
+    setPage(0);
+  };
+
+  function formatRupiah(number) {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(number);
+  }
+
+  function formatWeight(weightInGrams) {
+    const weightInKilograms = weightInGrams / 1000;
+    return `${weightInKilograms} kg`;
+  }
+
+  //function untuk memotong deskripsi yang terlalu panjang
+  // function truncateDescription(description, maxLength) {
+  //   const truncatedDescription = description.slice(0, maxLength);
+  //   const shouldTruncate = description.length > maxLength;
+
+  //   return shouldTruncate ? truncatedDescription + "..." : description;
+  // }
+
+  // membuat role admin warehouse hanya bisa read data saja
+  const role = localStorage.getItem("role");
+  const isButtonDisabled = role === "2";
+  const buttonColorScheme = isButtonDisabled ? "gray" : "green";
+
+  return (
+    // <div style={{ margin: "auto", width: "70%" }}>
+    <div className="container mx-auto px-4 mb-3">
+      {/* fitur search */}
+
+      <form onSubmit={searchData}>
+        <Flex mt="2" size="sm">
+          <Input
+            type="text"
+            placeholder="Search"
+            mr={2}
+            width="30%"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <Button colorScheme="blue" type="submit">
+            Search
+          </Button>
+        </Flex>
+      </form>
+
+      {/* fitur untuk filter, sort dan add product */}
+      <Flex alignItems="center" mt="2">
+        <Box mr={2}>
+          <Icon as={FaSort} />
+        </Box>
+        <Text fontWeight="bold">Sort by:</Text>
+        <Menu>
+          <MenuButton ml={2} variant="ghost">
+            Name
+          </MenuButton>
+          <MenuList>
+            <MenuItem value={sort} onClick={() => handleSort("name")}>
+              Name
+            </MenuItem>
+            <MenuItem value={sort} onClick={() => handleSort("price")}>
+              Price
+            </MenuItem>
+          </MenuList>
+        </Menu>
+        <Box mr={2} ml="4">
+          <Icon as={FaFilter} />
+        </Box>
+        <Text fontWeight="bold">Order:</Text>
+        <Menu>
+          <MenuButton ml={2} variant="ghost">
+            {order}
+          </MenuButton>
+          <MenuList>
+            <MenuItem value={order} onClick={() => handleOrder("ASC")}>
+              Ascending
+            </MenuItem>
+            <MenuItem value={order} onClick={() => handleOrder("DESC")}>
+              Descending
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </Flex>
+
+      {/* fitur table */}
+      <Table variant="striped" size="sm" mt="2" textAlign="center">
+        <TableCaption mb="2">
+          Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
+        </TableCaption>
+        <Thead>
+          <Tr>
+            <Th>Warehouse Name</Th>
+            <Th>Recipient</Th>
+            <Th>Grand Total</Th>
+            <Th>Status</Th>
+            <Th>Payment Proof</Th>
+            <Th>Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {orders.map((orderData) => (
+            <Tr key={orderData.id} align="center">
+              <Td fontSize="sm" fontWeight="medium">
+                {orderData.warehouse.name}
+              </Td>
+              <Td fontSize="sm">{orderData.user_address.recipient}</Td>
+              <Td fontSize="sm">
+                {formatRupiah(orderData.total_price + orderData.shipping_cost)}
+              </Td>
+              <Td fontSize="sm">{orderData.status}</Td>
+              <Td fontSize="sm">
+                {orderData.payment_proof ? (
+                  <img
+                    src={`http://localhost:8000/${orderData.payment_proof}`}
+                    alt="Product image"
+                    width="50"
+                  />
+                ) : (
+                  "Data Not Found"
+                )}
+              </Td>
+              <Td>
+                <Box display="flex">
+                  <Link
+                    to={
+                      isButtonDisabled
+                        ? "#"
+                        : `/admin/patch-product/${orderData.id}`
+                    }
+                    style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
+                    <IconButton
+                      size="sm"
+                      bgColor="green.500"
+                      aria-label="Edit"
+                      icon={<EditIcon />}
+                      mr={2}
+                      borderRadius="full"
+                      _hover={{ bg: "green.700" }}
+                      isDisabled={isButtonDisabled}
+                    />
+                  </Link>
+                  <IconButton
+                    size="sm"
+                    bgColor="red.500"
+                    aria-label="Delete"
+                    icon={<DeleteIcon />}
+                    borderRadius="full"
+                    _hover={{ bg: "red.700" }}
+                    isDisabled={isButtonDisabled}
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Are you sure you want to delete this product ?"
+                        )
+                      ) {
+                        deleteProducts(orderData.id);
+                      }
+                    }}
+                  />
+                </Box>
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+
+      {/* fitur paginate */}
+      <Flex alignItems="center" justifyContent="center">
+        <ReactPaginate
+          previousLabel={"< Prev"}
+          nextLabel={"Next >"}
+          pageCount={Math.min(10, pages)}
+          onPageChange={changePage}
+          containerClassName={"flex"}
+          pageLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          previousLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          nextLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          activeLinkClassName={
+            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          }
+          disabledLinkClassName={
+            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+          }
+        />
+      </Flex>
+    </div>
+  );
+}
+
+export default ListOrders;
