@@ -94,7 +94,6 @@ function App() {
             <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
             {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
             <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
-            <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
@@ -109,6 +108,7 @@ function App() {
             <Route path="/warehouse/history" element={<StockHistory />} />
             <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
+            <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
           </Route>
 
           {/* Fallback route */}

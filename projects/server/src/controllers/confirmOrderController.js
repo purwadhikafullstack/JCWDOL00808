@@ -163,7 +163,6 @@ module.exports = {
           await nearestWarehouse[0].stocks[0].update({ stock: nearestWarehouse[0].stocks[0].stock + detail.quantity });
         } else {
           await stock.update({ stock: stock.stock - detail.quantity });
-          await 
           await StockHistory.create({
             stock_before: stock.stock + detail.quantity,
             stock_after: stock.stock,

@@ -1,10 +1,9 @@
 import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { EditIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import AddCategoryProductModal from "../../components/addCategoryProductModal";
 import PatchCategoryProduct from "../../components/patchCategoryProductModal";
 import DeleteConfirmation from "../../components/DeleteConfirmationDialog";
@@ -107,7 +106,6 @@ function ManageCategoryProducts() {
   // membuat role admin warehouse hanya bisa read data saja
   const role = localStorage.getItem("role");
   const isButtonDisabled = role === "2";
-  const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
     <div className="container mx-auto px-4 mb-3">
@@ -159,7 +157,7 @@ function ManageCategoryProducts() {
           </MenuList>
         </Menu>
 
-        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />} onClick={handleFirstModalOpen}>
+        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />} isDisabled={isButtonDisabled} onClick={handleFirstModalOpen}>
           Add Category Product
         </Button>
         <AddCategoryProductModal isOpen={isFirstModalOpen} onClose={handleModalClose} />
@@ -205,22 +203,7 @@ function ManageCategoryProducts() {
                   <PatchCategoryProduct categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} />
 
                   {/* button icon for delete category product */}
-                  {/* <IconButton
-                    size="sm"
-                    bgColor="red.500"
-                    aria-label="Delete"
-                    icon={<DeleteIcon />}
-                    borderRadius="full"
-                    _hover={{ bg: "red.700" }}
-                    isDisabled={isButtonDisabled}
-                    // onClick={() => {
-                    //   if (window.confirm("Are you sure you want to delete this Category Product ?")) {
-                    //     deleteProducts(categoryProduct.id);
-                    //   }
-                    // }}
-                  /> */}
-
-                  <DeleteConfirmation onDelete={() => deleteProducts(categoryProduct.id)} isDisabled={isButtonDisabled} />
+                  <DeleteConfirmation onDelete={() => deleteProducts(categoryProduct.id)} isButtonDisabled={isButtonDisabled} />
                 </Box>
               </Td>
             </Tr>
