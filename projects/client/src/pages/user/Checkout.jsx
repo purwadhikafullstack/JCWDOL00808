@@ -319,6 +319,8 @@ const Checkout = () => {
         isClosable: true,
       });
       resetForm();
+
+      navigate("/user/upload-payment");
     } catch (error) {
       toast({
         title: "Error adding order.",
@@ -445,149 +447,13 @@ const Checkout = () => {
   };
 
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <Box width="100%" maxWidth="1000px" mx="auto" py={5}>
-        <h1 className="mb-10 text-center text-2xl font-bold">Checkout</h1>
+    <Box width="100%" maxWidth="1000px" mx="auto" py={5}>
+      <form onSubmit={formik.handleSubmit}>
+        <h1 className="mb-5 text-center text-2xl font-bold">Checkout</h1>
         <div className="flex flex-col justify-between w-full">
           <div className="bg-white py-5">
             <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
               <div className="rounded-lg md:w-2/3">
-                <Flex justifyContent="space-between" alignItems="center">
-                  <Heading size="md">Shipping Address</Heading>
-                  {addresses.length === 0 && (
-                    <Link to="/user/add-address/checkout">
-                      <Button
-                        onClick={addNewAddress}
-                        colorScheme="teal"
-                        size="sm">
-                        Add New Address
-                      </Button>
-                    </Link>
-                  )}
-                </Flex>
-                <hr className="my-4" />
-                {addresses.length !== 0 ? (
-                  <Flex>
-                    <Box textAlign={"left"}>
-                      <Text justifyContent="space-between">
-                        {selectedAddress.recipient}
-                      </Text>
-                      <Text>
-                        {selectedAddress.address} {selectedAddress.district}{" "}
-                        {selectedAddress.city} {selectedAddress.province}
-                      </Text>
-                      <Text mb={4}>{selectedAddress.phone_number}</Text>
-                      <div className="flex items-center">
-                        <Link>
-                          <FormControl
-                            isInvalid={
-                              formik.errors.user_addresses_id &&
-                              formik.touched.user_addresses_id
-                            }>
-                            <Button
-                              onClick={onOpen}
-                              colorScheme="blue"
-                              ml={1}
-                              mr={4}
-                              size="sm">
-                              Change Address
-                            </Button>
-                            <FormErrorMessage>
-                              {formik.errors.user_addresses_id}
-                            </FormErrorMessage>
-                          </FormControl>
-                        </Link>
-                        <div className="w-auto mr-4">
-                          {selectedAddress && (
-                            <FormControl
-                              isInvalid={
-                                formik.errors.shipping_method &&
-                                formik.touched.shipping_method
-                              }>
-                              <Select
-                                size="sm"
-                                id="courier"
-                                name="courirer"
-                                type="text"
-                                placeholder="Select Courier"
-                                ref={courierRef}
-                                onChange={handleCourierSelect}>
-                                {[
-                                  { value: "jne", label: "JNE" },
-                                  { value: "tiki", label: "Tiki" },
-                                  { value: "pos", label: "POS Indonesia" },
-                                ].map((option) => (
-                                  <option
-                                    key={option.value}
-                                    value={option.value}>
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </Select>
-                              <FormErrorMessage>
-                                {formik.errors.shipping_method}
-                              </FormErrorMessage>
-                            </FormControl>
-                          )}
-                        </div>
-
-                        <div className="w-auto">
-                          {courierSelect && (
-                            <FormControl
-                              isInvalid={
-                                formik.errors.shipping_method &&
-                                formik.touched.shipping_method
-                              }>
-                              <Select
-                                size="sm"
-                                id="cost"
-                                name="cost"
-                                type="text"
-                                placeholder="Select Cost"
-                                onChange={handleCostSelect}
-                                ref={costRef}
-                                // className='w-80'
-                              >
-                                {shippingCosts.map((shippingCost, index) => (
-                                  <option
-                                    key={index}
-                                    value={JSON.stringify(shippingCost)}>
-                                    {shippingCost.description} -{" "}
-                                    {shippingCost.cost[0].value.toLocaleString(
-                                      "id-ID",
-                                      {
-                                        style: "currency",
-                                        currency: "IDR",
-                                      }
-                                    )}
-                                  </option>
-                                ))}
-                              </Select>
-                              <FormErrorMessage>
-                                {formik.errors.shipping_method}
-                              </FormErrorMessage>
-                            </FormControl>
-                          )}
-                        </div>
-                      </div>
-                      {/* <Link to="/user/add-address/checkout">
-                    <Button colorScheme="blue" mr={4} mt={2} size="sm" >
-                      Add New Address
-                    </Button>
-                  </Link> */}
-                    </Box>
-                  </Flex>
-                ) : (
-                  <Stack spacing={4} mb={4}>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                      No address founded.
-                    </h1>
-                    <p className="text-gray-700 text-lg mb-8">
-                      Please add new address for process your order.
-                    </p>
-                  </Stack>
-                )}
-                <hr className="my-4" />
                 {carts.length !== 0 ? (
                   carts.map((cart, index) => {
                     return (
@@ -660,7 +526,146 @@ const Checkout = () => {
                 className={`sticky top-[5.7rem] mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
                   carts.length === 0 ? "hidden" : null
                 }`}>
-                <div className="mb-2 flex justify-between">
+                <Flex justifyContent="center" alignItems="center">
+                  <Heading size="md" className="text-center">
+                    Shipping Address
+                  </Heading>
+                  {addresses.length === 0 && (
+                    <Link to="/user/add-address/checkout">
+                      <Button
+                        onClick={addNewAddress}
+                        colorScheme="teal"
+                        size="sm">
+                        Add New Address
+                      </Button>
+                    </Link>
+                  )}
+                </Flex>
+                <hr className="my-4" />
+                {addresses.length !== 0 ? (
+                  <Flex>
+                    <Box textAlign={"left"}>
+                      <Text justifyContent="space-between">
+                        {selectedAddress.recipient}
+                      </Text>
+                      <Text>{selectedAddress.phone_number}</Text>
+                      <Text mb={4}>
+                        {selectedAddress.address} {selectedAddress.district}{" "}
+                        {selectedAddress.city} {selectedAddress.province}
+                      </Text>
+                      <div className=" items-center">
+                        <Link>
+                          <FormControl
+                            isInvalid={
+                              formik.errors.user_addresses_id &&
+                              formik.touched.user_addresses_id
+                            }>
+                            <Button
+                              onClick={onOpen}
+                              colorScheme="blue"
+                              ml={1}
+                              mr={4}
+                              size="sm">
+                              Change Address
+                            </Button>
+                            <FormErrorMessage>
+                              {formik.errors.user_addresses_id}
+                            </FormErrorMessage>
+                          </FormControl>
+                        </Link>
+
+                        {selectedAddress && (
+                          <FormControl
+                            isInvalid={
+                              formik.errors.shipping_method &&
+                              formik.touched.shipping_method
+                            }>
+                            <Select
+                              mt={2}
+                              size="sm"
+                              id="courier"
+                              name="courirer"
+                              type="text"
+                              placeholder="Select Courier"
+                              ref={courierRef}
+                              onChange={handleCourierSelect}>
+                              {[
+                                { value: "jne", label: "JNE" },
+                                { value: "tiki", label: "Tiki" },
+                                { value: "pos", label: "POS Indonesia" },
+                              ].map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </Select>
+                            <FormErrorMessage>
+                              {formik.errors.shipping_method}
+                            </FormErrorMessage>
+                          </FormControl>
+                        )}
+
+                        <div className="w-auto">
+                          {courierSelect && (
+                            <FormControl
+                              isInvalid={
+                                formik.errors.shipping_method &&
+                                formik.touched.shipping_method
+                              }>
+                              <Select
+                                mt={2}
+                                size="sm"
+                                id="cost"
+                                name="cost"
+                                type="text"
+                                placeholder="Select Cost"
+                                onChange={handleCostSelect}
+                                ref={costRef}
+                                // className='w-80'
+                              >
+                                {shippingCosts.map((shippingCost, index) => (
+                                  <option
+                                    key={index}
+                                    value={JSON.stringify(shippingCost)}>
+                                    {shippingCost.description} -{" "}
+                                    {shippingCost.cost[0].value.toLocaleString(
+                                      "id-ID",
+                                      {
+                                        style: "currency",
+                                        currency: "IDR",
+                                      }
+                                    )}
+                                  </option>
+                                ))}
+                              </Select>
+                              <FormErrorMessage>
+                                {formik.errors.shipping_method}
+                              </FormErrorMessage>
+                            </FormControl>
+                          )}
+                        </div>
+                      </div>
+                      {/* <Link to="/user/add-address/checkout">
+                    <Button colorScheme="blue" mr={4} mt={2} size="sm" >
+                      Add New Address
+                    </Button>
+                  </Link> */}
+                    </Box>
+                  </Flex>
+                ) : (
+                  <Stack spacing={4} mb={4}>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                      No address founded.
+                    </h1>
+                    <p className="text-gray-700 text-lg mb-8">
+                      Please add new address for process your order.
+                    </p>
+                  </Stack>
+                )}
+
+                <hr className="my-4" />
+
+                <div className="mb-2 mt-6 flex justify-between">
                   <p className="text-gray-700">
                     Subtotal ({totalProductsInCart} items)
                   </p>
@@ -695,7 +700,7 @@ const Checkout = () => {
                 </div>
               )} */}
 
-                <hr className="my-4" />
+                <hr className="my-4 " />
                 <div className="flex justify-between">
                   <p className="text-lg font-bold">Grand Total</p>
                   <div className="">
@@ -707,6 +712,15 @@ const Checkout = () => {
                     </p>
                   </div>
                 </div>
+                <Box mt={6}>
+                  <Button
+                    type="submit"
+                    colorScheme="blue"
+                    width="100%"
+                    isLoading={formik.isSubmitting}>
+                    Proceed to Payment
+                  </Button>
+                </Box>
               </div>
             </div>
           </div>
@@ -720,18 +734,8 @@ const Checkout = () => {
           handleAddressSelect={handleAddressSelect}
           handleNewAddressSubmit={handleNewAddressSubmit}
         />
-
-        <Box mt={6}>
-          <Button
-            type="submit"
-            colorScheme="blue"
-            width="100%"
-            isLoading={formik.isSubmitting}>
-            Proceed to Payment
-          </Button>
-        </Box>
-      </Box>
-    </form>
+      </form>
+    </Box>
   );
 };
 
