@@ -126,13 +126,9 @@ function App() {
               path="/admin/managecategory"
               element={<ManageCategoryProducts />}
             />
-            <Route path="/warehouse/list" element={<WarehouseList />} />
+
             <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
-            <Route
-              path="/warehouse/details/:id"
-              element={<WarehouseDetails />}
-            />
           </Route>
 
           {/*Super admin & Warehouse admin's route */}
@@ -141,6 +137,7 @@ function App() {
             <Route path="/admin/list-orders" element={<ListOrders />} />
             <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
             <Route path="/warehouse/history" element={<StockHistory />} />
+            <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route
               path="/warehouse/getstockmutationrequest"
               element={<StockRequestList />}
@@ -150,6 +147,7 @@ function App() {
               element={<ManageMutations />}
             />
           </Route>
+          <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
 
           {/* Fallback route */}
           <Route path="/*" element={<NotFound />} />
