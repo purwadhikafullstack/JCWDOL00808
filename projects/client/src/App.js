@@ -43,7 +43,7 @@ import Checkout from "./pages/user/Checkout";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import SuperAdminRoutes from "./utils/SuperAdminRoutes";
 import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
-import ListOrders from "./pages/admin/ListOrders";
+import ListOrders from "./pages/admin/listOrders";
 
 function App() {
   const location = useLocation();

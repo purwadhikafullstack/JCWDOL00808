@@ -15,6 +15,7 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const queryParams = new URLSearchParams(window.location.search);
   const search = queryParams.get("search");
+  const [color, setColor] = useState("");
   const [category, setCategory] = useState();
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -23,6 +24,21 @@ export default function Home() {
   const [pageCount, setPageCount] = useState(0);
   const [limit] = useState(12);
   const [offset, setOffset] = useState(0);
+  const radioColor = [
+    "Black",
+    "Blue",
+    "Brown",
+    "Gray",
+    "Green",
+    "Maroon",
+    "Navy",
+    "Orange",
+    "Pink",
+    "Purple",
+    "Red",
+    "Turquoise",
+    "White",
+  ];
 
   const getCategory = (category_id) => {
     setCategory(category_id);
@@ -35,6 +51,7 @@ export default function Home() {
         `${process.env.REACT_APP_API_BASE_URL}/products/`,
         {
           params: {
+            color,
             search,
             category,
             minPrice,
@@ -56,7 +73,17 @@ export default function Home() {
   useEffect(() => {
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
+  }, [
+    search,
+    color,
+    category,
+    minPrice,
+    maxPrice,
+    sortBy,
+    sortOrder,
+    limit,
+    offset,
+  ]);
 
   return (
     <div className="flex flex-col justify-between w-full">
@@ -105,8 +132,9 @@ export default function Home() {
       </div>
       <div className="grid md:grid-cols-4 grid-cols-1">
         <div className="mx-2 my-4 p-2 border-2 border-gray-200 dark:bg-gray-800 dark:text-white shadow rounded-lg">
-          <p>Filter</p>
-          <p className="text-left">Price</p>
+          <p className="font-bold">Filter</p>
+          <hr className="border-2 my-2" />
+          <p className="text-left font-bold">Price</p>
           <div className="py-4">
             <div className="flex">
               <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
@@ -133,32 +161,64 @@ export default function Home() {
               />
             </div>
           </div>
+          <hr className="border-2 mt-4 mb-2" />
+          <p className="text-left font-bold mb-2">Color</p>
+          <div className="flex items-center mb-2">
+            <input
+              onChange={(event) => setColor(event.target.value)}
+              id="All"
+              type="radio"
+              value=""
+              name="color"
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor="default-radio-1"
+              className="ml-2 text-sm text-gray-900 dark:text-gray-300"
+            >
+              All
+            </label>
+          </div>
+          {radioColor.map((color, index) => {
+            return (
+              <div key={index} className="flex items-center mb-2">
+                <input
+                  onChange={(event) => setColor(event.target.value)}
+                  id={color}
+                  type="radio"
+                  value={color}
+                  name="color"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  htmlFor="default-radio-1"
+                  className="ml-2 text-sm text-gray-900 dark:text-gray-300"
+                >
+                  {color}
+                </label>
+              </div>
+            );
+          })}
         </div>
 
         <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4">
           <ProductCard products={products} func={getCategory} />
           <div className="grid md:col-span-4 col-span-2 place-items-center">
             <ReactPaginate
-              previousLabel={"<"}
-              nextLabel={">"}
+              previousLabel="<"
+              nextLabel=">"
+              breakLabel="..."
+              breakClassName="md:mx-2 md:bg-gray-200 md:hover:bg-gray-400 md:text-gray-800 md:font-bold md:-my-[0.42rem] md:pt-2 md:px-3.5 md:rounded"
+              pageRangeDisplayed={0}
+              marginPagesDisplayed={1}
               pageCount={pageCount}
               onPageChange={({ selected }) => setOffset(selected * limit)}
-              containerClassName={"flex"}
-              pageLinkClassName={
-                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              }
-              previousLinkClassName={
-                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              }
-              nextLinkClassName={
-                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              }
-              activeLinkClassName={
-                "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              }
-              disabledLinkClassName={
-                "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
-              }
+              containerClassName="flex"
+              pageLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              previousLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              nextLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              activeLinkClassName="mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              disabledLinkClassName="mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
             />
           </div>
         </div>

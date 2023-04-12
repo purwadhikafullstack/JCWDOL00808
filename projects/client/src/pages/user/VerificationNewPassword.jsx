@@ -7,11 +7,9 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  
   Stack,
   Button,
   Heading,
-  
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
@@ -122,6 +120,7 @@ export default function VerificationNewPassword() {
   return (
     <Flex
       minH={"100vh"}
+      w={"full"}
       align={"center"}
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}
