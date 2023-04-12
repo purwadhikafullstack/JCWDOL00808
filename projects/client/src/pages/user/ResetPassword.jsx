@@ -69,6 +69,7 @@ export default function ResetPassword() {
   return (
     <Flex
       minH={"100vh"}
+      w={"full"}
       align={"center"}
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}
