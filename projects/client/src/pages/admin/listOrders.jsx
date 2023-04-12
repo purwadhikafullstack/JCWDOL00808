@@ -18,6 +18,13 @@ import {
   Text,
   TableCaption,
   useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -29,7 +36,7 @@ import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function ListOrders() {
   const [orders, setOrders] = useState([]);
@@ -42,6 +49,10 @@ function ListOrders() {
   const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
   const toast = useToast();
+  const navigate = useNavigate();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [orderDetails, setOrderDetails] = useState([]);
 
   const token = localStorage.getItem("token");
 
@@ -51,7 +62,7 @@ function ListOrders() {
 
   const getOrders = async () => {
     const response = await axios.get(
-      `http://localhost:8000/orders/get-order?search_query=${keyword}&page=${page}&limit=${limit}`,
+      `http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}`,
       {
         params: {
           sort,
@@ -64,22 +75,22 @@ function ListOrders() {
     setPage(response.data.page);
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
-    console.log(response.data.result);
   };
 
-  const deleteProducts = async (id) => {
+  const fetchOrderDetailsAndOpenModal = async (orderId) => {
     try {
-      await axios.delete(`http://localhost:8000/product/deleteproduct/${id}`);
-      getOrders();
-      toast({
-        title: `Product success deleted`,
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-      });
+      const response = await axios.get(
+        `http://localhost:8000/orders/get-order-details/${orderId}`,
+        {
+          headers: { Authorization: token },
+        }
+      );
+      setOrderDetails(response.data);
+      setIsModalOpen(true);
     } catch (error) {
+      console.error(error);
       toast({
-        title: `${error.message}`,
+        title: "Error fetching order details",
         status: "error",
         duration: 9000,
         isClosable: true,
@@ -91,21 +102,39 @@ function ListOrders() {
     setPage(selected);
   };
 
-  const searchData = (e) => {
-    e.preventDefault();
+  const searchData = () => {
     setPage(0);
     setKeyword(query);
   };
 
   const handleSort = (value) => {
-    setSort(value);
-
+    if (value === "warehouseName") {
+      setSort(["warehouse", "name"]);
+    } else {
+      setSort(value);
+    }
     setPage(0);
   };
 
   const handleOrder = (value) => {
     setOrder(value);
     setPage(0);
+  };
+
+  const getSortLabel = (sortValue) => {
+    if (sortValue === "status") {
+      return "Status";
+    } else if (
+      Array.isArray(sortValue) &&
+      sortValue[0] === "warehouse" &&
+      sortValue[1] === "name"
+    ) {
+      return "Warehouse1";
+    } else if (sortValue === "total_price") {
+      return "Total Price";
+    } else {
+      return "ID";
+    }
   };
 
   function formatRupiah(number) {
@@ -121,14 +150,6 @@ function ListOrders() {
     return `${weightInKilograms} kg`;
   }
 
-  //function untuk memotong deskripsi yang terlalu panjang
-  // function truncateDescription(description, maxLength) {
-  //   const truncatedDescription = description.slice(0, maxLength);
-  //   const shouldTruncate = description.length > maxLength;
-
-  //   return shouldTruncate ? truncatedDescription + "..." : description;
-  // }
-
   // membuat role admin warehouse hanya bisa read data saja
   const role = localStorage.getItem("role");
   const isButtonDisabled = role === "2";
@@ -138,7 +159,6 @@ function ListOrders() {
     // <div style={{ margin: "auto", width: "70%" }}>
     <div className="container mx-auto px-4 mb-3">
       {/* fitur search */}
-
       <form onSubmit={searchData}>
         <Flex mt="2" size="sm">
           <Input
@@ -149,12 +169,11 @@ function ListOrders() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <Button colorScheme="blue" type="submit">
+          <Button colorScheme="blue" type="button" onClick={searchData}>
             Search
           </Button>
         </Flex>
       </form>
-
       {/* fitur untuk filter, sort dan add product */}
       <Flex alignItems="center" mt="2">
         <Box mr={2}>
@@ -163,14 +182,17 @@ function ListOrders() {
         <Text fontWeight="bold">Sort by:</Text>
         <Menu>
           <MenuButton ml={2} variant="ghost">
-            Name
+            {getSortLabel(sort)}
           </MenuButton>
           <MenuList>
-            <MenuItem value={sort} onClick={() => handleSort("name")}>
-              Name
+            <MenuItem value={sort} onClick={() => handleSort("status")}>
+              Status
             </MenuItem>
-            <MenuItem value={sort} onClick={() => handleSort("price")}>
-              Price
+            <MenuItem value={sort} onClick={() => handleSort("warehouseName")}>
+              Warehouse
+            </MenuItem>
+            <MenuItem value={sort} onClick={() => handleSort("total_price")}>
+              Total Price
             </MenuItem>
           </MenuList>
         </Menu>
@@ -192,7 +214,6 @@ function ListOrders() {
           </MenuList>
         </Menu>
       </Flex>
-
       {/* fitur table */}
       <Table variant="striped" size="sm" mt="2" textAlign="center">
         <TableCaption mb="2">
@@ -220,7 +241,8 @@ function ListOrders() {
               </Td>
               <Td fontSize="sm">{orderData.status}</Td>
               <Td fontSize="sm">
-                {orderData.payment_proof ? (
+                {/* for showing payment proof */}
+                {/* {orderData.payment_proof ? (
                   <img
                     src={`http://localhost:8000/${orderData.payment_proof}`}
                     alt="Product image"
@@ -228,53 +250,47 @@ function ListOrders() {
                   />
                 ) : (
                   "Data Not Found"
+                )} */}
+                {orderData.payment_proof ? (
+                  <Button
+                    size="sm"
+                    colorScheme="blue"
+                    onClick={() => {
+                      // Your click event handler here
+                    }}
+                    disabled={!orderData.payment_proof}
+                    mr={2}>
+                    Show Payment Proof
+                  </Button>
+                ) : (
+                  "Data Not Found"
                 )}
               </Td>
               <Td>
                 <Box display="flex">
-                  <Link
-                    to={
-                      isButtonDisabled
-                        ? "#"
-                        : `/admin/patch-product/${orderData.id}`
-                    }
-                    style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
-                    <IconButton
-                      size="sm"
-                      bgColor="green.500"
-                      aria-label="Edit"
-                      icon={<EditIcon />}
-                      mr={2}
-                      borderRadius="full"
-                      _hover={{ bg: "green.700" }}
-                      isDisabled={isButtonDisabled}
-                    />
-                  </Link>
-                  <IconButton
+                  <Button
                     size="sm"
-                    bgColor="red.500"
-                    aria-label="Delete"
-                    icon={<DeleteIcon />}
-                    borderRadius="full"
-                    _hover={{ bg: "red.700" }}
-                    isDisabled={isButtonDisabled}
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          "Are you sure you want to delete this product ?"
-                        )
-                      ) {
-                        deleteProducts(orderData.id);
-                      }
-                    }}
-                  />
+                    mr={2}
+                    _hover={{ bg: "yellow.500" }}
+                    colorScheme="yellow"
+                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}>
+                    Order Details
+                  </Button>
+                  <Button
+                    size="sm"
+                    mr={2}
+                    _hover={{ bg: "green.500" }}
+                    colorScheme="green"
+                    // onClick={}
+                  >
+                    Send Order
+                  </Button>
                 </Box>
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-
       {/* fitur paginate */}
       <Flex alignItems="center" justifyContent="center">
         <ReactPaginate
@@ -300,6 +316,43 @@ function ListOrders() {
           }
         />
       </Flex>
+      {/* modal untuk order details */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Order Details</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Table variant="striped" size="sm">
+              <Thead>
+                <Tr>
+                  <Th>Product</Th>
+                  <Th>Quantity</Th>
+                  <Th>Product Price</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {orderDetails.map((detail) => (
+                  <Tr key={detail.id}>
+                    <Td>{detail.product_name}</Td>
+                    <Td>{detail.quantity}</Td>
+                    <Td>{formatRupiah(detail.product_price)}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => setIsModalOpen(false)}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      ;
     </div>
   );
 }

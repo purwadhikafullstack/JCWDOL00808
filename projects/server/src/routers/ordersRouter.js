@@ -8,5 +8,6 @@ const { ordersController } = require("../controllers");
 
 Router.post("/add-order", verifyToken, ordersController.addOrder);
 Router.get("/get-order", ordersController.getOrders);
+Router.get("/get-order-details/:id", ordersController.getOrderDetails);
 
 module.exports = Router;
