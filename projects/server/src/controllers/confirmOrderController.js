@@ -12,26 +12,10 @@ const Stock = db.stocks;
 const StockHistory = db.stock_histories;
 const StockMutation = db.stock_mutations;
 
-module.exports = {
-  // waiting_payment_confirmation: async (req, res) => {
-  //   try {
-  //     const pendingOrders = await Order.findAll({
-  //       where: { status: "Waiting for Confirmation" },
-  //       include: [
-  //         {
-  //           model: orderDetails,
-  //           as: "order_details",
-  //           foreignKey: "orders_id",
-  //         },
-  //       ],
-  //     });
-  //     res.json(pendingOrders);
-  //   } catch (err) {
-  //     console.error(err);
-  //     res.status(500).json({ message: "Internal Server Error" });
-  //   }
-  // },
+//import utils function
+const { haversineDistance } = require("../utils/function");
 
+module.exports = {
   waiting_payment_confirmation: async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 0;
@@ -103,12 +87,12 @@ module.exports = {
       }
       // Update order status to "Processed"
       await order.update({ status: "On Process" }, { transaction: t });
+
       // Update product stock and generate stock transfer request if necessary
       const orderDetail = await orderDetails.findAll({
         where: { orders_id: order.id },
       });
       for (const detail of orderDetail) {
-        // const product = await Product.findByPk(detail.products_id);
         const warehouse = await Warehouse.findByPk(order.warehouses_id);
         const stock = await Stock.findOne({
           where: {
@@ -116,89 +100,130 @@ module.exports = {
             warehouses_id: order.warehouses_id,
           },
         });
-        if (!stock || !stock.stock || stock.stock < detail.quantity) {
-          // If there is a shortage of stock, generate a request to transfer stock from the nearest branch with sufficient stock.
-          const nearestWarehouse = await Warehouse.findAll({
-            attributes: ["id", [sequelize.fn("ST_Distance_Sphere", sequelize.literal(`POINT(${warehouse.longitude}, ${warehouse.latitude})`), sequelize.literal(`POINT(longitude, latitude)`)), "distance"]],
-            where: {
-              id: {
-                [Op.ne]: warehouse.id,
-              },
-            },
+        if (!stock || (stock && stock.stock < detail.quantity)) {
+          // Find nearest warehouse with sufficient stock
+          const warehouses = await Warehouse.findAll({
             include: [
               {
                 model: Stock,
                 where: {
                   products_id: detail.products_id,
+                  stock: {
+                    [Op.gte]: detail.quantity,
+                  },
                 },
               },
             ],
-            order: sequelize.literal("distance ASC"),
-            limit: 1,
           });
-          if (nearestWarehouse.length === 0) {
-            return res.status(400).json({ message: "Insufficient stock and no nearest warehouse with sufficient stock" });
+
+          if (warehouses.length === 0) {
+            // await order.update({ status: 'FAILED' });
+            return res.status(400).json({ message: "Not enough stock available" });
           }
-          // Generate stock transfer request here
+
+          const currentWarehouse = await Warehouse.findByPk(warehouse.id);
+
+          let nearestWarehouse;
+          let minDistance = Number.MAX_VALUE;
+
+          warehouses.forEach((warehouse) => {
+            const distance = haversineDistance(currentWarehouse.latitude, currentWarehouse.longitude, warehouse.latitude, warehouse.longitude);
+
+            if (distance < minDistance) {
+              minDistance = distance;
+              nearestWarehouse = warehouse;
+            }
+          });
+
+          // Update stock in both warehouses
+          const transferQuantity = detail.quantity - (stock ? stock.stock : 0);
+
+          const nearestWarehouseStock = await Stock.findOne({
+            where: { products_id: detail.products_id, warehouses_id: nearestWarehouse.id },
+          });
+
+          // create Stock Mutation Auto
           await StockMutation.create(
             {
-              from_warehouse_id: nearestWarehouse[0].id,
+              from_warehouse_id: nearestWarehouse.id,
               to_warehouse_id: warehouse.id,
-              quantity: detail.quantity,
+              quantity: transferQuantity,
               mutation_type: "Automatic Transfer from nearest warehouse",
               products_id: detail.products_id,
             },
             { transaction: t }
           );
 
+          // Update stock history for the nearest warehouse
+          await StockHistory.create(
+            {
+              stock_before: nearestWarehouseStock.stock,
+              stock_after: nearestWarehouseStock.stock - transferQuantity,
+              products_id: detail.products_id,
+              warehouses_id: nearestWarehouse.id,
+              description: "Send Stock to request warehouse",
+            },
+            { transaction: t }
+          );
+
+          // if (stock) {
+          //   // await stock.update({ stock: stock.stock + transferQuantity }, { transaction: t });
+          // } else {
+          //   await Stock.create(
+          //     {
+          //       stock: transferQuantity,
+          //       products_id: detail.products_id,
+          //       warehouses_id: order.warehouses_id,
+          //     },
+          //     { transaction: t }
+          //   );
+          // }
+
           if (!stock) {
-            // Create new stock record if it doesn't exist
-            let newStock = await Stock.create(
+            await Stock.create(
               {
+                stock: 0,
                 products_id: detail.products_id,
                 warehouses_id: order.warehouses_id,
-                stock: 0,
               },
               { transaction: t }
             );
-            stock = newStock;
           }
-          // Stock History From other Warehouse
+
+          // Update stock history for the current warehouse
           await StockHistory.create(
             {
-              stock_before: nearestWarehouse[0].stocks[0].stock,
-              stock_after: nearestWarehouse[0].stocks[0].stock - detail.quantity,
+              stock_before: stock ? stock.stock : 0,
+              stock_after: (stock ? stock.stock : 0) + transferQuantity,
               products_id: detail.products_id,
-              warehouses_id: nearestWarehouse[0].id,
-              description: "Send to other Warehouses",
+              warehouses_id: order.warehouses_id,
+              description: "Receiving Stock from nearest warehouse",
             },
             { transaction: t }
           );
-          // Stock History to Warehouse
+
+          // update stock history to the user address
           await StockHistory.create(
             {
-              stock_before: stock.stock,
-              stock_after: stock.stock + detail.quantity,
-              products_id: detail.products_id,
-              warehouses_id: nearestWarehouse[0].id,
-              description: "Receive from other Warehouses",
-            },
-            { transaction: t }
-          );
-          // Stock history to user addres
-          await StockHistory.create(
-            {
-              stock_before: stock.stock + detail.quantity,
-              stock_after: stock.stock,
+              // stock_before: stock.stock + transferQuantity,
+              // stock_after: stock.stock + transferQuantity - detail.quantity,
+              stock_before: stock ? stock.stock + detail.quantity : detail.quantity,
+              stock_after: stock ? stock.stock : 0,
               products_id: detail.products_id,
               warehouses_id: warehouse.id,
               description: "Send to buyer address",
             },
             { transaction: t }
           );
-
-          await stock.update({ stock: 0 }, { transaction: t });
-          await nearestWarehouse[0].stocks[0].update({ stock: nearestWarehouse[0].stocks[0].stock - detail.quantity }, { transaction: t });
+          if (stock) {
+            await stock.update({ stock: stock.stock + transferQuantity - detail.quantity }, { transaction: t });
+          }
+          await nearestWarehouseStock.update(
+            {
+              stock: nearestWarehouseStock.stock - transferQuantity,
+            },
+            { transaction: t }
+          );
         } else {
           await stock.update({ stock: stock.stock - detail.quantity }, { transaction: t });
           await StockHistory.create(
@@ -217,6 +242,7 @@ module.exports = {
       res.json({ message: "Order accepted and processed" });
     } catch (err) {
       await t.rollback();
+      console.log(err);
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
