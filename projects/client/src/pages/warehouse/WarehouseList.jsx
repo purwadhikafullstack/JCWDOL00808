@@ -65,6 +65,7 @@ const WarehouseList = (props) => {
   const toast = useToast();
   const cancelRef = React.useRef();
   const navigate = useNavigate();
+  const [role, setRole] = useState(localStorage.getItem("role"));
 
   const {
     isOpen: isAlertOpen,
@@ -171,37 +172,38 @@ const WarehouseList = (props) => {
           <Td>{value.province}</Td>
           <Td>{value.city}</Td>
           <Td isNumeric>
-            <Button
-              colorScheme="yellow"
-              className="mr-2"
-              onClick={() => navigate(`/warehouse/stock/${value.id}`)}
-            >
-              Stock
-            </Button>
+            {role === "1" && (
+              <Button
+                colorScheme="yellow"
+                className="mr-2"
+                onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
+                Stock
+              </Button>
+            )}
             <Button
               colorScheme="teal"
               className="mr-2"
-              onClick={() => navigate(`/warehouse/details/${value.id}`)}
-            >
+              onClick={() => navigate(`/warehouse/details/${value.id}`)}>
               Details
             </Button>
-            <Button
-              colorScheme="blue"
-              className="mr-2"
-              onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}
-            >
-              Edit
-            </Button>
-            <>
-              <Button colorScheme="red" onClick={onAlertOpen}>
-                Delete
+            {role === "1" && (
+              <Button
+                colorScheme="blue"
+                className="mr-2"
+                onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
+                Edit
               </Button>
-
+            )}
+            <>
+              {role === "1" && (
+                <Button colorScheme="red" onClick={onAlertOpen}>
+                  Delete
+                </Button>
+              )}
               <AlertDialog
                 isOpen={isAlertOpen}
                 leastDestructiveRef={cancelRef}
-                onClose={onAlertClose}
-              >
+                onClose={onAlertClose}>
                 <AlertDialogOverlay>
                   <AlertDialogContent>
                     <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -220,8 +222,7 @@ const WarehouseList = (props) => {
                       <Button
                         colorScheme="red"
                         onClick={() => deleteButton(value.id)}
-                        ml={3}
-                      >
+                        ml={3}>
                         Delete
                       </Button>
                     </AlertDialogFooter>
@@ -263,32 +264,27 @@ const WarehouseList = (props) => {
               <HStack spacing="24px">
                 <Radio
                   value="name"
-                  onChange={(element) => setSort(element.target.value)}
-                >
+                  onChange={(element) => setSort(element.target.value)}>
                   Name
                 </Radio>
                 <Radio
                   value="province"
-                  onChange={(element) => setSort(element.target.value)}
-                >
+                  onChange={(element) => setSort(element.target.value)}>
                   Province
                 </Radio>
                 <Radio
                   value="city"
-                  onChange={(element) => setSort(element.target.value)}
-                >
+                  onChange={(element) => setSort(element.target.value)}>
                   City
                 </Radio>
                 <Radio
                   value="updatedAt"
-                  onChange={(element) => setSort(element.target.value)}
-                >
+                  onChange={(element) => setSort(element.target.value)}>
                   Date added
                 </Radio>
                 <Select
                   placeholder="Order"
-                  onChange={(element) => setOrder(element.target.value)}
-                >
+                  onChange={(element) => setOrder(element.target.value)}>
                   <option value="ASC">Ascending</option>
                   <option value="DESC">Descending</option>
                 </Select>
@@ -337,8 +333,7 @@ const WarehouseList = (props) => {
         <Button
           colorScheme="orange"
           className="mt-5"
-          onClick={() => navigate(`/warehouse/add`)}
-        >
+          onClick={() => navigate(`/warehouse/add`)}>
           Add new warehouse
         </Button>
       </div>
