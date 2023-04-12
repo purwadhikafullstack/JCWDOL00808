@@ -10,6 +10,7 @@ const orders = db.orders;
 const carts = db.carts;
 const products = db.products;
 const order_details = db.order_details;
+const warehouses = db.warehouses;
 
 const request = require("request");
 
@@ -56,7 +57,6 @@ module.exports = {
         ],
         attributes: ["id", "users_id", "quantity"],
       });
-      // console.log(JSON.stringify(fetchCart, null, 2));
 
       const orderDetailsData = fetchCart.map((cartItem) => ({
         orders_id: createNewOrder.id,
@@ -94,6 +94,121 @@ module.exports = {
         message: error.message,
         data: null,
       });
+    }
+  },
+  getOrders: async (req, res) => {
+    try {
+      // let { id } = req.dataDecode;
+
+      const page = parseInt(req.query.page) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search || "";
+      const offset = limit * page;
+      const sort = req.query.sort || "id"; //default sorting by name
+      const order = req.query.order || "DESC"; //default order DESC
+
+      const searchFilter = search
+        ? {
+            [Op.or]: [
+              {
+                "$user_address.recipient$": {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+              {
+                "$warehouse.name$": {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+              {
+                "$orders.status$": {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+            ],
+          }
+        : {};
+      const totalRows = await orders.count({
+        ...(Object.keys(searchFilter).length > 0 && { where: searchFilter }),
+      });
+
+      const totalPage = Math.ceil(totalRows / limit);
+      const result = await orders.findAll({
+        where: {
+          ...searchFilter,
+        },
+        include: [
+          {
+            model: warehouses,
+            as: "warehouse",
+            attributes: ["name", "admins_id"],
+          },
+          {
+            model: user_addresses,
+            as: "user_address", // Add 'as' property here
+            attributes: ["recipient", "phone_number"],
+          },
+        ],
+        offset: offset,
+        limit: limit,
+        order: Array.isArray(sort) ? [sort.concat(order)] : [[sort, order]],
+        subQuery: false,
+      });
+      // replace '\' with '/'
+      result.forEach((orderData) => {
+        if (orderData.payment_proof) {
+          orderData.payment_proof = orderData.payment_proof.replace(/\\/g, "/");
+        }
+      });
+      res.json({
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
+    }
+  },
+  getOrdersById: async (req, res) => {
+    try {
+      let { id } = req.params;
+      const result = await orders.findOne({
+        where: {
+          id: id,
+        },
+        include: [
+          {
+            model: warehouses,
+            as: "warehouse",
+            attributes: ["name", "admins_id"],
+          },
+          {
+            model: user_addresses,
+            attributes: ["recipient", "phone_number"],
+          },
+        ],
+      });
+      res.json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
+    }
+  },
+  getOrderDetails: async (req, res) => {
+    try {
+      let { id } = req.params;
+      const result = await order_details.findAll({
+        where: {
+          orders_id: id,
+        },
+      });
+      res.json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
     }
   },
 };
