@@ -224,7 +224,7 @@ module.exports = {
     }
   },
   deliverOrder: async (req, res) => {
-    // const t = await sequelize.transaction();
+    const t = await sequelize.transaction();
     try {
       const { id } = req.params;
 
@@ -247,19 +247,31 @@ module.exports = {
               },
             })
             .then((stocks) => {
-              // Do something with the stocks data
-              console.log(stocks);
               // Check if any products have no data
               const foundIds = stocks.map((stock) => stock.products_id);
               const missingIds = productIds.filter(
                 (id) => !foundIds.includes(id)
               );
               if (missingIds.length > 0) {
-                console.log(
-                  `Stock for products ID ${missingIds.join(
+                res.status(404).send({
+                  isError: true,
+                  message: `Stock for products ID ${missingIds.join(
                     ", "
-                  )} is not available.`
+                  )} is not available.`,
+                  data: null,
+                });
+              } else {
+                orders.update(
+                  { status: "Shipped" },
+                  { where: { id } },
+                  { transaction: t }
                 );
+                t.commit();
+                res.status(200).send({
+                  isError: false,
+                  message: "Orders has been shipped",
+                  data: null,
+                });
               }
             });
         });
@@ -298,7 +310,7 @@ module.exports = {
       //   data: findOrderDetails,
       // });
     } catch (error) {
-      // t.rollback();
+      t.rollback();
       res.status(404).send({
         isError: true,
         message: error.message,

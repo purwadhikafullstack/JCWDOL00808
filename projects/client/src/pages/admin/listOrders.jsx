@@ -37,6 +37,7 @@ import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import SendOrderModal from "../../components/SendOrderModal";
 
 function ListOrders() {
   const [orders, setOrders] = useState([]);
@@ -259,7 +260,8 @@ function ListOrders() {
                       // Your click event handler here
                     }}
                     disabled={!orderData.payment_proof}
-                    mr={2}>
+                    mr={2}
+                  >
                     Show Payment Proof
                   </Button>
                 ) : (
@@ -273,18 +275,11 @@ function ListOrders() {
                     mr={2}
                     _hover={{ bg: "yellow.500" }}
                     colorScheme="yellow"
-                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}>
+                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}
+                  >
                     Order Details
                   </Button>
-                  <Button
-                    size="sm"
-                    mr={2}
-                    _hover={{ bg: "green.500" }}
-                    colorScheme="green"
-                    // onClick={}
-                  >
-                    Send Order
-                  </Button>
+                  <SendOrderModal orders_id={orderData.id} />
                 </Box>
               </Td>
             </Tr>
@@ -346,13 +341,13 @@ function ListOrders() {
             <Button
               colorScheme="blue"
               mr={3}
-              onClick={() => setIsModalOpen(false)}>
+              onClick={() => setIsModalOpen(false)}
+            >
               Close
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-      ;
     </div>
   );
 }
