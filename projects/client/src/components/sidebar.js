@@ -145,7 +145,7 @@ export default function Sidebar() {
 
         <ul className="pt-2">
           {Menus.map((menu, index) => (
-            <>
+            <React.Fragment key={index}>
               {menu.title === "Account" && role === "2" ? null : ( // role nomor 2 menandakan sebagai admin warehouse
                 <li
                   key={index}
@@ -232,7 +232,7 @@ export default function Sidebar() {
                   })}
                 </ul>
               )}
-            </>
+            </React.Fragment>
           ))}
         </ul>
       </div>

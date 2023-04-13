@@ -98,7 +98,8 @@ module.exports = {
   },
   getOrders: async (req, res) => {
     try {
-      // let { id } = req.dataDecode;
+      let { id } = req.dataDecode;
+      const role = req.query.role;
 
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
@@ -106,6 +107,13 @@ module.exports = {
       const offset = limit * page;
       const sort = req.query.sort || "id"; //default sorting by name
       const order = req.query.order || "DESC"; //default order DESC
+
+      const adminFilter =
+        role === "2"
+          ? {
+              "$warehouse.admins_id$": id,
+            }
+          : {};
 
       const searchFilter = search
         ? {
@@ -136,6 +144,7 @@ module.exports = {
       const result = await orders.findAll({
         where: {
           ...searchFilter,
+          ...adminFilter,
         },
         include: [
           {
@@ -160,6 +169,12 @@ module.exports = {
           orderData.payment_proof = orderData.payment_proof.replace(/\\/g, "/");
         }
       });
+      console.log("Ini length" + result.length);
+      if (result.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "Please assign warehouse first" });
+      }
       res.json({
         result: result,
         page: page,

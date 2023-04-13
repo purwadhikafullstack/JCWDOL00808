@@ -34,7 +34,7 @@ import {
 } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import SendOrderModal from "../../components/SendOrderModal";
@@ -56,26 +56,65 @@ function ListOrders() {
   const [orderDetails, setOrderDetails] = useState([]);
 
   const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("role");
+
+  const showWarningToast = useCallback(
+    (message) => {
+      toast({
+        title: message,
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+    [toast]
+  );
+
+  const showErrorToast = useCallback(
+    (message) => {
+      toast({
+        title: message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+    [toast]
+  );
 
   useEffect(() => {
-    getOrders();
+    getOrders(userRole);
   }, [page, keyword, sort, order]);
 
-  const getOrders = async () => {
-    const response = await axios.get(
-      `http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}`,
-      {
-        params: {
-          sort,
-          order,
-        },
-        headers: { Authorization: token },
+  const getOrders = async (userRole) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}&role=${userRole}`,
+        {
+          params: {
+            sort,
+            order,
+          },
+          headers: { Authorization: token },
+        }
+      );
+
+      setOrders(response.data.result);
+      setPage(response.data.page);
+      setPages(response.data.totalPage);
+      setRows(response.data.totalRows);
+    } catch (error) {
+      console.error(error);
+      if (
+        error.response &&
+        error.response.status === 404 &&
+        error.response.data.message
+      ) {
+        showWarningToast(error.response.data.message); // Update this line
+      } else {
+        showErrorToast("Error fetching orders"); // Update this line
       }
-    );
-    setOrders(response.data.result);
-    setPage(response.data.page);
-    setPages(response.data.totalPage);
-    setRows(response.data.totalRows);
+    }
   };
 
   const fetchOrderDetailsAndOpenModal = async (orderId) => {
@@ -152,8 +191,8 @@ function ListOrders() {
   }
 
   // membuat role admin warehouse hanya bisa read data saja
-  const role = localStorage.getItem("role");
-  const isButtonDisabled = role === "2";
+  // const role = localStorage.getItem("role");
+  const isButtonDisabled = userRole === "2";
   const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
@@ -260,8 +299,7 @@ function ListOrders() {
                       // Your click event handler here
                     }}
                     disabled={!orderData.payment_proof}
-                    mr={2}
-                  >
+                    mr={2}>
                     Show Payment Proof
                   </Button>
                 ) : (
@@ -275,8 +313,7 @@ function ListOrders() {
                     mr={2}
                     _hover={{ bg: "yellow.500" }}
                     colorScheme="yellow"
-                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}
-                  >
+                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}>
                     Order Details
                   </Button>
                   <SendOrderModal orders_id={orderData.id} />
@@ -341,8 +378,7 @@ function ListOrders() {
             <Button
               colorScheme="blue"
               mr={3}
-              onClick={() => setIsModalOpen(false)}
-            >
+              onClick={() => setIsModalOpen(false)}>
               Close
             </Button>
           </ModalFooter>
