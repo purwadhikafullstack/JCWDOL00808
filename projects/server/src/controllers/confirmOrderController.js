@@ -205,10 +205,10 @@ module.exports = {
           // update stock history to the user address
           await StockHistory.create(
             {
-              stock_before: stock.stock + transferQuantity,
-              stock_after: stock.stock + transferQuantity - detail.quantity,
-              // stock_before: stock ? stock.stock + detail.quantity : detail.quantity,
-              // stock_after: stock ? stock.stock : 0,
+              // stock_before: stock.stock + transferQuantity,
+              // stock_after: stock.stock + transferQuantity - detail.quantity,
+              stock_before: stock ? stock.stock + transferQuantity : detail.quantity,
+              stock_after: stock ? stock.stock + transferQuantity - detail.quantity : 0,
               products_id: detail.products_id,
               warehouses_id: warehouse.id,
               description: "Send to buyer address",
