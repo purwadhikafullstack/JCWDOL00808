@@ -158,7 +158,8 @@ function ListOrders() {
     setPage(selected);
   };
 
-  const searchData = () => {
+  const searchData = (e) => {
+    e.preventDefault();
     setPage(0);
     setKeyword(query);
   };
@@ -275,8 +276,6 @@ function ListOrders() {
 
   // membuat role admin warehouse hanya bisa read data saja
   // const role = localStorage.getItem("role");
-  const isButtonDisabled = userRole === "2";
-  const buttonColorScheme = isButtonDisabled ? "gray" : "green";
 
   return (
     // <div style={{ margin: "auto", width: "70%" }}>
@@ -348,7 +347,6 @@ function ListOrders() {
             <Th>Recipient</Th>
             <Th>Grand Total</Th>
             <Th>Status</Th>
-            <Th>Payment Proof</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
@@ -363,17 +361,8 @@ function ListOrders() {
                 {formatRupiah(orderData.total_price + orderData.shipping_cost)}
               </Td>
               <Td fontSize="sm">{orderData.status}</Td>
-              <Td fontSize="sm">
-                {/* for showing payment proof */}
-                {/* {orderData.payment_proof ? (
-                  <img
-                    src={`http://localhost:8000/${orderData.payment_proof}`}
-                    alt="Product image"
-                    width="50"
-                  />
-                ) : (
-                  "Data Not Found"
-                )} */}
+              {/* <Td fontSize="sm">
+                
                 {orderData.payment_proof ? (
                   <Button
                     size="sm"
@@ -388,7 +377,7 @@ function ListOrders() {
                 ) : (
                   "Data Not Found"
                 )}
-              </Td>
+              </Td> */}
               <Td>
                 <Box display="flex">
                   <Button
@@ -415,19 +404,19 @@ function ListOrders() {
           onPageChange={changePage}
           containerClassName={"flex"}
           pageLinkClassName={
-            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+            "text-sm mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-medium px-4 py-1 rounded-md"
           }
           previousLinkClassName={
-            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+            "text-sm mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-medium px-4 py-1 rounded-md"
           }
           nextLinkClassName={
-            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+            "text-sm mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-medium px-4 py-1 rounded-md"
           }
           activeLinkClassName={
-            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            "text-sm mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded-md"
           }
           disabledLinkClassName={
-            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+            "text-sm mx-2 bg-gray-300 text-gray-500 font-medium py-1 px-4 rounded-md"
           }
         />
       </Flex>
@@ -527,11 +516,15 @@ function ListOrders() {
               <Text mb="2">Payment Status: {allData.status}</Text>
               <Box>
                 <Text mb="4">Payment Proof:</Text>
-                <img
-                  src={`http://localhost:8000/${allData.payment_proof}`}
-                  alt="Payment Proof"
-                  width="200"
-                />
+                {allData.payment_proof === null ? (
+                  <Text mb="4">No Payment Proof</Text>
+                ) : (
+                  <img
+                    src={`http://localhost:8000/${allData.payment_proof}`}
+                    alt="Payment Proof"
+                    width="200"
+                  />
+                )}
                 <Text mb="4"></Text>
               </Box>
             </Box>
