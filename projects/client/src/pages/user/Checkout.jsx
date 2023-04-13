@@ -20,6 +20,7 @@ import {
   Text,
   useToast,
   FormErrorMessage,
+  Skeleton,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -50,6 +51,7 @@ const Checkout = () => {
   const [finalCost, setFinalCost] = useState(null);
   const [shippingCosts, setShippingCosts] = useState([]);
   const [nearestWarehouse, setNearestWarehouse] = useState(null);
+  const [shippingCostLoading, setShippingCostLoading] = useState(false);
 
   const courierRef = useRef(null);
   const costRef = useRef(null);
@@ -607,41 +609,49 @@ const Checkout = () => {
 
                         <div className="w-auto">
                           {courierSelect && (
-                            <FormControl
-                              isInvalid={
-                                formik.errors.shipping_method &&
-                                formik.touched.shipping_method
-                              }>
-                              <Select
-                                mt={2}
-                                size="sm"
-                                id="cost"
-                                name="cost"
-                                type="text"
-                                placeholder="Select Cost"
-                                onChange={handleCostSelect}
-                                ref={costRef}
-                                // className='w-80'
-                              >
-                                {shippingCosts.map((shippingCost, index) => (
-                                  <option
-                                    key={index}
-                                    value={JSON.stringify(shippingCost)}>
-                                    {shippingCost.description} -{" "}
-                                    {shippingCost.cost[0].value.toLocaleString(
-                                      "id-ID",
-                                      {
-                                        style: "currency",
-                                        currency: "IDR",
-                                      }
+                            <Skeleton isLoaded={!shippingCostLoading}>
+                              {shippingCosts.length === 0 ? (
+                                <Stack>
+                                  <Skeleton mt={2} height="30px" />{" "}
+                                </Stack>
+                              ) : (
+                                <FormControl
+                                  isInvalid={
+                                    formik.errors.shipping_method &&
+                                    formik.touched.shipping_method
+                                  }>
+                                  <Select
+                                    mt={2}
+                                    size="sm"
+                                    id="cost"
+                                    name="cost"
+                                    type="text"
+                                    placeholder="Select Cost"
+                                    onChange={handleCostSelect}
+                                    ref={costRef}>
+                                    {shippingCosts.map(
+                                      (shippingCost, index) => (
+                                        <option
+                                          key={index}
+                                          value={JSON.stringify(shippingCost)}>
+                                          {shippingCost.description} -{" "}
+                                          {shippingCost.cost[0].value.toLocaleString(
+                                            "id-ID",
+                                            {
+                                              style: "currency",
+                                              currency: "IDR",
+                                            }
+                                          )}
+                                        </option>
+                                      )
                                     )}
-                                  </option>
-                                ))}
-                              </Select>
-                              <FormErrorMessage>
-                                {formik.errors.shipping_method}
-                              </FormErrorMessage>
-                            </FormControl>
+                                  </Select>
+                                  <FormErrorMessage>
+                                    {formik.errors.shipping_method}
+                                  </FormErrorMessage>
+                                </FormControl>
+                              )}
+                            </Skeleton>
                           )}
                         </div>
                       </div>
