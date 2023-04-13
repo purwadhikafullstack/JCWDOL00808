@@ -20,14 +20,7 @@ module.exports = {
 
     try {
       let { id } = req.dataDecode;
-      let {
-        total_price,
-        status,
-        shipping_method,
-        shipping_cost,
-        user_addresses_id,
-        warehouses_id,
-      } = req.body;
+      let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
 
       const createNewOrder = await orders.create(
         {
@@ -69,18 +62,12 @@ module.exports = {
       }));
 
       //Post all carts data to order_details table
-      const postOrderDetails = await order_details.bulkCreate(
-        orderDetailsData,
-        {
-          transaction: t,
-        }
-      );
+      const postOrderDetails = await order_details.bulkCreate(orderDetailsData, {
+        transaction: t,
+      });
 
       //Delete cart data based on users_id
-      const deleteCartData = await carts.destroy(
-        { where: { users_id: id } },
-        { transaction: t }
-      );
+      const deleteCartData = await carts.destroy({ where: { users_id: id } }, { transaction: t });
       t.commit();
       res.status(201).send({
         isError: false,
@@ -187,10 +174,16 @@ module.exports = {
           },
           {
             model: user_addresses,
-            attributes: ["recipient", "phone_number"],
+            attributes: ["recipient", "phone_number", "address", "province", "city", "district", "postal_code"],
           },
         ],
       });
+
+      //replace '\' with '/' for image
+      if (result && result.payment_proof) {
+        result.payment_proof = result.payment_proof.replace(/\\/g, "/");
+      }
+
       res.json(result);
     } catch (error) {
       console.error(error);
@@ -205,6 +198,12 @@ module.exports = {
           orders_id: id,
         },
       });
+
+      //replace '\' with '/' for image
+      result.forEach((image) => {
+        image.imageUrl = image.imageUrl.replace(/\\/g, "/");
+      });
+
       res.json(result);
     } catch (error) {
       console.error(error);
