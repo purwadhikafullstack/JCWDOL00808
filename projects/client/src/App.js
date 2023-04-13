@@ -48,41 +48,22 @@ import ListOrders from "./pages/admin/listOrders";
 function App() {
   const location = useLocation();
 
-  const cleanRoute = [
-    "/user/register",
-    "/user/verify",
-    "/user/verify-new-password",
-    "/user/login",
-    "/user/reset-password",
-    "/admin/login",
-  ].includes(location.pathname);
+  const cleanRoute = ["/user/register", "/user/verify", "/user/verify-new-password", "/user/login", "/user/reset-password", "/admin/login"].includes(location.pathname);
 
   return (
     <div className="App">
       {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
-      {cleanRoute ? null : location.pathname.startsWith("/admin") ||
-        location.pathname.startsWith("/warehouse") ? null : (
-        <Navbar />
-      )}
+      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Navbar />}
       <div className="flex justify-between">
-        {cleanRoute ? null : location.pathname.startsWith("/admin") ||
-          location.pathname.startsWith("/warehouse") ? (
-          <Sidebar />
-        ) : null}
+        {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : null}
 
         <Routes>
           {/*Public user's route */}
           <Route path="/" element={<Home />} />
-          <Route
-            path="/product-details/:productId"
-            element={<ProductDetails />}
-          />
+          <Route path="/product-details/:productId" element={<ProductDetails />} />
           <Route path="/user/register" element={<Registration />} />
           <Route path="/user/verify" element={<Verification />} />
-          <Route
-            path="/user/verify-new-password"
-            element={<VerificationNewPassword />}
-          />
+          <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
           <Route path="/user/login" element={<Login />} />
           <Route path="/user/reset-password" element={<ResetPassword />} />
 
@@ -91,10 +72,7 @@ function App() {
             <Route path="/user/profile" element={<EditProfile />} />
             <Route path="/user/address" element={<UserAddress />} />
             <Route path="/user/add-address" element={<AddUserAddress />} />
-            <Route
-              path="/user/add-address/checkout"
-              element={<AddUserAddress />}
-            />
+            <Route path="/user/add-address/checkout" element={<AddUserAddress />} />
             <Route path="/user/address/:id" element={<EditUserAddress />} />
             <Route path="/user/cart" element={<Cart />} />
             <Route path="/user/checkout" element={<Checkout />} />
@@ -113,20 +91,10 @@ function App() {
             <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
             <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
             <Route path="/admin/addProducts" element={<ProductForm />} />
-            <Route
-              path="/admin/patch-product/:id"
-              element={<PatchProductForm />}
-            />
+            <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
             {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
-            <Route
-              path="/admin/patch-category/:id"
-              element={<PatchCategoryProduct />}
-            />
-            <Route
-              path="/admin/managecategory"
-              element={<ManageCategoryProducts />}
-            />
-
+            <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
+            <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
           </Route>
@@ -138,14 +106,9 @@ function App() {
             <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
             <Route path="/warehouse/history" element={<StockHistory />} />
             <Route path="/warehouse/list" element={<WarehouseList />} />
-            <Route
-              path="/warehouse/getstockmutationrequest"
-              element={<StockRequestList />}
-            />
-            <Route
-              path="/warehouse/getAllstockmutationrequest"
-              element={<ManageMutations />}
-            />
+            <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
+            <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
+            <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
           </Route>
           <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
 
@@ -155,10 +118,7 @@ function App() {
       </div>
 
       {/*User path will have footer */}
-      {cleanRoute ? null : location.pathname.startsWith("/admin") ||
-        location.pathname.startsWith("/warehouse") ? null : (
-        <Footer />
-      )}
+      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Footer />}
       <Toaster />
     </div>
   );

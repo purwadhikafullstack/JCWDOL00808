@@ -2,6 +2,9 @@ import {
   Table,
   Thead,
   Tbody,
+  VStack,
+  Heading,
+  Image,
   Tr,
   Th,
   Td,
@@ -38,6 +41,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import SendOrderModal from "../../components/SendOrderModal";
+import { get } from "lodash";
 
 function ListOrders() {
   const [orders, setOrders] = useState([]);
@@ -54,6 +58,11 @@ function ListOrders() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
+  const [allData, getAllData] = useState([]);
+  const [isConfirmRejectModalOpen, setIsConfirmRejectModalOpen] =
+    useState(false);
+  const [isConfirmAcceptModalOpen, setIsConfirmAcceptModalOpen] =
+    useState(false);
 
   const token = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
@@ -126,6 +135,13 @@ function ListOrders() {
         }
       );
       setOrderDetails(response.data);
+      const responses = await axios.get(
+        `http://localhost:8000/orders/allorders-data/${orderId}`,
+        {
+          headers: { Authorization: token },
+        }
+      );
+      getAllData(responses.data);
       setIsModalOpen(true);
     } catch (error) {
       console.error(error);
@@ -159,6 +175,73 @@ function ListOrders() {
   const handleOrder = (value) => {
     setOrder(value);
     setPage(0);
+  };
+
+  const openConfirmAcceptModal = () => {
+    setIsConfirmAcceptModalOpen(true);
+  };
+
+  const closeConfirmAcceptModal = () => {
+    setIsConfirmAcceptModalOpen(false);
+  };
+
+  const openConfirmRejectModal = () => {
+    setIsConfirmRejectModalOpen(true);
+  };
+
+  const closeConfirmRejectModal = () => {
+    setIsConfirmRejectModalOpen(false);
+  };
+
+  const handleAcceptPayment = async (id) => {
+    try {
+      await axios.post(`http://localhost:8000/admin/acceptPayment/${id}`, {
+        headers: { Authorization: token },
+      });
+      closeConfirmAcceptModal();
+      setIsModalOpen(false);
+      toast({
+        title: "Success Accept payment",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+      getOrders();
+    } catch (error) {
+      console.error(error);
+      closeConfirmAcceptModal();
+      toast({
+        title: `${error.response.data.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleRejectPayment = async (id) => {
+    try {
+      await axios.post(`http://localhost:8000/admin/rejectPayment/${id}`, {
+        headers: { Authorization: token },
+      });
+      closeConfirmRejectModal();
+      setIsModalOpen(false);
+      toast({
+        title: "Success rejecting payment",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+      getOrders();
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   };
 
   const getSortLabel = (sortValue) => {
@@ -349,38 +432,171 @@ function ListOrders() {
         />
       </Flex>
       {/* modal untuk order details */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="6xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Order Details</ModalHeader>
+          <ModalHeader>Payment Information</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Table variant="striped" size="sm">
-              <Thead>
-                <Tr>
-                  <Th>Product</Th>
-                  <Th>Quantity</Th>
-                  <Th>Product Price</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {orderDetails.map((detail) => (
-                  <Tr key={detail.id}>
-                    <Td>{detail.product_name}</Td>
-                    <Td>{detail.quantity}</Td>
-                    <Td>{formatRupiah(detail.product_price)}</Td>
+            <Box
+              maxWidth="auto"
+              mx="auto"
+              mt="8"
+              maxHeight="70vh"
+              overflowY="auto"
+              width="100%">
+              <Text fontSize="2xl" fontWeight="bold" mb="4">
+                Order Confirmation Payment
+              </Text>
+
+              <Text mb="2">Order ID: {allData.id}</Text>
+              <Text mb="4">User ID: {allData.users_id}</Text>
+
+              <Text fontSize="lg" fontWeight="bold" mb="2">
+                Order Details:
+              </Text>
+              <Table variant="simple" size="sm" mb="4">
+                <Thead>
+                  <Tr>
+                    <Th>Product Name</Th>
+                    <Th>Quantity</Th>
+                    <Th>Unit Price</Th>
+                    <Th>Total Price</Th>
+                    <Th>Product Weight</Th>
+                    <Th>Image URL</Th>
+                    <Th>Product ID</Th>
                   </Tr>
-                ))}
-              </Tbody>
-            </Table>
+                </Thead>
+                <Tbody>
+                  {orderDetails.map((item) => (
+                    <Tr key={item.id}>
+                      <Td>{item.product_name}</Td>
+                      <Td>{item.quantity}</Td>
+                      <Td>{formatRupiah(item.product_price)}</Td>
+                      <Td>
+                        {formatRupiah(item.quantity * item.product_price)}
+                      </Td>
+                      <Td>{formatWeight(item.product_weight)}</Td>
+                      <Td>
+                        <img
+                          src={`http://localhost:8000/${item.imageUrl}`}
+                          alt="Product"
+                          width="50"
+                        />
+                      </Td>
+                      <Td>{item.products_id}</Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+
+              <Text fontSize="lg" fontWeight="bold" mb="2">
+                Order Summary:
+              </Text>
+              <Text mb="2">Shipping Method: {allData.shipping_method}</Text>
+              <Text mb="2">
+                Shipping Cost: {formatRupiah(allData.shipping_cost)}
+              </Text>
+              <Text mb="4">
+                Total Price: {formatRupiah(allData.total_price)}
+              </Text>
+
+              <Text fontSize="lg" fontWeight="bold" mb="2">
+                Shipping Information:
+              </Text>
+              <Text mb="2">
+                Shipping Address ID: {allData.user_addresses_id}
+              </Text>
+              <Text mb="4">
+                {allData.user_address?.address} {allData.user_address?.city},{" "}
+                {allData.user_address?.province}{" "}
+              </Text>
+
+              <Text fontSize="lg" fontWeight="bold" mb="2">
+                Warehouse Information:
+              </Text>
+              <Text mb="2">Warehouse ID: {allData.warehouses_id}</Text>
+              <Text mb="4">{allData.warehouse?.name}</Text>
+
+              <Text fontSize="lg" fontWeight="bold" mb="2">
+                Payment Information:
+              </Text>
+              <Text mb="2">Payment Status: {allData.status}</Text>
+              <Box>
+                <Text mb="4">Payment Proof:</Text>
+                <img
+                  src={`http://localhost:8000/${allData.payment_proof}`}
+                  alt="Payment Proof"
+                  width="200"
+                />
+                <Text mb="4"></Text>
+              </Box>
+            </Box>
+          </ModalBody>
+
+          <ModalFooter>
+            {allData.status === "Confirmed Payment" ? (
+              <>
+                <Button
+                  colorScheme="green"
+                  mr={3}
+                  onClick={openConfirmAcceptModal}>
+                  Accept
+                </Button>
+                <Button colorScheme="red" onClick={openConfirmRejectModal}>
+                  Reject
+                </Button>
+              </>
+            ) : null}
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal for reject Payment */}
+      <Modal
+        isOpen={isConfirmRejectModalOpen}
+        onClose={closeConfirmRejectModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Reject Payment</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Are you sure you want to reject this payment?</Text>
           </ModalBody>
           <ModalFooter>
             <Button
-              colorScheme="blue"
+              colorScheme="red"
               mr={3}
-              onClick={() => setIsModalOpen(false)}>
-              Close
+              onClick={() => handleRejectPayment(allData.id)}>
+              Reject
             </Button>
+            <Button onClick={closeConfirmRejectModal}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal for Accepted Payment */}
+      <Modal
+        isOpen={isConfirmAcceptModalOpen}
+        onClose={closeConfirmAcceptModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Accept Payment</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Are you sure you want to Accept this payment?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="teal"
+              mr={3}
+              onClick={() => handleAcceptPayment(allData.id)}>
+              Reject
+            </Button>
+            <Button onClick={closeConfirmAcceptModal}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
