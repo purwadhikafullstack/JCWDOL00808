@@ -75,7 +75,7 @@ export default function Navbar() {
               <div className="grid grid-cols-2 gap-1 place-items-center">
                 <Link to={"/user/cart"}>
                   <div className="relative">
-                    <FaShoppingCart className="dark:text-white text-2xl hover:text-slate-700 active:text-black" />
+                    <FaShoppingCart className="dark:text-white text-2xl hover:text-gray-700 active:text-black invert" />
                     <p className="absolute -top-2 -right-2 md:-right-2 text-white text-xs font-medium bg-red-600 rounded-full py-0.5 px-1 border border-white dark:border-gray-900">
                       {totalProductsInCart}
                     </p>
@@ -101,7 +101,7 @@ export default function Navbar() {
               <li>
                 <Link
                   to="/"
-                  className="hover:underline decoration-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                   aria-current="page">
                   HOME
                 </Link>
@@ -109,14 +109,14 @@ export default function Navbar() {
               <li>
                 <Link
                   to="#"
-                  className="hover:underline decoration-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                   ABOUT
                 </Link>
               </li>
               <li>
                 <Link
                   to="#"
-                  className="hover:underline decoration-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                   CONTACT
                 </Link>
               </li>
@@ -124,7 +124,7 @@ export default function Navbar() {
                 <li>
                   <button
                     onClick={onOpen}
-                    className="hover:underline decoration-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                    className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                     LOGIN
                   </button>
                 </li>
