@@ -7,6 +7,18 @@ import Big4Logo from "../assets/Big4Logo.svg";
 import { getCarts, getTotalProductsInCart } from "./../reducers/cartSlice";
 import AvatarButton from "./AvatarButton";
 import HamburgerMenuButton from "./HamburgerMenu";
+import LoginModal from "../pages/user/LoginModal";
+
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+} from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 
 export default function Navbar() {
   const token = localStorage.getItem("token");
@@ -23,6 +35,8 @@ export default function Navbar() {
       isAuth().then((data) => setProfile(data));
     }
   }, [token, dispatch, navigate]);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
@@ -73,8 +87,7 @@ export default function Navbar() {
               <Link to="/user/register">
                 <button
                   type="button"
-                  className="hidden md:flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 ml-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
+                  className="hidden md:flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 ml-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                   Create account
                 </button>
               </Link>
@@ -88,38 +101,44 @@ export default function Navbar() {
                 <Link
                   to="/"
                   className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                  aria-current="page"
-                >
+                  aria-current="page">
                   Home
                 </Link>
               </li>
               <li>
                 <Link
                   to="#"
-                  className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
+                  className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                   About
                 </Link>
               </li>
               <li>
                 <Link
                   to="#"
-                  className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
+                  className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                   Contact
                 </Link>
               </li>
               {profile ? null : (
                 <li>
-                  <Link
-                    to="/user/login"
-                    className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                  >
+                  <button
+                    onClick={onOpen}
+                    className="block py-2 pl-3 pr-4 text-lg text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                     Login
-                  </Link>
+                  </button>
                 </li>
               )}
             </ul>
+            <Modal isOpen={isOpen} onClose={onClose}>
+              <ModalOverlay />
+              <ModalContent className="w-min">
+                <ModalCloseButton />
+                <ModalBody className="">
+                  <LoginModal onClose={onClose} />
+                </ModalBody>
+                <ModalFooter></ModalFooter>
+              </ModalContent>
+            </Modal>
           </div>
         </div>
       </nav>

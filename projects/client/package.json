@@ -13,6 +13,8 @@
     "@chakra-ui/react": "^2.5.1",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@fontsource/oswald": "^4.5.12",
+    "@fontsource/roboto": "^4.5.8",
     "@reduxjs/toolkit": "^1.9.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",

@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
-const Login = () => {
+const LoginModal = ({ onClose }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const { user, isSuccess, isError, message } = useSelector(
@@ -52,7 +52,8 @@ const Login = () => {
       setTimeout(() => {
         navigate("/");
         dispatch(clearState());
-      }, 2000);
+        onClose();
+      }, 1000);
       toast({
         title: "Logged in successfully.",
         status: "success",
@@ -70,7 +71,7 @@ const Login = () => {
     } else if (user) {
       navigate("/");
     }
-  }, [user, isSuccess, isError, message, navigate, dispatch, toast]);
+  }, [user, isSuccess, isError, message, navigate, dispatch, toast, onClose]);
 
   const formik = useFormik({
     initialValues: {
@@ -89,24 +90,23 @@ const Login = () => {
   });
 
   return (
-    <div className="flex justify-start items-center flex-col h-screen w-full">
+    <div className="flex justify-start items-center flex-col">
       <Flex
-        minH={"80vh"}
         w={"full"}
         align={"center"}
         justify={"center"}
-        bg={useColorModeValue("gray.50", "gray.800")}>
-        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+        bg={useColorModeValue("white", "gray.800")}>
+        <Stack spacing={8} mx={"auto"}>
           <Stack align={"center"}>
-            <Heading fontSize={"4xl"} textAlign={"center"}>
+            <Heading
+              fontFamily="Roboto"
+              pt={8}
+              fontSize={"4xl"}
+              textAlign={"center"}>
               Login
             </Heading>
           </Stack>
-          <Box
-            rounded={"lg"}
-            bg={useColorModeValue("white", "gray.700")}
-            boxShadow={"lg"}
-            p={8}>
+          <Box rounded={"lg"} bg={useColorModeValue("white", "gray.700")} p={8}>
             <Stack spacing={4}>
               <form onSubmit={formik.handleSubmit}>
                 <FormControl
@@ -192,4 +192,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginModal;
