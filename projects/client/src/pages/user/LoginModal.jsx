@@ -172,10 +172,10 @@ const LoginModal = ({ onClose }) => {
                   </Link>
                 </Stack>
                 <Stack pt={6}>
-                  <Text align={"center"}>
+                  <Text align={"center"} variant="linkText">
                     <Link
-                      fontFamily="Roboto"
-                      className="text-gray-600 dark:text-gray-400"
+                      // fontFamily="Roboto"
+                      // className="text-gray-600 dark:text-gray-400"
                       width="full"
                       as={RouterLink}
                       to="/user/reset-password">

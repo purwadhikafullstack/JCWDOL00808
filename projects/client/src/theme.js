@@ -53,6 +53,14 @@ const theme = extendTheme({
         },
       },
     },
+    Text: {
+      variants: {
+        linkText: {
+          fontFamily: "Roboto",
+          className: "text-gray-600 dark:text-gray-400",
+        },
+      },
+    },
   },
 });
 
