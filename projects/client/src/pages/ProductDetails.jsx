@@ -87,8 +87,7 @@ export default function ProductDetails() {
         <Flex
           direction={{ base: "column", sm: "row" }}
           justifyContent="center"
-          alignItems="center"
-        >
+          alignItems="center">
           <Box flex="1" maxW="lg">
             <Image
               src={`${process.env.REACT_APP_API_BASE_URL}/${product?.imageUrl}`}
@@ -100,17 +99,17 @@ export default function ProductDetails() {
           </Box>
           <Spacer />
           <VStack flex="1" spacing={4} maxW="lg">
-            <Text fontSize="2xl" fontWeight="bold">
+            <Text fontSize="2xl" fontWeight="bold" fontFamily="Oswald">
               {product.name}
             </Text>
-            <Text>{product.description}</Text>
-            <Text fontSize="xl" fontWeight="bold">
+            <Text fontFamily="Roboto">{product.description}</Text>
+            <Text fontSize="xl" fontWeight="bold" fontFamily="Roboto">
               {(product.price * quantity).toLocaleString("id-ID", {
                 style: "currency",
                 currency: "IDR",
               })}
             </Text>
-            <HStack width="100%" justifyContent="center">
+            <HStack width="100%" justifyContent="center" fontFamily="Roboto">
               <Text>Quantity:</Text>
               <NumberInput
                 onChange={(qty) => setQuantity(Number(qty))}
@@ -119,20 +118,19 @@ export default function ProductDetails() {
                 max={99}
                 keepWithinRange
                 clampValueOnBlur
-              >
+                borderRadius="none">
                 <NumberInputField />
-                <NumberInputStepper>
+                <NumberInputStepper borderRadius="none">
                   <NumberIncrementStepper />
                   <NumberDecrementStepper />
                 </NumberInputStepper>
               </NumberInput>
             </HStack>
             <Button
+              variant="buttonBlack"
               onClick={() => handleAddToCart(product.id, quantity)}
               isDisabled={!profile?.is_verified || product.totalStock === "0"}
-              colorScheme="blue"
-              width="100%"
-            >
+              width="100%">
               {product.totalStock !== "0" ? "Add to cart" : "Out of stock"}
             </Button>
           </VStack>

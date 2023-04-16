@@ -27,8 +27,7 @@ export default function DeleteProductAlert(props) {
       ) : (
         <button
           onClick={onOpen}
-          className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
-        >
+          className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-red-500 hover:text-blue-50">
           {" "}
           -{" "}
         </button>
@@ -38,8 +37,7 @@ export default function DeleteProductAlert(props) {
         leastDestructiveRef={cancelRef}
         onClose={onClose}
         isOpen={isOpen}
-        isCentered
-      >
+        isCentered>
         <AlertDialogOverlay />
 
         <AlertDialogContent>
@@ -58,8 +56,7 @@ export default function DeleteProductAlert(props) {
                 onClose();
               }}
               colorScheme="red"
-              ml={3}
-            >
+              ml={3}>
               Delete
             </Button>
           </AlertDialogFooter>
