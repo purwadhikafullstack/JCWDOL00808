@@ -48,8 +48,8 @@ const UserAddress = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if(token) {
-    fetchAddresses();
+    if (token) {
+      fetchAddresses();
     }
     // getProvinceData();
   }, [searchTerm]);
@@ -59,21 +59,6 @@ const UserAddress = () => {
     setAddressToDelete(null);
     onClose();
   };
-
-  //  const getProvinceData = () => {
-  //   axios.get(`http://localhost:8000/warehouses/getProvinceData`)
-  //     .then((response) => {
-  //       setProvinceData(response.data);
-  //     })
-  //     .catch((error) => {
-  //       toast({
-  //         title: "Error fetching data.",
-  //         status: "error",
-  //         duration: 3000,
-  //         isClosable: true,
-  //       });
-  //     });
-  // };
 
   const fetchAddresses = async () => {
     try {
@@ -120,7 +105,7 @@ const UserAddress = () => {
   return (
     <>
       <Box mb={4} w={"full"}>
-        <HStack mb={4} mt={2} mr={4} justify="flex-end">
+        {/* <HStack mb={4} mt={2} mr={4} justify="flex-end">
           <Link to="/">
             <IconButton
               icon={<CloseIcon />}
@@ -128,66 +113,74 @@ const UserAddress = () => {
               colorScheme="blue"
             />
           </Link>
-        </HStack>
-        <Heading mb={10}>Address List</Heading>
+        </HStack> */}
+        <Heading fontFamily="Oswald" mb={10} mt={10}>
+          Address List
+        </Heading>
         <HStack mb={4} mt={2} mr={4} justify="center">
           <Input
+            fontFamily="Roboto"
             type="text"
+            borderRadius={0}
             placeholder="Search"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             maxW="200px"
           />
           {/* <IconButton icon={<SearchIcon />} aria-label="Search" colorScheme="blue" /> */}
-          <Link to="/user/add-address">
-            <IconButton
-              icon={<AddIcon />}
-              aria-label="Add Address"
-              colorScheme="blue"
-            />
-          </Link>
+          <Tooltip label="Add Address" placement="top-start">
+            <Link to="/user/add-address">
+              <IconButton
+                variant="buttonBlack"
+                icon={<AddIcon />}
+                aria-label="Add Address"
+                colorScheme="blue"
+              />
+            </Link>
+          </Tooltip>
         </HStack>
-        <VStack mt={8} w={"xl"} spacing={4} mx={"auto"} justify="center">
+        <VStack mt={8} w={"2xl"} spacing={4} mx={"auto"} justify="center">
           {addresses.map((address) => (
             <Tooltip
               label={address.is_primary === true ? "Primary Address" : ""}
               isDisabled={address.is_primary !== true}
-              placement="top-start"
-            >
+              placement="top-start">
               <Box
                 key={address.id}
-                borderWidth={address.is_primary === true ? "20px" : "1px"}
+                borderWidth={address.is_primary === true ? "5px" : "1px"}
                 borderColor={
-                  address.is_primary === true ? "blue.500" : "gray.200"
+                  address.is_primary === true ? "blue.800" : "gray.200"
                 }
-                borderRadius="lg"
+                borderRadius="0"
                 p={4}
                 w="100%"
-              >
-                <Text>
-                  {address.recipient} - {address.phone_number}
+                fontFamily="Roboto">
+                <Text fontFamily="Oswald" fontSize="lg">
+                  {address.recipient}
                 </Text>
+                <Text>{address.phone_number}</Text>
                 <Text>
                   {address.address}, {address.district}, {address.city},{" "}
                   {address.province}, {address.postal_code}
                 </Text>
-                <Flex justify="flex-end">
+                <Flex justify="flex-end" mt={4}>
                   <Link to={`/user/address/${address.id}`}>
-                    <IconButton
+                    <Button
                       // onClick={() => handleEditAddress(address.id, formik.values)}
                       icon={<EditIcon />}
-                      colorScheme="blue"
+                      variant="buttonBlack"
                       aria-label="Edit Address"
-                      isRound
-                      mr={2}
-                    />
+                      borderRadius={0}
+                      mr={2}>
+                      Edit
+                    </Button>
                   </Link>
                   <IconButton
                     onClick={() => handleDeleteButtonClick(address.id)}
                     icon={<DeleteIcon />}
                     colorScheme="red"
                     aria-label="Delete Address"
-                    isRound
+                    borderRadius={0}
                   />
                 </Flex>
               </Box>
@@ -198,18 +191,18 @@ const UserAddress = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Delete Address</ModalHeader>
+          <ModalHeader fontFamily="Oswald">Delete Address</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody fontFamily="Roboto">
             Are you sure you want to delete this address? This action cannot be
             undone.
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={handleConfirmDelete}>
+            <Button variant="buttonBlack" mr={3} onClick={handleConfirmDelete}>
               Delete
             </Button>
-            <Button variant="ghost" onClick={onClose}>
+            <Button variant="buttonWhite" onClick={onClose}>
               Cancel
             </Button>
           </ModalFooter>

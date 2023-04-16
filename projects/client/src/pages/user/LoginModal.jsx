@@ -132,7 +132,7 @@ const LoginModal = ({ onClose }) => {
                   id="password"
                   isRequired
                   isInvalid={formik.touched.password && formik.errors.password}>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel mt={4}>Password</FormLabel>
                   <InputGroup size="md">
                     <Input
                       pl={3}
