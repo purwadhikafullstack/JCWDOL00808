@@ -29,7 +29,12 @@ import {
   ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import {
+  EditIcon,
+  DeleteIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
@@ -54,8 +59,10 @@ function ListOrders() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
   const [allData, getAllData] = useState([]);
-  const [isConfirmRejectModalOpen, setIsConfirmRejectModalOpen] = useState(false);
-  const [isConfirmAcceptModalOpen, setIsConfirmAcceptModalOpen] = useState(false);
+  const [isConfirmRejectModalOpen, setIsConfirmRejectModalOpen] =
+    useState(false);
+  const [isConfirmAcceptModalOpen, setIsConfirmAcceptModalOpen] =
+    useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -64,13 +71,16 @@ function ListOrders() {
   }, [page, keyword, sort, order]);
 
   const getOrders = async () => {
-    const response = await axios.get(`http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}`, {
-      params: {
-        sort,
-        order,
-      },
-      headers: { Authorization: token },
-    });
+    const response = await axios.get(
+      `http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}`,
+      {
+        params: {
+          sort,
+          order,
+        },
+        headers: { Authorization: token },
+      }
+    );
     setOrders(response.data.result);
     setPage(response.data.page);
     setPages(response.data.totalPage);
@@ -79,13 +89,19 @@ function ListOrders() {
 
   const fetchOrderDetailsAndOpenModal = async (orderId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/orders/get-order-details/${orderId}`, {
-        headers: { Authorization: token },
-      });
+      const response = await axios.get(
+        `http://localhost:8000/orders/get-order-details/${orderId}`,
+        {
+          headers: { Authorization: token },
+        }
+      );
       setOrderDetails(response.data);
-      const responses = await axios.get(`http://localhost:8000/orders/allorders-data/${orderId}`, {
-        headers: { Authorization: token },
-      });
+      const responses = await axios.get(
+        `http://localhost:8000/orders/allorders-data/${orderId}`,
+        {
+          headers: { Authorization: token },
+        }
+      );
       getAllData(responses.data);
       setIsModalOpen(true);
     } catch (error) {
@@ -192,7 +208,11 @@ function ListOrders() {
   const getSortLabel = (sortValue) => {
     if (sortValue === "status") {
       return "Status";
-    } else if (Array.isArray(sortValue) && sortValue[0] === "warehouse" && sortValue[1] === "name") {
+    } else if (
+      Array.isArray(sortValue) &&
+      sortValue[0] === "warehouse" &&
+      sortValue[1] === "name"
+    ) {
       return "Warehouse1";
     } else if (sortValue === "total_price") {
       return "Total Price";
@@ -225,7 +245,14 @@ function ListOrders() {
       {/* fitur search */}
       <form onSubmit={searchData}>
         <Flex mt="2" size="sm">
-          <Input type="text" placeholder="Search" mr={2} width="30%" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Input
+            type="text"
+            placeholder="Search"
+            mr={2}
+            width="30%"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <Button colorScheme="blue" type="button" onClick={searchData}>
             Search
           </Button>
@@ -293,7 +320,9 @@ function ListOrders() {
                 {orderData.warehouse.name}
               </Td>
               <Td fontSize="sm">{orderData.user_address.recipient}</Td>
-              <Td fontSize="sm">{formatRupiah(orderData.total_price + orderData.shipping_cost)}</Td>
+              <Td fontSize="sm">
+                {formatRupiah(orderData.total_price + orderData.shipping_cost)}
+              </Td>
               <Td fontSize="sm">{orderData.status}</Td>
               <Td fontSize="sm">
                 {/* for showing payment proof */}
@@ -324,10 +353,16 @@ function ListOrders() {
               </Td>
               <Td>
                 <Box display="flex">
-                  <Button size="sm" mr={2} _hover={{ bg: "yellow.500" }} colorScheme="yellow" onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}>
+                  <Button
+                    size="sm"
+                    mr={2}
+                    _hover={{ bg: "yellow.500" }}
+                    colorScheme="yellow"
+                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}
+                  >
                     Order Details
                   </Button>
-                  <SendOrderModal orders_id={orderData.id} />
+                  <SendOrderModal orders_id={orderData.id} func={getOrders} />
                 </Box>
               </Td>
             </Tr>
@@ -342,21 +377,42 @@ function ListOrders() {
           pageCount={Math.min(10, pages)}
           onPageChange={changePage}
           containerClassName={"flex"}
-          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
-          disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
+          pageLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          previousLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          nextLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          activeLinkClassName={
+            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          }
+          disabledLinkClassName={
+            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+          }
         />
       </Flex>
       {/* modal untuk order details */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="6xl">
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="6xl"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Payment Information</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Box maxWidth="auto" mx="auto" mt="8" maxHeight="70vh" overflowY="auto" width="100%">
+            <Box
+              maxWidth="auto"
+              mx="auto"
+              mt="8"
+              maxHeight="70vh"
+              overflowY="auto"
+              width="100%"
+            >
               <Text fontSize="2xl" fontWeight="bold" mb="4">
                 Order Confirmation Payment
               </Text>
@@ -385,10 +441,16 @@ function ListOrders() {
                       <Td>{item.product_name}</Td>
                       <Td>{item.quantity}</Td>
                       <Td>{formatRupiah(item.product_price)}</Td>
-                      <Td>{formatRupiah(item.quantity * item.product_price)}</Td>
+                      <Td>
+                        {formatRupiah(item.quantity * item.product_price)}
+                      </Td>
                       <Td>{formatWeight(item.product_weight)}</Td>
                       <Td>
-                        <img src={`http://localhost:8000/${item.imageUrl}`} alt="Product" width="50" />
+                        <img
+                          src={`http://localhost:8000/${item.imageUrl}`}
+                          alt="Product"
+                          width="50"
+                        />
                       </Td>
                       <Td>{item.products_id}</Td>
                     </Tr>
@@ -400,15 +462,22 @@ function ListOrders() {
                 Order Summary:
               </Text>
               <Text mb="2">Shipping Method: {allData.shipping_method}</Text>
-              <Text mb="2">Shipping Cost: {formatRupiah(allData.shipping_cost)}</Text>
-              <Text mb="4">Total Price: {formatRupiah(allData.total_price)}</Text>
+              <Text mb="2">
+                Shipping Cost: {formatRupiah(allData.shipping_cost)}
+              </Text>
+              <Text mb="4">
+                Total Price: {formatRupiah(allData.total_price)}
+              </Text>
 
               <Text fontSize="lg" fontWeight="bold" mb="2">
                 Shipping Information:
               </Text>
-              <Text mb="2">Shipping Address ID: {allData.user_addresses_id}</Text>
+              <Text mb="2">
+                Shipping Address ID: {allData.user_addresses_id}
+              </Text>
               <Text mb="4">
-                {allData.user_address?.address} {allData.user_address?.city}, {allData.user_address?.province}{" "}
+                {allData.user_address?.address} {allData.user_address?.city},{" "}
+                {allData.user_address?.province}{" "}
               </Text>
 
               <Text fontSize="lg" fontWeight="bold" mb="2">
@@ -423,7 +492,11 @@ function ListOrders() {
               <Text mb="2">Payment Status: {allData.status}</Text>
               <Box>
                 <Text mb="4">Payment Proof:</Text>
-                <img src={`http://localhost:8000/${allData.payment_proof}`} alt="Payment Proof" width="200" />
+                <img
+                  src={`http://localhost:8000/${allData.payment_proof}`}
+                  alt="Payment Proof"
+                  width="200"
+                />
                 <Text mb="4"></Text>
               </Box>
             </Box>
@@ -432,7 +505,11 @@ function ListOrders() {
           <ModalFooter>
             {allData.status === "Confirmed Payment" ? (
               <>
-                <Button colorScheme="green" mr={3} onClick={openConfirmAcceptModal}>
+                <Button
+                  colorScheme="green"
+                  mr={3}
+                  onClick={openConfirmAcceptModal}
+                >
                   Accept
                 </Button>
                 <Button colorScheme="red" onClick={openConfirmRejectModal}>
@@ -445,7 +522,10 @@ function ListOrders() {
       </Modal>
 
       {/* Modal for reject Payment */}
-      <Modal isOpen={isConfirmRejectModalOpen} onClose={closeConfirmRejectModal}>
+      <Modal
+        isOpen={isConfirmRejectModalOpen}
+        onClose={closeConfirmRejectModal}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Reject Payment</ModalHeader>
@@ -454,7 +534,11 @@ function ListOrders() {
             <Text>Are you sure you want to reject this payment?</Text>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={() => handleRejectPayment(allData.id)}>
+            <Button
+              colorScheme="red"
+              mr={3}
+              onClick={() => handleRejectPayment(allData.id)}
+            >
               Reject
             </Button>
             <Button onClick={closeConfirmRejectModal}>Cancel</Button>
@@ -463,7 +547,10 @@ function ListOrders() {
       </Modal>
 
       {/* Modal for Accepted Payment */}
-      <Modal isOpen={isConfirmAcceptModalOpen} onClose={closeConfirmAcceptModal}>
+      <Modal
+        isOpen={isConfirmAcceptModalOpen}
+        onClose={closeConfirmAcceptModal}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Accept Payment</ModalHeader>
@@ -472,7 +559,11 @@ function ListOrders() {
             <Text>Are you sure you want to Accept this payment?</Text>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="teal" mr={3} onClick={() => handleAcceptPayment(allData.id)}>
+            <Button
+              colorScheme="teal"
+              mr={3}
+              onClick={() => handleAcceptPayment(allData.id)}
+            >
               Reject
             </Button>
             <Button onClick={closeConfirmAcceptModal}>Cancel</Button>
