@@ -158,17 +158,19 @@ export default function EditProfile() {
         w={"full"}
         maxW={"lg"}
         bg={useColorModeValue("white", "gray.700")}
-        rounded={"xl"}
+        rounded={0}
         boxShadow={"lg"}
         p={6}
         my={12}
-        className="border border-gray-200"
-      >
-        <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
-          Edit profile
+        className="border border-gray-200">
+        <Heading
+          fontFamily="Oswald"
+          lineHeight={1.1}
+          fontSize={{ base: "2xl", sm: "3xl" }}>
+          Edit Profile
         </Heading>
         <FormControl id="profile_picture">
-          <FormLabel>Profile Picture</FormLabel>
+          <FormLabel fontFamily="Oswald">Profile Picture</FormLabel>
           <Stack direction={["column", "row"]} spacing={6}>
             <Center>
               <Avatar
@@ -180,8 +182,7 @@ export default function EditProfile() {
                     : null
                 }
                 border="2px"
-                borderColor="papayawhip"
-              >
+                borderColor="papayawhip">
                 <RemovePicConfirmation
                   isOpen={isOpen}
                   onClose={onClose}
@@ -200,11 +201,11 @@ export default function EditProfile() {
               />
               <Tooltip hasArrow label="(jpg / jpeg / png) not bigger than 5 MB">
                 <Button
+                  variant="buttonBlack"
                   onClick={() => {
                     profilePicture.current.click();
                   }}
-                  w="full"
-                >
+                  w="full">
                   Change picture
                 </Button>
               </Tooltip>
@@ -214,10 +215,11 @@ export default function EditProfile() {
         <FormControl
           id="fullName"
           isRequired
-          isInvalid={formik.touched.fullName && formik.errors.fullName}
-        >
-          <FormLabel>Full Name</FormLabel>
+          isInvalid={formik.touched.fullName && formik.errors.fullName}>
+          <FormLabel fontFamily="Oswald">Full Name</FormLabel>
           <Input
+            fontFamily="Roboto"
+            borderRadius={0}
             id="fullName"
             name="fullName"
             type="text"
@@ -230,14 +232,14 @@ export default function EditProfile() {
         </FormControl>
         <FormControl
           id="email"
-          isInvalid={formik.touched.email && formik.errors.email}
-        >
-          <FormLabel>Email Address</FormLabel>
+          isInvalid={formik.touched.email && formik.errors.email}>
+          <FormLabel fontFamily="Oswald">Email Address</FormLabel>
           <Tooltip
             hasArrow
-            label="to change email address, please contact our customer service"
-          >
+            label="to change email address, please contact our customer service">
             <Input
+              fontFamily="Roboto"
+              borderRadius={0}
               isDisabled
               id="email"
               name="email"
@@ -253,10 +255,11 @@ export default function EditProfile() {
         <FormControl
           id="phoneNumber"
           isRequired
-          isInvalid={formik.touched.phoneNumber && formik.errors.phoneNumber}
-        >
-          <FormLabel>Phone Number</FormLabel>
+          isInvalid={formik.touched.phoneNumber && formik.errors.phoneNumber}>
+          <FormLabel fontFamily="Oswald">Phone Number</FormLabel>
           <Input
+            fontFamily="Roboto"
+            borderRadius={0}
             id="phoneNumber"
             name="phoneNumber"
             type="text"
@@ -269,29 +272,16 @@ export default function EditProfile() {
         </FormControl>
 
         <Stack spacing={6} direction={["column", "row"]}>
-          <Button
-            onClick={() => navigate(-1)}
-            bg={"red.400"}
-            color={"white"}
-            w="full"
-            _hover={{
-              bg: "red.500",
-            }}
-          >
+          <Button onClick={() => navigate(-1)} w="full" variant="buttonWhite">
             Cancel
           </Button>
           <Button
+            variant="buttonBlack"
             onClick={formik.handleSubmit}
             isLoading={isLoading}
             type="submit"
             loadingText="Saving"
-            bg={"blue.400"}
-            color={"white"}
-            w="full"
-            _hover={{
-              bg: "blue.500",
-            }}
-          >
+            w="full">
             Save
           </Button>
         </Stack>
@@ -301,8 +291,7 @@ export default function EditProfile() {
           <Button
             type="button"
             onClick={() => setShowChangePassword(true)}
-            colorScheme="green"
-          >
+            variant="buttonBlack">
             Change Password
           </Button>
         )}

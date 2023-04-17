@@ -21,44 +21,40 @@ export default function ChangePasswordConfirmation(props) {
         type="submit"
         isLoading={props.isLoading}
         loadingText="Saving"
-        bg={"blue.400"}
-        color={"white"}
-        w="full"
-        _hover={{
-          bg: "blue.500",
-        }}
-      >
-        Save new password
+        variant="buttonBlack"
+        w="full">
+        Save New Password
       </Button>
 
       <>
         <AlertDialog
           isOpen={isOpen}
           leastDestructiveRef={cancelRef}
-          onClose={onClose}
-        >
+          onClose={onClose}>
           <AlertDialogOverlay>
             <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              <AlertDialogHeader
+                fontFamily="Oswald"
+                fontSize="lg"
+                fontWeight="bold">
                 Save new password?
               </AlertDialogHeader>
 
-              <AlertDialogBody>
+              <AlertDialogBody fontFamily="Roboto">
                 Are you sure? You can't undo this action afterwards.
               </AlertDialogBody>
 
               <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
+                <Button variant="buttonWhite" ref={cancelRef} onClick={onClose}>
                   Cancel
                 </Button>
                 <Button
-                  colorScheme="red"
+                  variant="buttonBlack"
                   onClick={() => {
                     props.onSave();
                     onClose();
                   }}
-                  ml={3}
-                >
+                  ml={3}>
                   Save
                 </Button>
               </AlertDialogFooter>
