@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import DeleteProductAlert from "../../components/DeleteProductAlert";
@@ -17,7 +17,7 @@ export default function Cart() {
   const carts = useSelector(cartSelector.selectAll);
   const subtotal = useSelector(getTotalPriceInCart);
   const totalProductsInCart = useSelector(getTotalProductsInCart);
-
+  const [defaultValue, setDefaultValue] = useState({});
   const navigate = useNavigate();
 
   const handleDeleteProduct = (id) => {
@@ -25,7 +25,7 @@ export default function Cart() {
   };
 
   const handleUpdateQuantity = (event, id) => {
-    const inputValue = parseInt(event.target.value, 10);
+    const inputValue = parseInt(event.target.value || 0, 10);
     const minValue = parseInt(event.target.min, 10);
     const maxValue = parseInt(event.target.max, 10);
 
@@ -52,6 +52,14 @@ export default function Cart() {
   useEffect(() => {
     dispatch(getCarts());
   }, [navigate, dispatch]);
+
+  useEffect(() => {
+    const defaultValues = {};
+    carts.forEach((cart) => {
+      defaultValues[cart.id] = cart.quantity;
+    });
+    setDefaultValue(defaultValues);
+  }, [carts]);
 
   return (
     <>
@@ -124,7 +132,7 @@ export default function Cart() {
                             <input
                               className="h-8 w-8 border bg-white text-center text-xs outline-none"
                               type="number"
-                              defaultValue={cart.quantity}
+                              defaultValue={defaultValue[cart.id]}
                               onBlur={(event) => {
                                 handleUpdateQuantity(event, cart.id);
                               }}
