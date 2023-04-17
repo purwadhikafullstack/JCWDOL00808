@@ -388,7 +388,7 @@ function ListOrders() {
                     onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}>
                     Order Details
                   </Button>
-                  <SendOrderModal orders_id={orderData.id} />
+                  <SendOrderModal orders_id={orderData.id} func={getOrders} />
                 </Box>
               </Td>
             </Tr>
@@ -404,19 +404,19 @@ function ListOrders() {
           onPageChange={changePage}
           containerClassName={"flex"}
           pageLinkClassName={
-            "text-sm mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-medium px-4 py-1 rounded-md"
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
           }
           previousLinkClassName={
-            "text-sm mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-medium px-4 py-1 rounded-md"
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
           }
           nextLinkClassName={
-            "text-sm mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-medium px-4 py-1 rounded-md"
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
           }
           activeLinkClassName={
-            "text-sm mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded-md"
+            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           }
           disabledLinkClassName={
-            "text-sm mx-2 bg-gray-300 text-gray-500 font-medium py-1 px-4 rounded-md"
+            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
           }
         />
       </Flex>

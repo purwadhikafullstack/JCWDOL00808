@@ -22,7 +22,6 @@ export default function SendOrderModal(props) {
 
   const sendOrder = async () => {
     try {
-      console.log(token);
       setIsLoading(true);
       const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/cart/order/${orders_id}`,
@@ -36,6 +35,7 @@ export default function SendOrderModal(props) {
         duration: 5000,
         isClosable: true,
       });
+      props.func();
     } catch (error) {
       setIsLoading(false);
       toast({
