@@ -6,6 +6,7 @@ import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/admin/dashboard";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
+import AdminWarehouseNotFound from "./pages/AdminWarehouseNotFound";
 import ProductDetails from "./pages/ProductDetails";
 import AdminList from "./pages/admin/AdminList";
 import AssignAdmin from "./pages/admin/AssignAdmin";
@@ -134,6 +135,10 @@ function App() {
             <Route path="/admin/manageproducts" element={<ManageProducts />} />
             <Route path="/admin/list-orders" element={<ListOrders />} />
             <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
+            <Route
+              path="/warehouse/stock/0"
+              element={<AdminWarehouseNotFound />}
+            />
             <Route path="/warehouse/history" element={<StockHistory />} />
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route
