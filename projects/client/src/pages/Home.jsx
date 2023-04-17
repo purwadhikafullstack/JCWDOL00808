@@ -87,7 +87,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col justify-between w-full">
-      <div className="p-2 md:p-4" /*mt-16 */>
+      <div className="p-2 md:p-4">
         <Carousel
           wrapAround={true}
           autoplay={true}

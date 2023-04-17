@@ -24,6 +24,31 @@ export default function Cart() {
     dispatch(deleteProduct(id));
   };
 
+  const handleUpdateQuantity = (event, id) => {
+    const inputValue = parseInt(event.target.value, 10);
+    const minValue = parseInt(event.target.min, 10);
+    const maxValue = parseInt(event.target.max, 10);
+
+    // Ensure inputValue is within the min and max range
+    let newValue = inputValue;
+    if (inputValue < minValue) {
+      newValue = minValue;
+    } else if (inputValue > maxValue) {
+      newValue = maxValue;
+    }
+
+    // Update the input value to show the reverted value
+    event.target.value = newValue;
+
+    // Dispatch the action after reverting the value
+    dispatch(
+      updateCarts({
+        id,
+        quantity: newValue,
+      })
+    );
+  };
+
   useEffect(() => {
     dispatch(getCarts());
   }, [navigate, dispatch]);
@@ -99,16 +124,11 @@ export default function Cart() {
                             <input
                               className="h-8 w-8 border bg-white text-center text-xs outline-none"
                               type="number"
-                              value={cart.quantity}
-                              onChange={(e) =>
-                                dispatch(
-                                  updateCarts({
-                                    id: cart.id,
-                                    quantity: parseInt(e.target.value, 10),
-                                  })
-                                )
-                              }
-                              min="1"
+                              defaultValue={cart.quantity}
+                              onBlur={(event) => {
+                                handleUpdateQuantity(event, cart.id);
+                              }}
+                              min={1}
                               max={cart.product.totalStock}
                             />
                             <button
