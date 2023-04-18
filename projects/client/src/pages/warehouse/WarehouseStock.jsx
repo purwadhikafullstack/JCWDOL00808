@@ -56,6 +56,8 @@ const WarehouseStock = () => {
 
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("role");
 
   const {
     isOpen: isEditStockOpen,
@@ -223,7 +225,8 @@ const WarehouseStock = () => {
   const fetchWarehouseProducts = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/warehouses/get-warehouse-product/${id}?search_query=${searchTerm}`
+        `http://localhost:8000/warehouses/get-warehouse-product/${id}?search_query=${searchTerm}&role=${userRole}`,
+        { headers: { Authorization: token } }
       );
       // setWarehouseName(response?.[0].warehouse?.name)
       setProducts(response?.data?.data);

@@ -29,10 +29,10 @@ export default function Footer() {
         </div>
         <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-4">
           <div>
-            <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+            <h2 className="font-[Oswald] mb-6 font-semibold text-gray-900 uppercase dark:text-white">
               Menu
             </h2>
-            <ul className="text-gray-600 dark:text-gray-400">
+            <ul className="font-[Roboto] text-gray-600 dark:text-gray-400">
               <li className="mb-4">
                 <Link to="#" className="hover:underline">
                   About Us
@@ -62,16 +62,15 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+            <h2 className="font-[Oswald] mb-6 font-semibold text-gray-900 uppercase dark:text-white">
               Follow us
             </h2>
-            <ul className="text-gray-600 dark:text-gray-400">
+            <ul className="font-[Roboto] text-gray-600 dark:text-gray-400">
               <li className="mb-4">
                 <Link
                   to="http://facebook.com"
                   target="_blank"
-                  className="hover:underline "
-                >
+                  className="hover:underline ">
                   Facebook
                 </Link>
               </li>
@@ -79,8 +78,7 @@ export default function Footer() {
                 <Link
                   to="http://instagram.com"
                   target="_blank"
-                  className="hover:underline "
-                >
+                  className="hover:underline ">
                   Instagram
                 </Link>
               </li>
@@ -88,8 +86,7 @@ export default function Footer() {
                 <Link
                   to="http://tiktok.com"
                   target="_blank"
-                  className="hover:underline "
-                >
+                  className="hover:underline ">
                   Tiktok
                 </Link>
               </li>
@@ -97,18 +94,17 @@ export default function Footer() {
                 <Link
                   to="http://twitter.com"
                   target="_blank"
-                  className="hover:underline"
-                >
+                  className="hover:underline">
                   Twitter
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+            <h2 className="font-[Oswald] mb-6 font-semibold text-gray-900 uppercase dark:text-white">
               Legal
             </h2>
-            <ul className="text-gray-600 dark:text-gray-400">
+            <ul className="font-[Roboto] text-gray-600 dark:text-gray-400">
               <li className="mb-4">
                 <Link to="#" className="hover:underline">
                   Cookies Policy
@@ -127,7 +123,7 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+            <h2 className="font-[Oswald] mb-6 font-semibold text-gray-900 uppercase dark:text-white">
               Install App
             </h2>
             <ul className="inline-block">
@@ -155,7 +151,7 @@ export default function Footer() {
       </div>
       <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
       <div className="sm:flex sm:items-center sm:justify-between">
-        <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+        <span className=" font-[Oswald] text-sm text-gray-500 sm:text-center dark:text-gray-400">
           © 2023{" "}
           <Link to="/" className="hover:underline">
             Big4Commerce™
@@ -166,40 +162,35 @@ export default function Footer() {
           <Link
             to="http://facebook.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-          >
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
             <FaFacebook className="w-5 h-5" />
             <span className="sr-only">Facebook page</span>
           </Link>
           <Link
             to="http://instagram.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-          >
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
             <FaInstagram className="w-5 h-5" />
             <span className="sr-only">Instagram page</span>
           </Link>
           <Link
             to="http://twitter.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-          >
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
             <FaTwitter className="w-5 h-5" />
             <span className="sr-only">Twitter page</span>
           </Link>
           <Link
             to="http://tiktok.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-          >
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
             <FaTiktok className="w-5 h-5" />
             <span className="sr-only">Tiktok account</span>
           </Link>
           <Link
             to="http://youtube.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-          >
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
             <FaYoutube className="w-5 h-5" />
             <span className="sr-only">Youtube account</span>
           </Link>
