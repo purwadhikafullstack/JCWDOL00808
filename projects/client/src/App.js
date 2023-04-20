@@ -44,6 +44,7 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import SuperAdminRoutes from "./utils/SuperAdminRoutes";
 import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
 import ListOrders from "./pages/admin/listOrders";
+import SalesReport from "./pages/admin/salesReport";
 
 function App() {
   const location = useLocation();
@@ -97,6 +98,7 @@ function App() {
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
+            <Route path="/admin/sales-report" element={<SalesReport />} />
           </Route>
 
           {/*Super admin & Warehouse admin's route */}

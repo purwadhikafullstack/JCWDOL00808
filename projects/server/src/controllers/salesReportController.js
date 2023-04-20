@@ -13,6 +13,7 @@ module.exports = {
     try {
       const { email, start_date, end_date, warehouse_filter, category_filter, product_filter } = req.query;
 
+      // Authenticate user
       const authenticatedAdmin = await admin.findOne({
         where: { email: email },
       });
@@ -21,14 +22,17 @@ module.exports = {
         return res.status(401).json({ message: "Invalid Email" });
       }
 
-      const warehouseFilter = authenticatedAdmin.role === "1" && warehouse_filter ? { id: warehouse_filter } : { admins_id: authenticatedAdmin.id };
-
       const startDate = new Date(start_date);
       const endDate = new Date(end_date);
 
+      // Ensure endDate includes the whole day
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
 
+      // Set up filters based on user role and query parameters
+      const warehouseFilter = authenticatedAdmin.role === "1" && warehouse_filter ? { id: warehouse_filter } : { admins_id: authenticatedAdmin.id };
+
+      // Fetch sales data
       let whereCondition = {
         createdAt: {
           [Op.between]: [startDate, endDate],
@@ -39,42 +43,38 @@ module.exports = {
         whereCondition["products_id"] = parseInt(product_filter);
       }
 
-      let salesData = await OrderDetail.findAll({
-        where: whereCondition,
-        include: [
-          {
-            model: Product,
-            as: "product",
-            attributes: ["id", "name", "product_categories_id"],
-          },
-          {
-            model: Order,
-            attributes: [],
-            include: {
-              model: Warehouse,
-              attributes: [],
-              where: warehouseFilter,
-            },
-          },
-        ],
-      });
+      let productInclude = {
+        model: Product,
+        as: "product",
+        attributes: ["id", "name", "product_categories_id"],
+      };
 
-      console.log("Original sales data:", salesData);
-
-      if (product_filter) {
-        console.log("Product filter value:", parseInt(product_filter));
-        salesData = salesData.filter((sale) => {
-          if (sale.product) {
-            console.log("Sale product ID:", sale.product.id);
-            return sale.product.id == parseInt(product_filter);
-          }
-          return false;
-        });
-        console.log("Filtered sales data after product filter:", salesData);
+      if (category_filter) {
+        productInclude.where = { product_categories_id: parseInt(category_filter) };
       }
 
+      let orderInclude = {
+        model: Order,
+        attributes: [],
+      };
+
+      if (warehouse_filter || authenticatedAdmin.role !== "1") {
+        orderInclude.include = {
+          model: Warehouse,
+          attributes: [],
+          where: warehouseFilter,
+        };
+      }
+
+      let salesData = await OrderDetail.findAll({
+        where: whereCondition,
+        include: [productInclude, orderInclude],
+      });
+
+      // Generate report
       const report = generateReport(salesData);
 
+      // Send the report as a response
       res.status(200).json(report);
     } catch (error) {
       console.error(error);
