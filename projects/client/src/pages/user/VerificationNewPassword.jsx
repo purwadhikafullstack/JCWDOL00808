@@ -123,29 +123,30 @@ export default function VerificationNewPassword() {
       w={"full"}
       align={"center"}
       justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-    >
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+      bg={useColorModeValue("gray.50", "gray.800")}>
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} w={"md"}>
         <Stack align={"center"}>
-          <Heading fontSize={"4xl"} textAlign={"center"}>
-            Create new password
+          <Heading fontSize={"4xl"} textAlign={"center"} fontFamily="Oswald">
+            Create New Password
           </Heading>
         </Stack>
         <Box
-          rounded={"lg"}
+          rounded={"none"}
           bg={useColorModeValue("white", "gray.700")}
           boxShadow={"lg"}
-          p={8}
-        >
+          p={8}>
           <Stack spacing={4}>
             <form onSubmit={formik.handleSubmit}>
               <FormControl
+                fontFamily="Roboto"
                 id="email"
                 isReadOnly
-                isInvalid={formik.touched.email && formik.errors.email}
-              >
-                <FormLabel>Email address</FormLabel>
+                isInvalid={formik.touched.email && formik.errors.email}>
+                <FormLabel>Email Address</FormLabel>
                 <Input
+                  textColor={"gray"}
+                  pl={3}
+                  borderRadius="none"
                   id="email"
                   name="email"
                   type="email"
@@ -155,14 +156,17 @@ export default function VerificationNewPassword() {
                 <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
               </FormControl>
               <FormControl
+                fontFamily="Roboto"
+                mt={3}
                 id="password"
                 isRequired
-                isInvalid={formik.touched.password && formik.errors.password}
-              >
+                isInvalid={formik.touched.password && formik.errors.password}>
                 <FormLabel>Password</FormLabel>
                 <InputGroup>
                   <Input
                     id="password"
+                    pl={3}
+                    borderRadius="none"
                     name="password"
                     type={showPassword ? "text" : "password"}
                     onChange={formik.handleChange}
@@ -173,8 +177,7 @@ export default function VerificationNewPassword() {
                       variant={"ghost"}
                       onClick={() =>
                         setShowPassword((showPassword) => !showPassword)
-                      }
-                    >
+                      }>
                       {showPassword ? <ViewIcon /> : <ViewOffIcon />}
                     </Button>
                   </InputRightElement>
@@ -182,16 +185,19 @@ export default function VerificationNewPassword() {
                 <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
               </FormControl>
               <FormControl
+                mt={3}
                 id="confirmPassword"
+                fontFamily="Roboto"
                 isRequired
                 isInvalid={
                   formik.touched.confirmPassword &&
                   formik.errors.confirmPassword
-                }
-              >
-                <FormLabel>Confirm password</FormLabel>
+                }>
+                <FormLabel>Confirm Password</FormLabel>
                 <InputGroup>
                   <Input
+                    pl={3}
+                    borderRadius="none"
                     id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -205,8 +211,7 @@ export default function VerificationNewPassword() {
                         setShowConfirmPassword(
                           (showConfirmPassword) => !showConfirmPassword
                         )
-                      }
-                    >
+                      }>
                       {showConfirmPassword ? <ViewIcon /> : <ViewOffIcon />}
                     </Button>
                   </InputRightElement>
@@ -218,17 +223,11 @@ export default function VerificationNewPassword() {
 
               <Stack spacing={10} pt={2}>
                 <Button
+                  variant="buttonBlack"
                   isLoading={isLoading}
                   type="submit"
-                  loadingText="Submitting"
-                  size="md"
-                  bg={"blue.400"}
-                  color={"white"}
-                  _hover={{
-                    bg: "blue.500",
-                  }}
-                >
-                  Create new password
+                  loadingText="Submitting">
+                  Create New Password
                 </Button>
               </Stack>
             </form>
