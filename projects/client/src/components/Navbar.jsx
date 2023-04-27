@@ -132,9 +132,9 @@ export default function Navbar() {
             </ul>
             <Modal isOpen={isOpen} onClose={onClose}>
               <ModalOverlay />
-              <ModalContent className="w-min">
+              <ModalContent className="w-min rounded-none">
                 <ModalCloseButton />
-                <ModalBody className="">
+                <ModalBody className="rounded-none">
                   <LoginModal onClose={onClose} />
                 </ModalBody>
                 <ModalFooter></ModalFooter>

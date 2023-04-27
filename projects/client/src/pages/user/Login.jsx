@@ -91,19 +91,22 @@ const Login = () => {
   return (
     <div className="flex justify-start items-center flex-col h-screen w-full">
       <Flex
-        minH={"80vh"}
+        minH={"100vh"}
         w={"full"}
         align={"center"}
         justify={"center"}
         bg={useColorModeValue("gray.50", "gray.800")}>
-        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} w={"md"}>
           <Stack align={"center"}>
-            <Heading fontSize={"4xl"} textAlign={"center"}>
+            <Heading
+              fontSize={"4xl"}
+              textAlign={"center"}
+              fontFamily={"Oswald"}>
               Login
             </Heading>
           </Stack>
           <Box
-            rounded={"lg"}
+            rounded={"none"}
             bg={useColorModeValue("white", "gray.700")}
             boxShadow={"lg"}
             p={8}>
@@ -132,7 +135,7 @@ const Login = () => {
                   id="password"
                   isRequired
                   isInvalid={formik.touched.password && formik.errors.password}>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel mt={3}>Password</FormLabel>
                   <InputGroup size="md">
                     <Input
                       pl={3}

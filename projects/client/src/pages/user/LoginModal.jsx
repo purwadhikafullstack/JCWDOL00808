@@ -90,23 +90,27 @@ const LoginModal = ({ onClose }) => {
   });
 
   return (
-    <div className="flex justify-start items-center flex-col">
+    <div className="flex justify-start items-center flex-col rounded-none">
       <Flex
         w={"full"}
+        rounded={"none"}
         align={"center"}
         justify={"center"}
         bg={useColorModeValue("white", "gray.800")}>
-        <Stack spacing={8} mx={"auto"}>
+        <Stack spacing={8} mx={"auto"} rounded={"none"}>
           <Stack align={"center"}>
             <Heading
-              fontFamily="Roboto"
+              fontFamily="Oswald"
               pt={8}
               fontSize={"4xl"}
               textAlign={"center"}>
               Login
             </Heading>
           </Stack>
-          <Box rounded={"lg"} bg={useColorModeValue("white", "gray.700")} p={8}>
+          <Box
+            rounded={"none"}
+            bg={useColorModeValue("white", "gray.700")}
+            p={8}>
             <Stack spacing={4}>
               <form onSubmit={formik.handleSubmit}>
                 <FormControl
@@ -172,7 +176,10 @@ const LoginModal = ({ onClose }) => {
                   </Link>
                 </Stack>
                 <Stack pt={6}>
-                  <Text align={"center"} variant="linkText">
+                  <Text
+                    align={"center"}
+                    variant="linkText"
+                    fontFamily={"Roboto"}>
                     <Link
                       // fontFamily="Roboto"
                       // className="text-gray-600 dark:text-gray-400"
