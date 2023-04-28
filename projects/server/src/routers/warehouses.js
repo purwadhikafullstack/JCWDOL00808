@@ -10,11 +10,11 @@ route.delete("/deleteWarehouseData", warehousesController.deleteWarehouseData);
 route.get("/getProvinceData", warehousesController.getProvinceData);
 route.get("/getCityData", warehousesController.getCityData);
 route.get("/getCostData", warehousesController.getCostData);
-route.get("/getWarehouseDetails/:id", warehousesController.getWarehouseDetails)
-route.post("/add-warehouse-product/:id", warehousesController.addWarehouseProduct)
-route.get("/get-warehouse-product/:id", warehousesController.getWarehouseProduct)
-route.patch("/update-stock-product/:id", warehousesController.updateWarehouseProduct)
-route.get("/get-warehouse-product/:id", warehousesController.getWarehouseProductById)
-route.delete("/delete-warehouse-product/:id", warehousesController.deleteWarehouseProduct)
+route.get("/getWarehouseDetails", warehousesController.getWarehouseDetails);
+route.post("/add-warehouse-product/:id", warehousesController.addWarehouseProduct);
+route.get("/get-warehouse-product/:id", warehousesController.getWarehouseProduct);
+route.patch("/update-stock-product/:id", warehousesController.updateWarehouseProduct);
+route.get("/get-warehouse-product/:id", warehousesController.getWarehouseProductById);
+route.delete("/delete-warehouse-product/:id", warehousesController.deleteWarehouseProduct);
 
 module.exports = route;

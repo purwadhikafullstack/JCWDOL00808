@@ -21,6 +21,7 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   useDisclosure,
+  Flex,
   FormControl,
   FormLabel,
   FormErrorMessage,
@@ -38,19 +39,10 @@ import {
   ModalBody,
   ModalCloseButton,
   Select,
+  VStack,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Heading,
-  Stack,
-  StackDivider,
-  Box,
-  Text,
-} from "@chakra-ui/react";
+import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
 import Axios from "axios";
 import { API_url } from "../../helper";
 import { useEffect, useState, useRef } from "react";
@@ -89,10 +81,7 @@ const WarehouseList = (props) => {
   const [district, setDistrict] = React.useState("");
 
   const getWarehouseData = () => {
-    Axios.get(
-      API_url +
-        `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`
-    )
+    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
       .then((response) => {
         console.log(response.data);
         setTotalPage(response.data.totalPage);
@@ -226,165 +215,189 @@ const WarehouseList = (props) => {
       });
   };
 
-  const buttonEditWarehouse = () => {
-    Axios.patch(API_url + `/warehouses/updateWarehouseData`, {
-      id: warehouseId,
-      name,
-      address,
-      province,
-      city,
-      district,
-    })
-      .then((response) => {
-        console.log(response.data);
-        toast({
-          title: `${response.data.message}`,
-          status: "success",
-          duration: 9000,
-          onCloseComplete: () => getWarehouseData(),
-        });
-      })
-      .catch((err) => console.log(err));
-  };
+  // const buttonEditWarehouse = () => {
+  //   Axios.patch(API_url + `/warehouses/updateWarehouseData`, {
+  //     id: warehouseId,
+  //     name,
+  //     address,
+  //     province,
+  //     city,
+  //     district,
+  //   })
+  //     .then((response) => {
+  //       console.log(response.data);
+  //       toast({
+  //         title: `${response.data.message}`,
+  //         status: "success",
+  //         duration: 9000,
+  //         onCloseComplete: () => getWarehouseData(),
+  //       });
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
   return (
     <>
-      <Container className="my-5" maxW={600}>
-        <FormControl>
-          <FormLabel>Search</FormLabel>
-          <Input placeholder="type warehouse name, city, or province..." className="mb-5" onChange={(element) => setSearch(element.target.value)} />
-          <Button onClick={handleSearchButton}>Search</Button>
-        </FormControl>
-        <FormControl>
-          <FormLabel>Sort data by:</FormLabel>
-          <RadioGroup>
-            <HStack spacing="24px">
-              <Radio value="name" onChange={(element) => setSort(element.target.value)}>
-                Name
-              </Radio>
-              <Radio value="province" onChange={(element) => setSort(element.target.value)}>
-                Province
-              </Radio>
-              <Radio value="city" onChange={(element) => setSort(element.target.value)}>
-                City
-              </Radio>
-              <Radio value="updatedAt" onChange={(element) => setSort(element.target.value)}>
-                Date added
-              </Radio>
-              <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
-                <option value="ASC">Ascending</option>
-                <option value="DESC">Descending</option>
-              </Select>
-            </HStack>
-          </RadioGroup>
-        </FormControl>
-      </Container>
-      <TableContainer className="my-5">
-        <Table size="sm">
-          <Thead>
-            <Tr>
-              <Th>No.</Th>
-              <Th>Warehouse Name</Th>
-              <Th>Address</Th>
-              <Th>Province</Th>
-              <Th>City</Th>
-              <Th isNumeric className="mr-5">
-                Action
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>{showWarehouseData()}</Tbody>
-        </Table>
-      </TableContainer>
-      <div className="mt-5 flex items-center justify-center">
-        <ReactPaginate
-          previousLabel={"< Previous"}
-          nextLabel={"Next >"}
-          breakLabel={"..."}
-          pageCount={totalPage}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={2}
-          onPageChange={handlePageClick}
-          containerClassName={"flex"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-        />
-      </div>
-      <Button colorScheme="orange" className="my-5" onClick={onAddOpen}>
-        Add new warehouse
-      </Button>
-      <Modal isOpen={isAddOpen} onClose={onAddClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Add new warehouse</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <div className="mt-4 text-muted fw-bold text-start">
-              <Text fontSize="md">Name</Text>
-              <Input placeholder="Warehouse name" size="md" onChange={(element) => setName(element.target.value)} />
+      <Flex direction="column" alignItems="center">
+        <Box className="my-5">
+          <Flex>
+            <Card maxW="lg">
+              <CardBody>
+                <FormControl>
+                  <FormLabel>Search</FormLabel>
+                  <Input placeholder="warehouse name, city, or province..." className="mb-5" onChange={(element) => setSearch(element.target.value)} />
+                  <Button onClick={handleSearchButton}>Search</Button>
+                </FormControl>
+              </CardBody>
+            </Card>
+            <Card>
+              <CardBody>
+                <FormControl>
+                  <FormLabel>Sort data by:</FormLabel>
+                  {/* <RadioGroup> */}
+                  {/* <HStack spacing="24px"> */}
+                  {/* <Radio value="name" onChange={(element) => setSort(element.target.value)}>
+                        Name
+                      </Radio>
+                      <Radio value="province" onChange={(element) => setSort(element.target.value)}>
+                        Province
+                      </Radio>
+                      <Radio value="city" onChange={(element) => setSort(element.target.value)}>
+                        City
+                      </Radio>
+                      <Radio value="updatedAt" onChange={(element) => setSort(element.target.value)}>
+                        Date added
+                      </Radio> */}
+                  <VStack>
+                    <Select placeholder="Select option" onChange={(element) => setSort(element.target.value)}>
+                      <option value="name">Warehouse name</option>
+                      <option value="province">Province</option>
+                      <option value="city">City</option>
+                      <option value="updatedAt">Date added</option>
+                    </Select>
+                    <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
+                      <option value="ASC">Ascending</option>
+                      <option value="DESC">Descending</option>
+                    </Select>
+                  </VStack>
+                  {/* </HStack> */}
+                  {/* </RadioGroup> */}
+                </FormControl>
+              </CardBody>
+            </Card>
+          </Flex>
+        </Box>
+        <Card>
+          <CardBody>
+            <TableContainer className="my-5">
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>No.</Th>
+                    <Th>Warehouse Name</Th>
+                    <Th>Address</Th>
+                    <Th>Province</Th>
+                    <Th>City</Th>
+                    <Th isNumeric className="mr-5">
+                      Action
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{showWarehouseData()}</Tbody>
+              </Table>
+            </TableContainer>
+          </CardBody>
+        </Card>
+        <div className="mt-5 flex items-center justify-center">
+          <ReactPaginate
+            previousLabel={"< Previous"}
+            nextLabel={"Next >"}
+            breakLabel={"..."}
+            pageCount={totalPage}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={2}
+            onPageChange={handlePageClick}
+            containerClassName={"flex"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          />
+        </div>
+        <Button size="md" colorScheme="orange" className="my-5" onClick={onAddOpen}>
+          Add new warehouse
+        </Button>
+        <Modal isOpen={isAddOpen} onClose={onAddClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add new warehouse</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
               <div className="mt-4 text-muted fw-bold text-start">
-                <Text fontSize="md">Address</Text>
-                <InputGroup size="md">
-                  <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
-                </InputGroup>
+                <Text fontSize="md">Name</Text>
+                <Input placeholder="Warehouse name" size="md" onChange={(element) => setName(element.target.value)} />
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">Address</Text>
+                  <InputGroup size="md">
+                    <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
+                  </InputGroup>
+                </div>
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">Province</Text>
+                  <Select
+                    placeholder="Select province"
+                    onChange={(element) => {
+                      setProvince(element.target.value.split(",")[1]);
+                      onGetCity(element.target.value.split(",")[0]);
+                    }}
+                  >
+                    {provinceData.map((value) => {
+                      return (
+                        <option value={value.province_id + "," + value.province} key={value.province_id}>
+                          {value.province}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                </div>
               </div>
-              <div className="mt-4 text-muted fw-bold text-start">
-                <Text fontSize="md">Province</Text>
-                <Select
-                  placeholder="Select province"
-                  onChange={(element) => {
-                    setProvince(element.target.value.split(",")[1]);
-                    onGetCity(element.target.value.split(",")[0]);
-                  }}
-                >
-                  {provinceData.map((value) => {
-                    return (
-                      <option value={value.province_id + "," + value.province} key={value.province_id}>
-                        {value.province}
-                      </option>
-                    );
-                  })}
-                </Select>
+              <div>
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">City</Text>
+                  <Select placeholder="Select city" value={city} onChange={(element) => setCity(element.target.value)}>
+                    {cityData.map((value) => {
+                      return (
+                        <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                          {value.type} {value.city_name}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                </div>
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">District (Kecamatan)</Text>
+                  <Input placeholder="Input district" onChange={(element) => setDistrict(element.target.value)}></Input>
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="mt-4 text-muted fw-bold text-start">
-                <Text fontSize="md">City</Text>
-                <Select placeholder="Select city" value={city} onChange={(element) => setCity(element.target.value)}>
-                  {cityData.map((value) => {
-                    return (
-                      <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
-                        {value.type} {value.city_name}
-                      </option>
-                    );
-                  })}
-                </Select>
-              </div>
-              <div className="mt-4 text-muted fw-bold text-start">
-                <Text fontSize="md">District (Kecamatan)</Text>
-                <Input placeholder="Input district" onChange={(element) => setDistrict(element.target.value)}></Input>
-              </div>
-            </div>
-          </ModalBody>
+            </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onAddClose}>
-              Close
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                onAddClose();
-                buttonAddWarehouse();
-              }}
-            >
-              Add warehouse data
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} onClick={onAddClose}>
+                Close
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  onAddClose();
+                  buttonAddWarehouse();
+                }}
+              >
+                Add warehouse data
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Flex>
     </>
   );
 };

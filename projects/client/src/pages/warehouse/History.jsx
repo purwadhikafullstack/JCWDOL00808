@@ -41,74 +41,48 @@ const History = () => {
   const [order, setOrder] = useState("ASC");
   const [search, setSearch] = useState("");
   const [keyword, setKeyword] = useState("");
+  const [month, setMonth] = useState(0);
 
-  const [warehouseData, setWarehouseData] = useState([]);
-  const [productsData, setProductsData] = useState([]);
-  const [sortProductsId, setSortProductsId] = useState(0);
-  const [sortWarehouseId, setSortWarehouseId] = useState(0);
-  const [sortMonth, setSortMonth] = useState(0);
-  const [sortYear, setSortYear] = useState(0);
+  // const [warehouseData, setWarehouseData] = useState([]);
+  // const [productsData, setProductsData] = useState([]);
+  // const [sortProductsId, setSortProductsId] = useState(0);
+  // const [sortWarehouseId, setSortWarehouseId] = useState(0);
+  // const [sortYear, setSortYear] = useState(0);
 
   const [stockHistories, setStockHistories] = useState([]);
 
   const { isOpen: isPlusOpen, onOpen: onPlusOpen, onClose: onPlusClose } = useDisclosure();
   const { isOpen: isMinOpen, onOpen: onMinOpen, onClose: onMinClose } = useDisclosure();
 
-  const getWarehouseData = () => {
-    Axios.get(API_url + `/warehouses/getAllWarehouse`)
-      .then((response) => {
-        console.log(response.data);
-        setWarehouseData(response.data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const getProductsData = () => {
-    Axios.get(API_url + `/histories/getAllProducts`).then((response) => {
-      console.log(response.data);
-      setProductsData(response.data);
-    });
-  };
-
-  const autoGetStock = () => {
-    Axios.get(API_url + `/histories/autoGetStock`).then((response) => {
-      console.log("autoGetStock: ", response.data);
-      setStockHistories(response.data);
-    });
-  };
-
-  const getStockHistories = () => {
-    Axios.get(API_url + `/histories/getStockHistories?sortProductsId=${sortProductsId}&sortWarehouseId=${sortWarehouseId}&sortMonth=${sortMonth}&sortYear=${sortYear}`)
-      .then((response) => {
-        console.log(response.data);
-        setStockHistories(response.data);
-      })
-      .catch((error) => console.log(error));
-  };
-
   const getHistoryData = () => {
-    Axios.get(API_url + `/histories/getHistoryData?sortProductsId=${sortProductsId}&sortWarehouseId=${sortWarehouseId}&sortMonth=${sortMonth}&sortYear=${sortYear}`)
+    Axios.get(API_url + `/histories/getHistoryData?sort=${sort}&order=${order}&keyword=${keyword}&month=${month}`)
       .then((response) => {
         console.log(response.data);
-        setStockHistories(response.data);
+        setStockHistories(response.data.rows);
       })
       .catch((error) => console.log(error));
   };
 
   useEffect(() => {
-    getHistoryData();
-  }, [sort, order, keyword]);
-
-  useEffect(() => {
-    // getWarehouseData();
-    // getProductsData();
     // getStockHistories();
-    autoGetStock();
-  }, []);
+    getHistoryData();
+  }, [sort, month, order, keyword]);
 
-  const handleFilterButton = () => {
-    getStockHistories();
+  const handleSearchButton = () => {
+    setKeyword(search);
   };
+
+  const handleResetButton = () => {
+    setKeyword("");
+  };
+
+  // const getStockHistories = () => {
+  //   Axios.get(API_url + `/histories/getStockHistories?sortMonth=${sortMonth}`)
+  //     .then((response) => {
+  //       console.log(response.data);
+  //     })
+  //     .catch((error) => console.log(error));
+  // };
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {
@@ -189,24 +163,24 @@ const History = () => {
 
   return (
     <>
-      <Flex bg="gray.100">
-        <Box mx="100" my="100">
+      <Flex bg="gray.100" px="0">
+        <Box mx="100" mt="100">
           <Card maxW="xs" border="1px" borderColor="gray.200">
             <CardBody>
               <VStack>
                 <FormControl>
                   <FormLabel>Sort data by:</FormLabel>
-                  <Select placeholder="Select option">
-                    <option value="option1">Warehouse name</option>
-                    <option value="option2">Product name</option>
-                    <option value="option3">Month</option>
+                  <Select placeholder="Select option" onChange={(element) => setSort(element.target.value)}>
+                    <option value="id">ID</option>
+                    <option value="product">Product name</option>
+                    <option value="warehouse">Warehouse name</option>
                   </Select>
                 </FormControl>
                 <FormControl>
                   <FormLabel>Order</FormLabel>
-                  <Select placeholder="Select option">
-                    <option value="option1">Ascending</option>
-                    <option value="option2">Descending</option>
+                  <Select placeholder="Select option" onChange={(element) => setOrder(element.target.value)}>
+                    <option value="ASC">Ascending</option>
+                    <option value="DESC">Descending</option>
                   </Select>
                   {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
                 </FormControl>
@@ -215,11 +189,35 @@ const History = () => {
           </Card>
           <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
             <CardBody>
+              <FormControl>
+                <FormLabel>Filter data by month:</FormLabel>
+                <Select placeholder="Select month" onChange={(element) => setMonth(element.target.value)}>
+                  <option value={1}>January</option>
+                  <option value={2}>February</option>
+                  <option value={3}>March</option>
+                  <option value={4}>April</option>
+                  <option value={5}>Mei</option>
+                  <option value={6}>June</option>
+                  <option value={7}>July</option>
+                  <option value={8}>August</option>
+                  <option value={9}>September</option>
+                  <option value={10}>October</option>
+                  <option value={11}>November</option>
+                  <option value={12}>December</option>
+                </Select>
+              </FormControl>
+            </CardBody>
+          </Card>
+          <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
+            <CardBody>
               <VStack>
                 <FormControl>
                   <FormLabel>Search:</FormLabel>
-                  <Input placeholder="search" />
-                  <Button colorScheme="blue" mt="25">
+                  <Input placeholder="type warehouse or product name..." onChange={(element) => setSearch(element.target.value)} />
+                  <Button colorScheme="blue" mt="25" mr="25" onClick={handleResetButton}>
+                    Reset
+                  </Button>
+                  <Button colorScheme="blue" mt="25" onClick={handleSearchButton}>
                     Search
                   </Button>
                   {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
