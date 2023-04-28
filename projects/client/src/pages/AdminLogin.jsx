@@ -1,13 +1,4 @@
-import {
-  Input,
-  InputGroup,
-  InputRightElement,
-  Box,
-  Spacer,
-  Button,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Input, InputGroup, InputRightElement, Box, Spacer, Button, Text, useToast, FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
 import React from "react";
 import { useState } from "react";
 import Axios from "axios";
@@ -16,23 +7,24 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginAction } from "../actions/adminsAction";
 import { useFormik } from "formik";
+import * as yup from "yup";
 
 const AdminLogin = (props) => {
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
 
-  const [inputEmail, setInputEmail] = React.useState("");
-  const [inputPassword, setInputPassword] = React.useState("");
+  // const [inputEmail, setInputEmail] = React.useState("");
+  // const [inputPassword, setInputPassword] = React.useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const toast = useToast();
 
-  const loginButton = () => {
+  const loginButton = (values) => {
     Axios.post(API_url + "/admins/login", {
-      email: inputEmail,
-      password: inputPassword,
+      email: values.email,
+      password: values.password,
     })
       .then((response) => {
         console.log("response:", response.data);
@@ -51,9 +43,7 @@ const AdminLogin = (props) => {
             duration: 9000,
             isClosable: true,
           });
-          setTimeout(
-            () => (navigate("/admin/dashboard", { replace: true }), 2000)
-          );
+          setTimeout(() => (navigate("/admin/dashboard", { replace: true }), 2000));
         } else {
           toast({
             title: `${response.data.message}`,
@@ -72,45 +62,54 @@ const AdminLogin = (props) => {
       });
   };
 
-  // const formik = useFormik({
-  //   initialValues: {
-  //     email: "",
-  //   }
-  // })
+  const handleSubmit = () => {
+    // alert("siap login kk")
+    alert("Form submitted!");
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: yup.object().shape({
+      email: yup.string().required("E-mail address is required").email(),
+      password: yup
+        .string()
+        .required("Password is required")
+    }),
+    onSubmit: (values, actions) => {
+      loginButton(values);
+      actions.resetForm();
+    },
+  });
 
   return (
     <>
       <div className="flex justify-center items-center h-screen w-full">
         <Box w={[300, 400, 500]} className="shadow p-5">
-          <Text className="font-bold" fontSize="4xl">
-            Login as admin
-          </Text>
-          <Text className="mt-3" fontSize="lg">
-            e-mail
-          </Text>
-          <Input
-            placeholder="Enter your.email@mail.com"
-            // value={formik.values.email}
-            // onChange={formik.handleChange}
-            onChange={(element) => setInputEmail(element.target.value)}
-          />
-          <Text fontSize="lg">Password</Text>
-          <InputGroup size="md">
-            <Input
-              pr="4.5rem"
-              type={show ? "text" : "password"}
-              placeholder="Enter password"
-              onChange={(element) => setInputPassword(element.target.value)}
-            />
-            <InputRightElement width="4.5rem">
-              <Button h="1.75rem" size="sm" onClick={handleClick}>
-                {show ? "Hide" : "Show"}
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          <Button className="mt-5" colorScheme="twitter" onClick={loginButton}>
-            Login
-          </Button>
+          <form onSubmit={formik.handleSubmit}>
+            <FormControl isInvalid={formik.errors.email && formik.touched.email}>
+              <FormLabel>E-mail address</FormLabel>
+              <Input id="email" value={formik.values.email} onChange={formik.handleChange} />
+              <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={formik.errors.password && formik.touched.password}>
+              <FormLabel>Password</FormLabel>
+              <InputGroup>
+                <Input id="password" value={formik.values.password} onChange={formik.handleChange} />
+                <InputRightElement width="4.5rem">
+                  <Button h="1.75rem" size="sm" onClick={handleClick}>
+                    {show ? "Hide" : "Show"}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+              <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
+            </FormControl>
+            <Button colorScheme="twitter" type="submit">
+              Login
+            </Button>
+          </form>
         </Box>
       </div>
     </>

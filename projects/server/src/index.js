@@ -72,12 +72,7 @@ app.use(express.json());
 
 //Import router for controller from index.js inside routers folder
 
-const { usersRouter, authRouter, adminsRouter, warehousesRouter, adminRouter, productsRouter, productRouter, productCategoryRouter, cartsRouter, addressesRouter, stockMutationRouter, historiesRouter, ordersRouter <<<<<<< HEAD
-  confirmOrderRouter,
-=======
->>>>>>> parent of 03ec29f (moved to branch feature/payment-proof)
-  ordersRouter,
-} = require("./routers"); //refer to index.js in routers folder
+const { usersRouter, authRouter, adminsRouter, warehousesRouter, adminRouter, productsRouter, productRouter, productCategoryRouter, cartsRouter, addressesRouter, stockMutationRouter, historiesRouter, ordersRouter, confirmOrderRouter} = require("./routers"); //refer to index.js in routers folder
 
 app.use("/user", usersRouter);
 app.use("/auth", authRouter);

@@ -35,7 +35,6 @@ import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import StockHistory from "./pages/warehouse/StockHistory";
 import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
 import WarehouseList from "./pages/warehouse/WarehouseList";
-import OrderList from "./pages/user/OrderList";
 import WarehouseStock from "./pages/warehouse/WarehouseStock";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -49,8 +48,8 @@ import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
 import ListOrders from "./pages/admin/listOrders";
 import OrderList from "./pages/user/OrderList";
 import UploadPaymentProof from "./pages/user/UploadPaymentProof";
-// import "@fontsource/oswald/500.css";
-// import "@fontsource/roboto/400.css";
+import "@fontsource/oswald/500.css";
+import "@fontsource/roboto/400.css";
 
 function App() {
   const location = useLocation();
@@ -61,9 +60,7 @@ function App() {
     <div className="App">
       {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
       {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Navbar />}
-      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Navbar />}
       <div className="flex justify-between">
-        {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : null}
         {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : null}
 
         <Routes>
@@ -77,10 +74,9 @@ function App() {
           <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
           <Route path="/user/login" element={<Login />} />
           <Route path="/user/reset-password" element={<ResetPassword />} />
-          
+
           {/* sementara aja: */}
           <Route path="/user/order-list" element={<OrderList />} />
-
 
           {/*Protected user's route */}
           <Route element={<ProtectedRoutes />}>
@@ -140,7 +136,6 @@ function App() {
       </div>
 
       {/*User path will have footer */}
-      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Footer />}
       {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Footer />}
       <Toaster />
     </div>
