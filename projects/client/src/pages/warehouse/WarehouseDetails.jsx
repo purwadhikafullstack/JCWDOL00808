@@ -28,10 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  Box,
-  HStack,
 } from "@chakra-ui/react";
-import { BiArrowBack } from "react-icons/bi";
 import { useState, useEffect } from "react";
 import { API_url } from "../../helper";
 import Axios from "axios";
@@ -153,138 +150,134 @@ const WarehouseDetails = () => {
   };
 
   return (
-    <Box w="50%" bg="gray.100">
-      <Card maxW="lg">
-        <CardBody>
-          <Image src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg" alt="Green double couch with wooden legs" borderRadius="lg" />
-          <Stack mt="6" spacing="3">
-            <Heading size="md">Warehouse name: {name}</Heading>
-            <Text size="sm">Address: {address}</Text>
-            <Text color="blue.600" size="sm">
-              {city}, {province}
-            </Text>
-          </Stack>
-        </CardBody>
-        <Divider />
-        <CardFooter>
-          <ButtonGroup spacing="6">
-            
+    <Card maxW="sm" style={{ marginInline: 525, marginTop: 80 }}>
+      <CardBody>
+        <Image src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg" alt="Green double couch with wooden legs" borderRadius="lg" />
+        <Stack mt="6" spacing="3">
+          <Heading size="md">Warehouse {name}</Heading>
+          <Text size="sm">Warehouse address: {address}</Text>
+          <Text color="blue.600" size="sm">
+            {city}, {province}
+          </Text>
+        </Stack>
+      </CardBody>
+      <Divider />
+      <CardFooter>
+        <ButtonGroup spacing="7">
+          <Button variant="solid" onClick={() => navigate("/warehouse/list", { replace: true })}>
+            Back
+          </Button>
+          <Button
+            colorScheme="blue"
+            className="mr-2"
+            onClick={() => {
+              // setWarehouseId(value.id);
+              onEditOpen();
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            colorScheme="red"
+            onClick={() => {
+              onAlertOpen();
+            }}
+          >
+            Delete
+          </Button>
+          <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Delete Warehouse
+                </AlertDialogHeader>
 
-            <Button variant="solid" onClick={() => navigate("/warehouse/list", { replace: true })}>
-              <BiArrowBack />
-            </Button>
-            <Button
-              colorScheme="blue"
-              onClick={() => {
-                // setWarehouseId(value.id);
-                onEditOpen();
-              }}
-            >
-              Edit warehouse data
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={() => {
-                onAlertOpen();
-              }}
-            >
-              Delete warehouse data
-            </Button>
-            <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
-              <AlertDialogOverlay>
-                <AlertDialogContent>
-                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                    Delete Warehouse
-                  </AlertDialogHeader>
+                <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
 
-                  <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
-
-                  <AlertDialogFooter>
-                    <Button ref={cancelRef} onClick={onAlertClose}>
-                      Cancel
-                    </Button>
-                    <Button colorScheme="red" onClick={deleteButton} ml={3}>
-                      Delete
-                    </Button>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialogOverlay>
-            </AlertDialog>
-            <Modal isOpen={isEditOpen} onClose={onEditClose}>
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Edit warehouse data</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onAlertClose}>
+                    Cancel
+                  </Button>
+                  <Button colorScheme="red" onClick={deleteButton} ml={3}>
+                    Delete
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
+          <Modal isOpen={isEditOpen} onClose={onEditClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Edit warehouse data</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">Name</Text>
+                  <Input placeholder={detailsName} size="md" onChange={(element) => setName(element.target.value)} />
                   <div className="mt-4 text-muted fw-bold text-start">
-                    <Text fontSize="md">Name</Text>
-                    <Input placeholder={detailsName} size="md" onChange={(element) => setName(element.target.value)} />
-                    <div className="mt-4 text-muted fw-bold text-start">
-                      <Text fontSize="md">Address</Text>
-                      <InputGroup size="md">
-                        <Input pr="4.5rem" placeholder={detailsAddress} onChange={(element) => setAddress(element.target.value)} />
-                      </InputGroup>
-                    </div>
-                    <div className="mt-4 text-muted fw-bold text-start">
-                      <Text fontSize="md">Province</Text>
-                      <Select
-                        placeholder={detailsProvince}
-                        onChange={(element) => {
-                          setProvince(element.target.value.split(",")[1]);
-                          onGetCity(element.target.value.split(",")[0]);
-                        }}
-                      >
-                        {provinceData.map((value) => {
-                          return (
-                            <option value={value.province_id + "," + value.province} key={value.province_id}>
-                              {value.province}
-                            </option>
-                          );
-                        })}
-                      </Select>
-                    </div>
+                    <Text fontSize="md">Address</Text>
+                    <InputGroup size="md">
+                      <Input pr="4.5rem" placeholder={detailsAddress} onChange={(element) => setAddress(element.target.value)} />
+                    </InputGroup>
                   </div>
-                  <div>
-                    <div className="mt-4 text-muted fw-bold text-start">
-                      <Text fontSize="md">City</Text>
-                      <Select className="text-muted" placeholder={detailsCity} value={city} onChange={(element) => setCity(element.target.value)}>
-                        {cityData.map((value) => {
-                          return (
-                            <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
-                              {value.type} {value.city_name}
-                            </option>
-                          );
-                        })}
-                      </Select>
-                    </div>
-                    <div className="mt-4 text-muted fw-bold text-start">
-                      <Text fontSize="md">District (Kecamatan)</Text>
-                      <Input placeholder={detailsDistrict} onChange={(element) => setDistrict(element.target.value)}></Input>
-                    </div>
+                  <div className="mt-4 text-muted fw-bold text-start">
+                    <Text fontSize="md">Province</Text>
+                    <Select
+                      placeholder={detailsProvince}
+                      onChange={(element) => {
+                        setProvince(element.target.value.split(",")[1]);
+                        onGetCity(element.target.value.split(",")[0]);
+                      }}
+                    >
+                      {provinceData.map((value) => {
+                        return (
+                          <option value={value.province_id + "," + value.province} key={value.province_id}>
+                            {value.province}
+                          </option>
+                        );
+                      })}
+                    </Select>
                   </div>
-                </ModalBody>
+                </div>
+                <div>
+                  <div className="mt-4 text-muted fw-bold text-start">
+                    <Text fontSize="md">City</Text>
+                    <Select className="text-muted" placeholder={detailsCity} value={city} onChange={(element) => setCity(element.target.value)}>
+                      {cityData.map((value) => {
+                        return (
+                          <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                            {value.type} {value.city_name}
+                          </option>
+                        );
+                      })}
+                    </Select>
+                  </div>
+                  <div className="mt-4 text-muted fw-bold text-start">
+                    <Text fontSize="md">District (Kecamatan)</Text>
+                    <Input placeholder={detailsDistrict} onChange={(element) => setDistrict(element.target.value)}></Input>
+                  </div>
+                </div>
+              </ModalBody>
 
-                <ModalFooter>
-                  <Button mr={3} onClick={onEditClose}>
-                    Close
-                  </Button>
-                  <Button
-                    colorScheme="blue"
-                    onClick={() => {
-                      onEditClose();
-                      buttonEditWarehouse();
-                    }}
-                  >
-                    Edit warehouse data
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
-            
-          </ButtonGroup>
-        </CardFooter>
-      </Card>
-    </Box>
+              <ModalFooter>
+                <Button mr={3} onClick={onEditClose}>
+                  Close
+                </Button>
+                <Button
+                  colorScheme="blue"
+                  onClick={() => {
+                    onEditClose();
+                    buttonEditWarehouse();
+                  }}
+                >
+                  Edit warehouse data
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </ButtonGroup>
+      </CardFooter>
+    </Card>
   );
 };
 
