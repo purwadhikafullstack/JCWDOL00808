@@ -66,13 +66,11 @@ const authSlice = createSlice({
       state.token = action.payload.data.token;
       state.user = action.payload.data.user;
       state.message = action.payload.message;
-      toast.success(state.message);
     },
     [userLogin.rejected]: (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.message = action.payload;
-      toast.error(state.message);
     },
     [userLogin.pending]: (state) => {
       state.isLoading = true;

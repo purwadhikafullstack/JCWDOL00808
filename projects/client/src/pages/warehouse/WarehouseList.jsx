@@ -54,6 +54,7 @@ const WarehouseList = (props) => {
   const toast = useToast();
   const cancelRef = React.useRef();
   const navigate = useNavigate();
+  const [role, setRole] = useState(localStorage.getItem("role"));
 
   const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
   const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
@@ -133,9 +134,14 @@ const WarehouseList = (props) => {
           <Td>{value.province}</Td>
           <Td>{value.city}</Td>
           <Td isNumeric>
-            <Button colorScheme="yellow" className="mr-2" onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
-              Stock
-            </Button>
+            {role === "1" && (
+              <Button
+                colorScheme="yellow"
+                className="mr-2"
+                onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
+                Stock
+              </Button>
+            )}
             <Button
               colorScheme="teal"
               className="mr-2"
@@ -146,6 +152,50 @@ const WarehouseList = (props) => {
             >
               Details
             </Button>
+            {role === "1" && (
+              <Button
+                colorScheme="blue"
+                className="mr-2"
+                onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
+                Edit
+              </Button>
+            )}
+            <>
+              {role === "1" && (
+                <Button colorScheme="red" onClick={onAlertOpen}>
+                  Delete
+                </Button>
+              )}
+              <AlertDialog
+                isOpen={isAlertOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={onAlertClose}>
+                <AlertDialogOverlay>
+                  <AlertDialogContent>
+                    <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                      Delete Warehouse
+                    </AlertDialogHeader>
+
+                    <AlertDialogBody>
+                      Are you sure you want to delete this data? This can't be
+                      undone.
+                    </AlertDialogBody>
+
+                    <AlertDialogFooter>
+                      <Button ref={cancelRef} onClick={onAlertClose}>
+                        Cancel
+                      </Button>
+                      <Button
+                        colorScheme="red"
+                        onClick={() => deleteButton(value.id)}
+                        ml={3}>
+                        Delete
+                      </Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialogOverlay>
+              </AlertDialog>
+            </>
           </Td>
         </Tr>
       );

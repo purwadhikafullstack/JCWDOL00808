@@ -69,32 +69,33 @@ export default function ResetPassword() {
   return (
     <Flex
       minH={"100vh"}
+      w={"full"}
       align={"center"}
       justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-    >
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+      bg={useColorModeValue("gray.50", "gray.800")}>
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} w={"md"}>
         <Stack align={"center"}>
-          <Heading fontSize={"4xl"} textAlign={"center"}>
+          <Heading fontSize={"4xl"} textAlign={"center"} fontFamily="Oswald">
             Reset Password
           </Heading>
         </Stack>
         <Box
-          rounded={"lg"}
+          rounded={"none"}
           bg={useColorModeValue("white", "gray.700")}
           boxShadow={"lg"}
-          p={8}
-        >
+          p={8}>
           <Stack spacing={4}>
             <form onSubmit={formik.handleSubmit}>
               <FormControl
+                fontFamily="Roboto"
                 id="email"
                 isRequired
-                isInvalid={formik.touched.email && formik.errors.email}
-              >
-                <FormLabel>Email address</FormLabel>
+                isInvalid={formik.touched.email && formik.errors.email}>
+                <FormLabel>Email Address</FormLabel>
                 <Input
                   id="email"
+                  pl={3}
+                  borderRadius="none"
                   name="email"
                   type="email"
                   onChange={formik.handleChange}
@@ -105,23 +106,21 @@ export default function ResetPassword() {
 
               <Stack spacing={10} pt={2}>
                 <Button
+                  variant="buttonBlack"
                   isLoading={isLoading}
                   type="submit"
-                  loadingText="Submitting"
-                  size="md"
-                  bg={"blue.400"}
-                  color={"white"}
-                  _hover={{
-                    bg: "blue.500",
-                  }}
-                >
+                  loadingText="Submitting">
                   Reset Password
                 </Button>
               </Stack>
               <Stack pt={6}>
-                <Text align={"center"}>
+                <Text align={"center"} className="font-[Roboto]">
                   Remember your password?{" "}
-                  <Link as={RouterLink} to="/user/login" color={"blue.400"}>
+                  <Link
+                    as={RouterLink}
+                    to="/user/login"
+                    fontFamily={"Roboto"}
+                    color={"gray.500"}>
                     Login
                   </Link>
                 </Text>

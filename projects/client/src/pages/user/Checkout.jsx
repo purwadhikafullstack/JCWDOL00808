@@ -20,6 +20,7 @@ import {
   Text,
   useToast,
   FormErrorMessage,
+  Skeleton,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -50,6 +51,9 @@ const Checkout = () => {
   const [finalCost, setFinalCost] = useState(null);
   const [shippingCosts, setShippingCosts] = useState([]);
   const [nearestWarehouse, setNearestWarehouse] = useState(null);
+  const [shippingCostLoading, setShippingCostLoading] = useState(false);
+  const [primaryAddress, setPrimaryAddress] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const courierRef = useRef(null);
   const costRef = useRef(null);
@@ -68,8 +72,49 @@ const Checkout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAddresses();
     fetchWarehouseData();
+    const fetchAddressesData = async () => {
+      setLoading(true);
+      try {
+        const warehouseResponse = await axios.get(
+          `http://localhost:8000/warehouses/getAllWarehouse`
+        );
+        setWarehouseAddresses(warehouseResponse.data);
+
+        const response = await axios.get(
+          `http://localhost:8000/address/get-address?`,
+          {
+            headers: { Authorization: token },
+          }
+        );
+        const fetchedAddresses = response.data.result;
+        setAddresses(fetchedAddresses);
+        const primary = fetchedAddresses.find(
+          (address) => address.is_primary === true
+        );
+
+        setPrimaryAddress(primary);
+        setSelectedAddress(primary);
+
+        if (primary) {
+          const nearest = findShortestDistance(
+            primary.latitude,
+            primary.longitude,
+            warehouseResponse.data
+          );
+          setNearestWarehouse(nearest);
+        }
+      } catch (error) {
+        toast({
+          title: "Error fetching addresses.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+      setLoading(false);
+    };
+    fetchAddressesData();
   }, []);
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
@@ -133,8 +178,6 @@ const Checkout = () => {
       );
       const cities = citiesResponse.data;
 
-      // console.log(cities)
-
       const [originType, originCityName] = extractCityTypeAndName(originName);
       const [destinationType, destinationCityName] =
         extractCityTypeAndName(destinationName);
@@ -157,10 +200,6 @@ const Checkout = () => {
       const shippingInfoResponse = costResponse.data[0]?.costs;
 
       setShippingCosts(shippingInfoResponse);
-
-      // shippingInfo.forEach((cost) => {
-      //   console.log(`Service: ${cost.service} - Cost: ${cost.cost[0].value} - Estimated days: ${cost.cost[0].etd}`);
-      // });
     } catch (error) {
       console.error("Error fetching shipping cost:", error);
     }
@@ -175,7 +214,6 @@ const Checkout = () => {
       );
 
       setWarehouseAddresses(response.data);
-      // console.log(response.data);
     } catch (error) {
       toast({
         title: "Error fetching addresses.",
@@ -187,6 +225,7 @@ const Checkout = () => {
   };
 
   const fetchAddresses = async () => {
+    setLoading(true);
     try {
       // Replace with your API endpoint to get all addresses
       const response = await axios.get(
@@ -195,9 +234,12 @@ const Checkout = () => {
           headers: { Authorization: token },
         }
       );
-      setAddresses(response.data.result);
-      // console.log("log dari address" + response.data.result);
-      // console.log(response.data.result);
+      const fetchedAddresses = response.data.result;
+      setAddresses(fetchedAddresses);
+      const primary = fetchedAddresses.find(
+        (address) => address.is_primary === true
+      );
+      setPrimaryAddress(primary);
     } catch (error) {
       toast({
         title: "Error fetching addresses.",
@@ -206,6 +248,7 @@ const Checkout = () => {
         isClosable: true,
       });
     }
+    setLoading(false);
   };
 
   const handleAddressChange = (e) => {
@@ -232,8 +275,11 @@ const Checkout = () => {
   const handleAddressSelect = (e) => {
     const selected = JSON.parse(e.target.value);
     const selectedAddressID = JSON.parse(e.target.value).id;
+
     setSelectedAddress(selected);
     setSelectedAddressId(selectedAddressID);
+    setShippingCosts([]);
+    setCourierSelect(null);
     const nearest = findShortestDistance(
       selected.latitude,
       selected.longitude,
@@ -272,6 +318,8 @@ const Checkout = () => {
   const handleCourierSelect = (e) => {
     const selectedCourier = e.target.value;
 
+    setShippingCosts([]);
+    setCourierSelect(null);
     setCourierSelect(selectedCourier);
 
     fetchShippingCost(
@@ -319,6 +367,8 @@ const Checkout = () => {
         isClosable: true,
       });
       resetForm();
+
+      navigate("/user/upload-payment");
     } catch (error) {
       toast({
         title: "Error adding order.",
@@ -367,10 +417,11 @@ const Checkout = () => {
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Select an Address</ModalHeader>
+            <ModalHeader fontFamily="Oswald">Select an Address</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Select
+                fontFamily="Roboto"
                 placeholder="Select address"
                 onChange={handleAddressSelect}>
                 {addresses.map((address) => (
@@ -387,11 +438,17 @@ const Checkout = () => {
             </ModalBody>
             <ModalFooter>
               <Link to="/user/add-address/checkout">
-                <Button colorScheme="blue" mr={3} onClick={onNewAddressOpen}>
+                <Button
+                  variant="buttonBlack"
+                  colorScheme="blue"
+                  mr={3}
+                  onClick={onNewAddressOpen}>
                   Add New Address
                 </Button>
               </Link>
-              <Button onClick={onClose}>Close</Button>
+              <Button variant="buttonWhite" onClick={onClose}>
+                Close
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
@@ -420,12 +477,13 @@ const Checkout = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add New Address</ModalHeader>
+          <ModalHeader fontFamily="Oswald">Add New Address</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl>
-              <FormLabel>New Address</FormLabel>
+              <FormLabel fontFamily="Oswald">New Address</FormLabel>
               <Input
+                fontFamily="Roboto"
                 type="text"
                 value={newAddress}
                 onChange={handleNewAddressChange}
@@ -434,10 +492,12 @@ const Checkout = () => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+            <Button variant="buttonBlack" mr={3} onClick={handleSubmit}>
               Save
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button variant="buttonWhite" onClick={onClose}>
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -445,162 +505,28 @@ const Checkout = () => {
   };
 
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <Box width="100%" maxWidth="1000px" mx="auto" py={5}>
-        <h1 className="mb-10 text-center text-2xl font-bold">Checkout</h1>
+    <Box width="100%" maxWidth="1000px" mx="auto" py={5}>
+      <form onSubmit={formik.handleSubmit}>
+        <h1 className="mb-10 text-center text-2xl font-bold font-[Oswald]">
+          Checkout
+        </h1>
         <div className="flex flex-col justify-between w-full">
           <div className="bg-white py-5">
             <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
-              <div className="rounded-lg md:w-2/3">
-                <Flex justifyContent="space-between" alignItems="center">
-                  <Heading size="md">Shipping Address</Heading>
-                  {addresses.length === 0 && (
-                    <Link to="/user/add-address/checkout">
-                      <Button
-                        onClick={addNewAddress}
-                        colorScheme="teal"
-                        size="sm">
-                        Add New Address
-                      </Button>
-                    </Link>
-                  )}
-                </Flex>
-                <hr className="my-4" />
-                {addresses.length !== 0 ? (
-                  <Flex>
-                    <Box textAlign={"left"}>
-                      <Text justifyContent="space-between">
-                        {selectedAddress.recipient}
-                      </Text>
-                      <Text>
-                        {selectedAddress.address} {selectedAddress.district}{" "}
-                        {selectedAddress.city} {selectedAddress.province}
-                      </Text>
-                      <Text mb={4}>{selectedAddress.phone_number}</Text>
-                      <div className="flex items-center">
-                        <Link>
-                          <FormControl
-                            isInvalid={
-                              formik.errors.user_addresses_id &&
-                              formik.touched.user_addresses_id
-                            }>
-                            <Button
-                              onClick={onOpen}
-                              colorScheme="blue"
-                              ml={1}
-                              mr={4}
-                              size="sm">
-                              Change Address
-                            </Button>
-                            <FormErrorMessage>
-                              {formik.errors.user_addresses_id}
-                            </FormErrorMessage>
-                          </FormControl>
-                        </Link>
-                        <div className="w-auto mr-4">
-                          {selectedAddress && (
-                            <FormControl
-                              isInvalid={
-                                formik.errors.shipping_method &&
-                                formik.touched.shipping_method
-                              }>
-                              <Select
-                                size="sm"
-                                id="courier"
-                                name="courirer"
-                                type="text"
-                                placeholder="Select Courier"
-                                ref={courierRef}
-                                onChange={handleCourierSelect}>
-                                {[
-                                  { value: "jne", label: "JNE" },
-                                  { value: "tiki", label: "Tiki" },
-                                  { value: "pos", label: "POS Indonesia" },
-                                ].map((option) => (
-                                  <option
-                                    key={option.value}
-                                    value={option.value}>
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </Select>
-                              <FormErrorMessage>
-                                {formik.errors.shipping_method}
-                              </FormErrorMessage>
-                            </FormControl>
-                          )}
-                        </div>
-
-                        <div className="w-auto">
-                          {courierSelect && (
-                            <FormControl
-                              isInvalid={
-                                formik.errors.shipping_method &&
-                                formik.touched.shipping_method
-                              }>
-                              <Select
-                                size="sm"
-                                id="cost"
-                                name="cost"
-                                type="text"
-                                placeholder="Select Cost"
-                                onChange={handleCostSelect}
-                                ref={costRef}
-                                // className='w-80'
-                              >
-                                {shippingCosts.map((shippingCost, index) => (
-                                  <option
-                                    key={index}
-                                    value={JSON.stringify(shippingCost)}>
-                                    {shippingCost.description} -{" "}
-                                    {shippingCost.cost[0].value.toLocaleString(
-                                      "id-ID",
-                                      {
-                                        style: "currency",
-                                        currency: "IDR",
-                                      }
-                                    )}
-                                  </option>
-                                ))}
-                              </Select>
-                              <FormErrorMessage>
-                                {formik.errors.shipping_method}
-                              </FormErrorMessage>
-                            </FormControl>
-                          )}
-                        </div>
-                      </div>
-                      {/* <Link to="/user/add-address/checkout">
-                    <Button colorScheme="blue" mr={4} mt={2} size="sm" >
-                      Add New Address
-                    </Button>
-                  </Link> */}
-                    </Box>
-                  </Flex>
-                ) : (
-                  <Stack spacing={4} mb={4}>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                      No address founded.
-                    </h1>
-                    <p className="text-gray-700 text-lg mb-8">
-                      Please add new address for process your order.
-                    </p>
-                  </Stack>
-                )}
-                <hr className="my-4" />
+              <div className="rounded-sm md:w-2/3">
                 {carts.length !== 0 ? (
                   carts.map((cart, index) => {
                     return (
                       <div
                         key={index}
-                        className="justify-between border border-gray-200 mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
+                        className="justify-between border border-gray-200 mb-6 rounded-none bg-white p-6 shadow-md sm:flex sm:justify-start">
                         <img
                           onClick={() =>
                             navigate(`/product-details/${cart.product.id}`)
                           }
                           src={`${process.env.REACT_APP_API_BASE_URL}/${cart.product.imageUrl}`}
                           alt={cart.product.name}
-                          className="w-full rounded-lg sm:w-40"
+                          className="w-full rounded-sm sm:w-40"
                         />
                         <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                           <div className="mt-5 sm:mt-0">
@@ -608,24 +534,24 @@ const Checkout = () => {
                               onClick={() =>
                                 navigate(`/product-details/${cart.product.id}`)
                               }
-                              className="text-lg font-bold text-gray-900">
+                              className="text-lg font-[Oswald] text-gray-900">
                               {cart.product?.name}
                             </h2>
-                            <p className="mt-1 text-xs text-gray-700 text-left">
+                            <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
                               Weight:{" "}
                               {(
                                 cart.quantity * cart.product.weight
                               ).toLocaleString("ID")}{" "}
                               grams
                             </p>
-                            <p className="mt-1 text-xs text-gray-700 text-left">
+                            <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
                               Qty: {cart.quantity} Pcs
                             </p>
                           </div>
                           <div className="mt-4 flex justify-end sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
                             <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
                               <div className="flex md:flex-col items-center space-x-4 mt-2">
-                                <p className="text-sm">
+                                <p className="text-sm font-bold font-[Roboto]">
                                   {(
                                     cart.product.price * cart.quantity
                                   ).toLocaleString("id-ID", {
@@ -642,29 +568,187 @@ const Checkout = () => {
                   })
                 ) : (
                   <div className="flex flex-col col-span-4 justify-center items-center my-4">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                      No product in your cart
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4 font-[Oswald]">
+                      No product in your checkout list
                     </h1>
-                    <p className="text-gray-700 text-lg mb-8">
-                      Continue shopping and add some product to cart
+                    <p className="text-gray-700 text-lg mb-8 font-[Roboto]">
+                      Continue shopping and add some product to cart and do
+                      checkout
                     </p>
-                    <button
+                    <Button
+                      variant="buttonBlack"
                       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                       onClick={() => navigate("/")}>
                       Go Shopping
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
               <div
-                className={`sticky top-[5.7rem] mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
+                className={`sticky top-[5.7rem] mt-6 h-full rounded-none border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
                   carts.length === 0 ? "hidden" : null
                 }`}>
-                <div className="mb-2 flex justify-between">
-                  <p className="text-gray-700">
+                <Flex justifyContent="center" alignItems="center">
+                  <Heading
+                    size="md"
+                    className="text-center"
+                    fontFamily="Oswald">
+                    Shipping Address
+                  </Heading>
+                </Flex>
+                <hr className="my-4" />
+                {!loading && addresses.length !== 0 ? (
+                  <Flex>
+                    <Box textAlign={"left"}>
+                      <Text
+                        justifyContent="space-between"
+                        fontFamily="Oswald"
+                        fontSize="lg">
+                        {(selectedAddress || primaryAddress)?.recipient}
+                      </Text>
+                      <Text fontFamily="Roboto">
+                        {(selectedAddress || primaryAddress)?.phone_number}
+                      </Text>
+                      <Text mb={4} fontFamily="Roboto">
+                        {(selectedAddress || primaryAddress)?.address}
+                        {", "}
+                        {(selectedAddress || primaryAddress)?.district}
+                        {", "}
+                        {(selectedAddress || primaryAddress)?.city}
+                        {", "}
+                        {(selectedAddress || primaryAddress)?.province}
+                      </Text>
+                      <div className=" items-center">
+                        <Link>
+                          <FormControl
+                            isInvalid={
+                              formik.errors.user_addresses_id &&
+                              formik.touched.user_addresses_id
+                            }>
+                            <Button
+                              variant="buttonBlack"
+                              onClick={onOpen}
+                              colorScheme="blue"
+                              mr={4}>
+                              Change Address
+                            </Button>
+                            <FormErrorMessage>
+                              {formik.errors.user_addresses_id}
+                            </FormErrorMessage>
+                          </FormControl>
+                        </Link>
+
+                        {(selectedAddress || primaryAddress) && (
+                          <FormControl
+                            isInvalid={
+                              formik.errors.shipping_method &&
+                              formik.touched.shipping_method
+                            }>
+                            <Select
+                              mt={2}
+                              fontFamily="Roboto"
+                              id="courier"
+                              name="courirer"
+                              type="text"
+                              placeholder="Select Courier"
+                              ref={courierRef}
+                              onChange={handleCourierSelect}>
+                              {[
+                                { value: "jne", label: "JNE" },
+                                { value: "tiki", label: "Tiki" },
+                                { value: "pos", label: "POS Indonesia" },
+                              ].map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </Select>
+                            <FormErrorMessage>
+                              {formik.errors.shipping_method}
+                            </FormErrorMessage>
+                          </FormControl>
+                        )}
+
+                        <div className="w-auto">
+                          {courierSelect && (
+                            <Skeleton isLoaded={!shippingCostLoading}>
+                              {shippingCosts.length === 0 ? (
+                                <Stack>
+                                  <Skeleton mt={2} height="40px" />{" "}
+                                </Stack>
+                              ) : (
+                                <FormControl
+                                  isInvalid={
+                                    formik.errors.shipping_method &&
+                                    formik.touched.shipping_method
+                                  }>
+                                  <Select
+                                    mt={2}
+                                    fontFamily="Roboto"
+                                    id="cost"
+                                    name="cost"
+                                    type="text"
+                                    placeholder="Select Cost"
+                                    onChange={handleCostSelect}
+                                    ref={costRef}>
+                                    {shippingCosts.map(
+                                      (shippingCost, index) => (
+                                        <option
+                                          key={index}
+                                          value={JSON.stringify(shippingCost)}>
+                                          {shippingCost.description} -{" "}
+                                          {shippingCost.cost[0].value.toLocaleString(
+                                            "id-ID",
+                                            {
+                                              style: "currency",
+                                              currency: "IDR",
+                                            }
+                                          )}
+                                        </option>
+                                      )
+                                    )}
+                                  </Select>
+                                  <FormErrorMessage>
+                                    {formik.errors.shipping_method}
+                                  </FormErrorMessage>
+                                </FormControl>
+                              )}
+                            </Skeleton>
+                          )}
+                        </div>
+                      </div>
+                    </Box>
+                  </Flex>
+                ) : (
+                  <Stack spacing={4} mb={4}>
+                    <h1 className="text-lg font-bold font-[Oswald] text-gray-900 mb-2">
+                      No address founded.
+                    </h1>
+                    <p className="text-gray-700 text-md mb-8 font-[Roboto]">
+                      Please add new address for process your order.
+                    </p>
+                    {addresses.length === 0 && (
+                      <Link to="/user/add-address/checkout">
+                        <Button
+                          variant="buttonBlack"
+                          onClick={addNewAddress}
+                          colorScheme="teal"
+                          mb={4}
+                          mt={8}>
+                          Add New Address
+                        </Button>
+                      </Link>
+                    )}
+                  </Stack>
+                )}
+
+                <hr className="my-4" />
+
+                <div className="mb-2 mt-6 flex justify-between">
+                  <p className="text-gray-700 font-[Roboto]">
                     Subtotal ({totalProductsInCart} items)
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-gray-700 font-[Oswald] ">
                     {subtotal.toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
@@ -674,9 +758,9 @@ const Checkout = () => {
 
                 {finalCost && (
                   <div className="mb-2 flex justify-between">
-                    <p className="text-gray-700">Shipping Fee</p>
+                    <p className="text-gray-700 font-[Roboto]">Shipping Fee</p>
                     <div className="">
-                      <p className="text-gray-700">
+                      <p className="text-gray-700 font-[Oswald]">
                         {finalCost.toLocaleString("id-ID", {
                           style: "currency",
                           currency: "IDR",
@@ -695,11 +779,11 @@ const Checkout = () => {
                 </div>
               )} */}
 
-                <hr className="my-4" />
+                <hr className="my-4 " />
                 <div className="flex justify-between">
-                  <p className="text-lg font-bold">Grand Total</p>
+                  <p className="text-lg font-bold font-[Roboto]">Grand Total</p>
                   <div className="">
-                    <p className="mb-1 text-lg font-bold">
+                    <p className="mb-1 text-lg font-bold font-[Oswald]">
                       {(subtotal + finalCost).toLocaleString("id-ID", {
                         style: "currency",
                         currency: "IDR",
@@ -707,6 +791,15 @@ const Checkout = () => {
                     </p>
                   </div>
                 </div>
+                <Box mt={6}>
+                  <Button
+                    type="submit"
+                    variant="buttonBlack"
+                    width="100%"
+                    isLoading={formik.isSubmitting}>
+                    Proceed to Payment
+                  </Button>
+                </Box>
               </div>
             </div>
           </div>
@@ -720,18 +813,8 @@ const Checkout = () => {
           handleAddressSelect={handleAddressSelect}
           handleNewAddressSubmit={handleNewAddressSubmit}
         />
-
-        <Box mt={6}>
-          <Button
-            type="submit"
-            colorScheme="blue"
-            width="100%"
-            isLoading={formik.isSubmitting}>
-            Proceed to Payment
-          </Button>
-        </Box>
-      </Box>
-    </form>
+      </form>
+    </Box>
   );
 };
 

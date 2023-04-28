@@ -119,12 +119,10 @@ module.exports = {
           ],
         },
       });
-      res
-        .status(200)
-        .send({
-          ...WarehouseData,
-          totalPage: Math.ceil(WarehouseData.count / limit),
-        });
+      res.status(200).send({
+        ...WarehouseData,
+        totalPage: Math.ceil(WarehouseData.count / limit),
+      });
     } catch (error) {
       console.error(error);
       res.status(500).send({ success: false, message: "Something is wrong." });
@@ -159,13 +157,11 @@ module.exports = {
         longitude: lng,
       });
 
-      res
-        .status(200)
-        .send({
-          success: true,
-          message: "New warehouse data added",
-          dataAPI: response.results[0].geometry,
-        });
+      res.status(200).send({
+        success: true,
+        message: "New warehouse data added",
+        dataAPI: response.results[0].geometry,
+      });
     } catch (error) {
       res.status(400).send({ success: false, message: "Error" });
     }
@@ -199,13 +195,11 @@ module.exports = {
         .status(200)
         .send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          success: false,
-          message: "Error updating warehouse data",
-          error: error,
-        });
+      res.status(500).send({
+        success: false,
+        message: "Error updating warehouse data",
+        error: error,
+      });
     }
   },
   deleteWarehouseData: async (req, res) => {
@@ -448,6 +442,16 @@ module.exports = {
         success: false,
         message: "Get warehouse product details error",
       });
+    }
+  },
+  getWarehouseIdByAdminsId: async (req, res) => {
+    try {
+      let { id } = req.dataDecode;
+      let data = await WarehousesModel.findAll({ where: { admins_id: id } });
+      return res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
     }
   },
 };

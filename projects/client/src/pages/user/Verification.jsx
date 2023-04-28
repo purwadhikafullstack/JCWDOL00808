@@ -124,30 +124,31 @@ export default function Verification() {
       w={"full"}
       align={"center"}
       justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-    >
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+      bg={useColorModeValue("gray.50", "gray.800")}>
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} w={"md"}>
         <Stack align={"center"}>
-          <Heading fontSize={"4xl"} textAlign={"center"}>
-            Create password
+          <Heading fontSize={"4xl"} textAlign={"center"} fontFamily="Oswald">
+            Create Password
           </Heading>
         </Stack>
         <Box
-          rounded={"lg"}
+          rounded={"none"}
           bg={useColorModeValue("white", "gray.700")}
           boxShadow={"lg"}
-          p={8}
-        >
+          p={8}>
           <Stack spacing={4}>
             <form onSubmit={formik.handleSubmit}>
               <FormControl
+                fontFamily="Roboto"
                 id="email"
                 isReadOnly
-                isInvalid={formik.touched.email && formik.errors.email}
-              >
+                isInvalid={formik.touched.email && formik.errors.email}>
                 <FormLabel>Email address</FormLabel>
                 <Input
                   id="email"
+                  textColor={"gray"}
+                  borderRadius="none"
+                  pl={3}
                   name="email"
                   type="email"
                   onChange={formik.handleChange}
@@ -156,14 +157,17 @@ export default function Verification() {
                 <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
               </FormControl>
               <FormControl
+                fontFamily="Roboto"
                 id="password"
+                mt={3}
                 isRequired
-                isInvalid={formik.touched.password && formik.errors.password}
-              >
+                isInvalid={formik.touched.password && formik.errors.password}>
                 <FormLabel>Password</FormLabel>
                 <InputGroup>
                   <Input
                     id="password"
+                    pl={3}
+                    borderRadius="none"
                     name="password"
                     type={showPassword ? "text" : "password"}
                     onChange={formik.handleChange}
@@ -174,8 +178,7 @@ export default function Verification() {
                       variant={"ghost"}
                       onClick={() =>
                         setShowPassword((showPassword) => !showPassword)
-                      }
-                    >
+                      }>
                       {showPassword ? <ViewIcon /> : <ViewOffIcon />}
                     </Button>
                   </InputRightElement>
@@ -183,16 +186,19 @@ export default function Verification() {
                 <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
               </FormControl>
               <FormControl
+                mt={3}
                 id="confirmPassword"
+                fontFamily="Roboto"
                 isRequired
                 isInvalid={
                   formik.touched.confirmPassword &&
                   formik.errors.confirmPassword
-                }
-              >
-                <FormLabel>Confirm password</FormLabel>
+                }>
+                <FormLabel>Confirm Password</FormLabel>
                 <InputGroup>
                   <Input
+                    pl={3}
+                    borderRadius="none"
                     id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -206,8 +212,7 @@ export default function Verification() {
                         setShowConfirmPassword(
                           (showConfirmPassword) => !showConfirmPassword
                         )
-                      }
-                    >
+                      }>
                       {showConfirmPassword ? <ViewIcon /> : <ViewOffIcon />}
                     </Button>
                   </InputRightElement>
@@ -219,26 +224,12 @@ export default function Verification() {
 
               <Stack spacing={10} pt={2}>
                 <Button
+                  variant="buttonBlack"
                   isLoading={isLoading}
                   type="submit"
-                  loadingText="Submitting"
-                  size="md"
-                  bg={"blue.400"}
-                  color={"white"}
-                  _hover={{
-                    bg: "blue.500",
-                  }}
-                >
+                  loadingText="Submitting">
                   Create password
                 </Button>
-              </Stack>
-              <Stack pt={6}>
-                <Text align={"center"}>
-                  Already a user?{" "}
-                  <Link as={RouterLink} to="/user/login" color={"blue.400"}>
-                    Login
-                  </Link>
-                </Text>
               </Stack>
             </form>
           </Stack>

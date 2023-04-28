@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IconButton, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 
-export default function DeleteConfirmationDialog({ onDelete }) {
+export default function DeleteConfirmationDialog({ onDelete, isButtonDisabled }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleDelete = () => {
@@ -12,7 +12,7 @@ export default function DeleteConfirmationDialog({ onDelete }) {
 
   return (
     <>
-      <IconButton size="sm" bgColor="red.500" aria-label="Delete" icon={<DeleteIcon />} borderRadius="full" _hover={{ bg: "red.700" }} onClick={onOpen} />
+      <IconButton size="sm" bgColor="red.500" aria-label="Delete" icon={<DeleteIcon />} borderRadius="full" _hover={{ bg: "red.700" }} onClick={onOpen} isDisabled={isButtonDisabled} />
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

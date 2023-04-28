@@ -1,11 +1,13 @@
 // Import Sequelize
-const { Sequelize } = require("../../models");
+const { sequelize } = require("../../models");
 
 // Import models
 const db = require("../../models/index");
 const carts = db.carts;
 const products = db.products;
 const stocks = db.stocks;
+const orders = db.orders;
+const order_details = db.order_details;
 
 module.exports = {
   getCartData: async (req, res) => {
@@ -29,7 +31,7 @@ module.exports = {
             attributes: {
               include: [
                 [
-                  Sequelize.literal(`(
+                  sequelize.literal(`(
                     SELECT SUM(stock)
                     FROM stocks
                     WHERE
@@ -91,7 +93,7 @@ module.exports = {
       if (findProduct) {
         await carts.update(
           {
-            quantity: Sequelize.literal(`quantity + ${quantity}`),
+            quantity: sequelize.literal(`quantity + ${quantity}`),
           },
           { where: { id: findProduct.dataValues.id } }
         );
@@ -115,7 +117,7 @@ module.exports = {
             attributes: {
               include: [
                 [
-                  Sequelize.literal(`(
+                  sequelize.literal(`(
                     SELECT SUM(stock)
                     FROM stocks
                     WHERE
@@ -165,7 +167,7 @@ module.exports = {
             attributes: {
               include: [
                 [
-                  Sequelize.literal(`(
+                  sequelize.literal(`(
                     SELECT SUM(stock)
                     FROM stocks
                     WHERE
@@ -214,6 +216,101 @@ module.exports = {
         data: cartsData,
       });
     } catch (error) {
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
+  deliverOrder: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      const { id } = req.params;
+
+      //Get order data
+      const findOrder = await orders.findByPk(id);
+
+      //Get all products_id from the orders
+      const findOrderDetails = await order_details
+        .findAll({
+          attributes: ["products_id"],
+          where: { orders_id: id },
+        })
+        .then((products) => {
+          const productIds = products.map((product) => product.products_id);
+          stocks
+            .findAll({
+              where: {
+                warehouses_id: findOrder.dataValues.warehouses_id,
+                products_id: productIds,
+              },
+            })
+            .then((stocks) => {
+              // Check if any products have no data
+              const foundIds = stocks.map((stock) => stock.products_id);
+              const missingIds = productIds.filter(
+                (id) => !foundIds.includes(id)
+              );
+              if (missingIds.length > 0) {
+                res.status(404).send({
+                  isError: true,
+                  message: `Stock for products ID ${missingIds.join(
+                    ", "
+                  )} is not available.`,
+                  data: null,
+                });
+              } else {
+                orders.update(
+                  { status: "Shipped" },
+                  { where: { id } },
+                  { transaction: t }
+                );
+                t.commit();
+                res.status(200).send({
+                  isError: false,
+                  message: "Orders has been shipped",
+                  data: null,
+                });
+              }
+            });
+        });
+
+      //Check if all product stocks are available
+      // const checkStocks = await stocks.findOne({
+      //   where: {
+      //     products_id: findOrderDetails.dataValues.id,
+      //     warehouses_id: findOrder.dataValues.warehouse_id,
+      //   },
+      // });
+
+      //If one or more products stock is not available, send error
+      // if ("Products not available") {
+      //   res.status(404).send({
+      //     isError: true,
+      //     message: "Some products are not available",
+      //     data: null,
+      //   });
+      // } else {
+      //   await orders.update(
+      //     { status: "Dikirim" },
+      //     { where: id },
+      //     { transaction: t }
+      //   );
+      //   t.commit();
+      //   res.status(200).send({
+      //     isError: false,
+      //     message: "Orders has been shipped",
+      //     data: null,
+      //   });
+      // }
+      // res.status(200).send({
+      //   isError: false,
+      //   message: "Orders has been shipped",
+      //   data: findOrderDetails,
+      // });
+    } catch (error) {
+      t.rollback();
       res.status(404).send({
         isError: true,
         message: error.message,

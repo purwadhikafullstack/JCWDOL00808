@@ -9,12 +9,6 @@ const product_categories = db.product_categories;
 const stocks = db.stocks;
 const warehouses = db.warehouses;
 
-// Import verification token function
-const {
-  createVerificationToken,
-  validateVerificationToken,
-} = require("../helper/verificationToken");
-
 module.exports = {
   getCategories: async (req, res) => {
     try {
@@ -78,6 +72,7 @@ module.exports = {
   getAllProducts: async (req, res) => {
     try {
       const {
+        color,
         search,
         category,
         minPrice,
@@ -117,12 +112,25 @@ module.exports = {
         },
       };
 
-      // Add search query by name
-      if (search) {
-        query.where.name = {
-          [Op.like]: `%${search}%`,
-        };
+      if (search || color) {
+        query.where = {};
+        if (search && color) {
+          query.where[Op.and] = [
+            { name: { [Op.like]: `%${search}%` } },
+            { name: { [Op.like]: `%${color}%` } },
+          ];
+        } else if (search) {
+          query.where.name = { [Op.like]: `%${search}%` };
+        } else if (color) {
+          query.where.name = { [Op.like]: `${color}%` };
+        }
       }
+      // Add search query by name
+      // if (search) {
+      //   query.where.name = {
+      //     [Op.like]: `%${search}%`,
+      //   };
+      // }
 
       // Add category query
       if (category) {
