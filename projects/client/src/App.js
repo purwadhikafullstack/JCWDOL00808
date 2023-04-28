@@ -35,6 +35,7 @@ import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import StockHistory from "./pages/warehouse/StockHistory";
 import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
 import WarehouseList from "./pages/warehouse/WarehouseList";
+import OrderList from "./pages/user/OrderList";
 import WarehouseStock from "./pages/warehouse/WarehouseStock";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -60,18 +61,26 @@ function App() {
     <div className="App">
       {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
       {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Navbar />}
+      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Navbar />}
       <div className="flex justify-between">
+        {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : null}
         {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : null}
 
         <Routes>
           {/*Public user's route */}
           <Route path="/" element={<Home />} />
           <Route path="/product-details/:productId" element={<ProductDetails />} />
+          <Route path="/product-details/:productId" element={<ProductDetails />} />
           <Route path="/user/register" element={<Registration />} />
           <Route path="/user/verify" element={<Verification />} />
           <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
+          <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
           <Route path="/user/login" element={<Login />} />
           <Route path="/user/reset-password" element={<ResetPassword />} />
+          
+          {/* sementara aja: */}
+          <Route path="/user/order-list" element={<OrderList />} />
+
 
           {/*Protected user's route */}
           <Route element={<ProtectedRoutes />}>
@@ -100,12 +109,16 @@ function App() {
             <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
             <Route path="/admin/addProducts" element={<ProductForm />} />
             <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
+            <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
             {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
+            <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
+            <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
             <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
             <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
+            <Route path="/warehouse/details" element={<WarehouseDetails />} />
           </Route>
 
           {/*Super admin & Warehouse admin's route */}
@@ -115,6 +128,7 @@ function App() {
             <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
             <Route path="/warehouse/stock/0" element={<AdminWarehouseNotFound />} />
             <Route path="/warehouse/history" element={<StockHistory />} />
+            <Route path="/warehouse/history2" element={<History />} />
             <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
           </Route>
@@ -126,6 +140,7 @@ function App() {
       </div>
 
       {/*User path will have footer */}
+      {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Footer />}
       {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Footer />}
       <Toaster />
     </div>
