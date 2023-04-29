@@ -7,7 +7,7 @@ const db = require("../../models/index");
 const user_addresses = db.user_addresses;
 const users = db.users;
 const orders = db.orders;
-const orderDetails = db.order_details;
+const order_details = db.order_details;
 const products = db.products;
 const carts = db.carts;
 const warehouses = db.warehouses;
@@ -123,7 +123,7 @@ module.exports = {
       const users_id = req.dataDecode.id;
 
       let checkUser = await orders.findOne({ where: { id: req.body.id } });
-
+      console.log("req.body.id:", req.body.id);
       if (users_id == checkUser.users_id) {
         let payment_proof = req.files?.payment_proof[0]?.path;
 

@@ -11,7 +11,11 @@ import {
   ButtonGroup,
   useToast,
   AlertDialog,
+  AlertDialogOverlay,
   AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
   useDisclosure,
   Flex,
   FormControl,
@@ -122,10 +126,7 @@ const WarehouseList = (props) => {
           <Td>{value.city}</Td>
           <Td isNumeric>
             {role === "1" && (
-              <Button
-                colorScheme="yellow"
-                className="mr-2"
-                onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
+              <Button colorScheme="yellow" className="mr-2" onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
                 Stock
               </Button>
             )}
@@ -140,10 +141,7 @@ const WarehouseList = (props) => {
               Details
             </Button>
             {role === "1" && (
-              <Button
-                colorScheme="blue"
-                className="mr-2"
-                onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
+              <Button colorScheme="blue" className="mr-2" onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
                 Edit
               </Button>
             )}
@@ -153,29 +151,20 @@ const WarehouseList = (props) => {
                   Delete
                 </Button>
               )}
-              <AlertDialog
-                isOpen={isAlertOpen}
-                leastDestructiveRef={cancelRef}
-                onClose={onAlertClose}>
+              <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
                 <AlertDialogOverlay>
                   <AlertDialogContent>
                     <AlertDialogHeader fontSize="lg" fontWeight="bold">
                       Delete Warehouse
                     </AlertDialogHeader>
 
-                    <AlertDialogBody>
-                      Are you sure you want to delete this data? This can't be
-                      undone.
-                    </AlertDialogBody>
+                    <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
 
                     <AlertDialogFooter>
                       <Button ref={cancelRef} onClick={onAlertClose}>
                         Cancel
                       </Button>
-                      <Button
-                        colorScheme="red"
-                        onClick={() => deleteButton(value.id)}
-                        ml={3}>
+                      <Button colorScheme="red" onClick={() => deleteButton(value.id)} ml={3}>
                         Delete
                       </Button>
                     </AlertDialogFooter>
@@ -291,20 +280,6 @@ const WarehouseList = (props) => {
               <CardBody>
                 <FormControl>
                   <FormLabel>Sort data by:</FormLabel>
-                  {/* <RadioGroup> */}
-                  {/* <HStack spacing="24px"> */}
-                  {/* <Radio value="name" onChange={(element) => setSort(element.target.value)}>
-                        Name
-                      </Radio>
-                      <Radio value="province" onChange={(element) => setSort(element.target.value)}>
-                        Province
-                      </Radio>
-                      <Radio value="city" onChange={(element) => setSort(element.target.value)}>
-                        City
-                      </Radio>
-                      <Radio value="updatedAt" onChange={(element) => setSort(element.target.value)}>
-                        Date added
-                      </Radio> */}
                   <VStack>
                     <Select placeholder="Select option" onChange={(element) => setSort(element.target.value)}>
                       <option value="name">Warehouse name</option>

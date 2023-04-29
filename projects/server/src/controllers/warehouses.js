@@ -32,7 +32,7 @@ module.exports = {
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
 
-      console.log(body);
+      // console.log(body);
       let data = JSON.parse(body).rajaongkir.results;
       res.status(200).send(data);
     });
@@ -48,7 +48,7 @@ module.exports = {
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
 
-      console.log(body);
+      // console.log(body);
       let data = JSON.parse(body).rajaongkir.results;
       res.status(200).send(data);
     });
@@ -190,9 +190,7 @@ module.exports = {
         { where: { id: req.body.id } }
       );
 
-      res
-        .status(200)
-        .send({ success: true, message: "Warehouse data update success!" });
+      res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -256,10 +254,7 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create(
-        { stock, products_id, warehouses_id: id },
-        { transaction: t }
-      );
+      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id: id }, { transaction: t });
       const updateHistories = await stock_histories.create(
         {
           stock_before: 0,

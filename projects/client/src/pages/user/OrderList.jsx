@@ -44,7 +44,6 @@ const OrderList = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   let token = localStorage.getItem("token");
-  const token = localStorage.getItem("token");
   const getTransactionList = () => {
     Axios.get(API_url + `/orders/getOrderList`, {
       headers: { Authorization: token },
@@ -101,15 +100,34 @@ const OrderList = () => {
               </Box>
               {value.status == "Waiting for payment" ? (
                 <>
-                  <Button onClick={() => navigate("/user/upload-payment-proof")}>Proceed to payment</Button>
+                  <Button onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>Upload payment proof</Button>
                   <Button
                     colorScheme="red"
                     onClick={() => {
-                      handleCancelButton(value.id);
+                      onOpen();
                     }}
                   >
                     Cancel order
                   </Button>
+                  <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Request order cancellation?</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>This action can't be undone. Please add your reason for cancellation:</ModalBody>
+                      <Select placeholder="Select reason">
+                        <option>I bought the wrong item</option>
+                        <option>I don't need it anymore</option>
+                        <option>I want to change my address</option>
+                      </Select>
+                      <ModalFooter>
+                        <Button colorScheme="blue" mr={3} onClick={onClose}>
+                          Close
+                        </Button>
+                        <Button variant="ghost" onClick={handleCancelButton(value.id)}>Cancel my order</Button>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
                 </>
               ) : null}
             </VStack>
