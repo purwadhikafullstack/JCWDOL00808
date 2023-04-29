@@ -48,6 +48,11 @@ function AvatarButton(props) {
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]">
                   Edit Address
                 </Link>
+                <Link
+                  to="/user/order-list"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]">
+                  My Transaction
+                </Link>
                 <span
                   onClick={() => {
                     logout(navigate, dispatch);

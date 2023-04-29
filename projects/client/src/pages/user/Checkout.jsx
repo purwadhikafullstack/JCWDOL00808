@@ -329,7 +329,7 @@ const Checkout = () => {
       });
       resetForm();
 
-      navigate("/user/upload-payment");
+      navigate("/user/upload-payment-proof");
     } catch (error) {
       toast({
         title: "Error adding order.",

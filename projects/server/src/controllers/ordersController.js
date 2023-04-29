@@ -20,14 +20,7 @@ module.exports = {
 
     try {
       let { id } = req.dataDecode;
-      let {
-        total_price,
-        status,
-        shipping_method,
-        shipping_cost,
-        user_addresses_id,
-        warehouses_id,
-      } = req.body;
+      let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
 
       const createNewOrder = await orders.create(
         {
@@ -69,18 +62,12 @@ module.exports = {
       }));
 
       //Post all carts data to order_details table
-      const postOrderDetails = await order_details.bulkCreate(
-        orderDetailsData,
-        {
-          transaction: t,
-        }
-      );
+      const postOrderDetails = await order_details.bulkCreate(orderDetailsData, {
+        transaction: t,
+      });
 
       //Delete cart data based on users_id
-      const deleteCartData = await carts.destroy(
-        { where: { users_id: id } },
-        { transaction: t }
-      );
+      const deleteCartData = await carts.destroy({ where: { users_id: id } }, { transaction: t });
       t.commit();
       res.status(201).send({
         isError: false,
@@ -103,23 +90,8 @@ module.exports = {
 
     try {
       let data = await orders.findAll({
-        attributes: ["id", "status", "total_price", [sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "date"]],
-        // order: [[sort]],
-        where: {
-          users_id,
-          // [Op.or]: [
-          //   {
-          //     status: {
-          //       [Op.like]: "%" + keyword + "%",
-          //     },
-          //   },
-          // ],
-        },
-        include: [
-          {
-            model: orderDetails,
-          },
-        ],
+        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id"],
+        where: { users_id },
       });
       res.status(200).send(data);
     } catch (error) {
@@ -129,28 +101,21 @@ module.exports = {
   },
   cancelOrder: async (req, res) => {
     try {
-      const { id } = req.body;
-
       let { users_id } = req.dataDecode;
-
       let newStatus = "Cancelled by user";
+      await orders.update({ status: newStatus }, { where: { id: req.body.id } });
 
-      let response = await orders.update(
-        {
-          status: newStatus,
-        },
-        {
-          where: { id },
-        }
-      );
       res.status(200).send({
         success: true,
-        message: "Order cancelled!",
+        message: "Order cancelled.",
         data: null,
       });
     } catch (error) {
       console.log(error);
-      res.status(500).send(error);
+      res.status(500).send({
+        success: false,
+        message: "Cancel order failed.",
+      });
     }
   },
   uploadPaymentProof: async (req, res) => {
@@ -277,13 +242,9 @@ module.exports = {
         }
       });
       if (result.length === 0 && search !== "") {
-        return res
-          .status(404)
-          .json({ message: "No matching results found for the search query" });
+        return res.status(404).json({ message: "No matching results found for the search query" });
       } else if (result.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "Please assign warehouse first" });
+        return res.status(404).json({ message: "Please assign warehouse first" });
       }
       res.json({
         result: result,
@@ -312,15 +273,7 @@ module.exports = {
           },
           {
             model: user_addresses,
-            attributes: [
-              "recipient",
-              "phone_number",
-              "address",
-              "province",
-              "city",
-              "district",
-              "postal_code",
-            ],
+            attributes: ["recipient", "phone_number", "address", "province", "city", "district", "postal_code"],
           },
         ],
       });
