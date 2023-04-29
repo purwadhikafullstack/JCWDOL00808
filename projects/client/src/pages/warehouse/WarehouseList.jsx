@@ -140,11 +140,6 @@ const WarehouseList = (props) => {
             >
               Details
             </Button>
-            {role === "1" && (
-              <Button colorScheme="blue" className="mr-2" onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
-                Edit
-              </Button>
-            )}
             <>
               {role === "1" && (
                 <Button colorScheme="red" onClick={onAlertOpen}>

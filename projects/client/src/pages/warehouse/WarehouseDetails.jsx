@@ -88,7 +88,7 @@ const WarehouseDetails = () => {
   const getProvinceData = () => {
     Axios.get(API_url + `/warehouses/getProvinceData`)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setProvinceData(response.data);
       })
       .catch((err) => {
@@ -100,7 +100,7 @@ const WarehouseDetails = () => {
     // console.log("province_id:", province_id)
     Axios.get(API_url + `/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
-        console.log("dari onGetCity: ", response.data);
+        // console.log("dari onGetCity: ", response.data);
         setCityData(response.data);
 
         // setProvince("");
