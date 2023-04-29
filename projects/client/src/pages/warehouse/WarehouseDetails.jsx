@@ -65,7 +65,6 @@ const WarehouseDetails = () => {
   // const { id } = useParams();
   const { search } = useLocation();
   const id = search.split("=")[1];
-  console.log("id warehouse displayed:", id);
 
   const getSpecificWarehouse = () => {
     Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${id}`)

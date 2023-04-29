@@ -7,9 +7,9 @@ const db = require("../../models/index");
 const user_addresses = db.user_addresses;
 const users = db.users;
 const orders = db.orders;
-const carts = db.carts;
+const orderDetails = db.order_details;
 const products = db.products;
-const order_details = db.order_details;
+const carts = db.carts;
 const warehouses = db.warehouses;
 
 const request = require("request");
@@ -97,16 +97,91 @@ module.exports = {
     }
   },
   getOrderList: async (req, res) => {
+    // const sort = req.query.sort || "createdAt";
+    // const keyword = req.query.keyword || "";
     const users_id = req.dataDecode.id;
+
     try {
       let data = await orders.findAll({
-        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("createdAt"), "%Y-%m-%d"), "when"]],
-        where: { users_id },
+        attributes: ["id", "status", "total_price", [sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "date"]],
+        // order: [[sort]],
+        where: {
+          users_id,
+          // [Op.or]: [
+          //   {
+          //     status: {
+          //       [Op.like]: "%" + keyword + "%",
+          //     },
+          //   },
+          // ],
+        },
+        include: [
+          {
+            model: orderDetails,
+          },
+        ],
       });
       res.status(200).send(data);
     } catch (error) {
       console.log(error);
       res.status(500).send(error);
+    }
+  },
+  cancelOrder: async (req, res) => {
+    try {
+      const { id } = req.body;
+
+      let { users_id } = req.dataDecode;
+
+      let newStatus = "Cancelled by user";
+
+      let response = await orders.update(
+        {
+          status: newStatus,
+        },
+        {
+          where: { id },
+        }
+      );
+      res.status(200).send({
+        success: true,
+        message: "Order cancelled!",
+        data: null,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
+  },
+  uploadPaymentProof: async (req, res) => {
+    try {
+      const users_id = req.dataDecode.id;
+
+      let checkUser = await orders.findOne({ where: { id: req.body.id } });
+
+      if (users_id == checkUser.users_id) {
+        let payment_proof = req.files?.payment_proof[0]?.path;
+
+        await orders.update({ payment_proof }, { where: { id: req.body.id } });
+
+        await orders.update({ status: "Waiting for confirmation" }, { where: { id: req.body.id } });
+
+        res.status(200).send({
+          success: true,
+          message: "Proof of payment has been uploaded!",
+        });
+      } else if (users_id != checkUser.users_id) {
+        res.status(500).send({
+          success: false,
+          message: "You don't own this transaction.",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Something is wrong.",
+      });
     }
   },
   getOrders: async (req, res) => {

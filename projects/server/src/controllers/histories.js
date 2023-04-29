@@ -75,10 +75,10 @@ module.exports = {
   // },
   getStockHistories: async (req, res) => {
     try {
-      // const sortProductsId = req.query.sortProductsId || 0;
-      // const sortWarehouseId = req.query.sortWarehouseId || 0;
+      const sortProductsId = req.query.sortProductsId || 0;
+      const sortWarehouseId = req.query.sortWarehouseId || 0;
       const month = req.query.sortMonth || 0;
-      // const year = req.query.sortYear || 0;
+      const year = req.query.sortYear || 0;
 
       let data = await Models.sequelize.query(
         `SELECT * FROM stock_histories

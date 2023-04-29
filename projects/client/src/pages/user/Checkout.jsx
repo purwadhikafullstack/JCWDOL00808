@@ -24,13 +24,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  cartSelector,
-  getCarts,
-  getTotalPriceInCart,
-  getTotalProductsInCart,
-  getTotalWeightInCart,
-} from "../../reducers/cartSlice";
+import { cartSelector, getCarts, getTotalPriceInCart, getTotalProductsInCart, getTotalWeightInCart } from "../../reducers/cartSlice";
 import ScrollToTopButton from "../../components/ScrollToTopButton";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -125,12 +119,7 @@ const Checkout = () => {
     const R = 6371; // Earth's radius in km
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
 
@@ -142,12 +131,7 @@ const Checkout = () => {
     let nearestLocation;
 
     for (const location of locations) {
-      const distance = haversineDistance(
-        baseLat,
-        baseLon,
-        location.latitude,
-        location.longitude
-      );
+      const distance = haversineDistance(baseLat, baseLon, location.latitude, location.longitude);
 
       if (distance < shortestDistance) {
         shortestDistance = distance;
@@ -166,32 +150,16 @@ const Checkout = () => {
     return [null, null];
   }
 
-  const fetchShippingCost = async (
-    originName,
-    destinationName,
-    totalWeight,
-    courier
-  ) => {
+  const fetchShippingCost = async (originName, destinationName, totalWeight, courier) => {
     try {
-      const citiesResponse = await axios.get(
-        `http://localhost:8000/warehouses/getCityData?province_id=`
-      );
+      const citiesResponse = await axios.get(`http://localhost:8000/warehouses/getCityData?province_id=`);
       const cities = citiesResponse.data;
 
       const [originType, originCityName] = extractCityTypeAndName(originName);
-      const [destinationType, destinationCityName] =
-        extractCityTypeAndName(destinationName);
+      const [destinationType, destinationCityName] = extractCityTypeAndName(destinationName);
 
-      const originId = cities.find(
-        (city) =>
-          city.type.toLowerCase() === originType.toLowerCase() &&
-          city.city_name.toLowerCase() === originCityName.toLowerCase()
-      ).city_id;
-      const destinationId = cities.find(
-        (city) =>
-          city.type.toLowerCase() === destinationType.toLowerCase() &&
-          city.city_name.toLowerCase() === destinationCityName.toLowerCase()
-      ).city_id;
+      const originId = cities.find((city) => city.type.toLowerCase() === originType.toLowerCase() && city.city_name.toLowerCase() === originCityName.toLowerCase()).city_id;
+      const destinationId = cities.find((city) => city.type.toLowerCase() === destinationType.toLowerCase() && city.city_name.toLowerCase() === destinationCityName.toLowerCase()).city_id;
 
       // Calculate shipping cost
       const costUrl = `http://localhost:8000/warehouses/getCostData?originName=${originId}&destinationName=${destinationId}&totalWeight=${totalWeight}&courier=${courier}`;
@@ -209,9 +177,7 @@ const Checkout = () => {
 
   const fetchWarehouseData = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/warehouses/getAllWarehouse`
-      );
+      const response = await axios.get(`http://localhost:8000/warehouses/getAllWarehouse`);
 
       setWarehouseAddresses(response.data);
     } catch (error) {
@@ -322,12 +288,7 @@ const Checkout = () => {
     setCourierSelect(null);
     setCourierSelect(selectedCourier);
 
-    fetchShippingCost(
-      selectedAddress?.city,
-      nearestWarehouse?.city,
-      totalWeightInCart,
-      selectedCourier
-    );
+    fetchShippingCost(selectedAddress?.city, nearestWarehouse?.city, totalWeightInCart, selectedCourier);
     setFinalCost(null);
 
     if (costRef.current) {
@@ -348,17 +309,17 @@ const Checkout = () => {
     }
   };
 
+  console.log("orders id", ordersId);
   const handleAddOrder = async (values, { setSubmitting, resetForm }) => {
     try {
       // Replace with your API endpoint to add an address
-      const response = await axios.post(
-        "http://localhost:8000/orders/add-order",
-        values,
-        {
-          headers: { Authorization: token },
-        }
-      );
+      const response = await axios.post("http://localhost:8000/orders/add-order", values, {
+        headers: { Authorization: token },
+      });
       setOrders([...orders, response.data]);
+      setOrdersId(response.data.data.id);
+      handleClickToDisable();
+      handleClickToDisable2();
 
       toast({
         title: "Orders added.",
@@ -391,26 +352,14 @@ const Checkout = () => {
       warehouses_id: "",
     },
     validationSchema: Yup.object({
-      shipping_method: Yup.string().required(
-        "Courier or/and shipping method required"
-      ),
+      shipping_method: Yup.string().required("Courier or/and shipping method required"),
       user_addresses_id: Yup.number().required("Shipping Address required"),
     }),
     onSubmit: handleAddOrder,
   });
 
-  const ModalAddress = ({
-    isOpen,
-    onClose,
-    addresses,
-    handleAddressSelect,
-    handleNewAddressSubmit,
-  }) => {
-    const {
-      isOpen: isNewAddressOpen,
-      onOpen: onNewAddressOpen,
-      onClose: onNewAddressClose,
-    } = useDisclosure();
+  const ModalAddress = ({ isOpen, onClose, addresses, handleAddressSelect, handleNewAddressSubmit }) => {
+    const { isOpen: isNewAddressOpen, onOpen: onNewAddressOpen, onClose: onNewAddressClose } = useDisclosure();
 
     return (
       <>
@@ -430,7 +379,8 @@ const Checkout = () => {
                     value={JSON.stringify(
                       // {[address.address, address.recipient, address.phone_number]}>
                       address
-                    )}>
+                    )}
+                  >
                     {address.recipient}
                   </option>
                 ))}
@@ -452,11 +402,7 @@ const Checkout = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <NewAddressModal
-          isOpen={isNewAddressOpen}
-          onClose={onNewAddressClose}
-          handleNewAddressSubmit={handleNewAddressSubmit}
-        />
+        <NewAddressModal isOpen={isNewAddressOpen} onClose={onNewAddressClose} handleNewAddressSubmit={handleNewAddressSubmit} />
       </>
     );
   };
@@ -503,6 +449,14 @@ const Checkout = () => {
       </Modal>
     );
   };
+
+  function handleClickToDisable() {
+    setIsButtonDisabled(!isButtonDisabled);
+  }
+
+  function handleClickToDisable2() {
+    setIsButtonDisabled2(!isButtonDisabled2);
+  }
 
   return (
     <Box width="100%" maxWidth="1000px" mx="auto" py={5}>
@@ -632,9 +586,7 @@ const Checkout = () => {
                               mr={4}>
                               Change Address
                             </Button>
-                            <FormErrorMessage>
-                              {formik.errors.user_addresses_id}
-                            </FormErrorMessage>
+                            <FormErrorMessage>{formik.errors.user_addresses_id}</FormErrorMessage>
                           </FormControl>
                         </Link>
 

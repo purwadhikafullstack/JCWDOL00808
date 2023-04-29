@@ -1,7 +1,7 @@
 const express = require("express");
 const Router = express.Router();
 const { verifyToken } = require("../middleware/verifyToken");
-const { uploadImages, uploadImagesProduct } = require("../middleware/uploadImage");
+const { uploadImages, uploadImagesProduct, uploadPaymentProof } = require("../middleware/uploadImage");
 const { validateRegister, validateVerification, validateEditProfile, validateEditPassword } = require("../middleware/validator");
 
 // Import Controller

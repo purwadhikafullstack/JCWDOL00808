@@ -168,7 +168,6 @@ module.exports = {
   },
   updateWarehouseData: async (req, res) => {
     try {
-      console.log("req.body update warehouse:", req.body);
       const { id, name, address, province, city, district } = req.body;
       let response = await geocode({
         q: `${address}, ${district}, ${province}, ${city}`,

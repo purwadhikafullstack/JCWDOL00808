@@ -74,9 +74,7 @@ function App() {
           <Route path="/user/verify-new-password" element={<VerificationNewPassword />} />
           <Route path="/user/login" element={<Login />} />
           <Route path="/user/reset-password" element={<ResetPassword />} />
-
-          {/* sementara aja: */}
-          <Route path="/user/order-list" element={<OrderList />} />
+          
 
           {/*Protected user's route */}
           <Route element={<ProtectedRoutes />}>
