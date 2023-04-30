@@ -292,7 +292,7 @@ const Checkout = () => {
   const handleAddOrder = async (values, { setSubmitting, resetForm }) => {
     try {
       // Replace with your API endpoint to add an address
-      const response = await axios.post("http://localhost:8000/orders/add-order", values, {
+      const response = await axios.post("http://localhost:8000/test/test", values, {
         headers: { Authorization: token },
       });
       setOrders([...orders, response.data]);
