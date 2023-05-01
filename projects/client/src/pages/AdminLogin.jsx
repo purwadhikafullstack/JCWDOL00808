@@ -1,4 +1,4 @@
-import { Input, InputGroup, InputRightElement, Box, Spacer, Button, Text, useToast, FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
+import { Link, Input, InputGroup, InputRightElement, Box, Spacer, Button, Text, useToast, FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
 import React from "react";
 import { useState } from "react";
 import Axios from "axios";
@@ -12,9 +12,6 @@ import * as yup from "yup";
 const AdminLogin = (props) => {
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
-
-  // const [inputEmail, setInputEmail] = React.useState("");
-  // const [inputPassword, setInputPassword] = React.useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -62,11 +59,6 @@ const AdminLogin = (props) => {
       });
   };
 
-  const handleSubmit = () => {
-    // alert("siap login kk")
-    alert("Form submitted!");
-  };
-
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -74,9 +66,7 @@ const AdminLogin = (props) => {
     },
     validationSchema: yup.object().shape({
       email: yup.string().required("E-mail address is required").email(),
-      password: yup
-        .string()
-        .required("Password is required")
+      password: yup.string().required("Password is required"),
     }),
     onSubmit: (values, actions) => {
       loginButton(values);
@@ -110,6 +100,10 @@ const AdminLogin = (props) => {
               Login
             </Button>
           </form>
+          <Button colorScheme="twitter" type="submit" onClick={() => navigate("/user/login")}>
+            Ke page login user
+          </Button>
+          {/* <Link to="/user/login">Login sebagai user</Link> */}
         </Box>
       </div>
     </>

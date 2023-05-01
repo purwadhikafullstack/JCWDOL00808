@@ -236,27 +236,6 @@ const WarehouseList = (props) => {
       });
   };
 
-  // const buttonEditWarehouse = () => {
-  //   Axios.patch(API_url + `/warehouses/updateWarehouseData`, {
-  //     id: warehouseId,
-  //     name,
-  //     address,
-  //     province,
-  //     city,
-  //     district,
-  //   })
-  //     .then((response) => {
-  //       console.log(response.data);
-  //       toast({
-  //         title: `${response.data.message}`,
-  //         status: "success",
-  //         duration: 9000,
-  //         onCloseComplete: () => getWarehouseData(),
-  //       });
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
-
   return (
     <>
       <Flex direction="column" alignItems="center">

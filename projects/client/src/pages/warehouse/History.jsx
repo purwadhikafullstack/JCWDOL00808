@@ -33,7 +33,7 @@ import { useEffect, useState } from "react";
 import Axios from "axios";
 import { API_url } from "../../helper";
 import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
-
+import ReactPaginate from "react-paginate";
 import(Card);
 
 const History = () => {
@@ -51,6 +51,9 @@ const History = () => {
 
   const [stockHistories, setStockHistories] = useState([]);
 
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+
   const { isOpen: isPlusOpen, onOpen: onPlusOpen, onClose: onPlusClose } = useDisclosure();
   const { isOpen: isMinOpen, onOpen: onMinOpen, onClose: onMinClose } = useDisclosure();
 
@@ -66,7 +69,7 @@ const History = () => {
   useEffect(() => {
     // getStockHistories();
     getHistoryData();
-  }, [sort, month, order, keyword]);
+  }, [page, sort, month, order, keyword]);
 
   const handleSearchButton = () => {
     setKeyword(search);
@@ -161,10 +164,15 @@ const History = () => {
     });
   };
 
+  const handlePageClick = (data) => {
+    setPage(data.selected);
+  };
+
   return (
     <>
-      <Flex bg="gray.100" px="0">
-        <Box mx="100" mt="100">
+    <Flex flexDirection="column">
+      <Flex px="0">
+        <Box id="sort filter and search" mx="100" mt="100">
           <Card maxW="xs" border="1px" borderColor="gray.200">
             <CardBody>
               <VStack>
@@ -182,7 +190,6 @@ const History = () => {
                     <option value="ASC">Ascending</option>
                     <option value="DESC">Descending</option>
                   </Select>
-                  {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
                 </FormControl>
               </VStack>
             </CardBody>
@@ -220,13 +227,12 @@ const History = () => {
                   <Button colorScheme="blue" mt="25" onClick={handleSearchButton}>
                     Search
                   </Button>
-                  {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
                 </FormControl>
               </VStack>
             </CardBody>
           </Card>
         </Box>
-        <Box mr="30" my="100">
+        <Box id="tabel stock histories" mr="30" my="100">
           <TableContainer bg="white" border="1px" borderColor="gray.200">
             <Table variant="striped" size="md">
               <Thead>
@@ -242,6 +248,23 @@ const History = () => {
           </TableContainer>
         </Box>
       </Flex>
+        <Box id="pagination" className="mt-5 flex items-center justify-center">
+          <ReactPaginate
+            previousLabel={"< Previous"}
+            nextLabel={"Next >"}
+            breakLabel={"..."}
+            pageCount={totalPage}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={2}
+            onPageChange={handlePageClick}
+            containerClassName={"flex"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          />
+        </Box>
+    </Flex>
     </>
   );
 };

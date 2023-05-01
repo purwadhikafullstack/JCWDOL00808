@@ -87,11 +87,14 @@ module.exports = {
     // const sort = req.query.sort || "createdAt";
     // const keyword = req.query.keyword || "";
     const users_id = req.dataDecode.id;
-
     try {
       let data = await orders.findAll({
-        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id"],
+        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id"],
         where: { users_id },
+        include: {
+          model: order_details,
+          attributes: ["product_name", "quantity", "imageUrl"],
+        },
       });
       res.status(200).send(data);
     } catch (error) {
@@ -101,15 +104,26 @@ module.exports = {
   },
   cancelOrder: async (req, res) => {
     try {
-      let { users_id } = req.dataDecode;
-      let newStatus = "Cancelled by user";
-      await orders.update({ status: newStatus }, { where: { id: req.body.id } });
+      let users_id = req.dataDecode.id;
 
-      res.status(200).send({
-        success: true,
-        message: "Order cancelled.",
-        data: null,
-      });
+      let checkUser = await orders.findOne({ where: { id: req.body.id } });
+
+      // check if user who wants to cancel order is the same user who is logging in
+      if (users_id == checkUser.users_id) {
+        let newStatus = "Canceled";
+        await orders.update({ status: newStatus }, { where: { id: req.body.id } });
+
+        res.status(200).send({
+          success: true,
+          message: "Order cancelled.",
+          data: null,
+        });
+      } else if (users_id != checkUser.users_id) {
+        res.status(500).send({
+          success: false,
+          message: "You don't own this transaction.",
+        });
+      }
     } catch (error) {
       console.log(error);
       res.status(500).send({
@@ -123,7 +137,7 @@ module.exports = {
       const users_id = req.dataDecode.id;
 
       let checkUser = await orders.findOne({ where: { id: req.body.id } });
-      console.log("req.body.id:", req.body.id);
+      // check if user who wants to cancel order is the same user who is logging in
       if (users_id == checkUser.users_id) {
         let payment_proof = req.files?.payment_proof[0]?.path;
 

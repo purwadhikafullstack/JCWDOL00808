@@ -88,8 +88,6 @@ module.exports = {
         success: true,
         message: "Test ok",
         data: fetchCart,
-        // log: findOrderId,
-        // log: fetchCart[0].products_id
       });
     } catch (error) {
       console.log(error);

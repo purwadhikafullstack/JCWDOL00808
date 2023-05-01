@@ -100,6 +100,10 @@ module.exports = {
   },
   getHistoryData: async (req, res) => {
     try {
+      const page = parseInt(req.query.page) || 0;
+      const limit = 7;
+      const offset = limit * page;
+
       const sort = req.query.sort || "id";
       const order = req.query.order || "ASC";
       const keyword = req.query.keyword || "";
@@ -118,6 +122,9 @@ module.exports = {
             as: "warehouse",
           },
         ],
+        limit,
+        offset,
+        order: [[sort, order]],
         where: {
           [Op.or]: [
             {
@@ -135,7 +142,6 @@ module.exports = {
             Models.sequelize.literal(`EXTRACT(MONTH FROM "stock_histories.createdAt") = ${month}`),
           ],
         },
-        order: [[sort, order]],
       });
       res.status(200).send(data);
     } catch (error) {

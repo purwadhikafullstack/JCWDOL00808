@@ -152,8 +152,8 @@ const WarehouseDetails = () => {
   };
 
   return (
-    <Box w="50%" bg="gray.100">
-      <Card maxW="lg">
+    <Box w="50%">
+      <Card maxW="lg" border="1px" borderColor="gray.300">
         <CardBody>
           <Image src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg" alt="Green double couch with wooden legs" borderRadius="lg" />
           <Stack mt="6" spacing="3">
@@ -167,8 +167,6 @@ const WarehouseDetails = () => {
         <Divider />
         <CardFooter>
           <ButtonGroup spacing="6">
-            
-
             <Button variant="solid" onClick={() => navigate("/warehouse/list", { replace: true })}>
               <BiArrowBack />
             </Button>
@@ -279,7 +277,6 @@ const WarehouseDetails = () => {
                 </ModalFooter>
               </ModalContent>
             </Modal>
-            
           </ButtonGroup>
         </CardFooter>
       </Card>
