@@ -12,7 +12,6 @@ const historiesController = require("./histories");
 const cartsController = require("./cartsController");
 const ordersController = require("./ordersController");
 const confirmOrderController = require("./confirmOrderController");
-const testController = require("./test-orders")
 
 module.exports = {
   usersController,
@@ -29,5 +28,4 @@ module.exports = {
   historiesController,
   confirmOrderController,
   ordersController,
-  testController,
 };

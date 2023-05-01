@@ -87,7 +87,6 @@ app.use("/cart", cartsRouter);
 app.use("/address", addressesRouter);
 app.use("/histories", historiesRouter);
 app.use("/orders", ordersRouter);
-app.use("/test", testRouter)
 
 app.use(express.static("."));
 

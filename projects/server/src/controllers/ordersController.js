@@ -16,26 +16,11 @@ const request = require("request");
 
 module.exports = {
   addOrder: async (req, res) => {
-    const t = await sequelize.transaction();
-
     try {
       let { id } = req.dataDecode;
       let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
 
-      const createNewOrder = await orders.create(
-        {
-          total_price,
-          status,
-          shipping_method,
-          shipping_cost,
-          user_addresses_id,
-          warehouses_id,
-          users_id: id,
-        },
-        { transaction: t }
-      );
-
-      //Get all carts data owned by specific user and merged with products data
+      // Get all carts data owned by specific user and merged with products data
       const fetchCart = await carts.findAll({
         where: {
           users_id: id,
@@ -48,39 +33,69 @@ module.exports = {
             attributes: ["id", "name", "price", "weight", "imageUrl"],
           },
         ],
-        attributes: ["id", "users_id", "quantity"],
+        attributes: ["id", "users_id", "quantity", "products_id"],
       });
 
-      const orderDetailsData = fetchCart.map((cartItem) => ({
-        orders_id: createNewOrder.id,
-        products_id: cartItem.product.id,
-        product_name: cartItem.product.name,
-        quantity: cartItem.quantity,
-        product_price: cartItem.product.price,
-        product_weight: cartItem.product.weight,
-        imageUrl: cartItem.product.imageUrl,
-      }));
+      // check if order qty less than stocks available
+      let validationChecker = [];
+      for (i = 0; i < fetchCart.length; i++) {
+        let id = fetchCart[i].products_id;
+        let quantity = fetchCart[i].quantity;
+        let product_stock = await stocks.findAll({
+          where: {
+            products_id: id,
+          },
+          raw: true,
+        });
+        let stock = 0;
+        for (j = 0; j < product_stock.length; j++) {
+          stock += product_stock[j].stock;
+        }
+        if (quantity <= stock) {
+          validationChecker.push(i);
+        }
+      }
 
-      //Post all carts data to order_details table
-      const postOrderDetails = await order_details.bulkCreate(orderDetailsData, {
-        transaction: t,
-      });
+      if (fetchCart.length == validationChecker.length) {
 
-      //Delete cart data based on users_id
-      const deleteCartData = await carts.destroy({ where: { users_id: id } }, { transaction: t });
-      t.commit();
-      res.status(201).send({
-        isError: false,
-        message: "Order created.",
-        data: createNewOrder,
+        const createNewOrder = await orders.create({
+          total_price,
+          status,
+          shipping_method,
+          shipping_cost,
+          user_addresses_id,
+          warehouses_id,
+          users_id: id,
+        });
+
+        let findOrderId = await orders.findOne({ where: { users_id: id }, order: [["id", "DESC"]] });
+
+        for (i = 0; i < fetchCart.length; i++) {
+          let carts_id = fetchCart[i].id;
+
+          //Post all carts data to order_details table
+          let addOrderDetails = await order_details.create({
+            orders_id: findOrderId.dataValues.id,
+            products_id: fetchCart[i].product.id,
+            product_name: fetchCart[i].product.name,
+            quantity: fetchCart[i].quantity,
+            product_price: fetchCart[i].product.price,
+            product_weight: fetchCart[i].product.weight,
+            imageUrl: fetchCart[i].product.imageUrl,
+          });
+
+          //Delete cart data based on users_id
+          let deleteCartData = await carts.destroy({ where: { id: carts_id } });
+        }
+      }
+
+      res.status(200).send({
+        success: true,
+        message: "Test ok",
+        data: fetchCart,
       });
     } catch (error) {
-      t.rollback();
-      res.status(409).send({
-        isError: true,
-        message: error.message,
-        data: null,
-      });
+      console.log(error);
     }
   },
   getOrderList: async (req, res) => {
