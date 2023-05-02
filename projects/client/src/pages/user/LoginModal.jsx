@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
-const Login = () => {
+const LoginModal = ({ onClose }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const { user, isSuccess, isError, message } = useSelector(
@@ -52,7 +52,8 @@ const Login = () => {
       setTimeout(() => {
         navigate("/");
         dispatch(clearState());
-      }, 2000);
+        onClose();
+      }, 1000);
       toast({
         title: "Logged in successfully.",
         status: "success",
@@ -70,7 +71,7 @@ const Login = () => {
     } else if (user) {
       navigate("/");
     }
-  }, [user, isSuccess, isError, message, navigate, dispatch, toast]);
+  }, [user, isSuccess, isError, message, navigate, dispatch, toast, onClose]);
 
   const formik = useFormik({
     initialValues: {
@@ -89,26 +90,26 @@ const Login = () => {
   });
 
   return (
-    <div className="flex justify-start items-center flex-col h-screen w-full">
+    <div className="flex justify-start items-center flex-col rounded-none">
       <Flex
-        minH={"100vh"}
         w={"full"}
+        rounded={"none"}
         align={"center"}
         justify={"center"}
-        bg={useColorModeValue("gray.50", "gray.800")}>
-        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} w={"md"}>
+        bg={useColorModeValue("white", "gray.800")}>
+        <Stack spacing={8} mx={"auto"} rounded={"none"}>
           <Stack align={"center"}>
             <Heading
+              fontFamily="Oswald"
+              pt={8}
               fontSize={"4xl"}
-              textAlign={"center"}
-              fontFamily={"Oswald"}>
+              textAlign={"center"}>
               Login
             </Heading>
           </Stack>
           <Box
             rounded={"none"}
             bg={useColorModeValue("white", "gray.700")}
-            boxShadow={"lg"}
             p={8}>
             <Stack spacing={4}>
               <form onSubmit={formik.handleSubmit}>
@@ -135,7 +136,7 @@ const Login = () => {
                   id="password"
                   isRequired
                   isInvalid={formik.touched.password && formik.errors.password}>
-                  <FormLabel mt={3}>Password</FormLabel>
+                  <FormLabel mt={4}>Password</FormLabel>
                   <InputGroup size="md">
                     <Input
                       pl={3}
@@ -175,10 +176,13 @@ const Login = () => {
                   </Link>
                 </Stack>
                 <Stack pt={6}>
-                  <Text align={"center"}>
+                  <Text
+                    align={"center"}
+                    variant="linkText"
+                    fontFamily={"Roboto"}>
                     <Link
-                      fontFamily="Roboto"
-                      className="text-gray-600 dark:text-gray-400"
+                      // fontFamily="Roboto"
+                      // className="text-gray-600 dark:text-gray-400"
                       width="full"
                       as={RouterLink}
                       to="/user/reset-password">
@@ -195,4 +199,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginModal;

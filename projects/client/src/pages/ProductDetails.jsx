@@ -19,8 +19,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
 import { addProduct } from "../reducers/cartSlice";
 
 export default function ProductDetails() {
@@ -66,29 +64,26 @@ export default function ProductDetails() {
   useEffect(() => {
     getProductsData();
     setProfile(JSON.parse(localStorage.getItem("user")));
+    //eslint-disable-next-line
   }, []);
 
   if (!product) {
     return (
       <div className="container flex flex-col justify-between">
-        {/* <Navbar /> */}
         <div className="my-8">
           <CircularProgress isIndeterminate color="blue" />
         </div>
-        {/* <Footer /> */}
       </div>
     );
   }
 
   return (
     <>
-      {/* <Navbar /> */}
       <div className="container mx-auto md:px-24 px-8 py-8">
         <Flex
           direction={{ base: "column", sm: "row" }}
           justifyContent="center"
-          alignItems="center"
-        >
+          alignItems="center">
           <Box flex="1" maxW="lg">
             <Image
               src={`${process.env.REACT_APP_API_BASE_URL}/${product?.imageUrl}`}
@@ -100,45 +95,43 @@ export default function ProductDetails() {
           </Box>
           <Spacer />
           <VStack flex="1" spacing={4} maxW="lg">
-            <Text fontSize="2xl" fontWeight="bold">
+            <Text fontSize="2xl" fontWeight="bold" fontFamily="Oswald">
               {product.name}
             </Text>
-            <Text>{product.description}</Text>
-            <Text fontSize="xl" fontWeight="bold">
+            <Text fontFamily="Roboto">{product.description}</Text>
+            <Text fontSize="xl" fontWeight="bold" fontFamily="Roboto">
               {(product.price * quantity).toLocaleString("id-ID", {
                 style: "currency",
                 currency: "IDR",
               })}
             </Text>
-            <HStack width="100%" justifyContent="center">
+            <HStack width="100%" justifyContent="center" fontFamily="Roboto">
               <Text>Quantity:</Text>
               <NumberInput
                 onChange={(qty) => setQuantity(Number(qty))}
                 defaultValue={1}
                 min={1}
-                max={99}
+                max={product.totalStock}
                 keepWithinRange
                 clampValueOnBlur
-              >
+                borderRadius="none">
                 <NumberInputField />
-                <NumberInputStepper>
+                <NumberInputStepper borderRadius="none">
                   <NumberIncrementStepper />
                   <NumberDecrementStepper />
                 </NumberInputStepper>
               </NumberInput>
             </HStack>
             <Button
+              variant="buttonBlack"
               onClick={() => handleAddToCart(product.id, quantity)}
               isDisabled={!profile?.is_verified || product.totalStock === "0"}
-              colorScheme="blue"
-              width="100%"
-            >
+              width="100%">
               {product.totalStock !== "0" ? "Add to cart" : "Out of stock"}
             </Button>
           </VStack>
         </Flex>
       </div>
-      {/* <Footer /> */}
     </>
   );
 }

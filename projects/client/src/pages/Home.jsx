@@ -87,7 +87,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col justify-between w-full">
-      <div className="p-2 md:p-4" /*mt-16 */>
+      <div className="p-2 md:p-4">
         <Carousel
           wrapAround={true}
           autoplay={true}
@@ -99,19 +99,34 @@ export default function Home() {
               fill: "white",
               margin: "0 15px 0 15px",
             },
-          }}
-        >
-          <img src={Carousel1} alt="carousel-1" className="w-full rounded-lg" />
-          <img src={Carousel2} alt="carousel-2" className="w-full rounded-lg" />
-          <img src={Carousel3} alt="carousel-3" className="w-full rounded-lg" />
-          <img src={Carousel4} alt="carousel-4" className="w-full rounded-lg" />
+          }}>
+          <img
+            src={Carousel1}
+            alt="carousel-1"
+            className="w-full rounded-none"
+          />
+          <img
+            src={Carousel2}
+            alt="carousel-2"
+            className="w-full rounded-none"
+          />
+          <img
+            src={Carousel3}
+            alt="carousel-3"
+            className="w-full rounded-none"
+          />
+          <img
+            src={Carousel4}
+            alt="carousel-4"
+            className="w-full rounded-none"
+          />
         </Carousel>
       </div>
 
       <CategoryCard func={getCategory} />
 
-      <div className="flex justify-end items-center mt-4 px-4">
-        <label htmlFor="sort" className="font-medium mr-1">
+      <div className="flex justify-end items-center mt-4 px-4 text-md">
+        <label htmlFor="sort" className="font-[Oswald] mr-1 text-md">
           Sort by :
         </label>
         <select
@@ -122,8 +137,7 @@ export default function Home() {
             setSortBy(newSortBy);
             setSortOrder(newSortOrder);
           }}
-          className="px-2 py-1 border border-gray-500 rounded-md"
-        >
+          className="px-2 py-1 border border-gray-500 rounded-none font-[Roboto] text-md">
           <option value="name-asc">Name A-Z</option>
           <option value="name-desc">Name Z-A</option>
           <option value="price-asc">Lower Price</option>
@@ -131,38 +145,38 @@ export default function Home() {
         </select>
       </div>
       <div className="grid md:grid-cols-4 grid-cols-1">
-        <div className="mx-2 my-4 p-2 border-2 border-gray-200 dark:bg-gray-800 dark:text-white shadow rounded-lg">
-          <p className="font-bold">Filter</p>
+        <div className="mx-2 my-4 p-2 border-2 border-gray-200 dark:bg-gray-800 dark:text-white shadow rounded-none">
+          <p className="text-md font-[Oswald]">Filter</p>
           <hr className="border-2 my-2" />
-          <p className="text-left font-bold">Price</p>
+          <p className="text-left font-[Oswald]">Price</p>
           <div className="py-4">
-            <div className="flex">
-              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+            <div className="flex text-md font-[Roboto]">
+              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-none dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
                 Rp
               </span>
               <input
                 onBlur={(event) => setMinPrice(event.target.value)}
                 type="text"
-                className="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="rounded-none rounded-r-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Min price"
               />
             </div>
           </div>
           <div>
-            <div className="flex">
-              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+            <div className="flex text-md font-[Roboto]">
+              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-none dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
                 Rp
               </span>
               <input
                 onBlur={(event) => setMaxPrice(event.target.value)}
                 type="text"
-                className="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="rounded-none rounded-r-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Max price"
               />
             </div>
           </div>
           <hr className="border-2 mt-4 mb-2" />
-          <p className="text-left font-bold mb-2">Color</p>
+          <p className="text-left font-[Oswald] mb-2">Color</p>
           <div className="flex items-center mb-2">
             <input
               onChange={(event) => setColor(event.target.value)}
@@ -170,12 +184,11 @@ export default function Home() {
               type="radio"
               value=""
               name="color"
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              className="font-[Roboto] w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             />
             <label
               htmlFor="default-radio-1"
-              className="ml-2 text-sm text-gray-900 dark:text-gray-300"
-            >
+              className="ml-2 text-sm text-gray-900 dark:text-gray-300">
               All
             </label>
           </div>
@@ -188,12 +201,11 @@ export default function Home() {
                   type="radio"
                   value={color}
                   name="color"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  className="font-[Roboto] w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
                 <label
                   htmlFor="default-radio-1"
-                  className="ml-2 text-sm text-gray-900 dark:text-gray-300"
-                >
+                  className="font-[Roboto] ml-2 text-sm text-gray-900 dark:text-gray-300">
                   {color}
                 </label>
               </div>
@@ -201,23 +213,23 @@ export default function Home() {
           })}
         </div>
 
-        <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4">
+        <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4 ">
           <ProductCard products={products} func={getCategory} />
-          <div className="grid md:col-span-4 col-span-2 place-items-center">
+          <div className="grid md:col-span-4 col-span-2 place-items-center font-[Oswald] ">
             <ReactPaginate
               previousLabel="<"
               nextLabel=">"
               breakLabel="..."
-              breakClassName="md:mx-2 md:bg-gray-200 md:hover:bg-gray-400 md:text-gray-800 md:font-bold md:-my-[0.42rem] md:pt-2 md:px-3.5 md:rounded"
+              breakClassName="md:mx-2 md:bg-gray-200 md:hover:bg-gray-400 md:text-gray-800  md:-my-[0.42rem] md:pt-2 md:px-3.5 md:rounded-none"
               pageRangeDisplayed={0}
               marginPagesDisplayed={1}
               pageCount={pageCount}
               onPageChange={({ selected }) => setOffset(selected * limit)}
               containerClassName="flex"
-              pageLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              previousLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              nextLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              activeLinkClassName="mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              pageLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-600 text-md py-2 px-4 rounded-none"
+              previousLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-600 font-bold py-2 px-4 rounded-none"
+              nextLinkClassName="mx-2 bg-gray-200 hover:bg-gray-400 text-gray-600 font-bold py-2 px-4 rounded-none"
+              activeLinkClassName="mx-2 bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
               disabledLinkClassName="mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
             />
           </div>

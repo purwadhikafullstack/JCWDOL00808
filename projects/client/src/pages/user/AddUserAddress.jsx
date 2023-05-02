@@ -117,7 +117,6 @@ const AddUserAddress = () => {
       if (location.pathname === "/user/add-address/checkout") {
         window.location.href = "/user/checkout";
       }
-
     } catch (error) {
       toast({
         title: "Error adding address.",
@@ -130,6 +129,8 @@ const AddUserAddress = () => {
     }
   };
 
+  const phoneRegExp =
+    /^(\+62|62)?[\s-]?0?8[1-9]{1}\d{1}[\s-]?\d{4}[\s-]?\d{2,5}$/;
   const formik = useFormik({
     initialValues: {
       address: "",
@@ -148,7 +149,9 @@ const AddUserAddress = () => {
       province: Yup.string().required("Required"),
       postal_code: Yup.string().required("Required"),
       recipient: Yup.string().required("Required"),
-      phone_number: Yup.string().required("Required"),
+      phone_number: Yup.string()
+        .matches(phoneRegExp, "Phone number is not valid")
+        .required("Required"),
       is_primary: Yup.number().required("Required"),
     }),
     onSubmit: handleAddAddress,
@@ -157,26 +160,34 @@ const AddUserAddress = () => {
   return (
     <>
       <Box mb={4} w={"full"}>
-        <HStack mb={4} mt={2} mr={4} justify="flex-end">
-          <Link  to={location.pathname === '/user/add-address/checkout' ? '/user/checkout' : '/user/address'}>
+        <HStack mb={-2} mt={2} mr={4} justify="flex-end">
+          <Link
+            to={
+              location.pathname === "/user/add-address/checkout"
+                ? "/user/checkout"
+                : "/user/address"
+            }>
             <IconButton
               icon={<CloseIcon />}
               aria-label="Back Button"
-              colorScheme="blue"
+              variant="buttonBlack"
             />
           </Link>
         </HStack>
-        <Heading>Address List</Heading>
+        <Heading fontFamily="Oswald">Add Address</Heading>
         <form onSubmit={formik.handleSubmit}>
-          <VStack spacing={4} mt={4} mx="auto" maxW="480px">
+          <VStack spacing={2} mt={4} mx="auto" maxW="480px">
             <FormControl
-              isInvalid={formik.errors.address && formik.touched.address}
-            >
-              <FormLabel htmlFor="address">Address</FormLabel>
+              isInvalid={formik.errors.address && formik.touched.address}>
+              <FormLabel htmlFor="address" fontFamily="Oswald" fontSize="lg">
+                Address
+              </FormLabel>
               <Input
                 id="address"
                 name="address"
                 type="text"
+                fontFamily="Roboto"
+                borderRadius={0}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.address}
@@ -184,29 +195,30 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.province && formik.touched.province}
-            >
-              <FormLabel htmlFor="province">Province</FormLabel>
+              isInvalid={formik.errors.province && formik.touched.province}>
+              <FormLabel htmlFor="province" fontFamily="Oswald" fontSize="lg">
+                Province
+              </FormLabel>
               <Select
                 id="province"
                 name="province"
                 placeholder=" "
                 // type="text"
                 // onChange={formik.handleChange}
+                fontFamily="Roboto"
+                borderRadius={0}
                 onChange={(element) => {
                   setProvince(element.target.value.split(",")[1]);
                   onGetCity(element.target.value.split(","[0]));
                   formik.handleChange(element);
                 }}
                 // onBlur={formik.handleBlur}
-                value={formik.values.province}
-              >
+                value={formik.values.province}>
                 {provinceData.map((value) => {
                   return (
                     <option
                       value={value.province_id + "," + value.province}
-                      key={value.province_id}
-                    >
+                      key={value.province_id}>
                       {value.province}
                     </option>
                   );
@@ -215,11 +227,15 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={formik.errors.city && formik.touched.city}>
-              <FormLabel htmlFor="city">City</FormLabel>
+              <FormLabel htmlFor="city" fontFamily="Oswald" fontSize="lg">
+                City
+              </FormLabel>
               <Select
                 id="city"
                 name="city"
                 placeholder=" "
+                fontFamily="Roboto"
+                borderRadius={0}
                 // type="text"
                 // onChange={formik.handleChange}
                 onChange={(element) => {
@@ -227,14 +243,12 @@ const AddUserAddress = () => {
                   formik.handleChange(element);
                 }}
                 onBlur={formik.handleBlur}
-                value={formik.values.city}
-              >
+                value={formik.values.city}>
                 {cityData.map((value) => {
                   return (
                     <option
                       value={`${value.type} ${value.city_name}`}
-                      key={value.city_id}
-                    >
+                      key={value.city_id}>
                       {value.type} {value.city_name}
                     </option>
                   );
@@ -243,13 +257,16 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.district && formik.touched.district}
-            >
-              <FormLabel htmlFor="district">District</FormLabel>
+              isInvalid={formik.errors.district && formik.touched.district}>
+              <FormLabel htmlFor="district" fontFamily="Oswald" fontSize="lg">
+                District
+              </FormLabel>
               <Input
                 id="district"
                 name="district"
                 type="text"
+                fontFamily="Roboto"
+                borderRadius={0}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.district}
@@ -259,13 +276,19 @@ const AddUserAddress = () => {
             <FormControl
               isInvalid={
                 formik.errors.postal_code && formik.touched.postal_code
-              }
-            >
-              <FormLabel htmlFor="postal_code">Postal Code</FormLabel>
+              }>
+              <FormLabel
+                htmlFor="postal_code"
+                fontFamily="Oswald"
+                fontSize="lg">
+                Postal Code
+              </FormLabel>
               <Input
                 id="postal_code"
                 name="postal_code"
                 type="text"
+                fontFamily="Roboto"
+                borderRadius={0}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.postal_code}
@@ -273,13 +296,16 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.postal_code}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.recipient && formik.touched.recipient}
-            >
-              <FormLabel htmlFor="recipient">Recipient</FormLabel>
+              isInvalid={formik.errors.recipient && formik.touched.recipient}>
+              <FormLabel htmlFor="recipient" fontFamily="Oswald" fontSize="lg">
+                Recipient
+              </FormLabel>
               <Input
                 id="recipient"
                 name="recipient"
                 type="text"
+                fontFamily="Roboto"
+                borderRadius={0}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.recipient}
@@ -289,13 +315,19 @@ const AddUserAddress = () => {
             <FormControl
               isInvalid={
                 formik.errors.phone_number && formik.touched.phone_number
-              }
-            >
-              <FormLabel htmlFor="phone_number">Phone Number</FormLabel>
+              }>
+              <FormLabel
+                htmlFor="phone_number"
+                fontFamily="Oswald"
+                fontSize="lg">
+                Phone Number
+              </FormLabel>
               <Input
                 id="phone_number"
                 name="phone_number"
                 type="text"
+                fontFamily="Roboto"
+                borderRadius={0}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.phone_number}
@@ -303,17 +335,19 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.is_primary && formik.touched.is_primary}
-            >
-              <FormLabel htmlFor="is_primary">Primary Address</FormLabel>
+              isInvalid={formik.errors.is_primary && formik.touched.is_primary}>
+              <FormLabel htmlFor="is_primary" fontFamily="Oswald" fontSize="lg">
+                Primary Address
+              </FormLabel>
               <Select
                 id="is_primary"
                 name="is_primary"
                 type="number"
+                fontFamily="Roboto"
+                borderRadius={0}
                 placeholder=" "
                 {...formik.getFieldProps("is_primary")}
-                onChange={formik.handleChange}
-              >
+                onChange={formik.handleChange}>
                 {[
                   { value: 1, label: "Yes" },
                   { value: 0, label: "No" },
@@ -328,9 +362,8 @@ const AddUserAddress = () => {
 
             <Button
               type="submit"
-              colorScheme="blue"
-              isLoading={formik.isSubmitting}
-            >
+              variant="buttonBlack"
+              isLoading={formik.isSubmitting}>
               Add Address
             </Button>
           </VStack>
