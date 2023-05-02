@@ -16,7 +16,13 @@ module.exports = (sequelize, DataTypes) => {
   stocks.init(
     {
       stock: DataTypes.INTEGER,
+      is_deleted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
+
     {
       sequelize,
       modelName: "stocks",
