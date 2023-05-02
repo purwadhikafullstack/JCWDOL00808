@@ -42,8 +42,10 @@ const OrderList = () => {
   const [order, setOrder] = useState("DESC");
   const [search, setSearch] = useState("");
   const [keyword, setKeyword] = useState("");
+  const [dataDetails, setDataDetails] = useState([]);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure();
+  const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onClose: onDetailsClose } = useDisclosure();
   const [value, setValue] = useState("1");
 
   let token = localStorage.getItem("token");
@@ -90,54 +92,61 @@ const OrderList = () => {
 
   const showOrderList = () => {
     return list?.map((value) => {
+      // setDataDetails(value)
       return (
         <Card mb={6} size="lg" maxW="600px" mx="auto" border="1px" borderColor="gray.300">
           <CardBody>
-            <Box>
-              <Flex>
-                <BsBasketFill />
-                <Text>{value.when}</Text>
-                {value.status == "Shipped" ? (
-                  <Badge variant="subtle" colorScheme="green">
-                    {value.status}
+            {/* <Flex>
+                <BsBasketFill size={21} />
+              </Flex> */}
+            <Flex>
+              <Image src={`${process.env.REACT_APP_API_BASE_URL}/${value.order_details[0].imageUrl}`} boxSize="132px" />
+              <Flex flexDirection="column" alignItems="flex-start">
+                <Text fontSize="md" ml={8}>
+                  Transaction date: {value.when}
+                </Text>
+                {value.status == "Confirmed" ? (
+                  <Badge variant="subtle" colorScheme="green" ml={8}>
+                    done
                   </Badge>
                 ) : value.status == "Canceled" ? (
-                  <Badge variant="subtle" colorScheme="red">
+                  <Badge variant="subtle" colorScheme="red" ml={8}>
                     {value.status}
                   </Badge>
                 ) : (
-                  <Badge variant="subtle" colorScheme="blue">
+                  <Badge variant="subtle" colorScheme="blue" ml={8}>
                     {value.status}
                   </Badge>
                 )}
-              </Flex>
-            </Box>
-            <Box boxSize="70px">
-              <Flex>
-                <Image src="https://images.tokopedia.net/img/cache/500-square/hDjmkQ/2022/2/24/a9f6f800-b2ba-4ad7-a4e4-590c599309bc.jpg" size="sm" />
-                {/* <Image src={value.order_details[0].imageUrl} size="sm" /> */}
-                {/* {value.order_details.length > 1 ? (
-                  <Text>
-                    {value.order_details[0].product_name} dan {value.order_details.length - 1} lainnya
-                  </Text>
+                {value.order_details.length > 1 && value.order_details.length - 1 != 1 ? (
+                  <Box ml={8} mt={4}>
+                    {value.order_details[0].product_name} and {value.order_details.length - 1} other
+                  </Box>
                 ) : (
-                  <Text>{value.order_details[0].product_name}</Text>
-                )} */}
-                <Text>Total belanja: Rp{value.total_price}</Text>
+                  <Box ml={8} mt={4}>
+                    {value.order_details[0].product_name}
+                  </Box>
+                )}
+                <Box ml={8} mt={4}>
+                  Total payment: Rp{value.total_price}
+                </Box>
               </Flex>
-            </Box>
+            </Flex>
             {value.status == "Waiting for payment" ? (
               <>
-                <Button onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>Upload payment proof</Button>
                 <Button
-                  colorScheme="red"
+                  colorScheme="gray"
+                  variant="outline"
                   onClick={() => {
-                    onOpen();
+                    onCancelOpen();
                   }}
                 >
                   Cancel order
                 </Button>
-                <Modal isOpen={isOpen} onClose={onClose}>
+                <Button colorScheme="green" variant="outline" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
+                  Upload payment proof
+                </Button>
+                <Modal isOpen={isCancelOpen} onClose={onCancelClose}>
                   <ModalOverlay />
                   <ModalContent>
                     <ModalHeader>Request order cancellation?</ModalHeader>
@@ -149,7 +158,7 @@ const OrderList = () => {
                       <option>I want to change my address</option>
                     </Select>
                     <ModalFooter>
-                      <Button colorScheme="blue" mr={3} onClick={onClose}>
+                      <Button colorScheme="blue" mr={3} onClick={onCancelClose}>
                         Close
                       </Button>
                       <Button variant="ghost" onClick={() => handleCancelButton(value.id)}>
@@ -159,7 +168,67 @@ const OrderList = () => {
                   </ModalContent>
                 </Modal>
               </>
-            ) : null}
+            ) : (
+              <>
+                <Button variant="outline" onClick={() => onDetailsOpen()}>
+                  Transaction details
+                </Button>
+                <Modal isOpen={isDetailsOpen} onClose={onDetailsClose}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>Transaction Details</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                      <Text as="b">Status:</Text>
+                      {value.status == "Confirmed" ? (
+                        <Text variant="subtle" colorScheme="green">
+                          done
+                        </Text>
+                      ) : value.status == "Canceled" ? (
+                        <Text variant="subtle" colorScheme="red">
+                          {value.status}
+                        </Text>
+                      ) : (
+                        <Text variant="subtle" colorScheme="blue">
+                          {value.status}
+                        </Text>
+                      )}
+                      <Text as="b">Transaction Date:</Text>
+                      <Text>{value.when} insert jam here</Text>
+                      <Text as="b">Product Details:</Text>
+                      {value.order_details.map((detail) => {
+                        return (
+                          <>
+                            <Image src={`${process.env.REACT_APP_API_BASE_URL}/${detail.imageUrl}`} boxSize="132px" />
+                            <Text>{detail.product_name}</Text>
+                            <Text>
+                              {detail.quantity} x Rp {detail.product_price}
+                            </Text>
+                            <Text>{detail.product_weight} gr</Text>
+                            <Text>
+                              Shipping method: {value.shipping_method}
+                            </Text>
+                            <Text as="b">Payment Details</Text>
+                            <Text>Payment method: Bank transfer</Text>
+                            <Text>Total price: Rp {value.total_price}</Text>
+                            <Text>
+                              Shipping cost {detail.product_weight} gr: Rp {value.shipping_cost}
+                            </Text>
+                            <Text as="b">Grand Total: {value.total_price}</Text>
+                          </>
+                        );
+                      })}
+                    </ModalBody>
+
+                    <ModalFooter>
+                      <Button colorScheme="blue" mr={3} onClick={onDetailsClose}>
+                        Close
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
+              </>
+            )}
           </CardBody>
         </Card>
       );
@@ -174,7 +243,7 @@ const OrderList = () => {
     <>
       <Box w="100%">
         <Box id="sort and filter" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-          <Card maxW="md" border="1px" borderColor="gray.300">
+          <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
             <CardBody>
               <VStack>
                 <FormControl>
@@ -190,7 +259,7 @@ const OrderList = () => {
               </VStack>
             </CardBody>
           </Card>
-          <Card maxW="md" border="1px" borderColor="gray.300">
+          <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
             <CardBody>
               <VStack>
                 <FormControl>
@@ -199,16 +268,15 @@ const OrderList = () => {
                     <Stack direction="row">
                       <Radio value="1">All</Radio>
                       <Radio value="2">Ongoing</Radio>
-                      <Radio value="3">Success</Radio>
-                      <Radio value="4">Cancelled</Radio>
-                      <Radio value="5">Done</Radio>
+                      <Radio value="3">Cancelled</Radio>
+                      <Radio value="4">Done</Radio>
                     </Stack>
                   </RadioGroup>
                 </FormControl>
               </VStack>
             </CardBody>
           </Card>
-          <Card maxW="md" border="1px" borderColor="gray.300">
+          <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
             <CardBody>
               <VStack>
                 <FormControl>
@@ -222,7 +290,7 @@ const OrderList = () => {
             </CardBody>
           </Card>
         </Box>
-        <Box w="100%" my="100">
+        <Box w="100%" mt={8}>
           <Text fontSize="xl">My Transaction</Text>
           {showOrderList()}
         </Box>

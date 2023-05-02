@@ -57,7 +57,6 @@ module.exports = {
       }
 
       if (fetchCart.length == validationChecker.length) {
-
         const createNewOrder = await orders.create({
           total_price,
           status,
@@ -104,11 +103,10 @@ module.exports = {
     const users_id = req.dataDecode.id;
     try {
       let data = await orders.findAll({
-        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id"],
+        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id", "shipping_method", "shipping_cost"],
         where: { users_id },
         include: {
           model: order_details,
-          attributes: ["product_name", "quantity", "imageUrl"],
         },
       });
       res.status(200).send(data);
