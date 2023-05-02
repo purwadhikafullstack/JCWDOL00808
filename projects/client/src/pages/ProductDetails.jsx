@@ -19,8 +19,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
 import { addProduct } from "../reducers/cartSlice";
 
 export default function ProductDetails() {
@@ -66,23 +64,21 @@ export default function ProductDetails() {
   useEffect(() => {
     getProductsData();
     setProfile(JSON.parse(localStorage.getItem("user")));
+    //eslint-disable-next-line
   }, []);
 
   if (!product) {
     return (
       <div className="container flex flex-col justify-between">
-        {/* <Navbar /> */}
         <div className="my-8">
           <CircularProgress isIndeterminate color="blue" />
         </div>
-        {/* <Footer /> */}
       </div>
     );
   }
 
   return (
     <>
-      {/* <Navbar /> */}
       <div className="container mx-auto md:px-24 px-8 py-8">
         <Flex
           direction={{ base: "column", sm: "row" }}
@@ -115,7 +111,7 @@ export default function ProductDetails() {
                 onChange={(qty) => setQuantity(Number(qty))}
                 defaultValue={1}
                 min={1}
-                max={99}
+                max={product.totalStock}
                 keepWithinRange
                 clampValueOnBlur
                 borderRadius="none">
@@ -136,7 +132,6 @@ export default function ProductDetails() {
           </VStack>
         </Flex>
       </div>
-      {/* <Footer /> */}
     </>
   );
 }
