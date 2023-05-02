@@ -1,4 +1,4 @@
-import { Link, Input, InputGroup, InputRightElement, Box, Spacer, Button, Text, useToast, FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
+import { Link, Input, InputGroup, InputRightElement, Box, Spacer, Button, Text, useToast, FormControl, FormLabel, FormErrorMessage, Stack, Heading } from "@chakra-ui/react";
 import React from "react";
 import { useState } from "react";
 import Axios from "axios";
@@ -78,6 +78,11 @@ const AdminLogin = (props) => {
     <>
       <div className="flex justify-center items-center h-screen w-full">
         <Box w={[300, 400, 500]} className="shadow p-5">
+          <Stack align={"center"}>
+            <Heading fontSize={"4xl"} textAlign={"center"} fontFamily={"Oswald"}>
+              Login
+            </Heading>
+          </Stack>
           <form onSubmit={formik.handleSubmit}>
             <FormControl isInvalid={formik.errors.email && formik.touched.email}>
               <FormLabel>E-mail address</FormLabel>
@@ -96,14 +101,16 @@ const AdminLogin = (props) => {
               </InputGroup>
               <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
             </FormControl>
-            <Button colorScheme="twitter" type="submit">
+            {/* <Button colorScheme="twitter" type="submit">
+              Login
+            </Button> */}
+            <Button type="submit" variant="buttonBlack" className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
               Login
             </Button>
           </form>
-          <Button colorScheme="twitter" type="submit" onClick={() => navigate("/user/login")}>
-            Ke page login user
+          <Button variant="subtle" colorScheme="gray" type="submit" onClick={() => navigate("/user/login")}>
+            Login as user
           </Button>
-          {/* <Link to="/user/login">Login sebagai user</Link> */}
         </Box>
       </div>
     </>

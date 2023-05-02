@@ -11,6 +11,7 @@ const order_details = db.order_details;
 const products = db.products;
 const carts = db.carts;
 const warehouses = db.warehouses;
+const stocks = db.stocks;
 
 const request = require("request");
 

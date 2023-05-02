@@ -26,7 +26,7 @@ module.exports = {
     let options = {
       method: "GET",
       url: "https://api.rajaongkir.com/starter/province",
-      headers: { key: "c80fa8beeb5eeb737ca76afcf8939a56" },
+      headers: { key: process.env.API_KEY },
     };
 
     request(options, function (error, response, body) {
@@ -42,7 +42,7 @@ module.exports = {
       method: "GET",
       url: "https://api.rajaongkir.com/starter/city",
       qs: { province: req.query.province_id },
-      headers: { key: "c80fa8beeb5eeb737ca76afcf8939a56" },
+      headers: { key: process.env.API_KEY },
     };
 
     request(options, function (error, response, body) {
@@ -59,7 +59,7 @@ module.exports = {
       method: "POST",
       url: "https://api.rajaongkir.com/starter/cost",
       headers: {
-        key: "c80fa8beeb5eeb737ca76afcf8939a56",
+        key: process.env.API_KEY,
         "content-type": "application/x-www-form-urlencoded",
       },
       form: {

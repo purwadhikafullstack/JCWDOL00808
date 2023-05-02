@@ -2,11 +2,12 @@ import { Box, Text, InputGroup, Input, InputRightElement, Button, useToast } fro
 import { useState } from "react";
 import { API_url } from "../../helper";
 import Axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const UploadPaymentProof = () => {
   const [proof, setProof] = useState(null);
   const toast = useToast();
+  const navigate = useNavigate();
 
   let token = localStorage.getItem("token");
   let { search } = useLocation();
@@ -27,6 +28,7 @@ const UploadPaymentProof = () => {
           duration: 9000,
           isClosable: true,
         });
+        setTimeout(() => (navigate("/user/order-list", { replace: true }), 2000));
       })
       .catch((error) => {
         console.log(error);
@@ -49,8 +51,8 @@ const UploadPaymentProof = () => {
         </Text>
         <Input type="file" placeholder="upload .jpeg/ .jpg/ .png file less than 5MB" onChange={(element) => setProof(element.target.files[0])} />
 
-        <Button className="mt-5" colorScheme="twitter" onClick={handleUploadButton}>
-          Upload proof
+        <Button onClick={handleUploadButton} variant="buttonBlack" className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
+          Upload
         </Button>
       </Box>
     </div>
