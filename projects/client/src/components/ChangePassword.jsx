@@ -90,17 +90,21 @@ export default function ChangePassword(props) {
 
   return (
     <>
-      <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
+      <Heading
+        fontFamily="Oswald"
+        lineHeight={1.1}
+        fontSize={{ base: "2xl", sm: "3xl" }}>
         Change password
       </Heading>
       <FormControl
         id="oldPassword"
         isRequired
-        isInvalid={formik.touched.oldPassword && formik.errors.oldPassword}
-      >
-        <FormLabel>Old Password</FormLabel>
+        isInvalid={formik.touched.oldPassword && formik.errors.oldPassword}>
+        <FormLabel fontFamily="Oswald">Old Password</FormLabel>
         <InputGroup>
           <Input
+            ontFamily="Roboto"
+            borderRadius={0}
             id="oldPassword"
             name="oldPassword"
             placeholder="Old Password"
@@ -111,8 +115,7 @@ export default function ChangePassword(props) {
           <InputRightElement h={"full"}>
             <Button
               variant={"ghost"}
-              onClick={() => setShowOldPassword(!showOldPassword)}
-            >
+              onClick={() => setShowOldPassword(!showOldPassword)}>
               {showOldPassword ? <ViewIcon /> : <ViewOffIcon />}
             </Button>
           </InputRightElement>
@@ -122,11 +125,12 @@ export default function ChangePassword(props) {
       <FormControl
         id="newPassword"
         isRequired
-        isInvalid={formik.touched.newPassword && formik.errors.newPassword}
-      >
-        <FormLabel>New Password</FormLabel>
+        isInvalid={formik.touched.newPassword && formik.errors.newPassword}>
+        <FormLabel fontFamily="Oswald">New Password</FormLabel>
         <InputGroup>
           <Input
+            ontFamily="Roboto"
+            borderRadius={0}
             id="newPassword"
             name="newPassword"
             placeholder="New Password"
@@ -137,8 +141,7 @@ export default function ChangePassword(props) {
           <InputRightElement h={"full"}>
             <Button
               variant={"ghost"}
-              onClick={() => setShowNewPassword(!showNewPassword)}
-            >
+              onClick={() => setShowNewPassword(!showNewPassword)}>
               {showNewPassword ? <ViewIcon /> : <ViewOffIcon />}
             </Button>
           </InputRightElement>
@@ -150,11 +153,12 @@ export default function ChangePassword(props) {
         isRequired
         isInvalid={
           formik.touched.confirmPassword && formik.errors.confirmPassword
-        }
-      >
-        <FormLabel>Confirm New Password</FormLabel>
+        }>
+        <FormLabel fontFamily="Oswald">Confirm New Password</FormLabel>
         <InputGroup>
           <Input
+            ontFamily="Roboto"
+            borderRadius={0}
             id="confirmPassword"
             name="confirmPassword"
             placeholder="Confirm New Password"
@@ -165,8 +169,7 @@ export default function ChangePassword(props) {
           <InputRightElement h={"full"}>
             <Button
               variant={"ghost"}
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
               {showConfirmPassword ? <ViewIcon /> : <ViewOffIcon />}
             </Button>
           </InputRightElement>
@@ -174,15 +177,7 @@ export default function ChangePassword(props) {
         <FormErrorMessage>{formik.errors.confirmPassword}</FormErrorMessage>
       </FormControl>
       <Stack spacing={6} direction={["column", "row"]}>
-        <Button
-          onClick={props.onCancel}
-          bg={"red.400"}
-          color={"white"}
-          w="full"
-          _hover={{
-            bg: "red.500",
-          }}
-        >
+        <Button onClick={props.onCancel} w="full" variant="buttonWhite">
           Cancel
         </Button>
         <ChangePasswordConfirmation

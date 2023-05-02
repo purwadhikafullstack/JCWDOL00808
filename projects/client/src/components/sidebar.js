@@ -27,6 +27,7 @@ export default function Sidebar() {
   const [openSubMenuIndex, setOpenSubMenuIndex] = useState(-1);
   const navigate = useNavigate();
   const [role, setRole] = useState(localStorage.getItem("role"));
+  const token = localStorage.getItem("token");
   const [isOpen, setIsOpen] = useState(false);
   const toast = useToast();
 
@@ -48,10 +49,12 @@ export default function Sidebar() {
 
   //get all warehouse data from localhost:8000/warehouses/getAllWarehouse using axios
   const [warehouseData, setWarehouseData] = useState([]);
+  const [warehouseAdmin, setWarehouseAdmin] = useState([]);
   //
 
   useEffect(() => {
     fetchWarehouseData();
+    fetchWarehouseAdmin();
   }, []);
 
   const fetchWarehouseData = async () => {
@@ -60,6 +63,24 @@ export default function Sidebar() {
         `http://localhost:8000/warehouses/getAllWarehouse`
       );
       setWarehouseData(response.data);
+    } catch (error) {
+      toast({
+        title: "Error fetching warehouses data.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const fetchWarehouseAdmin = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/warehouses/warehouse-id-by-admins-id`,
+        { headers: { Authorization: token } }
+      );
+      setWarehouseAdmin(response.data);
+      console.log(response.data);
     } catch (error) {
       toast({
         title: "Error fetching warehouses data.",
@@ -145,7 +166,7 @@ export default function Sidebar() {
 
         <ul className="pt-2">
           {Menus.map((menu, index) => (
-            <>
+            <React.Fragment key={index}>
               {menu.title === "Account" && role === "2" ? null : ( // role nomor 2 menandakan sebagai admin warehouse
                 <li
                   key={index}
@@ -220,7 +241,11 @@ export default function Sidebar() {
                             navigate("/warehouse/list");
                           } else if (submenuItem.title === "Warehouse Stock") {
                             navigate(
-                              role === "2" ? "/warehouse/stock/1" : null
+                              role === "2"
+                                ? warehouseAdmin.length === 0
+                                  ? "/warehouse/stock/0"
+                                  : `/warehouse/stock/${warehouseAdmin[0]?.id}`
+                                : null
                             );
                           } else if (submenuItem.title === "List Orders") {
                             navigate("/admin/list-orders");
@@ -232,7 +257,7 @@ export default function Sidebar() {
                   })}
                 </ul>
               )}
-            </>
+            </React.Fragment>
           ))}
         </ul>
       </div>

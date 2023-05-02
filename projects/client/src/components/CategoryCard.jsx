@@ -27,13 +27,12 @@ export default function CategoryCard(props) {
       >
         <div
           onClick={() => props.func("")}
-          className="hover:animate-pulse hover:bg-gray-300 border border-gray-200 flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
-        >
+          className=" hover:bg-gray-300 border border-gray-200 flex flex-col min-w-fit break-words bg-white hover:shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-none bg-clip-border">
           <div className="flex flex-col items-center justify-between p-4">
-            <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
+            <p className="font-[Oswald] font-bold leading-normal uppercase text-sm dark:text-slate-300">
               All Categories
             </p>
-            <p className=" dark:text-white dark:opacity-60 text-sm">
+            <p className="font-[Roboto] dark:text-white dark:opacity-60 text-sm mt-1">
               Show products on all categories
             </p>
           </div>
@@ -43,13 +42,12 @@ export default function CategoryCard(props) {
             <div
               key={index}
               onClick={() => props.func(category.id)}
-              className="hover:animate-pulse hover:bg-gray-300 border border-gray-200 flex flex-col min-w-fit break-words bg-white shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-2xl bg-clip-border"
-            >
+              className=" hover:bg-gray-300 border border-gray-200 flex flex-col min-w-fit break-words bg-white hover:shadow-xl dark:bg-slate-800 dark:shadow-dark-xl rounded-none bg-clip-border">
               <div className="flex flex-col items-center justify-between p-4">
-                <p className="font-sans font-bold leading-normal uppercase text-sm dark:text-slate-300">
+                <p className="font-[Oswald] font-bold leading-normal uppercase text-sm dark:text-slate-300">
                   {category.name}
                 </p>
-                <p className=" dark:text-white dark:opacity-60 text-sm">
+                <p className="font-[Roboto] dark:text-white dark:opacity-60 text-sm mt-1">
                   {category.description}
                 </p>
               </div>

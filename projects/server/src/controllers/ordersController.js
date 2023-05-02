@@ -20,7 +20,14 @@ module.exports = {
 
     try {
       let { id } = req.dataDecode;
-      let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
+      let {
+        total_price,
+        status,
+        shipping_method,
+        shipping_cost,
+        user_addresses_id,
+        warehouses_id,
+      } = req.body;
 
       const createNewOrder = await orders.create(
         {
@@ -62,12 +69,18 @@ module.exports = {
       }));
 
       //Post all carts data to order_details table
-      const postOrderDetails = await order_details.bulkCreate(orderDetailsData, {
-        transaction: t,
-      });
+      const postOrderDetails = await order_details.bulkCreate(
+        orderDetailsData,
+        {
+          transaction: t,
+        }
+      );
 
       //Delete cart data based on users_id
-      const deleteCartData = await carts.destroy({ where: { users_id: id } }, { transaction: t });
+      const deleteCartData = await carts.destroy(
+        { where: { users_id: id } },
+        { transaction: t }
+      );
       t.commit();
       res.status(201).send({
         isError: false,
@@ -85,7 +98,8 @@ module.exports = {
   },
   getOrders: async (req, res) => {
     try {
-      // let { id } = req.dataDecode;
+      let { id } = req.dataDecode;
+      const role = req.query.role;
 
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
@@ -93,6 +107,13 @@ module.exports = {
       const offset = limit * page;
       const sort = req.query.sort || "id"; //default sorting by name
       const order = req.query.order || "DESC"; //default order DESC
+
+      const adminFilter =
+        role === "2"
+          ? {
+              "$warehouse.admins_id$": id,
+            }
+          : {};
 
       const searchFilter = search
         ? {
@@ -115,14 +136,34 @@ module.exports = {
             ],
           }
         : {};
+      // const totalRows = await orders.count({
+      //   ...(Object.keys(searchFilter).length > 0 && { where: searchFilter }),
+      // });
       const totalRows = await orders.count({
-        ...(Object.keys(searchFilter).length > 0 && { where: searchFilter }),
+        where: {
+          ...searchFilter,
+          ...adminFilter,
+        },
+        include: [
+          {
+            model: warehouses,
+            as: "warehouse",
+            attributes: ["name", "admins_id"],
+          },
+          {
+            model: user_addresses,
+            as: "user_address",
+            attributes: ["recipient", "phone_number"],
+          },
+        ],
+        subQuery: false,
       });
 
       const totalPage = Math.ceil(totalRows / limit);
       const result = await orders.findAll({
         where: {
           ...searchFilter,
+          ...adminFilter,
         },
         include: [
           {
@@ -147,6 +188,15 @@ module.exports = {
           orderData.payment_proof = orderData.payment_proof.replace(/\\/g, "/");
         }
       });
+      if (result.length === 0 && search !== "") {
+        return res
+          .status(404)
+          .json({ message: "No matching results found for the search query" });
+      } else if (result.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "Please assign warehouse first" });
+      }
       res.json({
         result: result,
         page: page,
@@ -174,7 +224,15 @@ module.exports = {
           },
           {
             model: user_addresses,
-            attributes: ["recipient", "phone_number", "address", "province", "city", "district", "postal_code"],
+            attributes: [
+              "recipient",
+              "phone_number",
+              "address",
+              "province",
+              "city",
+              "district",
+              "postal_code",
+            ],
           },
         ],
       });

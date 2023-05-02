@@ -37,7 +37,7 @@ import {
 } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import SendOrderModal from "../../components/SendOrderModal";
@@ -65,26 +65,65 @@ function ListOrders() {
     useState(false);
 
   const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("role");
+
+  const showWarningToast = useCallback(
+    (message) => {
+      toast({
+        title: message,
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+    [toast]
+  );
+
+  const showErrorToast = useCallback(
+    (message) => {
+      toast({
+        title: message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+    [toast]
+  );
 
   useEffect(() => {
-    getOrders();
+    getOrders(userRole);
   }, [page, keyword, sort, order]);
 
-  const getOrders = async () => {
-    const response = await axios.get(
-      `http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}`,
-      {
-        params: {
-          sort,
-          order,
-        },
-        headers: { Authorization: token },
+  const getOrders = async (userRole) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}&role=${userRole}`,
+        {
+          params: {
+            sort,
+            order,
+          },
+          headers: { Authorization: token },
+        }
+      );
+
+      setOrders(response.data.result);
+      setPage(response.data.page);
+      setPages(response.data.totalPage);
+      setRows(response.data.totalRows);
+    } catch (error) {
+      console.error(error);
+      if (
+        error.response &&
+        error.response.status === 404 &&
+        error.response.data.message
+      ) {
+        showWarningToast(error.response.data.message); // Update this line
+      } else {
+        showErrorToast("Error fetching orders"); // Update this line
       }
-    );
-    setOrders(response.data.result);
-    setPage(response.data.page);
-    setPages(response.data.totalPage);
-    setRows(response.data.totalRows);
+    }
   };
 
   const fetchOrderDetailsAndOpenModal = async (orderId) => {
@@ -119,7 +158,8 @@ function ListOrders() {
     setPage(selected);
   };
 
-  const searchData = () => {
+  const searchData = (e) => {
+    e.preventDefault();
     setPage(0);
     setKeyword(query);
   };
@@ -235,9 +275,7 @@ function ListOrders() {
   }
 
   // membuat role admin warehouse hanya bisa read data saja
-  const role = localStorage.getItem("role");
-  const isButtonDisabled = role === "2";
-  const buttonColorScheme = isButtonDisabled ? "gray" : "green";
+  // const role = localStorage.getItem("role");
 
   return (
     // <div style={{ margin: "auto", width: "70%" }}>
@@ -309,7 +347,6 @@ function ListOrders() {
             <Th>Recipient</Th>
             <Th>Grand Total</Th>
             <Th>Status</Th>
-            <Th>Payment Proof</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
@@ -324,17 +361,8 @@ function ListOrders() {
                 {formatRupiah(orderData.total_price + orderData.shipping_cost)}
               </Td>
               <Td fontSize="sm">{orderData.status}</Td>
-              <Td fontSize="sm">
-                {/* for showing payment proof */}
-                {/* {orderData.payment_proof ? (
-                  <img
-                    src={`http://localhost:8000/${orderData.payment_proof}`}
-                    alt="Product image"
-                    width="50"
-                  />
-                ) : (
-                  "Data Not Found"
-                )} */}
+              {/* <Td fontSize="sm">
+                
                 {orderData.payment_proof ? (
                   <Button
                     size="sm"
@@ -343,14 +371,13 @@ function ListOrders() {
                       // Your click event handler here
                     }}
                     disabled={!orderData.payment_proof}
-                    mr={2}
-                  >
+                    mr={2}>
                     Show Payment Proof
                   </Button>
                 ) : (
                   "Data Not Found"
                 )}
-              </Td>
+              </Td> */}
               <Td>
                 <Box display="flex">
                   <Button
@@ -358,8 +385,7 @@ function ListOrders() {
                     mr={2}
                     _hover={{ bg: "yellow.500" }}
                     colorScheme="yellow"
-                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}
-                  >
+                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}>
                     Order Details
                   </Button>
                   <SendOrderModal orders_id={orderData.id} func={getOrders} />
@@ -398,8 +424,7 @@ function ListOrders() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        size="6xl"
-      >
+        size="6xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Payment Information</ModalHeader>
@@ -411,8 +436,7 @@ function ListOrders() {
               mt="8"
               maxHeight="70vh"
               overflowY="auto"
-              width="100%"
-            >
+              width="100%">
               <Text fontSize="2xl" fontWeight="bold" mb="4">
                 Order Confirmation Payment
               </Text>
@@ -492,11 +516,15 @@ function ListOrders() {
               <Text mb="2">Payment Status: {allData.status}</Text>
               <Box>
                 <Text mb="4">Payment Proof:</Text>
-                <img
-                  src={`http://localhost:8000/${allData.payment_proof}`}
-                  alt="Payment Proof"
-                  width="200"
-                />
+                {allData.payment_proof === null ? (
+                  <Text mb="4">No Payment Proof</Text>
+                ) : (
+                  <img
+                    src={`http://localhost:8000/${allData.payment_proof}`}
+                    alt="Payment Proof"
+                    width="200"
+                  />
+                )}
                 <Text mb="4"></Text>
               </Box>
             </Box>
@@ -508,8 +536,7 @@ function ListOrders() {
                 <Button
                   colorScheme="green"
                   mr={3}
-                  onClick={openConfirmAcceptModal}
-                >
+                  onClick={openConfirmAcceptModal}>
                   Accept
                 </Button>
                 <Button colorScheme="red" onClick={openConfirmRejectModal}>
@@ -524,8 +551,7 @@ function ListOrders() {
       {/* Modal for reject Payment */}
       <Modal
         isOpen={isConfirmRejectModalOpen}
-        onClose={closeConfirmRejectModal}
-      >
+        onClose={closeConfirmRejectModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Reject Payment</ModalHeader>
@@ -537,8 +563,7 @@ function ListOrders() {
             <Button
               colorScheme="red"
               mr={3}
-              onClick={() => handleRejectPayment(allData.id)}
-            >
+              onClick={() => handleRejectPayment(allData.id)}>
               Reject
             </Button>
             <Button onClick={closeConfirmRejectModal}>Cancel</Button>
@@ -549,8 +574,7 @@ function ListOrders() {
       {/* Modal for Accepted Payment */}
       <Modal
         isOpen={isConfirmAcceptModalOpen}
-        onClose={closeConfirmAcceptModal}
-      >
+        onClose={closeConfirmAcceptModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Accept Payment</ModalHeader>
@@ -562,8 +586,7 @@ function ListOrders() {
             <Button
               colorScheme="teal"
               mr={3}
-              onClick={() => handleAcceptPayment(allData.id)}
-            >
+              onClick={() => handleAcceptPayment(allData.id)}>
               Reject
             </Button>
             <Button onClick={closeConfirmAcceptModal}>Cancel</Button>
