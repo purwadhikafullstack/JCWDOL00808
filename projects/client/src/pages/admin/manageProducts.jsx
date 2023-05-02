@@ -5,6 +5,8 @@ import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import AddProductModal from "../../components/addProductModal";
+import PatchProductModal from "../../components/PatchProductModal";
 
 function ManageProducts() {
   const [products, setProducts] = useState([]);
@@ -17,10 +19,15 @@ function ManageProducts() {
   const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
   const toast = useToast();
+  const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [productData, setProductData] = useState(null);
 
   useEffect(() => {
     getProducts();
-  }, [page, keyword, sort, order]);
+    fetchData();
+  }, [page, keyword, sort, order, selectedCategoryId]);
 
   const getProducts = async () => {
     const response = await axios.get(`http://localhost:8000/product/listproduct?search_query=${keyword}&page=${page}&limit=${limit}`, {
@@ -33,7 +40,7 @@ function ManageProducts() {
     setPage(response.data.page);
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
-    console.log(response.data.result);
+    // console.log(response.data.result);
   };
 
   const deleteProducts = async (id) => {
@@ -54,6 +61,29 @@ function ManageProducts() {
         isClosable: true,
       });
     }
+  };
+
+  const fetchData = async () => {
+    // Fetch the product data here, and update the productData state.
+    const response = await axios.get(`http://localhost:8000/product/productId/${selectedCategoryId}`);
+    setProductData(response.data);
+  };
+
+  const handleFirstModalOpen = () => {
+    setIsFirstModalOpen(true);
+  };
+
+  const handleSecondModalOpen = () => {
+    setIsSecondModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsFirstModalOpen(false);
+    setIsSecondModalOpen(false);
+  };
+
+  const handleProductUpdate = () => {
+    getProducts();
   };
 
   const changePage = ({ selected }) => {
@@ -153,13 +183,10 @@ function ManageProducts() {
             </MenuItem>
           </MenuList>
         </Menu>
-        <Button colorScheme={buttonColorScheme} size="sm" ml="auto" leftIcon={<Icon as={FaPlus} isDisabled={isButtonDisabled} />}>
-          <Link to={isButtonDisabled ? "#" : "/admin/addproducts"} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
-            <Flex alignItems="center">
-              <Text mr={2}>Add Product</Text>
-            </Flex>
-          </Link>
+        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />} isDisabled={isButtonDisabled} onClick={handleFirstModalOpen}>
+          Add Product
         </Button>
+        <AddProductModal isOpen={isFirstModalOpen} onClose={handleModalClose} onProductUpdate={handleProductUpdate} />
       </Flex>
 
       {/* fitur table */}
@@ -169,6 +196,7 @@ function ManageProducts() {
         </TableCaption>
         <Thead>
           <Tr>
+            <Th>No</Th>
             <Th>Name</Th>
             <Th>Description</Th>
             <Th>Price</Th>
@@ -178,8 +206,11 @@ function ManageProducts() {
           </Tr>
         </Thead>
         <Tbody>
-          {products.map((product) => (
+          {products.map((product, index) => (
             <Tr key={product.id} align="center">
+              <Td fontSize="sm" fontWeight="medium">
+                {index + 1 + page * limit}
+              </Td>
               <Td fontSize="sm" fontWeight="medium">
                 {product.name}
               </Td>
@@ -187,13 +218,26 @@ function ManageProducts() {
               <Td fontSize="sm">{formatRupiah(product.price)}</Td>
               <Td fontSize="sm">{formatWeight(product.weight)}</Td>
               <Td fontSize="sm">
-                <img src={`http://localhost:8000/${product.imageUrl}`} alt="Product image" width="50" />
+                <img src={`http://localhost:8000/${product.imageUrl}`} alt="product" width="50" />
               </Td>
               <Td>
                 <Box display="flex">
-                  <Link to={isButtonDisabled ? "#" : `/admin/patch-product/${product.id}`} style={isButtonDisabled ? { pointerEvents: "none" } : {}}>
-                    <IconButton size="sm" bgColor="green.500" aria-label="Edit" icon={<EditIcon />} mr={2} borderRadius="full" _hover={{ bg: "green.700" }} isDisabled={isButtonDisabled} />
-                  </Link>
+                  <IconButton
+                    size="sm"
+                    bgColor="green.500"
+                    aria-label="Edit"
+                    icon={<EditIcon />}
+                    mr={2}
+                    borderRadius="full"
+                    _hover={{ bg: "green.700" }}
+                    isDisabled={isButtonDisabled}
+                    onClick={() => {
+                      handleSecondModalOpen(true);
+                      setSelectedCategoryId(product.id);
+                    }}
+                  />
+                  <PatchProductModal categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} onProductUpdate={handleProductUpdate} productData={productData} />
+
                   <IconButton
                     size="sm"
                     bgColor="red.500"

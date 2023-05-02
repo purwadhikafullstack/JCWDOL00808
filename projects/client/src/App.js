@@ -9,13 +9,10 @@ import NotFound from "./pages/NotFound";
 import ProductDetails from "./pages/ProductDetails";
 import AdminList from "./pages/admin/AdminList";
 import AssignAdmin from "./pages/admin/AssignAdmin";
-import ProductForm from "./pages/admin/addProduct";
 import ManageAdmin from "./pages/admin/manageAdmin";
 import ManageCategoryProducts from "./pages/admin/manageCategoryProduct";
 import ManageProducts from "./pages/admin/manageProducts";
 import PatchAdmin from "./pages/admin/patchAdmin";
-import PatchCategoryProduct from "./pages/admin/patchCategory";
-import PatchProductForm from "./pages/admin/patchProduct";
 import RegisterAdmin from "./pages/admin/registerAdmin";
 import UserList from "./pages/admin/userList";
 import AddUserAddress from "./pages/user/AddUserAddress";
@@ -91,14 +88,12 @@ function App() {
             <Route path="/admin/manageadmin" element={<ManageAdmin />} />
             <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
             <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
-            <Route path="/admin/addProducts" element={<ProductForm />} />
-            <Route path="/admin/patch-product/:id" element={<PatchProductForm />} />
             {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
-            <Route path="/admin/patch-category/:id" element={<PatchCategoryProduct />} />
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
             <Route path="/admin/sales-report" element={<SalesReport />} />
+            <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
           </Route>
 
           {/*Super admin & Warehouse admin's route */}
@@ -109,7 +104,6 @@ function App() {
             <Route path="/warehouse/history" element={<StockHistory />} />
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
-            <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
             <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
           </Route>
           <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />

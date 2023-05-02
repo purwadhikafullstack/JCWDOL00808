@@ -24,7 +24,6 @@ import {
   PopoverHeader,
   PopoverBody,
 } from "@chakra-ui/react";
-import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus, FaCheck, FaTimes } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
@@ -285,7 +284,7 @@ const StockRequestList = () => {
                               </Flex>
                             </PopoverContent>
                             <PopoverTrigger>
-                              <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" onClick={() => handleIconClick("REJECT")} />
+                              <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" />
                             </PopoverTrigger>
                           </Popover>
                         </Box>

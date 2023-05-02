@@ -78,7 +78,7 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId }) => {
         isClosable: true,
       });
       onClose();
-      navigate("/admin/managecategory");
+      // navigate("/admin/managecategory");
     } catch (error) {
       toast({
         title: `${error.response.data.message}`,
