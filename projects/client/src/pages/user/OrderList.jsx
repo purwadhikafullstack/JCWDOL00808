@@ -32,17 +32,21 @@ import { API_url } from "../../helper";
 import Axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
 
 const OrderList = () => {
   const [list, setList] = useState([]);
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [sort, setSort] = useState("createdAt");
+  // const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
   const [search, setSearch] = useState("");
   const [keyword, setKeyword] = useState("");
   const [dataDetails, setDataDetails] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+  const [status, setStatus] = useState("");
 
   const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure();
   const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onClose: onDetailsClose } = useDisclosure();
@@ -50,12 +54,13 @@ const OrderList = () => {
 
   let token = localStorage.getItem("token");
   const getTransactionList = async () => {
-    await Axios.get(API_url + `/orders/getOrderList`, {
+    await Axios.get(API_url + `/orders/getOrderList?page=${page}&order=${order}&status=${status}`, {
       headers: { Authorization: token },
     })
       .then((response) => {
         console.log(response.data);
-        setList(response.data);
+        setTotalPage(response.data.totalPage);
+        setList(response.data.rows);
       })
       .catch((error) => {
         console.log(error);
@@ -64,7 +69,7 @@ const OrderList = () => {
 
   useEffect(() => {
     getTransactionList();
-  }, []);
+  }, [page, order, status]);
 
   const handleCancelButton = (value) => {
     Axios.post(
@@ -91,7 +96,7 @@ const OrderList = () => {
   };
 
   const showOrderList = () => {
-    return list?.map((value) => {
+    return list.map((value) => {
       // setDataDetails(value)
       return (
         <Card mb={6} size="lg" maxW="600px" mx="auto" border="1px" borderColor="gray.300">
@@ -205,16 +210,14 @@ const OrderList = () => {
                               {detail.quantity} x Rp {detail.product_price}
                             </Text>
                             <Text>{detail.product_weight} gr</Text>
-                            <Text>
-                              Shipping method: {value.shipping_method}
-                            </Text>
+                            <Text>Shipping method: {value.shipping_method}</Text>
                             <Text as="b">Payment Details</Text>
                             <Text>Payment method: Bank transfer</Text>
-                            <Text>Total price: Rp {value.total_price}</Text>
+                            <Text>Total price: Rp{value.total_price}</Text>
                             <Text>
-                              Shipping cost {detail.product_weight} gr: Rp {value.shipping_cost}
+                              Shipping cost {detail.product_weight} gr: Rp{value.shipping_cost}
                             </Text>
-                            <Text as="b">Grand Total: {value.total_price}</Text>
+                            <Text as="b">Grand Total: Rp{value.total_price + value.shipping_cost}</Text>
                           </>
                         );
                       })}
@@ -236,14 +239,19 @@ const OrderList = () => {
   };
 
   const handleSearchButton = () => {
+    setPage(0);
     setKeyword(search);
+  };
+
+  const handlePageClick = (data) => {
+    setPage(data.selected);
   };
 
   return (
     <>
       <Box w="100%">
         <Box id="sort and filter" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-          <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
+          {/* <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
             <CardBody>
               <VStack>
                 <FormControl>
@@ -258,20 +266,17 @@ const OrderList = () => {
                 </FormControl>
               </VStack>
             </CardBody>
-          </Card>
+          </Card> */}
           <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
             <CardBody>
               <VStack>
                 <FormControl>
-                  <FormLabel>Status</FormLabel>
-                  <RadioGroup onChange={setValue} value={value}>
-                    <Stack direction="row">
-                      <Radio value="1">All</Radio>
-                      <Radio value="2">Ongoing</Radio>
-                      <Radio value="3">Cancelled</Radio>
-                      <Radio value="4">Done</Radio>
-                    </Stack>
-                  </RadioGroup>
+                  <Select placeholder="Select status" onChange={(element) => setStatus(element.target.value)}>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Waiting for payment">Waiting for payment</option>
+                    <option value="Waiting for confirmation">Waiting for confirmation</option>
+                    <option value="Canceled">Canceled</option>
+                  </Select>
                 </FormControl>
               </VStack>
             </CardBody>
@@ -280,10 +285,10 @@ const OrderList = () => {
             <CardBody>
               <VStack>
                 <FormControl>
-                  <FormLabel>Sort transaction by:</FormLabel>
-                  <Select placeholder="Newest/Oldest" onChange={(element) => setSort(element.target.value)}>
-                    <option value="ASC">Newest</option>
-                    <option value="DESC">Oldest</option>
+                  <FormLabel>Order</FormLabel>
+                  <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
+                    <option value="DESC">Latest</option>
+                    <option value="ASC">Oldest</option>
                   </Select>
                 </FormControl>
               </VStack>
@@ -294,6 +299,22 @@ const OrderList = () => {
           <Text fontSize="xl">My Transaction</Text>
           {showOrderList()}
         </Box>
+        <div className="mt-5 flex items-center justify-center">
+          <ReactPaginate
+            previousLabel={"< Previous"}
+            nextLabel={"Next >"}
+            breakLabel={"..."}
+            pageCount={totalPage}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={2}
+            onPageChange={handlePageClick}
+            containerClassName={"flex"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          />
+        </div>
       </Box>
     </>
   );

@@ -98,18 +98,35 @@ module.exports = {
     }
   },
   getOrderList: async (req, res) => {
-    // const sort = req.query.sort || "createdAt";
+    const page = parseInt(req.query.page) || 0;
+    const limit = 5;
+    const offset = limit * page;
+
+    // const sort = req.query.sort || "id";
+    const order = req.query.order || "DESC";
     // const keyword = req.query.keyword || "";
+    const status = req.query.status || "";
     const users_id = req.dataDecode.id;
     try {
-      let data = await orders.findAll({
+      let data = await orders.findAndCountAll({
+        limit,
+        offset,
+        order: [["id", order]],
         attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id", "shipping_method", "shipping_cost"],
-        where: { users_id },
+        where: {
+          users_id,
+          status: {
+            [Op.like]: "%" + status + "%",
+          },
+        },
         include: {
           model: order_details,
         },
       });
-      res.status(200).send(data);
+      res.status(200).send({
+        ...data,
+        totalPage: Math.ceil(data.count / limit),
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send(error);
