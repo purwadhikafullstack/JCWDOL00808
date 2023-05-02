@@ -39,10 +39,7 @@ const OrderList = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
-  // const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
-  const [search, setSearch] = useState("");
-  const [keyword, setKeyword] = useState("");
   const [dataDetails, setDataDetails] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
@@ -60,7 +57,7 @@ const OrderList = () => {
       .then((response) => {
         console.log(response.data);
         setTotalPage(response.data.totalPage);
-        setList(response.data.rows);
+        setList(response.data.data);
       })
       .catch((error) => {
         console.log(error);
@@ -95,11 +92,21 @@ const OrderList = () => {
       });
   };
 
+  const getDetails = (value) => {
+    Axios.get(API_url + `/orders/getDetails?orders_id=${value}`)
+      .then((response) => {
+        console.log(response.data);
+        setDataDetails(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const showOrderList = () => {
     return list.map((value) => {
-      // setDataDetails(value)
       return (
-        <Card mb={6} size="lg" maxW="600px" mx="auto" border="1px" borderColor="gray.300">
+        <Card key={value.id} mb={6} size="lg" maxW="600px" mx="auto" border="1px" borderColor="gray.300">
           <CardBody>
             {/* <Flex>
                 <BsBasketFill size={21} />
@@ -107,6 +114,8 @@ const OrderList = () => {
             <Flex>
               <Image src={`${process.env.REACT_APP_API_BASE_URL}/${value.order_details[0].imageUrl}`} boxSize="132px" />
               <Flex flexDirection="column" alignItems="flex-start">
+                <Text as="b">ID order: {value.id}</Text>
+
                 <Text fontSize="md" ml={8}>
                   Transaction date: {value.when}
                 </Text>
@@ -175,7 +184,13 @@ const OrderList = () => {
               </>
             ) : (
               <>
-                <Button variant="outline" onClick={() => onDetailsOpen()}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    getDetails(value.id);
+                    onDetailsOpen();
+                  }}
+                >
                   Transaction details
                 </Button>
                 <Modal isOpen={isDetailsOpen} onClose={onDetailsClose}>
@@ -201,10 +216,12 @@ const OrderList = () => {
                       <Text as="b">Transaction Date:</Text>
                       <Text>{value.when} insert jam here</Text>
                       <Text as="b">Product Details:</Text>
-                      {value.order_details.map((detail) => {
+                      {dataDetails.map((detail) => {
+                        // console.log("detail:", detail);
                         return (
-                          <>
+                          <Box key={detail.id}>
                             <Image src={`${process.env.REACT_APP_API_BASE_URL}/${detail.imageUrl}`} boxSize="132px" />
+                            <Text>ID order details: {detail.id}</Text>
                             <Text>{detail.product_name}</Text>
                             <Text>
                               {detail.quantity} x Rp {detail.product_price}
@@ -218,7 +235,7 @@ const OrderList = () => {
                               Shipping cost {detail.product_weight} gr: Rp{value.shipping_cost}
                             </Text>
                             <Text as="b">Grand Total: Rp{value.total_price + value.shipping_cost}</Text>
-                          </>
+                          </Box>
                         );
                       })}
                     </ModalBody>
@@ -236,11 +253,6 @@ const OrderList = () => {
         </Card>
       );
     });
-  };
-
-  const handleSearchButton = () => {
-    setPage(0);
-    setKeyword(search);
   };
 
   const handlePageClick = (data) => {
@@ -285,7 +297,7 @@ const OrderList = () => {
             <CardBody>
               <VStack>
                 <FormControl>
-                  <FormLabel>Order</FormLabel>
+                  <FormLabel>Sort by date ordered:</FormLabel>
                   <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
                     <option value="DESC">Latest</option>
                     <option value="ASC">Oldest</option>

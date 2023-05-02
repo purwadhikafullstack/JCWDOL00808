@@ -108,7 +108,21 @@ module.exports = {
     const status = req.query.status || "";
     const users_id = req.dataDecode.id;
     try {
-      let data = await orders.findAndCountAll({
+      // get data length
+      let dataLength = await orders.findAll({
+        where: {
+          users_id,
+          status: {
+            [Op.like]: "%" + status + "%",
+          },
+        }
+      })
+
+      let data = await orders.findAll({
+        include: {
+          model: order_details,
+        },
+        required: true,
         limit,
         offset,
         order: [["id", order]],
@@ -119,17 +133,29 @@ module.exports = {
             [Op.like]: "%" + status + "%",
           },
         },
-        include: {
-          model: order_details,
-        },
       });
+      // console.log("length:", data.length);
       res.status(200).send({
-        ...data,
-        totalPage: Math.ceil(data.count / limit),
+        data,
+        totalPage: Math.ceil(dataLength.length / limit),
       });
     } catch (error) {
       console.log(error);
       res.status(500).send(error);
+    }
+  },
+  getDetails: async (req, res) => {
+    try {
+      let data = await order_details.findAll({
+        where: { orders_id: req.query.orders_id },
+      });
+      return res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Something is wrong",
+      });
     }
   },
   cancelOrder: async (req, res) => {
