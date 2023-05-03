@@ -26,7 +26,7 @@ module.exports = {
     let options = {
       method: "GET",
       url: "https://api.rajaongkir.com/starter/province",
-      headers: { key: process.env.API_KEY },
+      headers: { key: process.env.RAJAONGKIR_API_KEY },
     };
 
     request(options, function (error, response, body) {
@@ -42,7 +42,7 @@ module.exports = {
       method: "GET",
       url: "https://api.rajaongkir.com/starter/city",
       qs: { province: req.query.province_id },
-      headers: { key: process.env.API_KEY },
+      headers: { key: process.env.RAJAONGKIR_API_KEY },
     };
 
     request(options, function (error, response, body) {
@@ -59,7 +59,7 @@ module.exports = {
       method: "POST",
       url: "https://api.rajaongkir.com/starter/cost",
       headers: {
-        key: process.env.API_KEY,
+        key: process.env.RAJAONGKIR_API_KEY,
         "content-type": "application/x-www-form-urlencoded",
       },
       form: {
@@ -134,12 +134,12 @@ module.exports = {
       let { name, address, province, city, district } = req.body;
 
       // 3. q wajib ada buat ngirimin nilai address, district, province, city
-      // fungsi geocode tuh ngolah parameter yang dikasih (bisa alamat, kode negara, API key)
+      // mengolah parameter (alamat, kode negara, API key) dengan geocode
       let response = await geocode({
         q: `${address}, ${district}, ${province}, ${city}`,
         countrycode: "id",
         limit: 1,
-        key: "3b50c98b083b4331ab5b460ac164e3c2",
+        key: process.env.OPENCAGE_API_KEY,
       });
       console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
 
@@ -173,7 +173,7 @@ module.exports = {
         q: `${address}, ${district}, ${province}, ${city}`,
         countrycode: "id",
         limit: 1,
-        key: "3b50c98b083b4331ab5b460ac164e3c2",
+        key: process.env.OPENCAGE_API_KEY,
       });
       let { lat, lng } = response.results[0].geometry;
 

@@ -44,6 +44,7 @@ const OrderList = () => {
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
   const [status, setStatus] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure();
   const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onClose: onDetailsClose } = useDisclosure();
@@ -108,14 +109,9 @@ const OrderList = () => {
       return (
         <Card key={value.id} mb={6} size="lg" maxW="600px" mx="auto" border="1px" borderColor="gray.300">
           <CardBody>
-            {/* <Flex>
-                <BsBasketFill size={21} />
-              </Flex> */}
             <Flex>
               <Image src={`${process.env.REACT_APP_API_BASE_URL}/${value.order_details[0].imageUrl}`} boxSize="132px" />
               <Flex flexDirection="column" alignItems="flex-start">
-                <Text as="b">ID order: {value.id}</Text>
-
                 <Text fontSize="md" ml={8}>
                   Transaction date: {value.when}
                 </Text>
@@ -150,14 +146,17 @@ const OrderList = () => {
               <>
                 <Button
                   colorScheme="gray"
-                  variant="outline"
+                  variant="subtle"
                   onClick={() => {
                     onCancelOpen();
                   }}
                 >
                   Cancel order
                 </Button>
-                <Button colorScheme="green" variant="outline" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
+                {/* <Button colorScheme="green" variant="outline" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
+                  Upload payment proof
+                </Button> */}
+                <Button variant="buttonBlack" type="submit" isLoading={isLoading} onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
                   Upload payment proof
                 </Button>
                 <Modal isOpen={isCancelOpen} onClose={onCancelClose}>
@@ -214,14 +213,12 @@ const OrderList = () => {
                         </Text>
                       )}
                       <Text as="b">Transaction Date:</Text>
-                      <Text>{value.when} insert jam here</Text>
+                      <Text>{value.when}</Text>
                       <Text as="b">Product Details:</Text>
                       {dataDetails.map((detail) => {
-                        // console.log("detail:", detail);
                         return (
                           <Box key={detail.id}>
                             <Image src={`${process.env.REACT_APP_API_BASE_URL}/${detail.imageUrl}`} boxSize="132px" />
-                            <Text>ID order details: {detail.id}</Text>
                             <Text>{detail.product_name}</Text>
                             <Text>
                               {detail.quantity} x Rp {detail.product_price}
@@ -263,22 +260,6 @@ const OrderList = () => {
     <>
       <Box w="100%">
         <Box id="sort and filter" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-          {/* <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
-            <CardBody>
-              <VStack>
-                <FormControl>
-                  <FormLabel>Search</FormLabel>
-                  <Input placeholder="Search your transaction here" onChange={(element) => setSearch(element.target.value)} />
-                  <Button colorScheme="blue" mt="25" mr="4" onClick={() => setSearch("")}>
-                    Reset filter
-                  </Button>
-                  <Button colorScheme="blue" mt="25" onClick={handleSearchButton}>
-                    Search
-                  </Button>
-                </FormControl>
-              </VStack>
-            </CardBody>
-          </Card> */}
           <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
             <CardBody>
               <VStack>
