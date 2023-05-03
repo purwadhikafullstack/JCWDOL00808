@@ -244,7 +244,7 @@ module.exports = {
       const { stock, products_id } = req.body;
 
       const checkProductStock = await stocks.findOne({
-        where: { products_id, warehouses_id: id, is_deleted: false },
+        where: { products_id, warehouses_id: id },
       });
       if (checkProductStock) {
         return res.status(409).send({
