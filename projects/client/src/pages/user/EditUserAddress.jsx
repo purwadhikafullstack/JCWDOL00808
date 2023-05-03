@@ -18,7 +18,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
-const token = localStorage.getItem("token");
+const token = localStorage.getItem("user_token");
 
 const EditUserAddress = () => {
   const [addresses, setAddresses] = useState([]);

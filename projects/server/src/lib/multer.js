@@ -27,6 +27,9 @@ var storage = multer.diskStorage({
     if (file.fieldname === "imageUrl") {
       cb(null, `${defaultPath}/${file.fieldname}`); // public/imageUrl
     }
+    if (file.fieldname === "payment_proof") {
+      cb(null, `${defaultPath}/${file.fieldname}`); // public/payment_proof
+    }
   },
   filename: (req, file, cb) => {
     cb(

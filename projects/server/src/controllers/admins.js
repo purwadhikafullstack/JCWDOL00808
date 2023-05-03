@@ -33,7 +33,6 @@ module.exports = {
     }
   },
   login: async (req, res) => {
-    console.log("data dari req.body: ", req.body);
     let { email, password } = req.body;
     try {
       let data = await AdminsModel.findAll({
@@ -41,7 +40,6 @@ module.exports = {
           email,
         },
       });
-      console.log("data dari admins:", data);
 
       if (data.length > 0) {
         let checkPass = bcrypt.compareSync(password, data[0].dataValues.password);
@@ -72,52 +70,10 @@ module.exports = {
       return res.status(500).send(err);
     }
   },
-  keeplogin: async (req, res) => {
-    console.log(req.decript);
-    try {
-      let data = await AdminsModel.findAll({
-        where: {
-          id: req.decript.id,
-        },
-      });
-      console.log(data);
-
-      let token = createToken({ ...data[0].dataValues });
-      return res.status(200).send({ ...data[0].dataValues, token });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send(err);
-    }
-  },
   assignNewAdmin: async (req, res) => {
-    // console.log("req.body assign admin: ", req.body);
-    // let { id } = req.body;
-    // let updateQuery = `UPDATE admins set role=2 where id=${db.escape(id)};`;
-
-    // db.query(updateQuery, (err, result) => {
-    //   if (err) {
-    //     return res.status(500).send(
-    //       {
-    //         success: false,
-    //         message: "Admin assign failed!"
-    //       }
-    //     );
-    //   }
-    //   if(!id){
-    //     return res.status(200).send({
-    //       success: false,
-    //       message: "Admin not found!"
-    //     })
-    //   }
-    //   return res.status(200).send({ success: true, message: "Assign admin success!" });
-    // });
-
-    // kalau pake sequelize:
     try {
-      // const {id} = req.params; // ini id admin
       let { id, admins_id } = req.body;
 
-      console.log("req.body: ", req.body);
       let data = await AdminsModel.findAll({ where: { id: admins_id } });
       if (data.length > 0) {
       let update = await WarehouseModel.update(

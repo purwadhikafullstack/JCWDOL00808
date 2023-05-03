@@ -1,11 +1,7 @@
 import {
-  Avatar,
-  Image,
-  Container,
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
@@ -15,24 +11,17 @@ import {
   ButtonGroup,
   useToast,
   AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
   useDisclosure,
+  Flex,
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
   Input,
-  Radio,
-  RadioGroup,
-  HStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
+  InputGroup,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -41,19 +30,10 @@ import {
   ModalBody,
   ModalCloseButton,
   Select,
+  VStack,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Heading,
-  Stack,
-  StackDivider,
-  Box,
-  Text,
-} from "@chakra-ui/react";
+import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
 import Axios from "axios";
 import { API_url } from "../../helper";
 import { useEffect, useState, useRef } from "react";
@@ -67,16 +47,10 @@ const WarehouseList = (props) => {
   const navigate = useNavigate();
   const [role, setRole] = useState(localStorage.getItem("role"));
 
-  const {
-    isOpen: isAlertOpen,
-    onOpen: onAlertOpen,
-    onClose: onAlertClose,
-  } = useDisclosure();
-  const {
-    isOpen: isModalOpen,
-    onOpen: onModalOpen,
-    onClose: onModalClose,
-  } = useDisclosure();
+  const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
+  const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
+  const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onClose: onDetailsClose } = useDisclosure();
+  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
 
   const [warehouseData, setWarehouseData] = useState([]);
   const [warehouseId, setWarehouseId] = useState();
@@ -89,11 +63,17 @@ const WarehouseList = (props) => {
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
 
+  const [name, setName] = React.useState("");
+  const [address, setAddress] = React.useState("");
+  const [provinceData, setProvinceData] = React.useState([]);
+  const [province, setProvince] = React.useState("");
+  const [cityData, setCityData] = React.useState([]);
+  const [city, setCity] = React.useState("");
+  const [districtData, setDistrictData] = React.useState([]);
+  const [district, setDistrict] = React.useState("");
+
   const getWarehouseData = () => {
-    Axios.get(
-      API_url +
-        `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`
-    )
+    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
       .then((response) => {
         console.log(response.data);
         setTotalPage(response.data.totalPage);
@@ -106,8 +86,8 @@ const WarehouseList = (props) => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
 
-  const deleteButton = (value) => {
-    Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${value}`)
+  const deleteButton = () => {
+    Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${warehouseId}`)
       .then((response) => {
         toast({
           title: `${response.data.message}`,
@@ -120,44 +100,17 @@ const WarehouseList = (props) => {
       .catch((err) => console.log(err));
   };
 
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
-  const handleDetailsClick = () => {
-    setIsDetailsOpen(true);
-    // onModalOpen()
-    // showDetails()
-    // alert("warehouseId: ", warehouseId)
-  };
-  const handleDetailsClose = () => {
-    setIsDetailsOpen(false);
-  };
-
-  const showDetails = (warehouseId) => {
-    alert("siap show details: ", warehouseId);
-    // return (
-    //   <>
-    //     {/* <Button onClick={onOpen}>Open Modal</Button> */}
-
-    //     <Modal isOpen={isModalOpen} onClose={onModalClose}>
-    //       <ModalOverlay />
-    //       <ModalContent>
-    //         <ModalHeader>{element.name}</ModalHeader>
-    //         <ModalCloseButton />
-    //         <ModalBody>
-    //           <Text>{element.address} {element.province} {element.city}</Text>
-    //         </ModalBody>
-
-    //         <ModalFooter>
-    //           <Button colorScheme="blue" mr={3} onClick={onModalClose}>
-    //             Close
-    //           </Button>
-    //           <Button variant="ghost">Stock History</Button>
-    //         </ModalFooter>
-    //       </ModalContent>
-    //     </Modal>
-    //   </>
-    // );
-    // navigate(`/warehouse/details/${value.id}`, { replace: true });
+  const getSpecificWarehouse = () => {
+    Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${warehouseId}`)
+      .then((response) => {
+        console.log("response:", response.data.name);
+        setName(response.data.name);
+        setAddress(response.data.address);
+        setCity(response.data.city);
+        setProvince(response.data.province);
+        // setDetailsDistrict(response.data.district)
+      })
+      .catch((error) => console.log(error));
   };
 
   const showWarehouseData = () => {
@@ -173,56 +126,40 @@ const WarehouseList = (props) => {
           <Td>{value.city}</Td>
           <Td isNumeric>
             {role === "1" && (
-              <Button
-                colorScheme="yellow"
-                className="mr-2"
-                onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
+              <Button colorScheme="yellow" className="mr-2" onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
                 Stock
               </Button>
             )}
             <Button
               colorScheme="teal"
               className="mr-2"
-              onClick={() => navigate(`/warehouse/details/${value.id}`)}>
+              onClick={() => {
+                setWarehouseId(value.id);
+                navigate(`/warehouse/details?id=${value.id}`);
+              }}
+            >
               Details
             </Button>
-            {role === "1" && (
-              <Button
-                colorScheme="blue"
-                className="mr-2"
-                onClick={() => navigate(`/warehouse/edit?id=${value.id}`)}>
-                Edit
-              </Button>
-            )}
             <>
               {role === "1" && (
                 <Button colorScheme="red" onClick={onAlertOpen}>
                   Delete
                 </Button>
               )}
-              <AlertDialog
-                isOpen={isAlertOpen}
-                leastDestructiveRef={cancelRef}
-                onClose={onAlertClose}>
+              <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
                 <AlertDialogOverlay>
                   <AlertDialogContent>
                     <AlertDialogHeader fontSize="lg" fontWeight="bold">
                       Delete Warehouse
                     </AlertDialogHeader>
 
-                    <AlertDialogBody>
-                      Are you sure you want to delete this data? This can't be
-                      undone.
-                    </AlertDialogBody>
+                    <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
 
                     <AlertDialogFooter>
                       <Button ref={cancelRef} onClick={onAlertClose}>
                         Cancel
                       </Button>
-                      <Button
-                        colorScheme="red"
-                        onClick={() => deleteButton(value.id)}
-                        ml={3}>
+                      <Button colorScheme="red" onClick={() => deleteButton(value.id)} ml={3}>
                         Delete
                       </Button>
                     </AlertDialogFooter>
@@ -245,98 +182,204 @@ const WarehouseList = (props) => {
     setKeyword(search);
   };
 
+  const getProvinceData = () => {
+    Axios.get(API_url + `/warehouses/getProvinceData`)
+      .then((response) => {
+        console.log(response.data);
+        setProvinceData(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    getProvinceData();
+  }, []);
+
+  const onGetCity = (province_id) => {
+    Axios.get(API_url + `/warehouses/getCityData?province_id=${province_id}`)
+      .then((response) => {
+        setCityData(response.data);
+
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const buttonAddWarehouse = () => {
+    // alert(province + city)
+    Axios.post(API_url + `/warehouses/addWarehouse`, {
+      name,
+      address,
+      province,
+      city,
+      district,
+    })
+      .then((response) => {
+        console.log(response.data);
+        toast({
+          title: `${response.data.message}`,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          onCloseComplete: () => getWarehouseData(),
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <>
-      <div className="flex flex-col items-center w-full">
-        <Container className="my-5" maxW={600}>
-          <FormControl>
-            <FormLabel>Search</FormLabel>
-            <Input
-              placeholder="type warehouse name, city, or province..."
-              className="mb-5"
-              onChange={(element) => setSearch(element.target.value)}
-            />
-            <Button onClick={handleSearchButton}>Search</Button>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Sort data by:</FormLabel>
-            <RadioGroup>
-              <HStack spacing="24px">
-                <Radio
-                  value="name"
-                  onChange={(element) => setSort(element.target.value)}>
-                  Name
-                </Radio>
-                <Radio
-                  value="province"
-                  onChange={(element) => setSort(element.target.value)}>
-                  Province
-                </Radio>
-                <Radio
-                  value="city"
-                  onChange={(element) => setSort(element.target.value)}>
-                  City
-                </Radio>
-                <Radio
-                  value="updatedAt"
-                  onChange={(element) => setSort(element.target.value)}>
-                  Date added
-                </Radio>
-                <Select
-                  placeholder="Order"
-                  onChange={(element) => setOrder(element.target.value)}>
-                  <option value="ASC">Ascending</option>
-                  <option value="DESC">Descending</option>
-                </Select>
-              </HStack>
-            </RadioGroup>
-          </FormControl>
-        </Container>
-        <TableContainer className="mt-5">
-          <Table size="sm">
-            <Thead>
-              <Tr>
-                <Th>No.</Th>
-                <Th>Warehouse Name</Th>
-                <Th>Address</Th>
-                <Th>Province</Th>
-                <Th>City</Th>
-                <Th isNumeric className="mr-5">
-                  Action
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>{showWarehouseData()}</Tbody>
-          </Table>
-        </TableContainer>
-        <div className="mt-5">
+      <Flex direction="column" alignItems="center">
+        <Box className="my-5">
+          <Flex>
+            <Card maxW="lg">
+              <CardBody>
+                <FormControl>
+                  <FormLabel>Search</FormLabel>
+                  <Input placeholder="warehouse name, city, or province..." className="mb-5" onChange={(element) => setSearch(element.target.value)} />
+                  <Button onClick={handleSearchButton}>Search</Button>
+                </FormControl>
+              </CardBody>
+            </Card>
+            <Card>
+              <CardBody>
+                <FormControl>
+                  <FormLabel>Sort data by:</FormLabel>
+                  <VStack>
+                    <Select placeholder="Select option" onChange={(element) => setSort(element.target.value)}>
+                      <option value="name">Warehouse name</option>
+                      <option value="province">Province</option>
+                      <option value="city">City</option>
+                      <option value="updatedAt">Date added</option>
+                    </Select>
+                    <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
+                      <option value="ASC">Ascending</option>
+                      <option value="DESC">Descending</option>
+                    </Select>
+                  </VStack>
+                  {/* </HStack> */}
+                  {/* </RadioGroup> */}
+                </FormControl>
+              </CardBody>
+            </Card>
+          </Flex>
+        </Box>
+        <Card>
+          <CardBody>
+            <TableContainer className="my-5">
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>No.</Th>
+                    <Th>Warehouse Name</Th>
+                    <Th>Address</Th>
+                    <Th>Province</Th>
+                    <Th>City</Th>
+                    <Th isNumeric className="mr-5">
+                      Action
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{showWarehouseData()}</Tbody>
+              </Table>
+            </TableContainer>
+          </CardBody>
+        </Card>
+        <div className="mt-5 flex items-center justify-center">
           <ReactPaginate
-            previousLabel={"previous"}
-            nextLabel={"next"}
+            previousLabel={"< Previous"}
+            nextLabel={"Next >"}
             breakLabel={"..."}
             pageCount={totalPage}
             marginPagesDisplayed={2}
             pageRangeDisplayed={2}
             onPageChange={handlePageClick}
-            containerClassName={"pagination justify-content-center"}
+            containerClassName={"flex"}
             pageClassName={"page-item"}
-            pageLinkClassName={"page-link"}
-            previousClassName={"page-item"}
-            previousLinkClassName={"page-link"}
-            nextClassName={"page-item"}
-            nextLinkClassName={"page-link"}
-            breakClassName={"page-item"}
-            breakLinkClassName={"page-link"}
-            activeClassName={"active"}
+            pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
           />
         </div>
-        <Button
-          colorScheme="orange"
-          className="mt-5"
-          onClick={() => navigate(`/warehouse/add`)}>
+        <Button size="md" colorScheme="orange" className="my-5" onClick={onAddOpen}>
           Add new warehouse
         </Button>
-      </div>
+        <Modal isOpen={isAddOpen} onClose={onAddClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add new warehouse</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="mt-4 text-muted fw-bold text-start">
+                <Text fontSize="md">Name</Text>
+                <Input placeholder="Warehouse name" size="md" onChange={(element) => setName(element.target.value)} />
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">Address</Text>
+                  <InputGroup size="md">
+                    <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
+                  </InputGroup>
+                </div>
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">Province</Text>
+                  <Select
+                    placeholder="Select province"
+                    onChange={(element) => {
+                      setProvince(element.target.value.split(",")[1]);
+                      onGetCity(element.target.value.split(",")[0]);
+                    }}
+                  >
+                    {provinceData.map((value) => {
+                      return (
+                        <option value={value.province_id + "," + value.province} key={value.province_id}>
+                          {value.province}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">City</Text>
+                  <Select placeholder="Select city" value={city} onChange={(element) => setCity(element.target.value)}>
+                    {cityData.map((value) => {
+                      return (
+                        <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                          {value.type} {value.city_name}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                </div>
+                <div className="mt-4 text-muted fw-bold text-start">
+                  <Text fontSize="md">District (Kecamatan)</Text>
+                  <Input placeholder="Input district" onChange={(element) => setDistrict(element.target.value)}></Input>
+                </div>
+              </div>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} onClick={onAddClose}>
+                Close
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  onAddClose();
+                  buttonAddWarehouse();
+                }}
+              >
+                Add warehouse data
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Flex>
     </>
   );
 };

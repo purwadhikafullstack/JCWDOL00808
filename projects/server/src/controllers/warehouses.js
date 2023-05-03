@@ -26,13 +26,13 @@ module.exports = {
     let options = {
       method: "GET",
       url: "https://api.rajaongkir.com/starter/province",
-      headers: { key: "c80fa8beeb5eeb737ca76afcf8939a56" },
+      headers: { key: process.env.RAJAONGKIR_API_KEY },
     };
 
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
 
-      console.log(body);
+      // console.log(body);
       let data = JSON.parse(body).rajaongkir.results;
       res.status(200).send(data);
     });
@@ -42,13 +42,13 @@ module.exports = {
       method: "GET",
       url: "https://api.rajaongkir.com/starter/city",
       qs: { province: req.query.province_id },
-      headers: { key: "c80fa8beeb5eeb737ca76afcf8939a56" },
+      headers: { key: process.env.RAJAONGKIR_API_KEY },
     };
 
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
 
-      console.log(body);
+      // console.log(body);
       let data = JSON.parse(body).rajaongkir.results;
       res.status(200).send(data);
     });
@@ -59,7 +59,7 @@ module.exports = {
       method: "POST",
       url: "https://api.rajaongkir.com/starter/cost",
       headers: {
-        key: "c80fa8beeb5eeb737ca76afcf8939a56",
+        key: process.env.RAJAONGKIR_API_KEY,
         "content-type": "application/x-www-form-urlencoded",
       },
       form: {
@@ -134,12 +134,12 @@ module.exports = {
       let { name, address, province, city, district } = req.body;
 
       // 3. q wajib ada buat ngirimin nilai address, district, province, city
-      // fungsi geocode tuh ngolah parameter yang dikasih (bisa alamat, kode negara, API key)
+      // mengolah parameter (alamat, kode negara, API key) dengan geocode
       let response = await geocode({
         q: `${address}, ${district}, ${province}, ${city}`,
         countrycode: "id",
         limit: 1,
-        key: "3b50c98b083b4331ab5b460ac164e3c2",
+        key: process.env.OPENCAGE_API_KEY,
       });
       console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
 
@@ -168,13 +168,12 @@ module.exports = {
   },
   updateWarehouseData: async (req, res) => {
     try {
-      console.log("req.body update warehouse:", req.body);
       const { id, name, address, province, city, district } = req.body;
       let response = await geocode({
         q: `${address}, ${district}, ${province}, ${city}`,
         countrycode: "id",
         limit: 1,
-        key: "3b50c98b083b4331ab5b460ac164e3c2",
+        key: process.env.OPENCAGE_API_KEY,
       });
       let { lat, lng } = response.results[0].geometry;
 
@@ -191,9 +190,7 @@ module.exports = {
         { where: { id: req.body.id } }
       );
 
-      res
-        .status(200)
-        .send({ success: true, message: "Warehouse data update success!" });
+      res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -226,8 +223,8 @@ module.exports = {
   },
   getWarehouseDetails: async (req, res) => {
     try {
-      const { id } = req.params;
-      let data = await WarehousesModel.findOne({ where: { id } });
+      const id = req.query.id;
+      let data = await WarehousesModel.findAll({ where: { id } });
       console.log("data details: ", data);
 
       res.status(200).send(data);
@@ -257,10 +254,7 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create(
-        { stock, products_id, warehouses_id: id },
-        { transaction: t }
-      );
+      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id: id }, { transaction: t });
       const updateHistories = await stock_histories.create(
         {
           stock_before: 0,

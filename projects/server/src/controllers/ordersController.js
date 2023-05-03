@@ -7,42 +7,21 @@ const db = require("../../models/index");
 const user_addresses = db.user_addresses;
 const users = db.users;
 const orders = db.orders;
-const carts = db.carts;
-const products = db.products;
 const order_details = db.order_details;
+const products = db.products;
+const carts = db.carts;
 const warehouses = db.warehouses;
+const stocks = db.stocks;
 
 const request = require("request");
 
 module.exports = {
   addOrder: async (req, res) => {
-    const t = await sequelize.transaction();
-
     try {
       let { id } = req.dataDecode;
-      let {
-        total_price,
-        status,
-        shipping_method,
-        shipping_cost,
-        user_addresses_id,
-        warehouses_id,
-      } = req.body;
+      let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
 
-      const createNewOrder = await orders.create(
-        {
-          total_price,
-          status,
-          shipping_method,
-          shipping_cost,
-          user_addresses_id,
-          warehouses_id,
-          users_id: id,
-        },
-        { transaction: t }
-      );
-
-      //Get all carts data owned by specific user and merged with products data
+      // Get all carts data owned by specific user and merged with products data
       const fetchCart = await carts.findAll({
         where: {
           users_id: id,
@@ -55,44 +34,189 @@ module.exports = {
             attributes: ["id", "name", "price", "weight", "imageUrl"],
           },
         ],
-        attributes: ["id", "users_id", "quantity"],
+        attributes: ["id", "users_id", "quantity", "products_id"],
       });
 
-      const orderDetailsData = fetchCart.map((cartItem) => ({
-        orders_id: createNewOrder.id,
-        products_id: cartItem.product.id,
-        product_name: cartItem.product.name,
-        quantity: cartItem.quantity,
-        product_price: cartItem.product.price,
-        product_weight: cartItem.product.weight,
-        imageUrl: cartItem.product.imageUrl,
-      }));
-
-      //Post all carts data to order_details table
-      const postOrderDetails = await order_details.bulkCreate(
-        orderDetailsData,
-        {
-          transaction: t,
+      // check if order qty less than stocks available
+      let validationChecker = [];
+      for (i = 0; i < fetchCart.length; i++) {
+        let id = fetchCart[i].products_id;
+        let quantity = fetchCart[i].quantity;
+        let product_stock = await stocks.findAll({
+          where: {
+            products_id: id,
+          },
+          raw: true,
+        });
+        let stock = 0;
+        for (j = 0; j < product_stock.length; j++) {
+          stock += product_stock[j].stock;
         }
-      );
+        if (quantity <= stock) {
+          validationChecker.push(i);
+        }
+      }
 
-      //Delete cart data based on users_id
-      const deleteCartData = await carts.destroy(
-        { where: { users_id: id } },
-        { transaction: t }
-      );
-      t.commit();
-      res.status(201).send({
-        isError: false,
-        message: "Order created.",
-        data: createNewOrder,
+      if (fetchCart.length == validationChecker.length) {
+        const createNewOrder = await orders.create({
+          total_price,
+          status,
+          shipping_method,
+          shipping_cost,
+          user_addresses_id,
+          warehouses_id,
+          users_id: id,
+        });
+
+        let findOrderId = await orders.findOne({ where: { users_id: id }, order: [["id", "DESC"]] });
+
+        for (i = 0; i < fetchCart.length; i++) {
+          let carts_id = fetchCart[i].id;
+
+          //Post all carts data to order_details table
+          let addOrderDetails = await order_details.create({
+            orders_id: findOrderId.dataValues.id,
+            products_id: fetchCart[i].product.id,
+            product_name: fetchCart[i].product.name,
+            quantity: fetchCart[i].quantity,
+            product_price: fetchCart[i].product.price,
+            product_weight: fetchCart[i].product.weight,
+            imageUrl: fetchCart[i].product.imageUrl,
+          });
+
+          //Delete cart data based on users_id
+          let deleteCartData = await carts.destroy({ where: { id: carts_id } });
+        }
+      }
+
+      res.status(200).send({
+        success: true,
+        message: "Test ok",
+        data: fetchCart,
       });
     } catch (error) {
-      t.rollback();
-      res.status(409).send({
-        isError: true,
-        message: error.message,
-        data: null,
+      console.log(error);
+    }
+  },
+  getOrderList: async (req, res) => {
+    const page = parseInt(req.query.page) || 0;
+    const limit = 5;
+    const offset = limit * page;
+
+    // const sort = req.query.sort || "id";
+    const order = req.query.order || "DESC";
+    // const keyword = req.query.keyword || "";
+    const status = req.query.status || "";
+    const users_id = req.dataDecode.id;
+    try {
+      // get data length
+      let dataLength = await orders.findAll({
+        where: {
+          users_id,
+          status: {
+            [Op.like]: "%" + status + "%",
+          },
+        }
+      })
+
+      let data = await orders.findAll({
+        include: {
+          model: order_details,
+        },
+        required: true,
+        limit,
+        offset,
+        order: [["id", order]],
+        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id", "shipping_method", "shipping_cost"],
+        where: {
+          users_id,
+          status: {
+            [Op.like]: "%" + status + "%",
+          },
+        },
+      });
+      // console.log("length:", data.length);
+      res.status(200).send({
+        data,
+        totalPage: Math.ceil(dataLength.length / limit),
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
+  },
+  getDetails: async (req, res) => {
+    try {
+      let data = await order_details.findAll({
+        where: { orders_id: req.query.orders_id },
+      });
+      return res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Something is wrong",
+      });
+    }
+  },
+  cancelOrder: async (req, res) => {
+    try {
+      let users_id = req.dataDecode.id;
+
+      let checkUser = await orders.findOne({ where: { id: req.body.id } });
+
+      // check if user who wants to cancel order is the same user who is logging in
+      if (users_id == checkUser.users_id) {
+        let newStatus = "Canceled";
+        await orders.update({ status: newStatus }, { where: { id: req.body.id } });
+
+        res.status(200).send({
+          success: true,
+          message: "Order cancelled.",
+          data: null,
+        });
+      } else if (users_id != checkUser.users_id) {
+        res.status(500).send({
+          success: false,
+          message: "You don't own this transaction.",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Cancel order failed.",
+      });
+    }
+  },
+  uploadPaymentProof: async (req, res) => {
+    try {
+      const users_id = req.dataDecode.id;
+
+      let checkUser = await orders.findOne({ where: { id: req.body.id } });
+      // check if user who wants to cancel order is the same user who is logging in
+      if (users_id == checkUser.users_id) {
+        let payment_proof = req.files?.payment_proof[0]?.path;
+
+        await orders.update({ payment_proof }, { where: { id: req.body.id } });
+
+        await orders.update({ status: "Waiting for confirmation" }, { where: { id: req.body.id } });
+
+        res.status(200).send({
+          success: true,
+          message: "Proof of payment has been uploaded!",
+        });
+      } else if (users_id != checkUser.users_id) {
+        res.status(500).send({
+          success: false,
+          message: "You don't own this transaction.",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Something is wrong.",
       });
     }
   },
@@ -189,13 +313,9 @@ module.exports = {
         }
       });
       if (result.length === 0 && search !== "") {
-        return res
-          .status(404)
-          .json({ message: "No matching results found for the search query" });
+        return res.status(404).json({ message: "No matching results found for the search query" });
       } else if (result.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "Please assign warehouse first" });
+        return res.status(404).json({ message: "Please assign warehouse first" });
       }
       res.json({
         result: result,
@@ -224,15 +344,7 @@ module.exports = {
           },
           {
             model: user_addresses,
-            attributes: [
-              "recipient",
-              "phone_number",
-              "address",
-              "province",
-              "city",
-              "district",
-              "postal_code",
-            ],
+            attributes: ["recipient", "phone_number", "address", "province", "city", "district", "postal_code"],
           },
         ],
       });

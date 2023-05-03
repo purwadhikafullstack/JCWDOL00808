@@ -109,9 +109,7 @@ const AddWarehouse = (props) => {
                   onChange={(element) => setAddress(element.target.value)}
                 />
               </InputGroup>
-              {/* </div> */}
             </div>
-            {/* <div className="my-5 mx-5 px-5"> */}
             <div className="mt-4 text-muted fw-bold text-start">
               <Text fontSize="md">Province</Text>
               <Select

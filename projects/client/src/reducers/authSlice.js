@@ -10,7 +10,7 @@ export const userLogin = createAsyncThunk(
         `${process.env.REACT_APP_API_BASE_URL}/user/login`,
         { email, password }
       );
-      localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("user_token", response.data.data.token);
       localStorage.setItem("user", response.data.data.user);
       //return response data to redux extra reducers
       return response?.data;
@@ -24,7 +24,7 @@ export const userLogin = createAsyncThunk(
   }
 );
 
-const token = localStorage.getItem("token") || null;
+const token = localStorage.getItem("user_token") || null;
 
 const initialState = {
   isLoading: false,

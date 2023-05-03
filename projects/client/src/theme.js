@@ -20,6 +20,10 @@ const theme = extendTheme({
           bg: "black",
           color: "white",
           borderRadius: "0px",
+          _disabled: {
+            color: "black",
+            bg: "gray.300",
+          },
           _hover: {
             bg: "gray.700",
             boxShadow: "0px 4px 4px 0px #00000040",

@@ -32,7 +32,7 @@ export default function EditProfile() {
   const profilePicture = useRef(null);
   const navigate = useNavigate();
   const toast = useToast();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("user_token");
 
   const handlePictureChange = async (event) => {
     try {
@@ -119,7 +119,7 @@ export default function EditProfile() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (localStorage.getItem("user_token")) {
       isAuth().then((data) => setProfile(data));
     }
   }, [navigate, refresh]);
@@ -162,11 +162,13 @@ export default function EditProfile() {
         boxShadow={"lg"}
         p={6}
         my={12}
-        className="border border-gray-200">
+        className="border border-gray-200"
+      >
         <Heading
           fontFamily="Oswald"
           lineHeight={1.1}
-          fontSize={{ base: "2xl", sm: "3xl" }}>
+          fontSize={{ base: "2xl", sm: "3xl" }}
+        >
           Edit Profile
         </Heading>
         <FormControl id="profile_picture">
@@ -182,7 +184,8 @@ export default function EditProfile() {
                     : null
                 }
                 border="2px"
-                borderColor="papayawhip">
+                borderColor="papayawhip"
+              >
                 <RemovePicConfirmation
                   isOpen={isOpen}
                   onClose={onClose}
@@ -205,7 +208,8 @@ export default function EditProfile() {
                   onClick={() => {
                     profilePicture.current.click();
                   }}
-                  w="full">
+                  w="full"
+                >
                   Change picture
                 </Button>
               </Tooltip>
@@ -215,7 +219,8 @@ export default function EditProfile() {
         <FormControl
           id="fullName"
           isRequired
-          isInvalid={formik.touched.fullName && formik.errors.fullName}>
+          isInvalid={formik.touched.fullName && formik.errors.fullName}
+        >
           <FormLabel fontFamily="Oswald">Full Name</FormLabel>
           <Input
             fontFamily="Roboto"
@@ -232,11 +237,13 @@ export default function EditProfile() {
         </FormControl>
         <FormControl
           id="email"
-          isInvalid={formik.touched.email && formik.errors.email}>
+          isInvalid={formik.touched.email && formik.errors.email}
+        >
           <FormLabel fontFamily="Oswald">Email Address</FormLabel>
           <Tooltip
             hasArrow
-            label="to change email address, please contact our customer service">
+            label="to change email address, please contact our customer service"
+          >
             <Input
               fontFamily="Roboto"
               borderRadius={0}
@@ -255,7 +262,8 @@ export default function EditProfile() {
         <FormControl
           id="phoneNumber"
           isRequired
-          isInvalid={formik.touched.phoneNumber && formik.errors.phoneNumber}>
+          isInvalid={formik.touched.phoneNumber && formik.errors.phoneNumber}
+        >
           <FormLabel fontFamily="Oswald">Phone Number</FormLabel>
           <Input
             fontFamily="Roboto"
@@ -281,7 +289,8 @@ export default function EditProfile() {
             isLoading={isLoading}
             type="submit"
             loadingText="Saving"
-            w="full">
+            w="full"
+          >
             Save
           </Button>
         </Stack>
@@ -291,7 +300,8 @@ export default function EditProfile() {
           <Button
             type="button"
             onClick={() => setShowChangePassword(true)}
-            variant="buttonBlack">
+            variant="buttonBlack"
+          >
             Change Password
           </Button>
         )}
