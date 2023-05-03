@@ -20,6 +20,7 @@ import PatchProductForm from "./pages/admin/patchProduct";
 import RegisterAdmin from "./pages/admin/registerAdmin";
 import UserList from "./pages/admin/userList";
 import AddUserAddress from "./pages/user/AddUserAddress";
+import History from "./pages/warehouse/History";
 import Cart from "./pages/user/Cart";
 import EditProfile from "./pages/user/EditProfile";
 import EditUserAddress from "./pages/user/EditUserAddress";
@@ -45,6 +46,8 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import SuperAdminRoutes from "./utils/SuperAdminRoutes";
 import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
 import ListOrders from "./pages/admin/listOrders";
+import OrderList from "./pages/user/OrderList";
+import UploadPaymentProof from "./pages/user/UploadPaymentProof";
 import "@fontsource/oswald/500.css";
 import "@fontsource/roboto/400.css";
 
@@ -101,6 +104,11 @@ function App() {
             <Route path="/user/address/:id" element={<EditUserAddress />} />
             <Route path="/user/cart" element={<Cart />} />
             <Route path="/user/checkout" element={<Checkout />} />
+            <Route path="/user/order-list" element={<OrderList />} />
+            <Route
+              path="/user/upload-payment-proof"
+              element={<UploadPaymentProof />}
+            />
           </Route>
 
           {/*Public admin's route */}
@@ -120,14 +128,21 @@ function App() {
               path="/admin/patch-product/:id"
               element={<PatchProductForm />}
             />
+
             {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
             <Route
               path="/admin/patch-category/:id"
               element={<PatchCategoryProduct />}
             />
+            <Route
+              path="/admin/managecategory"
+              element={<ManageCategoryProducts />}
+            />
+
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
+            <Route path="/warehouse/details" element={<WarehouseDetails />} />
           </Route>
 
           {/*Super admin & Warehouse admin's route */}
@@ -140,7 +155,7 @@ function App() {
               element={<AdminWarehouseNotFound />}
             />
             <Route path="/warehouse/history" element={<StockHistory />} />
-            <Route path="/warehouse/list" element={<WarehouseList />} />
+            <Route path="/warehouse/history2" element={<History />} />
             <Route
               path="/warehouse/getstockmutationrequest"
               element={<StockRequestList />}
@@ -148,10 +163,6 @@ function App() {
             <Route
               path="/warehouse/getAllstockmutationrequest"
               element={<ManageMutations />}
-            />
-            <Route
-              path="/admin/managecategory"
-              element={<ManageCategoryProducts />}
             />
           </Route>
           <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />

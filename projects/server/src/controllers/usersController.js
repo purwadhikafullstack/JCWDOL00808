@@ -4,12 +4,10 @@ const { sequelize } = require("../../models");
 // Import models
 const db = require("../../models/index");
 const users = db.users;
+const orders = db.orders;
 
 // Import verification token function
-const {
-  createVerificationToken,
-  validateVerificationToken,
-} = require("../helper/verificationToken");
+const { createVerificationToken, validateVerificationToken } = require("../helper/verificationToken");
 const { createToken, validateToken } = require("../lib/jwt");
 // Import transporter function
 const transporter = require("../helper/transporter");
@@ -36,10 +34,7 @@ module.exports = {
       } else {
         const createAccount = await users.create({ email }, { transaction: t });
 
-        const template = await fs.readFile(
-          "./src/template/register.html",
-          "utf-8"
-        );
+        const template = await fs.readFile("./src/template/register.html", "utf-8");
         let compiledTemplate = handlebars.compile(template);
         let registerTemplate = compiledTemplate({
           registrationLink: "http://localhost:3000/user/verify",
@@ -127,10 +122,7 @@ module.exports = {
           data: null,
         });
       } else {
-        let hasMatchResult = await hashMatch(
-          password,
-          findEmail.dataValues.password
-        );
+        let hasMatchResult = await hashMatch(password, findEmail.dataValues.password);
 
         if (hasMatchResult === false)
           return res.status(404).send({
@@ -173,10 +165,7 @@ module.exports = {
           data: null,
         });
       } else {
-        const template = await fs.readFile(
-          "./src/template/resetPassword.html",
-          "utf-8"
-        );
+        const template = await fs.readFile("./src/template/resetPassword.html", "utf-8");
         let compiledTemplate = handlebars.compile(template);
         let resetPasswordTemplate = compiledTemplate({
           resetPasswordLink: "http://localhost:3000/user/verify-new-password",
@@ -212,11 +201,7 @@ module.exports = {
       const { email, password, token } = req.body;
       validateToken(token);
 
-      await users.update(
-        { password: await hashPassword(password) },
-        { where: { email } },
-        { transaction: t }
-      );
+      await users.update({ password: await hashPassword(password) }, { where: { email } }, { transaction: t });
 
       t.commit();
       res.status(201).send({
@@ -281,11 +266,7 @@ module.exports = {
       //Check if user data available in database
       const response = await users.findOne({ where: { id } });
       //Remove user's profile_picture data from database
-      await users.update(
-        { profile_picture: null },
-        { where: { id } },
-        { transaction: t }
-      );
+      await users.update({ profile_picture: null }, { where: { id } }, { transaction: t });
       //Remove image from storage
       await fs.unlink(response?.dataValues?.profile_picture, (err) => {
         if (err) throw err;
@@ -311,10 +292,7 @@ module.exports = {
       const { id } = req.dataDecode;
       const { fullName, phoneNumber } = req.body;
       //Update data with user input
-      await users.update(
-        { full_name: fullName, phone_number: phoneNumber },
-        { where: { id } }
-      );
+      await users.update({ full_name: fullName, phone_number: phoneNumber }, { where: { id } });
       res.status(201).send({
         isError: false,
         message: "Profile updated.",
@@ -337,10 +315,7 @@ module.exports = {
       //Get old password from database to compare
       const findOldPassword = await users.findOne({ where: { id } });
       //Compare input password with hashed password from database
-      let hasMatchResult = await hashMatch(
-        oldPassword,
-        findOldPassword.dataValues.password
-      );
+      let hasMatchResult = await hashMatch(oldPassword, findOldPassword.dataValues.password);
 
       if (hasMatchResult === false)
         return res.status(401).send({
@@ -349,11 +324,7 @@ module.exports = {
           data: true,
         });
       //Update new password after old password match
-      await users.update(
-        { password: await hashPassword(newPassword) },
-        { where: { id } },
-        { transaction: t }
-      );
+      await users.update({ password: await hashPassword(newPassword) }, { where: { id } }, { transaction: t });
       t.commit();
       res.status(201).send({
         isError: false,
