@@ -9,15 +9,17 @@ import {
   getCarts,
   getTotalPriceInCart,
   getTotalProductsInCart,
+  getTotalWeightInCart,
   updateCarts,
 } from "../../reducers/cartSlice";
-import { Button } from "@chakra-ui/react";
+import { Button, Tooltip } from "@chakra-ui/react";
 
 export default function Cart() {
   const dispatch = useDispatch();
   const carts = useSelector(cartSelector.selectAll);
   const subtotal = useSelector(getTotalPriceInCart);
   const totalProductsInCart = useSelector(getTotalProductsInCart);
+  const totalWeightInCart = useSelector(getTotalWeightInCart);
   const [defaultValue, setDefaultValue] = useState({});
   const navigate = useNavigate();
 
@@ -76,7 +78,8 @@ export default function Cart() {
                   return (
                     <div
                       key={index}
-                      className="justify-between border border-gray-200 mb-6 rounded-none bg-white p-6 shadow-md sm:flex sm:justify-start">
+                      className="justify-between border border-gray-200 mb-6 rounded-none bg-white p-6 shadow-md sm:flex sm:justify-start"
+                    >
                       <img
                         onClick={() =>
                           navigate(`/product-details/${cart.product.id}`)
@@ -91,7 +94,8 @@ export default function Cart() {
                             onClick={() =>
                               navigate(`/product-details/${cart.product.id}`)
                             }
-                            className="text-lg font-[Oswald] text-gray-900">
+                            className="text-lg font-[Oswald] text-gray-900"
+                          >
                             {cart.product?.name}
                           </h2>
                           <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
@@ -123,7 +127,8 @@ export default function Cart() {
                                     })
                                   )
                                 }
-                                className="cursor-pointer font-bold rounded-sm bg-gray-100 py-1 px-3.5 duration-100 hover:bg-red-500 hover:text-blue-50">
+                                className="cursor-pointer font-bold rounded-sm bg-gray-100 py-1 px-3.5 duration-100 hover:bg-red-500 hover:text-blue-50"
+                              >
                                 {" "}
                                 -{" "}
                               </button>
@@ -132,8 +137,9 @@ export default function Cart() {
                             <input
                               className="h-8 w-8 border bg-white text-center text-xs outline-none"
                               type="number"
-                              defaultValue={defaultValue[cart.id]}
-                              onBlur={(event) => {
+                              // defaultValue={defaultValue[cart.id]}
+                              value={defaultValue[cart.id]}
+                              onChange={(event) => {
                                 handleUpdateQuantity(event, cart.id);
                               }}
                               min={1}
@@ -152,7 +158,8 @@ export default function Cart() {
                                   })
                                 )
                               }
-                              className="cursor-pointer font-bold rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 enabled:hover:text-blue-50 disabled:text-gray-100 disabled:bg-gray-100">
+                              className="cursor-pointer font-bold rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 enabled:hover:text-blue-50 disabled:text-gray-100 disabled:bg-gray-100"
+                            >
                               {" "}
                               +{" "}
                             </button>
@@ -188,7 +195,8 @@ export default function Cart() {
                   <Button
                     variant="buttonBlack"
                     // className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={() => navigate("/")}>
+                    onClick={() => navigate("/")}
+                  >
                     Go Shopping
                   </Button>
                 </div>
@@ -197,7 +205,8 @@ export default function Cart() {
             <div
               className={`sticky top-[5.7rem] mt-6 h-full rounded-none border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
                 carts.length === 0 ? "hidden" : null
-              }`}>
+              }`}
+            >
               <div className="mb-2 flex justify-between">
                 <p className="text-gray-700 font-[Roboto]">
                   Subtotal ({totalProductsInCart} items)
@@ -221,12 +230,30 @@ export default function Cart() {
                   </p>
                 </div>
               </div>
+
               <Link to="/user/checkout">
-                <Button
-                  variant="buttonBlack"
-                  className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
-                  Checkout
-                </Button>
+                {totalWeightInCart >= 30000 ? (
+                  <Tooltip
+                    hasArrow
+                    label="Total weight should be less than 30 Kg"
+                    bg="red.600"
+                  >
+                    <Button
+                      isDisabled="true"
+                      variant="buttonBlack"
+                      className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600"
+                    >
+                      Checkout
+                    </Button>
+                  </Tooltip>
+                ) : (
+                  <Button
+                    variant="buttonBlack"
+                    className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600"
+                  >
+                    Checkout
+                  </Button>
+                )}
               </Link>
             </div>
           </div>
