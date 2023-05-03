@@ -43,7 +43,7 @@ import { userLogout } from "../reducers/authSlice";
 // };
 export const isAuth = async () => {
   try {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("user_token");
     const userData = await axios.get(
       `${process.env.REACT_APP_API_BASE_URL}/auth`,
       { headers: { Authorization: token } }

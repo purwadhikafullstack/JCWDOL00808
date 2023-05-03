@@ -10,7 +10,7 @@ import Big4Logo from "../assets/Big4Logo.svg";
 
 export default function Footer() {
   const isLoggedIn = () => {
-    if (localStorage.getItem("token")) {
+    if (localStorage.getItem("user_token")) {
       return true;
     } else return false;
   };
@@ -70,7 +70,8 @@ export default function Footer() {
                 <Link
                   to="http://facebook.com"
                   target="_blank"
-                  className="hover:underline ">
+                  className="hover:underline "
+                >
                   Facebook
                 </Link>
               </li>
@@ -78,7 +79,8 @@ export default function Footer() {
                 <Link
                   to="http://instagram.com"
                   target="_blank"
-                  className="hover:underline ">
+                  className="hover:underline "
+                >
                   Instagram
                 </Link>
               </li>
@@ -86,7 +88,8 @@ export default function Footer() {
                 <Link
                   to="http://tiktok.com"
                   target="_blank"
-                  className="hover:underline ">
+                  className="hover:underline "
+                >
                   Tiktok
                 </Link>
               </li>
@@ -94,7 +97,8 @@ export default function Footer() {
                 <Link
                   to="http://twitter.com"
                   target="_blank"
-                  className="hover:underline">
+                  className="hover:underline"
+                >
                   Twitter
                 </Link>
               </li>
@@ -162,35 +166,40 @@ export default function Footer() {
           <Link
             to="http://facebook.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+          >
             <FaFacebook className="w-5 h-5" />
             <span className="sr-only">Facebook page</span>
           </Link>
           <Link
             to="http://instagram.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+          >
             <FaInstagram className="w-5 h-5" />
             <span className="sr-only">Instagram page</span>
           </Link>
           <Link
             to="http://twitter.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+          >
             <FaTwitter className="w-5 h-5" />
             <span className="sr-only">Twitter page</span>
           </Link>
           <Link
             to="http://tiktok.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+          >
             <FaTiktok className="w-5 h-5" />
             <span className="sr-only">Tiktok account</span>
           </Link>
           <Link
             to="http://youtube.com"
             target="_blank"
-            className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+            className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+          >
             <FaYoutube className="w-5 h-5" />
             <span className="sr-only">Youtube account</span>
           </Link>
