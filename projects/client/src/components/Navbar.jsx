@@ -21,7 +21,7 @@ import {
 import { useDisclosure } from "@chakra-ui/react";
 
 export default function Navbar() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("user_token");
   const [profile, setProfile] = useState(null);
   const totalProductsInCart = useSelector(getTotalProductsInCart);
   const queryParams = new URLSearchParams(window.location.search);
@@ -88,7 +88,8 @@ export default function Navbar() {
                 <Button
                   type="button"
                   variant="buttonBlack"
-                  className="rounded-none font-[Oswald] hidden md:flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium  text-sm px-5 py-2.5 text-center mr-3 ml-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                  className="rounded-none font-[Oswald] hidden md:flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium  text-sm px-5 py-2.5 text-center mr-3 ml-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                >
                   Create account
                 </Button>
               </Link>
@@ -102,21 +103,24 @@ export default function Navbar() {
                 <Link
                   to="/"
                   className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                  aria-current="page">
+                  aria-current="page"
+                >
                   HOME
                 </Link>
               </li>
               <li>
                 <Link
                   to="#"
-                  className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >
                   ABOUT
                 </Link>
               </li>
               <li>
                 <Link
                   to="#"
-                  className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >
                   CONTACT
                 </Link>
               </li>
@@ -124,7 +128,8 @@ export default function Navbar() {
                 <li>
                   <button
                     onClick={onOpen}
-                    className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                    className="hover:border-b-2  border-red-500 block py-2 pl-3 pr-4 text-md mx-2 rounded-none hover:bg-gray-100 md:hover:bg-transparent md:hover:text-gray-400 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  >
                     LOGIN
                   </button>
                 </li>

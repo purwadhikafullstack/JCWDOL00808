@@ -52,7 +52,7 @@ const Checkout = () => {
   const courierRef = useRef(null);
   const costRef = useRef(null);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("user_token");
 
   const carts = useSelector(cartSelector.selectAll);
   const subtotal = useSelector(getTotalPriceInCart);

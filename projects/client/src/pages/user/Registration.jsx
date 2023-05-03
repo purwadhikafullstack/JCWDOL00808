@@ -70,7 +70,7 @@ export default function Registration() {
   });
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (localStorage.getItem("user_token")) {
       navigate("/");
     }
   }, [navigate]);
@@ -81,7 +81,8 @@ export default function Registration() {
       w={"full"}
       align={"center"}
       justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}>
+      bg={useColorModeValue("gray.50", "gray.800")}
+    >
       <HStack>
         <img src={big4Logo} className="h-60" alt="Big4Commerce Logo" />
 
@@ -96,14 +97,16 @@ export default function Registration() {
             rounded={"none"}
             bg={useColorModeValue("white", "gray.700")}
             boxShadow={"lg"}
-            p={8}>
+            p={8}
+          >
             <Stack spacing={4}>
               <form onSubmit={formik.handleSubmit}>
                 <FormControl
                   fontFamily="Roboto"
                   id="email"
                   isRequired
-                  isInvalid={formik.touched.email && formik.errors.email}>
+                  isInvalid={formik.touched.email && formik.errors.email}
+                >
                   <FormLabel>Email Address</FormLabel>
                   <Input
                     id="email"
@@ -122,7 +125,8 @@ export default function Registration() {
                     variant="buttonBlack"
                     isLoading={isLoading}
                     type="submit"
-                    loadingText="Submitting">
+                    loadingText="Submitting"
+                  >
                     Sign Up
                   </Button>
                 </Stack>
@@ -133,7 +137,8 @@ export default function Registration() {
                       as={RouterLink}
                       to="/user/login"
                       fontFamily={"Roboto"}
-                      color={"gray.500"}>
+                      color={"gray.500"}
+                    >
                       Login
                     </Link>
                   </Text>

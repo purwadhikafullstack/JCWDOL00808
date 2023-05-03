@@ -29,7 +29,7 @@ export default function ChangePassword(props) {
   const handleChangePassword = async (values) => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("user_token");
       const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/user/profile/password`,
         values,
@@ -45,7 +45,7 @@ export default function ChangePassword(props) {
         duration: 5000,
         isClosable: true,
       });
-      localStorage.removeItem("token");
+      localStorage.removeItem("user_token");
       setTimeout(() => navigate("/user/login", 5000));
     } catch (error) {
       setIsLoading(false);
@@ -93,13 +93,15 @@ export default function ChangePassword(props) {
       <Heading
         fontFamily="Oswald"
         lineHeight={1.1}
-        fontSize={{ base: "2xl", sm: "3xl" }}>
+        fontSize={{ base: "2xl", sm: "3xl" }}
+      >
         Change password
       </Heading>
       <FormControl
         id="oldPassword"
         isRequired
-        isInvalid={formik.touched.oldPassword && formik.errors.oldPassword}>
+        isInvalid={formik.touched.oldPassword && formik.errors.oldPassword}
+      >
         <FormLabel fontFamily="Oswald">Old Password</FormLabel>
         <InputGroup>
           <Input
@@ -115,7 +117,8 @@ export default function ChangePassword(props) {
           <InputRightElement h={"full"}>
             <Button
               variant={"ghost"}
-              onClick={() => setShowOldPassword(!showOldPassword)}>
+              onClick={() => setShowOldPassword(!showOldPassword)}
+            >
               {showOldPassword ? <ViewIcon /> : <ViewOffIcon />}
             </Button>
           </InputRightElement>
@@ -125,7 +128,8 @@ export default function ChangePassword(props) {
       <FormControl
         id="newPassword"
         isRequired
-        isInvalid={formik.touched.newPassword && formik.errors.newPassword}>
+        isInvalid={formik.touched.newPassword && formik.errors.newPassword}
+      >
         <FormLabel fontFamily="Oswald">New Password</FormLabel>
         <InputGroup>
           <Input
@@ -141,7 +145,8 @@ export default function ChangePassword(props) {
           <InputRightElement h={"full"}>
             <Button
               variant={"ghost"}
-              onClick={() => setShowNewPassword(!showNewPassword)}>
+              onClick={() => setShowNewPassword(!showNewPassword)}
+            >
               {showNewPassword ? <ViewIcon /> : <ViewOffIcon />}
             </Button>
           </InputRightElement>
@@ -153,7 +158,8 @@ export default function ChangePassword(props) {
         isRequired
         isInvalid={
           formik.touched.confirmPassword && formik.errors.confirmPassword
-        }>
+        }
+      >
         <FormLabel fontFamily="Oswald">Confirm New Password</FormLabel>
         <InputGroup>
           <Input
@@ -169,7 +175,8 @@ export default function ChangePassword(props) {
           <InputRightElement h={"full"}>
             <Button
               variant={"ghost"}
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
               {showConfirmPassword ? <ViewIcon /> : <ViewOffIcon />}
             </Button>
           </InputRightElement>

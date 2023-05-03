@@ -6,7 +6,7 @@ import {
 import axios from "axios";
 
 export const getCarts = createAsyncThunk("cart/getCarts", async () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("user_token");
   const response = await axios.get(
     `${process.env.REACT_APP_API_BASE_URL}/cart`,
     {
@@ -19,7 +19,7 @@ export const getCarts = createAsyncThunk("cart/getCarts", async () => {
 export const addProduct = createAsyncThunk(
   "cart/addProduct",
   async ({ products_id, quantity }) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("user_token");
 
     const response = await axios.post(
       `${process.env.REACT_APP_API_BASE_URL}/cart`,
@@ -33,7 +33,7 @@ export const addProduct = createAsyncThunk(
 export const updateCarts = createAsyncThunk(
   "cart/updateCarts",
   async ({ id, quantity }) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("user_token");
 
     const response = await axios.patch(
       `${process.env.REACT_APP_API_BASE_URL}/cart`,
@@ -47,7 +47,7 @@ export const updateCarts = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   "carts/deleteProduct",
   async (id) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("user_token");
 
     await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/cart/${id}`, {
       headers: { Authorization: token },
@@ -71,8 +71,10 @@ export const getTotalPriceInCart = (state) => {
 
 export const getTotalWeightInCart = (state) => {
   const cartItems = cartSelector.selectAll(state);
-  return cartItems.reduce((total, cartItem) => total + cartItem.quantity * cartItem.product.weight,
-   0);
+  return cartItems.reduce(
+    (total, cartItem) => total + cartItem.quantity * cartItem.product.weight,
+    0
+  );
 };
 
 const cartEntity = createEntityAdapter({ selectId: (cart) => cart.id });
