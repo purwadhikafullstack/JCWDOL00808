@@ -214,46 +214,55 @@ export default function Sidebar() {
                       role === "1"
                     ) {
                       return null;
-                    }
-                    return (
-                      <li
-                        key={submenuIndex}
-                        className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
+                    } else if (
+                      submenuItem.title === "Warehouse List" &&
+                      role === "2"
+                    ) {
+                      return null;
+                    } else
+                      return (
+                        <li
+                          key={submenuIndex}
+                          className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
           p-2 px-5 hover:bg-light-white rounded-md"
-                        onClick={() => {
-                          if (submenuItem.title === "Admin Account") {
-                            navigate("/admin/manageadmin");
-                          } else if (submenuItem.title === "List User") {
-                            navigate("/admin/adminuserlist");
-                          } else if (
-                            submenuItem.title === "Manage Category Product"
-                          ) {
-                            navigate("/admin/managecategory");
-                          } else if (submenuItem.title === "Manage Product") {
-                            navigate("/admin/manageProducts");
-                          } else if (submenuItem.title === "Stock Mutations") {
-                            navigate(
-                              role === "1"
-                                ? "/warehouse/getAllstockmutationrequest"
-                                : "/warehouse/getstockmutationrequest"
-                            );
-                          } else if (submenuItem.title === "Warehouse List") {
-                            navigate("/warehouse/list");
-                          } else if (submenuItem.title === "Warehouse Stock") {
-                            navigate(
-                              role === "2"
-                                ? warehouseAdmin.length === 0
-                                  ? "/warehouse/stock/0"
-                                  : `/warehouse/stock/${warehouseAdmin[0]?.id}`
-                                : null
-                            );
-                          } else if (submenuItem.title === "List Orders") {
-                            navigate("/admin/list-orders");
-                          }
-                        }}>
-                        {submenuItem.title}
-                      </li>
-                    );
+                          onClick={() => {
+                            if (submenuItem.title === "Admin Account") {
+                              navigate("/admin/manageadmin");
+                            } else if (submenuItem.title === "List User") {
+                              navigate("/admin/adminuserlist");
+                            } else if (
+                              submenuItem.title === "Manage Category Product"
+                            ) {
+                              navigate("/admin/managecategory");
+                            } else if (submenuItem.title === "Manage Product") {
+                              navigate("/admin/manageProducts");
+                            } else if (
+                              submenuItem.title === "Stock Mutations"
+                            ) {
+                              navigate(
+                                role === "1"
+                                  ? "/warehouse/getAllstockmutationrequest"
+                                  : "/warehouse/getstockmutationrequest"
+                              );
+                            } else if (submenuItem.title === "Warehouse List") {
+                              navigate("/warehouse/list");
+                            } else if (
+                              submenuItem.title === "Warehouse Stock"
+                            ) {
+                              navigate(
+                                role === "2"
+                                  ? warehouseAdmin.length === 0
+                                    ? "/warehouse/stock/0"
+                                    : `/warehouse/stock/${warehouseAdmin[0]?.id}`
+                                  : null
+                              );
+                            } else if (submenuItem.title === "List Orders") {
+                              navigate("/admin/list-orders");
+                            }
+                          }}>
+                          {submenuItem.title}
+                        </li>
+                      );
                   })}
                 </ul>
               )}

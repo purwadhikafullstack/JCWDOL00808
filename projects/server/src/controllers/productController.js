@@ -210,6 +210,7 @@ module.exports = {
       if (name) {
         let findNameProducts = await products.findOne({
           where: {
+            is_deleted: 0,
             name: name,
             id: { [Op.not]: product },
           },
@@ -328,13 +329,14 @@ module.exports = {
   getProductsByCategoryId: async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 0;
-      const limit = parseInt(req.query.limit) || 10;
+      // const limit = parseInt(req.query.limit) || 10000;
       const search = req.query.search_query || "";
-      const offset = limit * page;
+      // const offset = limit * page;
       const sort = req.query.sort || "name"; //default sorting by name
       const order = req.query.order || "DESC"; //default order DESC
       const totalRows = await products.count({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -349,9 +351,10 @@ module.exports = {
           ],
         },
       });
-      const totalPage = Math.ceil(totalRows / limit);
+      // const totalPage = Math.ceil(totalRows / limit);
       const result = await products.findAll({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               product_categories_id: {
@@ -365,8 +368,8 @@ module.exports = {
             },
           ],
         },
-        offset: offset,
-        limit: limit,
+        // offset: offset,
+        // limit: limit,
         order: [[sort, order]], // add order clause with the sort and order parameters
       });
 
@@ -378,9 +381,9 @@ module.exports = {
       res.json({
         result: result,
         page: page,
-        limit: limit,
+        // limit: limit,
         totalRows: totalRows,
-        totalPage: totalPage,
+        // totalPage: totalPage,
       });
     } catch (error) {
       // console.error(error);

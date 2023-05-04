@@ -25,6 +25,7 @@ const { error } = require("console");
 const { geocode } = require("opencage-api-client");
 
 const request = require("request");
+require("dotenv").config();
 
 module.exports = {
   addAddress: async (req, res) => {
