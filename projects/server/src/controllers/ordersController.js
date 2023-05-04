@@ -12,6 +12,7 @@ const products = db.products;
 const carts = db.carts;
 const warehouses = db.warehouses;
 const stocks = db.stocks;
+const admins = db.admins;
 
 const request = require("request");
 
@@ -31,7 +32,7 @@ module.exports = {
             model: products,
             as: "product",
             required: true,
-            attributes: ["id", "name", "price", "weight", "imageUrl"],
+            attributes: ["id", "name", "price", "weight", "imageUrl", "booked_stock"],
           },
         ],
         attributes: ["id", "users_id", "quantity", "products_id"],
@@ -40,6 +41,7 @@ module.exports = {
       // check if order qty less than stocks available
       let validationChecker = [];
       for (i = 0; i < fetchCart.length; i++) {
+        let booked_stock = fetchCart[i].product.booked_stock;
         let id = fetchCart[i].products_id;
         let quantity = fetchCart[i].quantity;
         let product_stock = await stocks.findAll({
@@ -54,6 +56,8 @@ module.exports = {
         }
         if (quantity <= stock) {
           validationChecker.push(i);
+          booked_stock += quantity;
+          let updateBookedStock = await products.update({ booked_stock }, { where: { id } });
         }
       }
 
@@ -91,7 +95,7 @@ module.exports = {
 
       res.status(200).send({
         success: true,
-        message: "Test ok",
+        message: "Order added",
         data: fetchCart,
       });
     } catch (error) {
@@ -116,8 +120,8 @@ module.exports = {
           status: {
             [Op.like]: "%" + status + "%",
           },
-        }
-      })
+        },
+      });
 
       let data = await orders.findAll({
         include: {
@@ -167,8 +171,25 @@ module.exports = {
 
       // check if user who wants to cancel order is the same user who is logging in
       if (users_id == checkUser.users_id) {
+        let orders_id = req.body.id;
+
+        // find order details
+        let findToCancel = await order_details.findAll({ where: { orders_id }, raw: true });
+        for (let i = 0; i < findToCancel.length; i++) {
+          let products_id = findToCancel[i].products_id;
+
+          let findProducts = await products.findOne({
+            where: { id: products_id },
+            raw: true,
+          });
+
+          let stockToReturn = parseInt(findToCancel[i].qty);
+          let booked_stock = parseInt(findProducts.booked_stock) - stockToReturn;
+          let updateBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
+        }
+
         let newStatus = "Canceled";
-        await orders.update({ status: newStatus }, { where: { id: req.body.id } });
+        let updateOrderStatus = await orders.update({ status: newStatus }, { where: { id: orders_id } });
 
         res.status(200).send({
           success: true,
@@ -181,6 +202,48 @@ module.exports = {
           message: "You don't own this transaction.",
         });
       }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Cancel order failed.",
+      });
+    }
+  },
+  cancelUserOrder: async (req, res) => {
+    try {
+      // check if someone who wants to cancel order is the real admin who is logging in
+      let orders_id = req.body.id;
+      let admins_id = req.dataDecode.id;
+      let checkAdmin = await admins.findOne({ where: { id: admins_id } });
+
+      if (checkAdmin) {
+        // find order details
+        let findToCancel = await order_details.findAll({ where: { orders_id }, raw: true });
+        for (let i = 0; i < findToCancel.length; i++) {
+          let products_id = findToCancel[i].products_id;
+
+          let findProducts = await products.findOne({
+            where: { id: products_id },
+            raw: true,
+          });
+
+          let stockToReturn = parseInt(findToCancel[i].qty);
+          let booked_stock = parseInt(findProducts.booked_stock) - stockToReturn;
+          let updateBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
+        }
+        let updateOrderStatus = await orders.update({ status: "Canceled" }, { where: { id: orders_id } });
+      } else {
+        res.status(500).send({
+          success: false,
+          message: "You don't own this transaction.",
+        });
+      }
+
+      res.status(200).send({
+        success: true,
+        message: "Order cancelled.",
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send({

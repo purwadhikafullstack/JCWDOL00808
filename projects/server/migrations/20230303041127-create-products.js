@@ -37,6 +37,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+      booked_stock: {
+        type: Sequelize.INTEGER,
+      },
     });
   },
   async down(queryInterface, Sequelize) {

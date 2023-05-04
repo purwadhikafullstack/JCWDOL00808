@@ -10,7 +10,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 
 const AdminLogin = (props) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
 
   const dispatch = useDispatch();
@@ -24,7 +24,6 @@ const AdminLogin = (props) => {
       password: values.password,
     })
       .then((response) => {
-        console.log("response:", response.data);
         if (response.data.success) {
           dispatch(loginAction(response.data));
 
@@ -92,7 +91,7 @@ const AdminLogin = (props) => {
             <FormControl isInvalid={formik.errors.password && formik.touched.password}>
               <FormLabel>Password</FormLabel>
               <InputGroup>
-                <Input id="password" value={formik.values.password} onChange={formik.handleChange} />
+                <Input id="password" value={formik.values.password} onChange={formik.handleChange} type={show ? "text" : "password"} />
                 <InputRightElement width="4.5rem">
                   <Button h="1.75rem" size="sm" onClick={handleClick}>
                     {show ? "Hide" : "Show"}
@@ -101,9 +100,6 @@ const AdminLogin = (props) => {
               </InputGroup>
               <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
             </FormControl>
-            {/* <Button colorScheme="twitter" type="submit">
-              Login
-            </Button> */}
             <Button type="submit" variant="buttonBlack" className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
               Login
             </Button>

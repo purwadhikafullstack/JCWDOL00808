@@ -32,7 +32,6 @@ module.exports = {
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
 
-      // console.log(body);
       let data = JSON.parse(body).rajaongkir.results;
       res.status(200).send(data);
     });
@@ -48,7 +47,6 @@ module.exports = {
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
 
-      // console.log(body);
       let data = JSON.parse(body).rajaongkir.results;
       res.status(200).send(data);
     });
@@ -206,8 +204,6 @@ module.exports = {
       });
 
       await WarehousesModel.destroy({ where: { id: req.query.id } });
-
-      console.log("deleted warehouse: ", deletedWarehouse);
 
       res.status(200).send({
         success: true,

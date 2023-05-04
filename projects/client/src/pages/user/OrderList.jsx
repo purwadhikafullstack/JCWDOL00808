@@ -68,7 +68,6 @@ const OrderList = () => {
       }
     )
       .then((response) => {
-        console.log(response.data);
         setTotalPage(response.data.totalPage);
         setList(response.data.data);
       })
@@ -92,7 +91,6 @@ const OrderList = () => {
       }
     )
       .then((response) => {
-        console.log(response.data);
         toast({
           title: `${response.data.message}`,
           duration: 9000,
@@ -108,7 +106,6 @@ const OrderList = () => {
   const getDetails = (value) => {
     Axios.get(API_url + `/orders/getDetails?orders_id=${value}`)
       .then((response) => {
-        console.log(response.data);
         setDataDetails(response.data);
       })
       .catch((error) => {
