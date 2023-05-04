@@ -12,6 +12,7 @@ const products = db.products;
 const carts = db.carts;
 const warehouses = db.warehouses;
 const stocks = db.stocks;
+const admins = db.admins;
 
 const request = require("request");
 
@@ -71,30 +72,30 @@ module.exports = {
           users_id: id,
         });
 
-      let findOrderId = await orders.findOne({ where: { users_id: id }, order: [["id", "DESC"]] });
+        let findOrderId = await orders.findOne({ where: { users_id: id }, order: [["id", "DESC"]] });
 
-      for (i = 0; i < fetchCart.length; i++) {
-        let carts_id = fetchCart[i].id;
+        for (i = 0; i < fetchCart.length; i++) {
+          let carts_id = fetchCart[i].id;
 
-        //Post all carts data to order_details table
-        let addOrderDetails = await order_details.create({
-          orders_id: findOrderId.dataValues.id,
-          products_id: fetchCart[i].product.id,
-          product_name: fetchCart[i].product.name,
-          quantity: fetchCart[i].quantity,
-          product_price: fetchCart[i].product.price,
-          product_weight: fetchCart[i].product.weight,
-          imageUrl: fetchCart[i].product.imageUrl,
-        });
+          //Post all carts data to order_details table
+          let addOrderDetails = await order_details.create({
+            orders_id: findOrderId.dataValues.id,
+            products_id: fetchCart[i].product.id,
+            product_name: fetchCart[i].product.name,
+            quantity: fetchCart[i].quantity,
+            product_price: fetchCart[i].product.price,
+            product_weight: fetchCart[i].product.weight,
+            imageUrl: fetchCart[i].product.imageUrl,
+          });
 
-        //Delete cart data based on users_id
-        let deleteCartData = await carts.destroy({ where: { id: carts_id } });
-      }
+          //Delete cart data based on users_id
+          let deleteCartData = await carts.destroy({ where: { id: carts_id } });
+        }
       }
 
       res.status(200).send({
         success: true,
-        message: "Test ok",
+        message: "Order added",
         data: fetchCart,
       });
     } catch (error) {
@@ -184,6 +185,48 @@ module.exports = {
           message: "You don't own this transaction.",
         });
       }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Cancel order failed.",
+      });
+    }
+  },
+  cancelUserOrder: async (req, res) => {
+    try {
+      // check if someone who wants to cancel order is the real admin who is logging in
+      let orders_id = req.body.id;
+      let admins_id = req.dataDecode.id;
+      let checkAdmin = await admins.findOne({ where: { id: admins_id } });
+
+      if (checkAdmin) {
+        // find order details
+        let findToCancel = await order_details.findAll({ where: { orders_id }, raw: true });
+        for (let i = 0; i < findToCancel.length; i++) {
+          let products_id = findToCancel[i].products_id;
+
+          let findProducts = await products.findOne({
+            where: { id: products_id },
+            raw: true,
+          });
+
+          let stockToReturn = parseInt(findToCancel[i].qty);
+          let booked_stock = parseInt(findProducts.booked_stock) - stockToReturn;
+          let updateBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
+        }
+        let updateOrderStatus = await orders.update({ status: "Canceled" }, { where: { id: orders_id } });
+      } else {
+        res.status(500).send({
+          success: false,
+          message: "You don't own this transaction.",
+        });
+      }
+
+      res.status(200).send({
+        success: true,
+        message: "Order cancelled.",
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send({
