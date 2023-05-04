@@ -37,6 +37,8 @@ import { API_url } from "../../helper";
 import Axios from "axios";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import React from "react";
+import * as yup from "yup";
+import { useFormik } from "formik";
 
 const WarehouseDetails = () => {
   const [warehouseId, setWarehouseId] = useState();
@@ -62,14 +64,12 @@ const WarehouseDetails = () => {
 
   const navigate = useNavigate();
 
-  // const { id } = useParams();
   const { search } = useLocation();
   const id = search.split("=")[1];
 
   const getSpecificWarehouse = () => {
     Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${id}`)
       .then((response) => {
-        console.log("response:", response.data);
         setName(response.data[0].name);
         setAddress(response.data[0].address);
         setCity(response.data[0].city);
@@ -88,7 +88,6 @@ const WarehouseDetails = () => {
   const getProvinceData = () => {
     Axios.get(API_url + `/warehouses/getProvinceData`)
       .then((response) => {
-        // console.log(response.data);
         setProvinceData(response.data);
       })
       .catch((err) => {
@@ -97,10 +96,8 @@ const WarehouseDetails = () => {
   };
 
   const onGetCity = (province_id) => {
-    // console.log("province_id:", province_id)
     Axios.get(API_url + `/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
-        // console.log("dari onGetCity: ", response.data);
         setCityData(response.data);
 
         // setProvince("");
@@ -151,6 +148,24 @@ const WarehouseDetails = () => {
       .catch((err) => console.log(err));
   };
 
+  const formik = useFormik({
+    initialValues: {
+      name: detailsName,
+      address: detailsAddress,
+      province: detailsProvince,
+      city: detailsCity,
+    },
+    validationSchema: yup.object().shape({
+      name: yup.string().required("Required"),
+      address: yup.string().required("Required"),
+      province: yup.string().required("Required"),
+      city: yup.string().required("Required"),
+      district: yup.string().required("Required"),
+    }),
+    onSubmit: (values, actions) => {
+      actions.resetForm();
+    },
+  });
   return (
     <Box w="50%">
       <Card maxW="lg" border="1px" borderColor="gray.300">

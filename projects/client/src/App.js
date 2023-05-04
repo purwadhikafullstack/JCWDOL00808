@@ -30,7 +30,6 @@ import ResetPassword from "./pages/user/ResetPassword";
 import UserAddress from "./pages/user/UserAddress";
 import Verification from "./pages/user/Verification";
 import VerificationNewPassword from "./pages/user/VerificationNewPassword";
-import AddWarehouse from "./pages/warehouse/AddWarehouse";
 import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import StockHistory from "./pages/warehouse/StockHistory";
 import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
@@ -140,7 +139,6 @@ function App() {
             />
 
             <Route path="/warehouse/list" element={<WarehouseList />} />
-            <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
             <Route path="/warehouse/details" element={<WarehouseDetails />} />
           </Route>

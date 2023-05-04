@@ -20,6 +20,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  FormErrorMessage,
   Input,
   InputGroup,
   Modal,
@@ -40,6 +41,8 @@ import { useEffect, useState, useRef } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 const WarehouseList = (props) => {
   const toast = useToast();
@@ -49,7 +52,6 @@ const WarehouseList = (props) => {
 
   const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
   const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
-  const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onClose: onDetailsClose } = useDisclosure();
   const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
 
   const [warehouseData, setWarehouseData] = useState([]);
@@ -103,7 +105,6 @@ const WarehouseList = (props) => {
   const getSpecificWarehouse = () => {
     Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${warehouseId}`)
       .then((response) => {
-        console.log("response:", response.data.name);
         setName(response.data.name);
         setAddress(response.data.address);
         setCity(response.data.city);
@@ -185,7 +186,6 @@ const WarehouseList = (props) => {
   const getProvinceData = () => {
     Axios.get(API_url + `/warehouses/getProvinceData`)
       .then((response) => {
-        console.log(response.data);
         setProvinceData(response.data);
       })
       .catch((err) => {
@@ -201,24 +201,15 @@ const WarehouseList = (props) => {
     Axios.get(API_url + `/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
         setCityData(response.data);
-
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const buttonAddWarehouse = () => {
-    // alert(province + city)
-    Axios.post(API_url + `/warehouses/addWarehouse`, {
-      name,
-      address,
-      province,
-      city,
-      district,
-    })
+  const buttonAddWarehouse = (values) => {
+    Axios.post(API_url + `/warehouses/addWarehouse`, values)
       .then((response) => {
-        console.log(response.data);
         toast({
           title: `${response.data.message}`,
           status: "success",
@@ -232,11 +223,32 @@ const WarehouseList = (props) => {
       });
   };
 
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      address: "",
+      province: "",
+      city: "",
+      district: "",
+    },
+    validationSchema: yup.object().shape({
+      name: yup.string().required("Required"),
+      address: yup.string().required("Required"),
+      province: yup.string().required("Required"),
+      city: yup.string().required("Required"),
+      district: yup.string().required("Required"),
+    }),
+    onSubmit: (values, actions) => {
+      buttonAddWarehouse(values);
+      onAddClose();
+    },
+  });
+
   return (
     <>
       <Flex direction="column" alignItems="center">
         <Box className="my-5">
-          <Flex>
+          <Flex id="sort, search, and filter">
             <Card maxW="lg">
               <CardBody>
                 <FormControl>
@@ -290,7 +302,7 @@ const WarehouseList = (props) => {
             </TableContainer>
           </CardBody>
         </Card>
-        <div className="mt-5 flex items-center justify-center">
+        <div id="pagination" className="mt-5 flex items-center justify-center">
           <ReactPaginate
             previousLabel={"< Previous"}
             nextLabel={"Next >"}
@@ -314,69 +326,72 @@ const WarehouseList = (props) => {
           <ModalContent>
             <ModalHeader>Add new warehouse</ModalHeader>
             <ModalCloseButton />
-            <ModalBody>
-              <div className="mt-4 text-muted fw-bold text-start">
-                <Text fontSize="md">Name</Text>
-                <Input placeholder="Warehouse name" size="md" onChange={(element) => setName(element.target.value)} />
-                <div className="mt-4 text-muted fw-bold text-start">
-                  <Text fontSize="md">Address</Text>
-                  <InputGroup size="md">
-                    <Input pr="4.5rem" placeholder="warehouse address" onChange={(element) => setAddress(element.target.value)} />
+            <form onSubmit={formik.handleSubmit}>
+              <ModalBody>
+                <FormControl isInvalid={formik.errors.name && formik.touched.name}>
+                  <FormLabel>Name:</FormLabel>
+                  <Input id="name" placeholder="Warehouse name" value={formik.values.name} onChange={formik.handleChange} />
+                  <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={formik.errors.address && formik.touched.address}>
+                  <FormLabel>Address:</FormLabel>
+                  <InputGroup>
+                    <Input id="address" placeholder="Address" value={formik.values.address} onChange={formik.handleChange} />
                   </InputGroup>
-                </div>
-                <div className="mt-4 text-muted fw-bold text-start">
-                  <Text fontSize="md">Province</Text>
+                  <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={formik.errors.province && formik.touched.province}>
+                  <FormLabel>Province:</FormLabel>
                   <Select
+                    id="province"
                     placeholder="Select province"
-                    onChange={(element) => {
-                      setProvince(element.target.value.split(",")[1]);
-                      onGetCity(element.target.value.split(",")[0]);
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                      formik.setFieldValue("province", e.target.value.split(",")[1]);
+                      onGetCity(e.target.value.split(",")[0]);
                     }}
                   >
                     {provinceData.map((value) => {
                       return (
-                        <option value={value.province_id + "," + value.province} key={value.province_id}>
+                        <option id="province" value={value.province_id + "," + value.province} key={value.province_id}>
                           {value.province}
                         </option>
                       );
                     })}
                   </Select>
-                </div>
-              </div>
-              <div>
-                <div className="mt-4 text-muted fw-bold text-start">
-                  <Text fontSize="md">City</Text>
-                  <Select placeholder="Select city" value={city} onChange={(element) => setCity(element.target.value)}>
+                  <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={formik.errors.city && formik.touched.city}>
+                  <FormLabel>City:</FormLabel>
+                  <Select id="city" placeholder="Select city" onChange={formik.handleChange}>
                     {cityData.map((value) => {
                       return (
-                        <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                        <option id="city" value={`${value.type} ${value.city_name}`} key={value.city_id}>
                           {value.type} {value.city_name}
                         </option>
                       );
                     })}
                   </Select>
-                </div>
-                <div className="mt-4 text-muted fw-bold text-start">
-                  <Text fontSize="md">District (Kecamatan)</Text>
-                  <Input placeholder="Input district" onChange={(element) => setDistrict(element.target.value)}></Input>
-                </div>
-              </div>
-            </ModalBody>
+                  <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={formik.errors.district && formik.touched.district}>
+                  <FormLabel>District (Kecamatan):</FormLabel>
+                  <InputGroup>
+                    <Input id="district" placeholder="District" value={formik.values.district} onChange={formik.handleChange} />
+                  </InputGroup>
+                  <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
+                </FormControl>
+              </ModalBody>
 
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onAddClose}>
-                Close
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  onAddClose();
-                  buttonAddWarehouse();
-                }}
-              >
-                Add warehouse data
-              </Button>
-            </ModalFooter>
+              <ModalFooter>
+                <Button colorScheme="blue" mr={3} onClick={onAddClose}>
+                  Close
+                </Button>
+                <Button variant="ghost" type="submit">
+                  Add warehouse data
+                </Button>
+              </ModalFooter>
+            </form>
           </ModalContent>
         </Modal>
       </Flex>
