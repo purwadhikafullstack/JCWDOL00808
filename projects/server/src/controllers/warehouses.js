@@ -11,7 +11,6 @@ const products = db.products;
 const product_categories = db.product_categories;
 const { sequelize } = require("../../models");
 const { Op } = require("sequelize");
-require("dotenv").config();
 
 module.exports = {
   getAllWarehouse: async (req, res) => {
@@ -191,9 +190,7 @@ module.exports = {
         { where: { id: req.body.id } }
       );
 
-      res
-        .status(200)
-        .send({ success: true, message: "Warehouse data update success!" });
+      res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -257,10 +254,7 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create(
-        { stock, products_id, warehouses_id: id },
-        { transaction: t }
-      );
+      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id: id }, { transaction: t });
       const updateHistories = await stock_histories.create(
         {
           stock_before: 0,

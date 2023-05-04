@@ -7,8 +7,6 @@ const db = require("../../models/index");
 const user_addresses = db.user_addresses;
 const users = db.users;
 
-require("dotenv").config();
-
 // Import verification token function
 const {
   createVerificationToken,
