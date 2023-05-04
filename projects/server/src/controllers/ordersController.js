@@ -31,7 +31,7 @@ module.exports = {
             model: products,
             as: "product",
             required: true,
-            attributes: ["id", "name", "price", "weight", "imageUrl"],
+            attributes: ["id", "name", "price", "weight", "imageUrl", "booked_stock"],
           },
         ],
         attributes: ["id", "users_id", "quantity", "products_id"],
@@ -40,6 +40,7 @@ module.exports = {
       // check if order qty less than stocks available
       let validationChecker = [];
       for (i = 0; i < fetchCart.length; i++) {
+        let booked_stock = fetchCart[i].product.booked_stock;
         let id = fetchCart[i].products_id;
         let quantity = fetchCart[i].quantity;
         let product_stock = await stocks.findAll({
@@ -54,6 +55,8 @@ module.exports = {
         }
         if (quantity <= stock) {
           validationChecker.push(i);
+          booked_stock += quantity;
+          let updateBookedStock = await products.update({ booked_stock }, { where: { id } });
         }
       }
 
@@ -68,25 +71,25 @@ module.exports = {
           users_id: id,
         });
 
-        let findOrderId = await orders.findOne({ where: { users_id: id }, order: [["id", "DESC"]] });
+      let findOrderId = await orders.findOne({ where: { users_id: id }, order: [["id", "DESC"]] });
 
-        for (i = 0; i < fetchCart.length; i++) {
-          let carts_id = fetchCart[i].id;
+      for (i = 0; i < fetchCart.length; i++) {
+        let carts_id = fetchCart[i].id;
 
-          //Post all carts data to order_details table
-          let addOrderDetails = await order_details.create({
-            orders_id: findOrderId.dataValues.id,
-            products_id: fetchCart[i].product.id,
-            product_name: fetchCart[i].product.name,
-            quantity: fetchCart[i].quantity,
-            product_price: fetchCart[i].product.price,
-            product_weight: fetchCart[i].product.weight,
-            imageUrl: fetchCart[i].product.imageUrl,
-          });
+        //Post all carts data to order_details table
+        let addOrderDetails = await order_details.create({
+          orders_id: findOrderId.dataValues.id,
+          products_id: fetchCart[i].product.id,
+          product_name: fetchCart[i].product.name,
+          quantity: fetchCart[i].quantity,
+          product_price: fetchCart[i].product.price,
+          product_weight: fetchCart[i].product.weight,
+          imageUrl: fetchCart[i].product.imageUrl,
+        });
 
-          //Delete cart data based on users_id
-          let deleteCartData = await carts.destroy({ where: { id: carts_id } });
-        }
+        //Delete cart data based on users_id
+        let deleteCartData = await carts.destroy({ where: { id: carts_id } });
+      }
       }
 
       res.status(200).send({
@@ -116,8 +119,8 @@ module.exports = {
           status: {
             [Op.like]: "%" + status + "%",
           },
-        }
-      })
+        },
+      });
 
       let data = await orders.findAll({
         include: {

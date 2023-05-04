@@ -1,5 +1,4 @@
 export const loginAction = (data) => {
-  console.log("data dari component: ", data);
   return {
     type: "Admin login success",
     payload: data,
