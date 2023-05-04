@@ -171,8 +171,25 @@ module.exports = {
 
       // check if user who wants to cancel order is the same user who is logging in
       if (users_id == checkUser.users_id) {
+        let orders_id = req.body.id;
+
+        // find order details
+        let findToCancel = await order_details.findAll({ where: { orders_id }, raw: true });
+        for (let i = 0; i < findToCancel.length; i++) {
+          let products_id = findToCancel[i].products_id;
+
+          let findProducts = await products.findOne({
+            where: { id: products_id },
+            raw: true,
+          });
+
+          let stockToReturn = parseInt(findToCancel[i].qty);
+          let booked_stock = parseInt(findProducts.booked_stock) - stockToReturn;
+          let updateBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
+        }
+
         let newStatus = "Canceled";
-        await orders.update({ status: newStatus }, { where: { id: req.body.id } });
+        let updateOrderStatus = await orders.update({ status: newStatus }, { where: { id: orders_id } });
 
         res.status(200).send({
           success: true,
