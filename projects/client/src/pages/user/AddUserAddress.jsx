@@ -18,9 +18,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
-const token = localStorage.getItem("user_token");
 
 const AddUserAddress = () => {
+  const token = localStorage.getItem("user_token");
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
 

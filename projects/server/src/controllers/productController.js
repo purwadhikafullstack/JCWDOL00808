@@ -25,6 +25,7 @@ module.exports = {
       const order = req.query.order || "DESC"; //default order DESC
       const totalRows = await products.count({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -42,6 +43,7 @@ module.exports = {
       const totalPage = Math.ceil(totalRows / limit);
       const result = await products.findAll({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -129,7 +131,10 @@ module.exports = {
         });
 
       // insert data ke products
-      await products.create({ name, description, price, weight, imageUrl, product_categories_id }, { transaction: t });
+      await products.create(
+        { name, description, price, weight, imageUrl, product_categories_id },
+        { transaction: t }
+      );
 
       //step 5 kirim response
       await t.commit();
@@ -192,9 +197,13 @@ module.exports = {
 
       // step 2 validasi
       if (product_categories_id) {
-        const productCategory = await categories.findByPk(product_categories_id);
+        const productCategory = await categories.findByPk(
+          product_categories_id
+        );
         if (!productCategory) {
-          return res.status(404).send({ message: "Product category not found" });
+          return res
+            .status(404)
+            .send({ message: "Product category not found" });
         }
       }
 
@@ -215,7 +224,10 @@ module.exports = {
       }
 
       // Update the product
-      await product.update({ name, description, price, weight, imageUrl, product_categories_id }, { transaction: t });
+      await product.update(
+        { name, description, price, weight, imageUrl, product_categories_id },
+        { transaction: t }
+      );
 
       await t.commit();
       res.status(200).send({
@@ -251,7 +263,10 @@ module.exports = {
       }
 
       // step 2: delete admin data from database
-      await products.destroy({ where: { id: id } }, { transaction: t });
+      await products.update(
+        { is_deleted: 1 },
+        { where: { id: id }, transaction: t }
+      );
 
       // step 3: send response
       await t.commit();
