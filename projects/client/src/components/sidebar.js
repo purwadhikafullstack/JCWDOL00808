@@ -151,16 +151,26 @@ export default function Sidebar() {
 
         <div className="inline-flex">
           <AiFillEnvironment
-            className={`bg-amber-300 text-4xl rounded cursor-pointer block float-left mr-2 duration-500 ${
+            className={`bg-amber-300 text-4xl rounded cursor-pointer block float-left mr-2 duration-500 my-1 ${
               open && "rotate-[360deg]"
             }`}
           />
           <h1
-            className={`text-white p-2 font-medium text-2xl duration-300 ${
+            className={`text-white p-1 font-medium text-2xl duration-300 text-center align-middle ${
               !open && "scale-0"
             }`}>
             Big4Commerce
           </h1>
+        </div>
+        <div className="inline-flex">
+          <h2
+            className={`text-white p-1 duration-300 text-center align-middle ${
+              !open && "scale-0"
+            }`}>
+            {role === "2" && warehouseAdmin.length === 0
+              ? "Not assigned to any warehouse"
+              : warehouseAdmin[0]?.name}
+          </h2>
         </div>
 
         {/* <div className={`flex items-center rounded-md bg-light-white mt-6 ${!open ? "px-2.5" : "px-4"} py-2 `}>

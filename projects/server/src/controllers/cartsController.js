@@ -20,6 +20,7 @@ module.exports = {
         include: [
           {
             model: products,
+            where: { is_deleted: 0 },
             include: [
               {
                 model: stocks,
@@ -107,6 +108,7 @@ module.exports = {
         include: [
           {
             model: products,
+            where: { is_deleted: 0 },
             include: [
               {
                 model: stocks,
@@ -158,6 +160,7 @@ module.exports = {
         include: [
           {
             model: products,
+            where: { is_deleted: 0 },
             include: [
               {
                 model: stocks,
