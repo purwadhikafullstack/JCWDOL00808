@@ -80,10 +80,7 @@ function App() {
             <Route path="/user/cart" element={<Cart />} />
             <Route path="/user/checkout" element={<Checkout />} />
             <Route path="/user/order-list" element={<OrderList />} />
-            <Route
-              path="/user/upload-payment-proof"
-              element={<UploadPaymentProof />}
-            />
+            <Route path="/user/upload-payment-proof" element={<UploadPaymentProof />} />
           </Route>
 
           {/*Public admin's route */}
@@ -98,21 +95,8 @@ function App() {
             <Route path="/admin/manageadmin" element={<ManageAdmin />} />
             <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
             <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
-            <Route path="/admin/addProducts" element={<ProductForm />} />
-            <Route
-              path="/admin/patch-product/:id"
-              element={<PatchProductForm />}
-            />
-
             {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
-            <Route
-              path="/admin/patch-category/:id"
-              element={<PatchCategoryProduct />}
-            />
-            <Route
-              path="/admin/managecategory"
-              element={<ManageCategoryProducts />}
-            />
+            <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
 
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
@@ -129,14 +113,8 @@ function App() {
             <Route path="/warehouse/stock/0" element={<AdminWarehouseNotFound />} />
             <Route path="/warehouse/history" element={<StockHistory />} />
             <Route path="/warehouse/history2" element={<History />} />
-            <Route
-              path="/warehouse/getstockmutationrequest"
-              element={<StockRequestList />}
-            />
-            <Route
-              path="/warehouse/getAllstockmutationrequest"
-              element={<ManageMutations />}
-            />
+            <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
+            <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
