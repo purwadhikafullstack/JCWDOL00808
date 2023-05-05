@@ -1,19 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  BsArrowLeftShort,
-  BsSearch,
-  BsChevronDown,
-  BsReverseLayoutTextSidebarReverse,
-  BsBuilding,
-} from "react-icons/bs";
-import {
-  AiFillEnvironment,
-  AiOutlineFileText,
-  AiOutlineBarChart,
-  AiOutlineSetting,
-  AiOutlineLogout,
-  AiOutlineContainer,
-} from "react-icons/ai";
+import { BsArrowLeftShort, BsSearch, BsChevronDown, BsReverseLayoutTextSidebarReverse, BsBuilding } from "react-icons/bs";
+import { AiFillEnvironment, AiOutlineFileText, AiOutlineBarChart, AiOutlineSetting, AiOutlineLogout, AiOutlineContainer } from "react-icons/ai";
 import { RiDashboardFill } from "react-icons/ri";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -59,9 +46,7 @@ export default function Sidebar() {
 
   const fetchWarehouseData = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/warehouses/getAllWarehouse`
-      );
+      const response = await axios.get(`http://localhost:8000/warehouses/getAllWarehouse`);
       setWarehouseData(response.data);
     } catch (error) {
       toast({
@@ -97,10 +82,7 @@ export default function Sidebar() {
       title: "Product",
       icon: <AiOutlineFileText />,
       submenu: true,
-      submenuItems: [
-        { title: "Manage Product" },
-        { title: "Manage Category Product" },
-      ],
+      submenuItems: [{ title: "Manage Product" }, { title: "Manage Category Product" }],
     },
     {
       title: "Account",
@@ -112,11 +94,7 @@ export default function Sidebar() {
       title: "Warehouse",
       icon: <BsBuilding />,
       submenu: true,
-      submenuItems: [
-        { title: "Stock Mutations" },
-        { title: "Warehouse List" },
-        { title: "Warehouse Stock" },
-      ],
+      submenuItems: [{ title: "Stock Mutations" }, { title: "Warehouse List" }, { title: "Warehouse Stock" }],
     },
     {
       title: "Orders",
@@ -124,39 +102,22 @@ export default function Sidebar() {
       submenu: true,
       submenuItems: [{ title: "List Orders" }],
     },
-    { title: "Analytics", spacing: true, icon: <AiOutlineBarChart /> },
-    { title: "Setting", icon: <AiOutlineSetting /> },
+    { title: "Sales Report", spacing: true, icon: <AiOutlineBarChart />, onClick: () => navigate("/admin/sales-report") },
     { title: "Logout", icon: <AiOutlineLogout />, onClick: handleOpen },
   ];
 
   return (
-    <div
-      className="flex"
-      style={{ position: "sticky", top: 0, height: "100vh" }}>
-      <div
-        className={`bg-dark-purple h-screen p-5 pt-8 ${
-          open ? "w-72" : "w-20"
-        } duration-300 relative`}>
+    <div className="flex" style={{ position: "sticky", top: 0, height: "100vh" }}>
+      <div className={`bg-dark-purple h-screen p-5 pt-8 ${open ? "w-72" : "w-20"} duration-300 relative`}>
         <BsArrowLeftShort
           className={`bg-white text-dark-purple text-3xl rounded-full 
-        absolute -right-3 top-9 border border-dark-purple cursor-pointer ${
-          !open && "rotate-180"
-        }`}
+        absolute -right-3 top-9 border border-dark-purple cursor-pointer ${!open && "rotate-180"}`}
           onClick={() => setOpen(!open)}
         />
 
         <div className="inline-flex">
-          <AiFillEnvironment
-            className={`bg-amber-300 text-4xl rounded cursor-pointer block float-left mr-2 duration-500 ${
-              open && "rotate-[360deg]"
-            }`}
-          />
-          <h1
-            className={`text-white p-2 font-medium text-2xl duration-300 ${
-              !open && "scale-0"
-            }`}>
-            Big4Commerce
-          </h1>
+          <AiFillEnvironment className={`bg-amber-300 text-4xl rounded cursor-pointer block float-left mr-2 duration-500 ${open && "rotate-[360deg]"}`} />
+          <h1 className={`text-white p-2 font-medium text-2xl duration-300 ${!open && "scale-0"}`}>Big4Commerce</h1>
         </div>
 
         {/* <div className={`flex items-center rounded-md bg-light-white mt-6 ${!open ? "px-2.5" : "px-4"} py-2 `}>
@@ -175,44 +136,17 @@ export default function Sidebar() {
                   onClick={menu.onClick}
                   // onClick={handleOpen}
                 >
-                  <span className="text-2xl block float-left">
-                    {menu.icon ? menu.icon : <RiDashboardFill />}
-                  </span>
-                  <span
-                    className={`text-base font-medium duration-200 ${
-                      !open && "hidden"
-                    }`}>
-                    {menu.title}
-                  </span>
-                  {menu.submenu && open && (
-                    <BsChevronDown
-                      className={`${
-                        openSubMenuIndex === index && "rotate-180"
-                      } `}
-                      onClick={() =>
-                        setOpenSubMenuIndex(
-                          openSubMenuIndex === index ? -1 : index
-                        )
-                      }
-                    />
-                  )}
-                  {menu.title === "Logout" && (
-                    <LogoutDialog
-                      onLogout={handleLogout}
-                      isOpen={isOpen}
-                      onClose={handleClose}
-                    />
-                  )}
+                  <span className="text-2xl block float-left">{menu.icon ? menu.icon : <RiDashboardFill />}</span>
+                  <span className={`text-base font-medium duration-200 ${!open && "hidden"}`}>{menu.title}</span>
+                  {menu.submenu && open && <BsChevronDown className={`${openSubMenuIndex === index && "rotate-180"} `} onClick={() => setOpenSubMenuIndex(openSubMenuIndex === index ? -1 : index)} />}
+                  {menu.title === "Logout" && <LogoutDialog onLogout={handleLogout} isOpen={isOpen} onClose={handleClose} />}
                 </li>
               )}
 
               {menu.submenu && openSubMenuIndex === index && open && (
                 <ul>
                   {menu.submenuItems.map((submenuItem, submenuIndex) => {
-                    if (
-                      submenuItem.title === "Warehouse Stock" &&
-                      role === "1"
-                    ) {
+                    if (submenuItem.title === "Warehouse Stock" && role === "1") {
                       return null;
                     }
                     return (
@@ -225,18 +159,12 @@ export default function Sidebar() {
                             navigate("/admin/manageadmin");
                           } else if (submenuItem.title === "List User") {
                             navigate("/admin/adminuserlist");
-                          } else if (
-                            submenuItem.title === "Manage Category Product"
-                          ) {
+                          } else if (submenuItem.title === "Manage Category Product") {
                             navigate("/admin/managecategory");
                           } else if (submenuItem.title === "Manage Product") {
                             navigate("/admin/manageProducts");
                           } else if (submenuItem.title === "Stock Mutations") {
-                            navigate(
-                              role === "1"
-                                ? "/warehouse/getAllstockmutationrequest"
-                                : "/warehouse/getstockmutationrequest"
-                            );
+                            navigate(role === "1" ? "/warehouse/getAllstockmutationrequest" : "/warehouse/getstockmutationrequest");
                           } else if (submenuItem.title === "Warehouse List") {
                             navigate("/warehouse/list");
                           } else if (submenuItem.title === "Warehouse Stock") {
@@ -250,7 +178,8 @@ export default function Sidebar() {
                           } else if (submenuItem.title === "List Orders") {
                             navigate("/admin/list-orders");
                           }
-                        }}>
+                        }}
+                      >
                         {submenuItem.title}
                       </li>
                     );

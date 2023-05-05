@@ -202,7 +202,7 @@ module.exports = {
         let findNameProducts = await products.findOne({
           where: {
             name: name,
-            id: { [Op.not]: product },
+            id: { [Op.not]: product.id },
           },
         });
 
@@ -366,6 +366,24 @@ module.exports = {
         limit: limit,
         totalRows: totalRows,
         totalPage: totalPage,
+      });
+    } catch (error) {
+      // console.error(error);
+      res.status(500).json({ error: "Terjadi kesalahan saat mengambil data." });
+    }
+  },
+
+  getAllProducts: async (req, res) => {
+    try {
+      const result = await products.findAll();
+
+      //replace '\' with '/'
+      result.forEach((product) => {
+        product.imageUrl = product.imageUrl.replace(/\\/g, "/");
+      });
+
+      res.json({
+        result: result,
       });
     } catch (error) {
       // console.error(error);
