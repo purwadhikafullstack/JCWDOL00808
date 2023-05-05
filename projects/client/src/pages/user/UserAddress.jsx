@@ -27,7 +27,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 const UserAddress = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("user_token");
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
 
@@ -144,7 +144,8 @@ const UserAddress = () => {
             <Tooltip
               label={address.is_primary === true ? "Primary Address" : ""}
               isDisabled={address.is_primary !== true}
-              placement="top-start">
+              placement="top-start"
+            >
               <Box
                 key={address.id}
                 borderWidth={address.is_primary === true ? "5px" : "1px"}
@@ -154,7 +155,8 @@ const UserAddress = () => {
                 borderRadius="0"
                 p={4}
                 w="100%"
-                fontFamily="Roboto">
+                fontFamily="Roboto"
+              >
                 <Text fontFamily="Oswald" fontSize="lg">
                   {address.recipient}
                 </Text>
@@ -171,7 +173,8 @@ const UserAddress = () => {
                       variant="buttonBlack"
                       aria-label="Edit Address"
                       borderRadius={0}
-                      mr={2}>
+                      mr={2}
+                    >
                       Edit
                     </Button>
                   </Link>

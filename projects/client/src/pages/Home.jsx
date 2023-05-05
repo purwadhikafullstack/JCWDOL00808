@@ -10,6 +10,14 @@ import Carousel4 from "../assets/carousel/carousel4.jpg";
 import CategoryCard from "../components/CategoryCard";
 import { ProductCard } from "../components/ProductCard";
 import ScrollToTopButton from "../components/ScrollToTopButton";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Box,
+} from "@chakra-ui/react";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -99,7 +107,8 @@ export default function Home() {
               fill: "white",
               margin: "0 15px 0 15px",
             },
-          }}>
+          }}
+        >
           <img
             src={Carousel1}
             alt="carousel-1"
@@ -137,7 +146,8 @@ export default function Home() {
             setSortBy(newSortBy);
             setSortOrder(newSortOrder);
           }}
-          className="px-2 py-1 border border-gray-500 rounded-none font-[Roboto] text-md">
+          className="px-2 py-1 border border-gray-500 rounded-none font-[Roboto] text-md"
+        >
           <option value="name-asc">Name A-Z</option>
           <option value="name-desc">Name Z-A</option>
           <option value="price-asc">Lower Price</option>
@@ -176,41 +186,56 @@ export default function Home() {
             </div>
           </div>
           <hr className="border-2 mt-4 mb-2" />
-          <p className="text-left font-[Oswald] mb-2">Color</p>
-          <div className="flex items-center mb-2">
-            <input
-              onChange={(event) => setColor(event.target.value)}
-              id="All"
-              type="radio"
-              value=""
-              name="color"
-              className="font-[Roboto] w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-            />
-            <label
-              htmlFor="default-radio-1"
-              className="ml-2 text-sm text-gray-900 dark:text-gray-300">
-              All
-            </label>
-          </div>
-          {radioColor.map((color, index) => {
-            return (
-              <div key={index} className="flex items-center mb-2">
-                <input
-                  onChange={(event) => setColor(event.target.value)}
-                  id={color}
-                  type="radio"
-                  value={color}
-                  name="color"
-                  className="font-[Roboto] w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label
-                  htmlFor="default-radio-1"
-                  className="font-[Roboto] ml-2 text-sm text-gray-900 dark:text-gray-300">
-                  {color}
-                </label>
-              </div>
-            );
-          })}
+          <Accordion allowToggle>
+            <AccordionItem>
+              <h2>
+                <AccordionButton>
+                  <Box as="span" flex="1" textAlign="left">
+                    <p className="text-left font-[Oswald] mb-2">Color</p>
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                <div className="flex items-center mb-2">
+                  <input
+                    onChange={(event) => setColor(event.target.value)}
+                    id="All"
+                    type="radio"
+                    value=""
+                    name="color"
+                    className="font-[Roboto] w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label
+                    htmlFor="default-radio-1"
+                    className="ml-2 text-sm text-gray-900 dark:text-gray-300"
+                  >
+                    All
+                  </label>
+                </div>
+                {radioColor.map((color, index) => {
+                  return (
+                    <div key={index} className="flex items-center mb-2">
+                      <input
+                        onChange={(event) => setColor(event.target.value)}
+                        id={color}
+                        type="radio"
+                        value={color}
+                        name="color"
+                        className="font-[Roboto] w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor="default-radio-1"
+                        className="font-[Roboto] ml-2 text-sm text-gray-900 dark:text-gray-300"
+                      >
+                        {color}
+                      </label>
+                    </div>
+                  );
+                })}
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
         </div>
 
         <div className="my-4 px-2 grid col-span-3 md:grid-cols-4 grid-cols-2 gap-4 ">

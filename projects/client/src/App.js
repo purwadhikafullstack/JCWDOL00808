@@ -17,6 +17,7 @@ import PatchAdmin from "./pages/admin/patchAdmin";
 import RegisterAdmin from "./pages/admin/registerAdmin";
 import UserList from "./pages/admin/userList";
 import AddUserAddress from "./pages/user/AddUserAddress";
+import History from "./pages/warehouse/History";
 import Cart from "./pages/user/Cart";
 import EditProfile from "./pages/user/EditProfile";
 import EditUserAddress from "./pages/user/EditUserAddress";
@@ -26,7 +27,6 @@ import ResetPassword from "./pages/user/ResetPassword";
 import UserAddress from "./pages/user/UserAddress";
 import Verification from "./pages/user/Verification";
 import VerificationNewPassword from "./pages/user/VerificationNewPassword";
-import AddWarehouse from "./pages/warehouse/AddWarehouse";
 import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import StockHistory from "./pages/warehouse/StockHistory";
 import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
@@ -43,6 +43,8 @@ import SuperAdminRoutes from "./utils/SuperAdminRoutes";
 import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
 import ListOrders from "./pages/admin/listOrders";
 import SalesReport from "./pages/admin/salesReport";
+import OrderList from "./pages/user/OrderList";
+import UploadPaymentProof from "./pages/user/UploadPaymentProof";
 import "@fontsource/oswald/500.css";
 import "@fontsource/roboto/400.css";
 
@@ -77,6 +79,11 @@ function App() {
             <Route path="/user/address/:id" element={<EditUserAddress />} />
             <Route path="/user/cart" element={<Cart />} />
             <Route path="/user/checkout" element={<Checkout />} />
+            <Route path="/user/order-list" element={<OrderList />} />
+            <Route
+              path="/user/upload-payment-proof"
+              element={<UploadPaymentProof />}
+            />
           </Route>
 
           {/*Public admin's route */}
@@ -91,11 +98,27 @@ function App() {
             <Route path="/admin/manageadmin" element={<ManageAdmin />} />
             <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
             <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
+            <Route path="/admin/addProducts" element={<ProductForm />} />
+            <Route
+              path="/admin/patch-product/:id"
+              element={<PatchProductForm />}
+            />
+
+            {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
+            <Route
+              path="/admin/patch-category/:id"
+              element={<PatchCategoryProduct />}
+            />
+            <Route
+              path="/admin/managecategory"
+              element={<ManageCategoryProducts />}
+            />
+
             <Route path="/warehouse/list" element={<WarehouseList />} />
-            <Route path="/warehouse/add" element={<AddWarehouse />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
 
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
+            <Route path="/warehouse/details" element={<WarehouseDetails />} />
           </Route>
 
           {/*Super admin & Warehouse admin's route */}
@@ -105,6 +128,15 @@ function App() {
             <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
             <Route path="/warehouse/stock/0" element={<AdminWarehouseNotFound />} />
             <Route path="/warehouse/history" element={<StockHistory />} />
+            <Route path="/warehouse/history2" element={<History />} />
+            <Route
+              path="/warehouse/getstockmutationrequest"
+              element={<StockRequestList />}
+            />
+            <Route
+              path="/warehouse/getAllstockmutationrequest"
+              element={<ManageMutations />}
+            />
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
