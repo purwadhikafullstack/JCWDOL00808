@@ -60,10 +60,7 @@ export default function Sidebar() {
 
   const fetchWarehouseAdmin = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/warehouses/warehouse-id-by-admins-id`,
-        { headers: { Authorization: token } }
-      );
+      const response = await axios.get(`http://localhost:8000/warehouses/warehouse-id-by-admins-id`, { headers: { Authorization: token } });
       setWarehouseAdmin(response.data);
       console.log(response.data);
     } catch (error) {
@@ -94,7 +91,7 @@ export default function Sidebar() {
       title: "Warehouse",
       icon: <BsBuilding />,
       submenu: true,
-      submenuItems: [{ title: "Stock Mutations" }, { title: "Warehouse List" }, { title: "Warehouse Stock" }],
+      submenuItems: [{ title: "Stock Mutations" }, { title: "Stock History" }, { title: "Warehouse List" }, { title: "Warehouse Stock" }],
     },
     {
       title: "Orders",
@@ -168,15 +165,11 @@ export default function Sidebar() {
                           } else if (submenuItem.title === "Warehouse List") {
                             navigate("/warehouse/list");
                           } else if (submenuItem.title === "Warehouse Stock") {
-                            navigate(
-                              role === "2"
-                                ? warehouseAdmin.length === 0
-                                  ? "/warehouse/stock/0"
-                                  : `/warehouse/stock/${warehouseAdmin[0]?.id}`
-                                : null
-                            );
+                            navigate(role === "2" ? (warehouseAdmin.length === 0 ? "/warehouse/stock/0" : `/warehouse/stock/${warehouseAdmin[0]?.id}`) : null);
                           } else if (submenuItem.title === "List Orders") {
                             navigate("/admin/list-orders");
+                          } else if (submenuItem.title === "Stock History") {
+                            navigate("/warehouse/history");
                           }
                         }}
                       >

@@ -2,6 +2,7 @@ const db = require("../../models/index");
 const StockHistoriesModel = db.stock_histories;
 const ProductsModel = db.products;
 const WarehousesModel = db.warehouses;
+const StocksModel = db.stocks;
 const { Op, QueryTypes } = require("sequelize");
 const sequelize = require("../../models/index");
 
@@ -19,6 +20,8 @@ module.exports = {
   },
   autoGetStock: async (req, res) => {
     try {
+      const admins_id = req.dataDecode.id;
+
       let data = await StockHistoriesModel.findAll({
         include: [
           {
@@ -146,6 +149,126 @@ module.exports = {
       res.status(200).send(data);
     } catch (error) {
       console.log(error);
+    }
+  },
+  test: async (req, res) => {
+    try {
+      // const admins_id = req.dataDecode.id;
+
+      const page = parseInt(req.query.page) || 0;
+      const limit = 5;
+      const offset = limit * page;
+
+      let filterStockHistory = {};
+      let result = [];
+      let warehouse = req.body.warehouse;
+      let month1 = req.body.month;
+      let year = req.body.year;
+
+      if (warehouse !== "" && typeof warehouse !== "undefined") {
+        filterStockHistory.warehouses_id = warehouse;
+      }
+
+      if (year !== "" && typeof year !== "undefined" && month1 !== "" && typeof month1 !== "undefined") {
+        let bulan = parseInt(month1);
+        let tahun = parseInt(year);
+        startDate = new Date(`${tahun}-${bulan}-01`);
+        endDate = bulan < 12 ? new Date(`${tahun}-${bulan + 1}-01`) : new Date(`${tahun + 1}-1-01`);
+
+        filterStockHistory.updatedAt = {
+          [Op.and]: {
+            [Op.gte]: startDate,
+            [Op.lt]: endDate,
+          },
+        };
+      }
+
+      // something to get the warehouse data
+      let warehouseData = await WarehousesModel.findAll({
+        raw: true,
+      });
+
+      // get products to show in product column in FE
+      let productsData = await ProductsModel.findAndCountAll({
+        include: [
+          {
+            model: StockHistoriesModel,
+            where: filterStockHistory,
+            // attributes: [],
+          },
+        ],
+        distinct: true,
+        col: "id",
+        limit,
+        offset,
+      });
+
+      let totalPage = Math.ceil(parseInt(productsData.count) / limit);
+
+      // loop buat dapetin stock per product dalam periode tertentu (misal sebulan lalu)
+      for (let i = 0; i < productsData.rows.length; i++) {
+        let stockIn = 0;
+        let stockOut = 0;
+        let products_id = productsData.rows[i].id;
+        filterStockHistory.products_id = products_id;
+        let name = productsData.rows[i].name;
+        let stockCount = await StockHistoriesModel.findAll({
+          where: filterStockHistory,
+          raw: true,
+        });
+
+        // loop untuk mencari stock in & stock out per product
+        for (let j = 0; j < stockCount.length; j++) {
+          let difference = stockCount[j].stock_after - stockCount[j].stock_before;
+          if (difference < 0) {
+            stockOut += Math.abs(difference);
+          } else if (difference > 0) {
+            stockIn += difference;
+          }
+        }
+
+        // menentukan stock
+        let latestStockChecker = await StockHistoriesModel.findOne({
+          where: filterStockHistory,
+          raw: true,
+          order: [
+            ["updatedAt", "desc"],
+            ["id", "desc"],
+          ],
+        });
+        let latestStock = latestStockChecker.stock_after;
+
+        result.push({ name, products_id, stockIn, stockOut, latestStock });
+      }
+
+      res.status(200).send({
+        success: true,
+        message: "Ok",
+        data: result,
+        totalPage,
+        warehouse: warehouseData,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Stock histories not available",
+      });
+    }
+  },
+  test2: async (req, res) => {
+    try {
+      let products_id = req.query;
+      console.log("rq", req.query);
+      let historyData = await StockHistoriesModel.findAll({
+        where: { products_id },
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Something is wrong",
+      });
     }
   },
 };
