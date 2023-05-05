@@ -196,7 +196,21 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
                     </Box>
                   </Flex>
                 </FormControl>
-                <AddAdminConfirmation onSave={formik.handleSubmit} />
+
+                {/* button for cancel and submit */}
+                <Flex justifyContent="flex-end">
+                  <Button
+                    variant="ghost"
+                    mr={1}
+                    onClick={() => {
+                      onClose();
+                      formik.resetForm();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <AddAdminConfirmation onSave={formik.handleSubmit} />
+                </Flex>
               </form>
             </Box>
           </ModalBody>

@@ -53,17 +53,26 @@ function ManageMutations() {
   }, [page, keyword, sort, order]);
 
   const getListMutations = async () => {
-    const response = await axios.get(`http://localhost:8000/mutations/getAllRequestMutation?search_query=${keyword}&page=${page}&limit=${limit}`, {
-      params: {
-        sort,
-        order,
-      },
-      headers: { Authorization: token },
-    });
-    setMutation(response.data.result);
-    setPage(response.data.page);
-    setPages(response.data.totalPage);
-    setRows(response.data.totalRows);
+    try {
+      const response = await axios.get(`http://localhost:8000/mutations/getAllRequestMutation?search_query=${keyword}&page=${page}&limit=${limit}`, {
+        params: {
+          sort,
+          order,
+        },
+        headers: { Authorization: token },
+      });
+      setMutation(response.data.result);
+      setPage(response.data.page);
+      setPages(response.data.totalPage);
+      setRows(response.data.totalRows);
+    } catch (error) {
+      toast({
+        title: `${error.response.data.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleStatusUpdate = async (id, status) => {
@@ -243,6 +252,7 @@ function ManageMutations() {
             <Th>To</Th>
             <Th>Status</Th>
             <Th>Date</Th>
+            <Th>Approved Date</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
@@ -258,6 +268,7 @@ function ManageMutations() {
               <Td fontSize="sm">{mutation.to_warehouse.name}</Td>
               <Td fontSize="sm">{mutation.mutation_type}</Td>
               <Td fontSize="sm">{formatDate(mutation.createdAt)}</Td>
+              <Td fontSize="sm">{formatDate(mutation.approvedAt)}</Td>
               <Td>
                 <Box display="flex">
                   {mutation.mutation_type === "Pending" && (
@@ -267,7 +278,7 @@ function ManageMutations() {
                         <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick(mutation.id, "REJECT", index)} />
                       </Box>
                       <Box position="relative">
-                        <Popover isOpen={isPopoverOpen[index]} onClose={handlePopoverClose} placement="bottom-start" closeOnBlur={false}>
+                        <Popover isOpen={isPopoverOpen[index]} onClose={() => setIsPopoverOpen((prevState) => ({ ...prevState, [index]: false }))} placement="bottom-start" closeOnBlur={false}>
                           <PopoverContent>
                             <PopoverHeader fontWeight="bold">{selectedStatus === "ACCEPT" ? "Confirm Accept" : "Confirm Reject"}</PopoverHeader>
                             <PopoverBody>Are you sure you want to {selectedStatus === "ACCEPT" ? "accept" : "reject"}?</PopoverBody>

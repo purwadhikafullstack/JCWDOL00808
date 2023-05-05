@@ -7,6 +7,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import AddProductModal from "../../components/addProductModal";
 import PatchProductModal from "../../components/PatchProductModal";
+import DeleteConfirmation from "../../components/DeleteConfirmationDialog";
 
 function ManageProducts() {
   const [products, setProducts] = useState([]);
@@ -16,7 +17,8 @@ function ManageProducts() {
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("id");
+  const [sort, setSort] = useState("updatedAt");
+  const [sortText, setSortText] = useState("Date");
   const [order, setOrder] = useState("DESC");
   const toast = useToast();
   const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
@@ -98,8 +100,21 @@ function ManageProducts() {
 
   const handleSort = (value) => {
     setSort(value);
-
     setPage(0);
+    // add switch case to convert value to readable text
+    switch (value) {
+      case "name":
+        setSortText("Name");
+        break;
+      case "price":
+        setSortText("Price");
+        break;
+      case "updatedAt":
+        setSortText("Date");
+        break;
+      default:
+        setSortText(value);
+    }
   };
 
   const handleOrder = (value) => {
@@ -155,7 +170,7 @@ function ManageProducts() {
         <Text fontWeight="bold">Sort by:</Text>
         <Menu>
           <MenuButton ml={2} variant="ghost">
-            Name
+            {sortText}
           </MenuButton>
           <MenuList>
             <MenuItem value={sort} onClick={() => handleSort("name")}>
@@ -163,6 +178,9 @@ function ManageProducts() {
             </MenuItem>
             <MenuItem value={sort} onClick={() => handleSort("price")}>
               Price
+            </MenuItem>
+            <MenuItem value={sort} onClick={() => handleSort("updatedAt")}>
+              Date
             </MenuItem>
           </MenuList>
         </Menu>
@@ -236,29 +254,15 @@ function ManageProducts() {
                       setSelectedCategoryId(product.id);
                     }}
                   />
-                  <PatchProductModal categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} onProductUpdate={handleProductUpdate} productData={productData} />
 
-                  <IconButton
-                    size="sm"
-                    bgColor="red.500"
-                    aria-label="Delete"
-                    icon={<DeleteIcon />}
-                    borderRadius="full"
-                    _hover={{ bg: "red.700" }}
-                    isDisabled={isButtonDisabled}
-                    onClick={() => {
-                      if (window.confirm("Are you sure you want to delete this product ?")) {
-                        deleteProducts(product.id);
-                      }
-                    }}
-                  />
+                  <DeleteConfirmation onDelete={() => deleteProducts(product.id)} isButtonDisabled={isButtonDisabled} />
                 </Box>
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-
+      <PatchProductModal categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} onProductUpdate={handleProductUpdate} productData={productData} />
       {/* fitur paginate */}
       <Flex alignItems="center" justifyContent="center">
         <ReactPaginate

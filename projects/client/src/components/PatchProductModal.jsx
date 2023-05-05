@@ -94,9 +94,10 @@ const PatchProductModal = ({ isOpen, onClose, categoryId, onProductUpdate }) => 
         });
         // navigate("/admin/manageProducts");
       } catch (error) {
+        console.log(error);
         setIsSubmitting(false);
         toast({
-          title: `${error.message}`,
+          title: `${error.response.data.message}`,
           status: "error",
           duration: 9000,
           isClosable: true,
@@ -139,7 +140,7 @@ const PatchProductModal = ({ isOpen, onClose, categoryId, onProductUpdate }) => 
     } catch (error) {
       setIsLoading(false); // clear loading state
       toast({
-        title: `${error.message}`,
+        title: `${error.response.data.message}`,
         status: "error",
         duration: 9000,
         isClosable: true,
@@ -162,7 +163,7 @@ const PatchProductModal = ({ isOpen, onClose, categoryId, onProductUpdate }) => 
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
-      <ModalOverlay bg="none" backdropFilter="blur(0.5px)" />
+      <ModalOverlay />
       <ModalContent>
         <ModalHeader>Update Product</ModalHeader>
         <ModalCloseButton />

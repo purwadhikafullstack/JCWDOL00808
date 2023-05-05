@@ -7,6 +7,7 @@ const OrderDetail = db.order_details;
 const Product = db.products;
 const Warehouse = db.warehouses;
 const Order = db.orders;
+const ProductCategory = db.product_categories;
 
 module.exports = {
   getSalesReport: async (req, res) => {
@@ -30,7 +31,19 @@ module.exports = {
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
 
       // Set up filters based on user role and query parameters
-      const warehouseFilter = authenticatedAdmin.role === "1" && warehouse_filter ? { id: warehouse_filter } : { admins_id: authenticatedAdmin.id };
+      let warehouseFilter;
+      if (authenticatedAdmin.role === 1) {
+        warehouseFilter = warehouse_filter ? { id: warehouse_filter } : {};
+      } else {
+        warehouseFilter = { admins_id: authenticatedAdmin.id };
+      }
+
+      const warehouseIds = await Warehouse.findAll({
+        attributes: ["id"],
+        where: { admins_id: authenticatedAdmin.id },
+      });
+
+      const warehouseIdArray = warehouseIds.map((warehouse) => warehouse.id);
 
       // Fetch sales data
       let whereCondition = {
@@ -47,6 +60,11 @@ module.exports = {
         model: Product,
         as: "product",
         attributes: ["id", "name", "product_categories_id"],
+        include: {
+          model: ProductCategory,
+          as: "product_category",
+          attributes: ["id", "name"],
+        },
       };
 
       if (category_filter) {
@@ -56,13 +74,27 @@ module.exports = {
       let orderInclude = {
         model: Order,
         attributes: [],
-      };
-
-      if (warehouse_filter || authenticatedAdmin.role !== "1") {
-        orderInclude.include = {
+        include: {
           model: Warehouse,
           attributes: [],
-          where: warehouseFilter,
+          as: "warehouse",
+        },
+        where: {
+          status: {
+            [Op.or]: ["On process", "Shipped", "Order confirmed"],
+          },
+        },
+      };
+
+      if (authenticatedAdmin.role === 1 && warehouse_filter) {
+        orderInclude.where = {
+          $warehouses_id$: warehouseFilter.id,
+        };
+      } else if (authenticatedAdmin.role !== 1) {
+        orderInclude.where = {
+          warehouses_id: {
+            [Op.in]: warehouseIdArray,
+          },
         };
       }
 
@@ -121,13 +153,15 @@ module.exports = {
         weekReport.totalQuantity += sale.quantity;
 
         const categoryID = sale.product.product_categories_id;
+        const categoryName = sale.product.product_category.name;
         const productID = sale.product.id;
         const productName = sale.product.name;
 
-        const category = monthReport.categories.find((c) => c.id === categoryID) || { id: categoryID, total: 0 };
+        const category = monthReport.categories.find((c) => c.id === categoryID) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
         const product = monthReport.products.find((p) => p.id === productID) || { id: productID, name: productName, total: 0, quantity: 0 };
 
         category.total += amount;
+        category.quantity += sale.quantity;
         product.total += amount;
         product.quantity += sale.quantity;
 
@@ -139,10 +173,11 @@ module.exports = {
           monthReport.products.push(product);
         }
 
-        const weekCategory = weekReport.categories.find((c) => c.id === categoryID) || { id: categoryID, total: 0 };
+        const weekCategory = weekReport.categories.find((c) => c.id === categoryID) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
         const weekProduct = weekReport.products.find((p) => p.id === productID) || { id: productID, name: productName, total: 0, quantity: 0 };
 
         weekCategory.total += amount;
+        weekCategory.quantity += sale.quantity;
         weekProduct.total += amount;
         weekProduct.quantity += sale.quantity;
 
@@ -159,7 +194,7 @@ module.exports = {
         reports.map((r) => ({
           ...r,
           total: r.total.toFixed(2),
-          categories: r.categories.map((c) => ({ id: c.id, total: c.total.toFixed(2) })),
+          categories: r.categories.map((c) => ({ id: c.id, name: c.name, total: c.total.toFixed(2), quantity: c.quantity })),
           products: r.products.map((p) => ({ id: p.id, name: p.name, total: p.total.toFixed(2), quantity: p.quantity })),
         }));
 

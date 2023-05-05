@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-const PatchCategoryProduct = ({ isOpen, onClose, categoryId }) => {
+const PatchCategoryProduct = ({ isOpen, onClose, categoryId, onCategoryUpdate }) => {
   const toast = useToast();
   const navigate = useNavigate();
   //   const { id } = useParams();
@@ -77,6 +77,7 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId }) => {
         duration: 9000,
         isClosable: true,
       });
+      onCategoryUpdate();
       onClose();
       // navigate("/admin/managecategory");
     } catch (error) {
@@ -95,7 +96,7 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay bg="none" backdropFilter="blur(0.5px)" />
+      <ModalOverlay />
       <ModalContent>
         <ModalHeader>Update Category</ModalHeader>
         <ModalCloseButton />
