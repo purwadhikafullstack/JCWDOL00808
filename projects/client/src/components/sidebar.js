@@ -124,8 +124,12 @@ export default function Sidebar() {
       submenu: true,
       submenuItems: [{ title: "List Orders" }],
     },
-    { title: "Analytics", spacing: true, icon: <AiOutlineBarChart /> },
-    { title: "Setting", icon: <AiOutlineSetting /> },
+    {
+      title: "Sales Report",
+      spacing: true,
+      icon: <AiOutlineBarChart />,
+      onClick: () => navigate("/admin/sales-report"),
+    },
     { title: "Logout", icon: <AiOutlineLogout />, onClick: handleOpen },
   ];
 

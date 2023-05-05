@@ -19,7 +19,8 @@ function ManageCategoryProducts() {
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("name");
+  const [sort, setSort] = useState("updatedAt");
+  const [sortText, setSortText] = useState("Date");
   const [order, setOrder] = useState("DESC");
 
   const toast = useToast();
@@ -61,6 +62,10 @@ function ManageCategoryProducts() {
     }
   };
 
+  const handleCategoryUpdate = () => {
+    getCategoryProducts();
+  };
+
   const handleFirstModalOpen = () => {
     setIsFirstModalOpen(true);
   };
@@ -86,8 +91,21 @@ function ManageCategoryProducts() {
 
   const handleSort = (value) => {
     setSort(value);
-
     setPage(0);
+    // add switch case to convert value to readable text
+    switch (value) {
+      case "name":
+        setSortText("Name");
+        break;
+      case "description":
+        setSortText("Description");
+        break;
+      case "updatedAt":
+        setSortText("Date");
+        break;
+      default:
+        setSortText(value);
+    }
   };
 
   const handleOrder = (value) => {
@@ -128,7 +146,7 @@ function ManageCategoryProducts() {
         <Text fontWeight="bold">Sort by:</Text>
         <Menu>
           <MenuButton ml={2} variant="ghost">
-            {sort}
+            {sortText}
           </MenuButton>
           <MenuList>
             <MenuItem value={sort} onClick={() => handleSort("name")}>
@@ -136,6 +154,9 @@ function ManageCategoryProducts() {
             </MenuItem>
             <MenuItem value={sort} onClick={() => handleSort("description")}>
               Description
+            </MenuItem>
+            <MenuItem value={sort} onClick={() => handleSort("updatedAt")}>
+              Date
             </MenuItem>
           </MenuList>
         </Menu>
@@ -160,7 +181,7 @@ function ManageCategoryProducts() {
         <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />} isDisabled={isButtonDisabled} onClick={handleFirstModalOpen}>
           Add Category Product
         </Button>
-        <AddCategoryProductModal isOpen={isFirstModalOpen} onClose={handleModalClose} />
+        <AddCategoryProductModal isOpen={isFirstModalOpen} onClose={handleModalClose} onCategoryUpdate={handleCategoryUpdate} />
       </Flex>
 
       {/* fitur table */}
@@ -200,7 +221,6 @@ function ManageCategoryProducts() {
                       setSelectedCategoryId(categoryProduct.id);
                     }}
                   />
-                  <PatchCategoryProduct categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} />
 
                   {/* button icon for delete category product */}
                   <DeleteConfirmation onDelete={() => deleteProducts(categoryProduct.id)} isButtonDisabled={isButtonDisabled} />
@@ -210,6 +230,7 @@ function ManageCategoryProducts() {
           ))}
         </Tbody>
       </Table>
+      <PatchCategoryProduct categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} onCategoryUpdate={handleCategoryUpdate} />
 
       {/* fitur paginate */}
       <Flex alignItems="center" justifyContent="center">
