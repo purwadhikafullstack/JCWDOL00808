@@ -17,14 +17,17 @@ import {
 import axios from "axios";
 import { useFormik } from "formik";
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { isAuth } from "../../apis/userAPIs";
 import ChangePassword from "../../components/ChangePassword";
 import RemovePicConfirmation from "../../components/RemovePicConfirmation";
+import { userUpdate, userProfile } from "../../reducers/authSlice";
 
 export default function EditProfile() {
-  const [profile, setProfile] = useState([]);
+  const dispatch = useDispatch();
+  const profile = useSelector(userProfile);
   const [refresh, setRefresh] = useState(false);
   const { isOpen, onClose } = useDisclosure();
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -121,11 +124,11 @@ export default function EditProfile() {
   useEffect(() => {
     if (localStorage.getItem("user_token")) {
       isAuth().then((data) => {
-        setProfile(data);
         localStorage.setItem("user", JSON.stringify(data));
+        dispatch(userUpdate());
       });
     }
-  }, [navigate, refresh]);
+  }, [navigate, refresh, dispatch]);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
