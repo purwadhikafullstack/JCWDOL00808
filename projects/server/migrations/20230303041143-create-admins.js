@@ -31,6 +31,11 @@ module.exports = {
       profile_picture: {
         type: Sequelize.STRING,
       },
+      is_deleted: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
