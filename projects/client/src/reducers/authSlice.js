@@ -24,6 +24,8 @@ export const userLogin = createAsyncThunk(
   }
 );
 
+export const userProfile = (state) => state.auth.user;
+
 const token = localStorage.getItem("user_token") || null;
 
 const initialState = {
@@ -50,6 +52,9 @@ const authSlice = createSlice({
       setTimeout(() => {
         toast.success("Account logged out.");
       }, 500);
+    },
+    userUpdate: (state) => {
+      state.user = JSON.parse(localStorage.getItem("user"));
     },
     clearState: (state) => {
       state.isError = false;
@@ -78,5 +83,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { userLogout, clearState } = authSlice.actions;
+export const { userLogout, clearState, userUpdate } = authSlice.actions;
 export default authSlice.reducer;

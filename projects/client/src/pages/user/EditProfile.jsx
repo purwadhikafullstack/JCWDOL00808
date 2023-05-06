@@ -17,14 +17,17 @@ import {
 import axios from "axios";
 import { useFormik } from "formik";
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { isAuth } from "../../apis/userAPIs";
 import ChangePassword from "../../components/ChangePassword";
 import RemovePicConfirmation from "../../components/RemovePicConfirmation";
+import { userUpdate, userProfile } from "../../reducers/authSlice";
 
 export default function EditProfile() {
-  const [profile, setProfile] = useState([]);
+  const dispatch = useDispatch();
+  const profile = useSelector(userProfile);
   const [refresh, setRefresh] = useState(false);
   const { isOpen, onClose } = useDisclosure();
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -120,9 +123,12 @@ export default function EditProfile() {
 
   useEffect(() => {
     if (localStorage.getItem("user_token")) {
-      isAuth().then((data) => setProfile(data));
+      isAuth().then((data) => {
+        localStorage.setItem("user", JSON.stringify(data));
+        dispatch(userUpdate());
+      });
     }
-  }, [navigate, refresh]);
+  }, [navigate, refresh, dispatch]);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -178,15 +184,16 @@ export default function EditProfile() {
               <Avatar
                 crossOrigin="true"
                 size="xl"
+                name={profile.full_name}
                 src={
-                  profile?.profile_picture
-                    ? `${process.env.REACT_APP_API_BASE_URL}/${profile?.profile_picture}`
-                    : null
+                  profile?.profile_picture &&
+                  `${process.env.REACT_APP_API_BASE_URL}/${profile?.profile_picture}`
                 }
                 border="2px"
                 borderColor="papayawhip"
               >
                 <RemovePicConfirmation
+                  picture={profile?.profile_picture}
                   isOpen={isOpen}
                   onClose={onClose}
                   onDelete={handleRemovePicture}
