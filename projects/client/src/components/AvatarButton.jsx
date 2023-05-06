@@ -22,9 +22,8 @@ function AvatarButton(props) {
         size="md"
         name={props.profile.full_name}
         src={
-          props.profile.profile_picture
-            ? `${process.env.REACT_APP_API_BASE_URL}/${props.profile.profile_picture}`
-            : null
+          props.profile.profile_picture &&
+          `${process.env.REACT_APP_API_BASE_URL}/${props.profile.profile_picture}`
         }
         className="border dark:border-white"
       />
@@ -44,24 +43,28 @@ function AvatarButton(props) {
               <div className="py-1">
                 <Link
                   to="/user/profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]">
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]"
+                >
                   Edit Profile
                 </Link>
                 <Link
                   to="/user/address"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]">
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]"
+                >
                   Edit Address
                 </Link>
                 <Link
                   to="/user/order-list"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]">
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]"
+                >
                   My Transaction
                 </Link>
                 <span
                   onClick={() => {
                     logout(navigate, dispatch);
                   }}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]">
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]"
+                >
                   Logout
                 </span>
               </div>
@@ -71,14 +74,16 @@ function AvatarButton(props) {
               <div className="px-4 py-1">
                 <Link
                   to="/user/login"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]">
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]"
+                >
                   Sign in as user
                 </Link>
               </div>
               <div className="py-1">
                 <Link
                   to="/admin/login"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]">
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-[Roboto]"
+                >
                   Sign in as admin
                 </Link>
               </div>

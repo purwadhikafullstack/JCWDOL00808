@@ -120,7 +120,10 @@ export default function EditProfile() {
 
   useEffect(() => {
     if (localStorage.getItem("user_token")) {
-      isAuth().then((data) => setProfile(data));
+      isAuth().then((data) => {
+        setProfile(data);
+        localStorage.setItem("user", JSON.stringify(data));
+      });
     }
   }, [navigate, refresh]);
 
@@ -178,15 +181,16 @@ export default function EditProfile() {
               <Avatar
                 crossOrigin="true"
                 size="xl"
+                name={profile.full_name}
                 src={
-                  profile?.profile_picture
-                    ? `${process.env.REACT_APP_API_BASE_URL}/${profile?.profile_picture}`
-                    : null
+                  profile?.profile_picture &&
+                  `${process.env.REACT_APP_API_BASE_URL}/${profile?.profile_picture}`
                 }
                 border="2px"
                 borderColor="papayawhip"
               >
                 <RemovePicConfirmation
+                  picture={profile?.profile_picture}
                   isOpen={isOpen}
                   onClose={onClose}
                   onDelete={handleRemovePicture}
