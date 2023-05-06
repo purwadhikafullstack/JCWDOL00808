@@ -50,9 +50,11 @@ export default function SendOrderModal(props) {
   return (
     <>
       <Button
+        // isDisabled={props.orders_status !== "On Process"}
+        display={props.orders_status !== "On Process" ? "none" : "block"}
         size="sm"
         mr={2}
-        _hover={{ bg: "green.500" }}
+        _hover={{ bg: "green.600" }}
         colorScheme="green"
         onClick={onOpen}
       >
