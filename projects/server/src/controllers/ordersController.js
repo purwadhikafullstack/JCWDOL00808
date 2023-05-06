@@ -20,7 +20,14 @@ module.exports = {
   addOrder: async (req, res) => {
     try {
       let { id } = req.dataDecode;
-      let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
+      let {
+        total_price,
+        status,
+        shipping_method,
+        shipping_cost,
+        user_addresses_id,
+        warehouses_id,
+      } = req.body;
 
       // Get all carts data owned by specific user and merged with products data
       const fetchCart = await carts.findAll({
@@ -32,7 +39,14 @@ module.exports = {
             model: products,
             as: "product",
             required: true,
-            attributes: ["id", "name", "price", "weight", "imageUrl", "booked_stock"],
+            attributes: [
+              "id",
+              "name",
+              "price",
+              "weight",
+              "imageUrl",
+              "booked_stock",
+            ],
           },
         ],
         attributes: ["id", "users_id", "quantity", "products_id"],
@@ -57,7 +71,10 @@ module.exports = {
         if (quantity <= stock) {
           validationChecker.push(i);
           booked_stock += quantity;
-          let updateBookedStock = await products.update({ booked_stock }, { where: { id } });
+          let updateBookedStock = await products.update(
+            { booked_stock },
+            { where: { id } }
+          );
         }
       }
 
@@ -72,7 +89,10 @@ module.exports = {
           users_id: id,
         });
 
-        let findOrderId = await orders.findOne({ where: { users_id: id }, order: [["id", "DESC"]] });
+        let findOrderId = await orders.findOne({
+          where: { users_id: id },
+          order: [["id", "DESC"]],
+        });
 
         for (i = 0; i < fetchCart.length; i++) {
           let carts_id = fetchCart[i].id;
@@ -131,7 +151,21 @@ module.exports = {
         limit,
         offset,
         order: [["id", order]],
-        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id", "shipping_method", "shipping_cost"],
+        attributes: [
+          [
+            sequelize.fn(
+              "DATE_FORMAT",
+              sequelize.col("orders.createdAt"),
+              "%Y-%m-%d"
+            ),
+            "when",
+          ],
+          "status",
+          "total_price",
+          "id",
+          "shipping_method",
+          "shipping_cost",
+        ],
         where: {
           users_id,
           status: {
@@ -174,7 +208,10 @@ module.exports = {
         let orders_id = req.body.id;
 
         // find order details
-        let findToCancel = await order_details.findAll({ where: { orders_id }, raw: true });
+        let findToCancel = await order_details.findAll({
+          where: { orders_id },
+          raw: true,
+        });
         for (let i = 0; i < findToCancel.length; i++) {
           let products_id = findToCancel[i].products_id;
 
@@ -184,12 +221,19 @@ module.exports = {
           });
 
           let stockToReturn = parseInt(findToCancel[i].qty);
-          let booked_stock = parseInt(findProducts.booked_stock) - stockToReturn;
-          let updateBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
+          let booked_stock =
+            parseInt(findProducts.booked_stock) - stockToReturn;
+          let updateBooked_stock = await products.update(
+            { booked_stock },
+            { where: { id: products_id } }
+          );
         }
 
         let newStatus = "Canceled";
-        let updateOrderStatus = await orders.update({ status: newStatus }, { where: { id: orders_id } });
+        let updateOrderStatus = await orders.update(
+          { status: newStatus },
+          { where: { id: orders_id } }
+        );
 
         res.status(200).send({
           success: true,
@@ -219,7 +263,10 @@ module.exports = {
 
       if (checkAdmin) {
         // find order details
-        let findToCancel = await order_details.findAll({ where: { orders_id }, raw: true });
+        let findToCancel = await order_details.findAll({
+          where: { orders_id },
+          raw: true,
+        });
         for (let i = 0; i < findToCancel.length; i++) {
           let products_id = findToCancel[i].products_id;
 
@@ -229,10 +276,17 @@ module.exports = {
           });
 
           let stockToReturn = parseInt(findToCancel[i].qty);
-          let booked_stock = parseInt(findProducts.booked_stock) - stockToReturn;
-          let updateBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
+          let booked_stock =
+            parseInt(findProducts.booked_stock) - stockToReturn;
+          let updateBooked_stock = await products.update(
+            { booked_stock },
+            { where: { id: products_id } }
+          );
         }
-        let updateOrderStatus = await orders.update({ status: "Canceled" }, { where: { id: orders_id } });
+        let updateOrderStatus = await orders.update(
+          { status: "Canceled" },
+          { where: { id: orders_id } }
+        );
       } else {
         res.status(500).send({
           success: false,
@@ -263,7 +317,10 @@ module.exports = {
 
         await orders.update({ payment_proof }, { where: { id: req.body.id } });
 
-        await orders.update({ status: "Waiting for confirmation" }, { where: { id: req.body.id } });
+        await orders.update(
+          { status: "Confirmed payment" },
+          { where: { id: req.body.id } }
+        );
 
         res.status(200).send({
           success: true,
@@ -376,9 +433,13 @@ module.exports = {
         }
       });
       if (result.length === 0 && search !== "") {
-        return res.status(404).json({ message: "No matching results found for the search query" });
+        return res
+          .status(404)
+          .json({ message: "No matching results found for the search query" });
       } else if (result.length === 0) {
-        return res.status(404).json({ message: "Please assign warehouse first" });
+        return res
+          .status(404)
+          .json({ message: "Please assign warehouse first" });
       }
       res.json({
         result: result,
@@ -407,7 +468,15 @@ module.exports = {
           },
           {
             model: user_addresses,
-            attributes: ["recipient", "phone_number", "address", "province", "city", "district", "postal_code"],
+            attributes: [
+              "recipient",
+              "phone_number",
+              "address",
+              "province",
+              "city",
+              "district",
+              "postal_code",
+            ],
           },
         ],
       });
