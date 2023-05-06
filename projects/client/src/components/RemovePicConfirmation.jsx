@@ -16,6 +16,7 @@ import React from "react";
 export default function RemovePicConfirmation(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
+  console.log(props.picture);
 
   return (
     <>
@@ -26,8 +27,10 @@ export default function RemovePicConfirmation(props) {
         top="-10px"
         colorScheme="red"
         aria-label="remove Image"
+        isDisabled={!props.picture}
         icon={<SmallCloseIcon />}
         onClick={onOpen}
+        className="disabled:hidden"
       />
       <>
         <AlertDialog
