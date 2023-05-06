@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-const AddCategoryProductModal = ({ isOpen, onClose }) => {
+const AddCategoryProductModal = ({ isOpen, onClose, onCategoryUpdate }) => {
   const toast = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,8 +47,9 @@ const AddCategoryProductModal = ({ isOpen, onClose }) => {
         duration: 9000,
         isClosable: true,
       });
+      onCategoryUpdate();
       onClose();
-      navigate("/admin/managecategory");
+      // navigate("/admin/managecategory");
     } catch (error) {
       toast({
         title: `${error.response.data.message}`,
@@ -62,7 +63,7 @@ const AddCategoryProductModal = ({ isOpen, onClose }) => {
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay  />
+        <ModalOverlay />
         <ModalContent>
           <ModalHeader>Add Category</ModalHeader>
           <ModalCloseButton />

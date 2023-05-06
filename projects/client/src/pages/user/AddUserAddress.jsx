@@ -18,9 +18,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
-const token = localStorage.getItem("user_token");
 
 const AddUserAddress = () => {
+  const token = localStorage.getItem("user_token");
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
 
@@ -28,7 +28,7 @@ const AddUserAddress = () => {
   const [provinceData, setProvinceData] = useState([]);
   const [cityData, setCityData] = useState([]);
 
-  // nampung province dan city pilihan admin
+  // nampung province dan city pilihan
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
 
@@ -51,7 +51,6 @@ const AddUserAddress = () => {
   };
 
   const onGetCity = (province_id) => {
-    // console.log("province_id:", province_id)
     axios
       .get(
         `http://localhost:8000/warehouses/getCityData?province_id=${province_id}`
@@ -70,15 +69,13 @@ const AddUserAddress = () => {
   };
 
   useEffect(() => {
-    // fetchAddresses();
     getProvinceData();
   }, []);
 
   const fetchAddresses = async () => {
     try {
-      // Replace with your API endpoint to get all addresses
       const response = await axios.get(
-        "http://localhost:8000/address/get-address",
+        `http://localhost:8000/address/get-address`,
         {
           headers: { Authorization: token },
         }
@@ -96,9 +93,8 @@ const AddUserAddress = () => {
 
   const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
     try {
-      // Replace with your API endpoint to add an address
       const response = await axios.post(
-        "http://localhost:8000/address/add-address",
+        `http://localhost:8000/address/add-address`,
         values,
         {
           headers: { Authorization: token },
@@ -166,8 +162,7 @@ const AddUserAddress = () => {
               location.pathname === "/user/add-address/checkout"
                 ? "/user/checkout"
                 : "/user/address"
-            }
-          >
+            }>
             <IconButton
               icon={<CloseIcon />}
               aria-label="Back Button"
@@ -179,8 +174,7 @@ const AddUserAddress = () => {
         <form onSubmit={formik.handleSubmit}>
           <VStack spacing={2} mt={4} mx="auto" maxW="480px">
             <FormControl
-              isInvalid={formik.errors.address && formik.touched.address}
-            >
+              isInvalid={formik.errors.address && formik.touched.address}>
               <FormLabel htmlFor="address" fontFamily="Oswald" fontSize="lg">
                 Address
               </FormLabel>
@@ -197,8 +191,7 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.province && formik.touched.province}
-            >
+              isInvalid={formik.errors.province && formik.touched.province}>
               <FormLabel htmlFor="province" fontFamily="Oswald" fontSize="lg">
                 Province
               </FormLabel>
@@ -206,8 +199,6 @@ const AddUserAddress = () => {
                 id="province"
                 name="province"
                 placeholder=" "
-                // type="text"
-                // onChange={formik.handleChange}
                 fontFamily="Roboto"
                 borderRadius={0}
                 onChange={(element) => {
@@ -215,15 +206,12 @@ const AddUserAddress = () => {
                   onGetCity(element.target.value.split(","[0]));
                   formik.handleChange(element);
                 }}
-                // onBlur={formik.handleBlur}
-                value={formik.values.province}
-              >
+                value={formik.values.province}>
                 {provinceData.map((value) => {
                   return (
                     <option
                       value={value.province_id + "," + value.province}
-                      key={value.province_id}
-                    >
+                      key={value.province_id}>
                       {value.province}
                     </option>
                   );
@@ -241,21 +229,17 @@ const AddUserAddress = () => {
                 placeholder=" "
                 fontFamily="Roboto"
                 borderRadius={0}
-                // type="text"
-                // onChange={formik.handleChange}
                 onChange={(element) => {
                   setCity(element.target.value);
                   formik.handleChange(element);
                 }}
                 onBlur={formik.handleBlur}
-                value={formik.values.city}
-              >
+                value={formik.values.city}>
                 {cityData.map((value) => {
                   return (
                     <option
                       value={`${value.type} ${value.city_name}`}
-                      key={value.city_id}
-                    >
+                      key={value.city_id}>
                       {value.type} {value.city_name}
                     </option>
                   );
@@ -264,8 +248,7 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.district && formik.touched.district}
-            >
+              isInvalid={formik.errors.district && formik.touched.district}>
               <FormLabel htmlFor="district" fontFamily="Oswald" fontSize="lg">
                 District
               </FormLabel>
@@ -284,13 +267,11 @@ const AddUserAddress = () => {
             <FormControl
               isInvalid={
                 formik.errors.postal_code && formik.touched.postal_code
-              }
-            >
+              }>
               <FormLabel
                 htmlFor="postal_code"
                 fontFamily="Oswald"
-                fontSize="lg"
-              >
+                fontSize="lg">
                 Postal Code
               </FormLabel>
               <Input
@@ -306,8 +287,7 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.postal_code}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.recipient && formik.touched.recipient}
-            >
+              isInvalid={formik.errors.recipient && formik.touched.recipient}>
               <FormLabel htmlFor="recipient" fontFamily="Oswald" fontSize="lg">
                 Recipient
               </FormLabel>
@@ -326,13 +306,11 @@ const AddUserAddress = () => {
             <FormControl
               isInvalid={
                 formik.errors.phone_number && formik.touched.phone_number
-              }
-            >
+              }>
               <FormLabel
                 htmlFor="phone_number"
                 fontFamily="Oswald"
-                fontSize="lg"
-              >
+                fontSize="lg">
                 Phone Number
               </FormLabel>
               <Input
@@ -348,8 +326,7 @@ const AddUserAddress = () => {
               <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.is_primary && formik.touched.is_primary}
-            >
+              isInvalid={formik.errors.is_primary && formik.touched.is_primary}>
               <FormLabel htmlFor="is_primary" fontFamily="Oswald" fontSize="lg">
                 Primary Address
               </FormLabel>
@@ -361,8 +338,7 @@ const AddUserAddress = () => {
                 borderRadius={0}
                 placeholder=" "
                 {...formik.getFieldProps("is_primary")}
-                onChange={formik.handleChange}
-              >
+                onChange={formik.handleChange}>
                 {[
                   { value: 1, label: "Yes" },
                   { value: 0, label: "No" },
@@ -378,8 +354,7 @@ const AddUserAddress = () => {
             <Button
               type="submit"
               variant="buttonBlack"
-              isLoading={formik.isSubmitting}
-            >
+              isLoading={formik.isSubmitting}>
               Add Address
             </Button>
           </VStack>

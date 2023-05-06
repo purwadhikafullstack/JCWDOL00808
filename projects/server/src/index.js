@@ -88,13 +88,14 @@ const {
   ordersRouter,
   confirmOrderRouter,
   testRouter,
+  salesReportRouter,
 } = require("./routers"); //refer to index.js in routers folder
 
 app.use("/user", usersRouter);
 app.use("/auth", authRouter);
 app.use("/admins", adminsRouter);
 app.use("/warehouses", warehousesRouter);
-app.use("/admin", adminRouter, confirmOrderRouter);
+app.use("/admin", adminRouter, confirmOrderRouter, salesReportRouter);
 app.use("/products", productsRouter);
 app.use("/product", productRouter);
 app.use("/productcategory", productCategoryRouter);

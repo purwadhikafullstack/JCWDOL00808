@@ -124,8 +124,12 @@ export default function Sidebar() {
       submenu: true,
       submenuItems: [{ title: "List Orders" }],
     },
-    { title: "Analytics", spacing: true, icon: <AiOutlineBarChart /> },
-    { title: "Setting", icon: <AiOutlineSetting /> },
+    {
+      title: "Sales Report",
+      spacing: true,
+      icon: <AiOutlineBarChart />,
+      onClick: () => navigate("/admin/sales-report"),
+    },
     { title: "Logout", icon: <AiOutlineLogout />, onClick: handleOpen },
   ];
 
@@ -147,16 +151,26 @@ export default function Sidebar() {
 
         <div className="inline-flex">
           <AiFillEnvironment
-            className={`bg-amber-300 text-4xl rounded cursor-pointer block float-left mr-2 duration-500 ${
+            className={`bg-amber-300 text-4xl rounded cursor-pointer block float-left mr-2 duration-500 my-1 ${
               open && "rotate-[360deg]"
             }`}
           />
           <h1
-            className={`text-white p-2 font-medium text-2xl duration-300 ${
+            className={`text-white p-1 font-medium text-2xl duration-300 text-center align-middle ${
               !open && "scale-0"
             }`}>
             Big4Commerce
           </h1>
+        </div>
+        <div className="inline-flex">
+          <h2
+            className={`text-white p-1 duration-300 text-center align-middle ${
+              !open && "scale-0"
+            }`}>
+            {role === "2" && warehouseAdmin.length === 0
+              ? "Not assigned to any warehouse"
+              : warehouseAdmin[0]?.name}
+          </h2>
         </div>
 
         {/* <div className={`flex items-center rounded-md bg-light-white mt-6 ${!open ? "px-2.5" : "px-4"} py-2 `}>
@@ -214,46 +228,55 @@ export default function Sidebar() {
                       role === "1"
                     ) {
                       return null;
-                    }
-                    return (
-                      <li
-                        key={submenuIndex}
-                        className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
+                    } else if (
+                      submenuItem.title === "Warehouse List" &&
+                      role === "2"
+                    ) {
+                      return null;
+                    } else
+                      return (
+                        <li
+                          key={submenuIndex}
+                          className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
           p-2 px-5 hover:bg-light-white rounded-md"
-                        onClick={() => {
-                          if (submenuItem.title === "Admin Account") {
-                            navigate("/admin/manageadmin");
-                          } else if (submenuItem.title === "List User") {
-                            navigate("/admin/adminuserlist");
-                          } else if (
-                            submenuItem.title === "Manage Category Product"
-                          ) {
-                            navigate("/admin/managecategory");
-                          } else if (submenuItem.title === "Manage Product") {
-                            navigate("/admin/manageProducts");
-                          } else if (submenuItem.title === "Stock Mutations") {
-                            navigate(
-                              role === "1"
-                                ? "/warehouse/getAllstockmutationrequest"
-                                : "/warehouse/getstockmutationrequest"
-                            );
-                          } else if (submenuItem.title === "Warehouse List") {
-                            navigate("/warehouse/list");
-                          } else if (submenuItem.title === "Warehouse Stock") {
-                            navigate(
-                              role === "2"
-                                ? warehouseAdmin.length === 0
-                                  ? "/warehouse/stock/0"
-                                  : `/warehouse/stock/${warehouseAdmin[0]?.id}`
-                                : null
-                            );
-                          } else if (submenuItem.title === "List Orders") {
-                            navigate("/admin/list-orders");
-                          }
-                        }}>
-                        {submenuItem.title}
-                      </li>
-                    );
+                          onClick={() => {
+                            if (submenuItem.title === "Admin Account") {
+                              navigate("/admin/manageadmin");
+                            } else if (submenuItem.title === "List User") {
+                              navigate("/admin/adminuserlist");
+                            } else if (
+                              submenuItem.title === "Manage Category Product"
+                            ) {
+                              navigate("/admin/managecategory");
+                            } else if (submenuItem.title === "Manage Product") {
+                              navigate("/admin/manageProducts");
+                            } else if (
+                              submenuItem.title === "Stock Mutations"
+                            ) {
+                              navigate(
+                                role === "1"
+                                  ? "/warehouse/getAllstockmutationrequest"
+                                  : "/warehouse/getstockmutationrequest"
+                              );
+                            } else if (submenuItem.title === "Warehouse List") {
+                              navigate("/warehouse/list");
+                            } else if (
+                              submenuItem.title === "Warehouse Stock"
+                            ) {
+                              navigate(
+                                role === "2"
+                                  ? warehouseAdmin.length === 0
+                                    ? "/warehouse/stock/0"
+                                    : `/warehouse/stock/${warehouseAdmin[0]?.id}`
+                                  : null
+                              );
+                            } else if (submenuItem.title === "List Orders") {
+                              navigate("/admin/list-orders");
+                            }
+                          }}>
+                          {submenuItem.title}
+                        </li>
+                      );
                   })}
                 </ul>
               )}

@@ -24,7 +24,6 @@ import {
   PopoverHeader,
   PopoverBody,
 } from "@chakra-ui/react";
-import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus, FaCheck, FaTimes } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
@@ -106,10 +105,10 @@ const StockRequestList = () => {
     }
   };
 
-  function handleIconClick(id, status) {
+  function handleIconClick(id, status, rowIndex) {
     setDialogAction(id);
     setSelectedStatus(status);
-    setIsPopoverOpen(true);
+    setIsPopoverOpen((prevState) => ({ ...prevState, [rowIndex]: true }));
   }
 
   function handlePopoverClose() {
@@ -244,6 +243,7 @@ const StockRequestList = () => {
             <Th>To</Th>
             <Th>Status</Th>
             <Th>Date</Th>
+            <Th>Approved Date</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
@@ -262,16 +262,17 @@ const StockRequestList = () => {
                 <Td fontSize="sm">{mutation.to_warehouse.name}</Td>
                 <Td fontSize="sm">{mutation.mutation_type}</Td>
                 <Td fontSize="sm">{formatDate(mutation.createdAt)}</Td>
+                <Td fontSize="sm">{formatDate(mutation.approvedAt)}</Td>
                 <Td>
                   <Box display="flex">
                     {mutation.mutation_type === "Pending" && (
                       <div key={mutation.id}>
                         <Box position="relative">
-                          <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} onClick={() => handleIconClick(mutation.id, "ACCEPT")} />
-                          <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick(mutation.id, "REJECT")} />
+                          <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} onClick={() => handleIconClick(mutation.id, "ACCEPT", index)} />
+                          <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick(mutation.id, "REJECT", index)} />
                         </Box>
                         <Box position="relative">
-                          <Popover isOpen={isPopoverOpen} onClose={handlePopoverClose} placement="bottom-start" closeOnBlur={false}>
+                          <Popover isOpen={isPopoverOpen[index]} onClose={() => setIsPopoverOpen((prevState) => ({ ...prevState, [index]: false }))} placement="bottom-start" closeOnBlur={false}>
                             <PopoverContent>
                               <PopoverHeader fontWeight="bold">{selectedStatus === "ACCEPT" ? "Confirm Accept" : "Confirm Reject"}</PopoverHeader>
                               <PopoverBody>Are you sure you want to {selectedStatus === "ACCEPT" ? "accept" : "reject"}?</PopoverBody>
@@ -285,7 +286,7 @@ const StockRequestList = () => {
                               </Flex>
                             </PopoverContent>
                             <PopoverTrigger>
-                              <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" onClick={() => handleIconClick("REJECT")} />
+                              <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" />
                             </PopoverTrigger>
                           </Popover>
                         </Box>
