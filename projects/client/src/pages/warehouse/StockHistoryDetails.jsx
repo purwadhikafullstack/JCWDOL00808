@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Axios from "axios";
 import { API_url } from "../../helper";
 import { useLocation } from "react-router-dom";
+import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
 
 const StockHistory = () => {
   const [warehouseData, setWarehouseData] = useState([]);
@@ -11,6 +12,8 @@ const StockHistory = () => {
   const [sortWarehouseId, setSortWarehouseId] = useState(0);
   const [sortMonth, setSortMonth] = useState(0);
   const [sortYear, setSortYear] = useState(0);
+  const [stockQuery, setStockQuery] = useState("");
+  const [warehouseQuery, setWarehouseQuery] = useState("");
 
   const [stockHistories, setStockHistories] = useState([]);
 
@@ -33,59 +36,49 @@ const StockHistory = () => {
     });
   };
 
-  const autoGetStock = () => {
-    Axios.get(API_url + `/histories/autoGetStock`).then((response) => {
-      console.log("autoGetStock: ", response.data);
-      setStockHistories(response.data);
-    });
-  };
-
-  const getStockHistories = () => {
-    Axios.get(API_url + `/histories/getStockHistories?sortProductsId=${sortProductsId}&sortWarehouseId=${sortWarehouseId}&sortMonth=${sortMonth}&sortYear=${sortYear}`)
+  let token = localStorage.getItem("token");
+  const historyDetails = () => {
+    Axios.get(API_url + `/histories/test2?products_id=${id}&stockQuery=${stockQuery}&warehouseQuery=${warehouseQuery}`, {
+      headers: { Authorization: token },
+    })
       .then((response) => {
-        console.log(response.data);
-        setStockHistories(response.data);
+        setStockHistories(response.data.data);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error.message);
+      });
   };
 
   useEffect(() => {
     getWarehouseData();
     getProductsData();
-    // getStockHistories();
-    autoGetStock();
-  }, []);
+    historyDetails();
+  }, [stockQuery, warehouseQuery]);
 
   const handleFilterButton = () => {
-    getStockHistories();
+    // getStockHistories();
   };
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {
-      let difference = value.stock_after - value.stock_before;
-      if (difference < 0) {
-        difference = Math.abs(difference);
-        return (
-          // qty out
-          <Tr key={value.id}>
-            <Td>{value.createdAt}</Td>
-            <Td>{value.description}</Td>
-            {/* <Td>{value.stock_after}</Td> */}
-            <Td>{difference}</Td>
-            {/* <Td>{value?.product.name}</Td> */}
-          </Tr>
-        );
-      } else {
-        return (
-          <Tr key={value.id}>
-            <Td>{value.createdAt}</Td>
-            <Td>{value.description}</Td>
-            {/* <Td>{value.stock_after}</Td> */}
-            <Td>{difference}</Td>
-            {/* <Td>{value?.product.name}</Td> */}
-          </Tr>
-        );
-      }
+      return (
+        <Tr key={value.id}>
+          <Td>{value.time}</Td>
+          <Td>{value.description}</Td>
+          <Td>
+            <Flex>
+              <AiOutlineArrowUp style={{ marginTop: 1, marginRight: 10 }} />
+              {value.stockOut}
+            </Flex>
+          </Td>
+          <Td>
+            <Flex>
+              <AiOutlineArrowDown style={{ marginTop: 1, marginRight: 10 }} />
+              {value.stockIn}
+            </Flex>
+          </Td>
+        </Tr>
+      );
     });
   };
 
@@ -103,39 +96,21 @@ const StockHistory = () => {
             <Stack divider={<StackDivider />} spacing="4">
               <Box>
                 <Text fontSize="md">View a history of your products over the last month.</Text>
-
-                {/* <Text pt="2" fontSize="md">
-                  Product:
-                </Text>
-                <Select placeholder="Select product" onChange={(element) => setSortProductsId(element.target.value)}>
-                  {productsData.map((value) => {
-                    return (
-                      <option value={value.id}>
-                        [{value.id}] {value.name}
-                      </option>
-                    );
-                  })}
-                </Select> */}
                 <Text pt="2" fontSize="md">
                   Filter data by:
                 </Text>
-                <Select placeholder="Qty in / qty out">
-                  return (<option>Qty In</option>
-                  <option>Qty Out</option>
-                  );
+                <Select placeholder="Stock in / stock out" onChange={(element) => setStockQuery(element.target.value)}>
+                  <option value="stockIn">Stock In</option>
+                  <option value="stockOut">Stock Out</option>
                 </Select>
 
                 <Text pt="2" fontSize="md">
                   Warehouse location:
                 </Text>
 
-                <Select placeholder="Select warehouse" onChange={(element) => setSortWarehouseId(element.target.value)}>
+                <Select placeholder="Select warehouse" onChange={(element) => setWarehouseQuery(element.target.value)}>
                   {warehouseData.map((value) => {
-                    return (
-                      <option value={value.id}>
-                        [{value.id}] {value.name}
-                      </option>
-                    );
+                    return <option value={value.name}>{value.name}</option>;
                   })}
                 </Select>
 
@@ -171,11 +146,10 @@ const StockHistory = () => {
             <Table variant="striped" size="md">
               <Thead>
                 <Tr>
-                  <Th>Date</Th>
+                  <Th>Date & Time</Th>
                   <Th>Description</Th>
-                  <Th>Qty</Th>
-                  {/* <Th>Qty difference</Th> */}
-                  {/* <Th>Product</Th> */}
+                  <Th>Stock Out</Th>
+                  <Th>Stock In</Th>
                 </Tr>
               </Thead>
               <Tbody>{showStockHistories()}</Tbody>

@@ -11,6 +11,7 @@ import {
   Input,
   VStack,
   Button,
+  Spinner,
   Table,
   Thead,
   Tbody,
@@ -54,9 +55,6 @@ const History = () => {
   const [totalPage, setTotalPage] = useState(0);
   const navigate = useNavigate();
 
-  const { isOpen: isPlusOpen, onOpen: onPlusOpen, onClose: onPlusClose } = useDisclosure();
-  const { isOpen: isMinOpen, onOpen: onMinOpen, onClose: onMinClose } = useDisclosure();
-
   const getHistoryData = () => {
     Axios.post(
       API_url + `/histories/test?page=${page}`,
@@ -69,33 +67,25 @@ const History = () => {
         headers: { Authorization: token },
       }
     )
-      // Axios.get(API_url + `/histories/getHistoryData?sort=${sort}&order=${order}&keyword=${keyword}&month=${month}`)
       .then((response) => {
         setStockHistories(response.data.data);
         setWarehouseData(response.data.warehouse);
         setTotalPage(response.data.totalPage);
-        // console.log("warehouse", response.data.warehouse);
       })
       .catch((error) => console.log(error));
   };
 
-  const getWarehouseData = () => {};
+  useEffect(() => {
+    getHistoryData();
+  }, [selectedWarehouse, page, month, year]);
 
-  useEffect(
-    () => {
-      getHistoryData();
-    },
-    [selectedWarehouse, page, month, year]
-    // [page, sort, month, order, keyword]
-  );
+  // const handleSearchButton = () => {
+  //   setKeyword(search);
+  // };
 
-  const handleSearchButton = () => {
-    setKeyword(search);
-  };
-
-  const handleResetButton = () => {
-    setKeyword("");
-  };
+  // const handleResetButton = () => {
+  //   setKeyword("");
+  // };
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {
@@ -126,7 +116,6 @@ const History = () => {
 
   const handlePageClick = (data) => {
     setPage(data.selected);
-    console.log("ds", data.selected);
   };
 
   return (
@@ -140,18 +129,10 @@ const History = () => {
                   <FormControl>
                     <FormLabel>Warehouse:</FormLabel>
                     <Select onChange={(element) => setSelectedWarehouse(element.target.value)}>
-                      <option value="">All</option>
+                      <option value="">All Warehouse</option>
                       {warehouseData?.map((value) => {
                         return <option value={value.id}>{value.name}</option>;
                       })}
-                    </Select>
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel>Year</FormLabel>
-                    <Select onChange={(element) => setYear(element.target.value)}>
-                      <option value={2022}>2022</option>
-                      <option value={2023}>2023</option>
-                      <option value={2024}>2024</option>
                     </Select>
                   </FormControl>
                 </VStack>
@@ -160,7 +141,7 @@ const History = () => {
             <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
               <CardBody>
                 <FormControl>
-                  <FormLabel>Filter data by month:</FormLabel>
+                  <FormLabel>Month:</FormLabel>
                   <Select placeholder="Select month" onChange={(element) => setMonth(element.target.value)}>
                     <option value={1}>January</option>
                     <option value={2}>February</option>
@@ -182,6 +163,21 @@ const History = () => {
               <CardBody>
                 <VStack>
                   <FormControl>
+                    <FormLabel>Year:</FormLabel>
+                    <Select placeholder="Select year" onChange={(element) => setYear(element.target.value)}>
+                      <option value={2022}>2022</option>
+                      <option value={2023}>2023</option>
+                      <option value={2024}>2024</option>
+                    </Select>
+                  </FormControl>
+                </VStack>
+              </CardBody>
+            </Card>
+
+            {/* <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
+              <CardBody>
+                <VStack>
+                  <FormControl>
                     <FormLabel>Search:</FormLabel>
                     <Input placeholder="type warehouse or product name..." onChange={(element) => setSearch(element.target.value)} />
                     <Button colorScheme="blue" mt="25" mr="25" onClick={handleResetButton}>
@@ -193,24 +189,28 @@ const History = () => {
                   </FormControl>
                 </VStack>
               </CardBody>
-            </Card>
+            </Card> */}
           </Box>
-          <Box id="tabel stock histories" mr="30" my="100">
-            <TableContainer bg="white" border="1px" borderColor="gray.200">
-              <Table variant="striped" size="md">
-                <Thead>
-                  <Tr>
-                    <Th>Product Name</Th>
-                    <Th>Stock In</Th>
-                    <Th>Stock Out</Th>
-                    <Th>Latest Stock</Th>
-                    {role == 1 ? <Th isNumeric>Action</Th> : null}
-                  </Tr>
-                </Thead>
-                <Tbody>{showStockHistories()}</Tbody>
-              </Table>
-            </TableContainer>
-          </Box>
+          {stockHistories.length == 0 ? (
+            <Spinner color="red.500" />
+          ) : (
+            <Box id="tabel stock histories" mr="30" my="100">
+              <TableContainer bg="white" border="1px" borderColor="gray.200">
+                <Table variant="striped" size="md">
+                  <Thead>
+                    <Tr>
+                      <Th>Product Name</Th>
+                      <Th>Stock In</Th>
+                      <Th>Stock Out</Th>
+                      <Th>Latest Stock</Th>
+                      {role == 1 ? <Th isNumeric>Action</Th> : null}
+                    </Tr>
+                  </Thead>
+                  <Tbody>{showStockHistories()}</Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
         </Flex>
         <Box id="pagination" className="mt-5 flex items-center justify-center">
           <ReactPaginate
