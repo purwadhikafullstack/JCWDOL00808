@@ -318,7 +318,7 @@ module.exports = {
         await orders.update({ payment_proof }, { where: { id: req.body.id } });
 
         await orders.update(
-          { status: "Confirmed payment" },
+          { status: "Waiting for confirmation" },
           { where: { id: req.body.id } }
         );
 

@@ -123,8 +123,7 @@ const OrderList = () => {
           maxW="600px"
           mx="auto"
           border="1px"
-          borderColor="gray.300"
-        >
+          borderColor="gray.300">
           <CardBody>
             <Flex>
               <Image
@@ -135,7 +134,7 @@ const OrderList = () => {
                 <Text fontSize="md" ml={8}>
                   Transaction date: {value.when}
                 </Text>
-                {value.status == "Confirmed" ? (
+                {value.status == "Order confirmed" ? (
                   <Badge variant="subtle" colorScheme="green" ml={8}>
                     done
                   </Badge>
@@ -171,8 +170,7 @@ const OrderList = () => {
                   variant="subtle"
                   onClick={() => {
                     onCancelOpen();
-                  }}
-                >
+                  }}>
                   Cancel order
                 </Button>
                 {/* <Button colorScheme="green" variant="outline" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
@@ -184,8 +182,7 @@ const OrderList = () => {
                   isLoading={isLoading}
                   onClick={() =>
                     navigate(`/user/upload-payment-proof?id=${value.id}`)
-                  }
-                >
+                  }>
                   Upload payment proof
                 </Button>
                 <Modal isOpen={isCancelOpen} onClose={onCancelClose}>
@@ -208,8 +205,7 @@ const OrderList = () => {
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={() => handleCancelButton(value.id)}
-                      >
+                        onClick={() => handleCancelButton(value.id)}>
                         Cancel my order
                       </Button>
                     </ModalFooter>
@@ -223,8 +219,7 @@ const OrderList = () => {
                   onClick={() => {
                     getDetails(value.id);
                     onDetailsOpen();
-                  }}
-                >
+                  }}>
                   Transaction details
                 </Button>
                 <Modal isOpen={isDetailsOpen} onClose={onDetailsClose}>
@@ -234,7 +229,7 @@ const OrderList = () => {
                     <ModalCloseButton />
                     <ModalBody>
                       <Text as="b">Status:</Text>
-                      {value.status == "Confirmed" ? (
+                      {value.status == "Order confirmed" ? (
                         <Text variant="subtle" colorScheme="green">
                           done
                         </Text>
@@ -285,8 +280,7 @@ const OrderList = () => {
                       <Button
                         colorScheme="blue"
                         mr={3}
-                        onClick={onDetailsClose}
-                      >
+                        onClick={onDetailsClose}>
                         Close
                       </Button>
                     </ModalFooter>
@@ -312,17 +306,15 @@ const OrderList = () => {
           display="flex"
           flexDirection="column"
           justifyContent="center"
-          alignItems="center"
-        >
+          alignItems="center">
           <Card border="1px" borderColor="gray.300" w="50%" mt={4}>
             <CardBody>
               <VStack>
                 <FormControl>
                   <Select
                     placeholder="Select status"
-                    onChange={(element) => setStatus(element.target.value)}
-                  >
-                    <option value="Confirmed">Confirmed</option>
+                    onChange={(element) => setStatus(element.target.value)}>
+                    <option value="Order confirmed">Order confirmed</option>
                     <option value="Waiting for payment">
                       Waiting for payment
                     </option>
@@ -342,8 +334,7 @@ const OrderList = () => {
                   <FormLabel>Sort by date ordered:</FormLabel>
                   <Select
                     placeholder="Order"
-                    onChange={(element) => setOrder(element.target.value)}
-                  >
+                    onChange={(element) => setOrder(element.target.value)}>
                     <option value="DESC">Latest</option>
                     <option value="ASC">Oldest</option>
                   </Select>

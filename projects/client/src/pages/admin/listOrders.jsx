@@ -614,7 +614,7 @@ function ListOrders() {
           </ModalBody>
 
           <ModalFooter>
-            {allData.status === "Confirmed payment" ? (
+            {allData.status === "Waiting for confirmation" ? (
               <>
                 <Button
                   colorScheme="green"
