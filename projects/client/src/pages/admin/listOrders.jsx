@@ -433,11 +433,6 @@ function ListOrders() {
                   >
                     Order Details
                   </Button>
-                  <SendOrderModal
-                    orders_id={orderData.id}
-                    orders_status={orderData.status}
-                    func={getOrders}
-                  />
                 </Box>
               </Td>
             </Tr>
@@ -572,17 +567,24 @@ function ListOrders() {
                     <Text mb="4">No Payment Proof</Text>
                     {allData.status === "Canceled" ? null : (
                       <>
-                        <Button
-                          size="sm"
-                          mr={2}
-                          _hover={{ bg: "red" }}
-                          colorScheme="red"
-                          onClick={() => {
-                            onAlertOpen();
-                          }}
-                        >
-                          Cancel Order
-                        </Button>
+                        <Flex>
+                          <Button
+                            size="sm"
+                            mr={2}
+                            _hover={{ bg: "red" }}
+                            colorScheme="red"
+                            onClick={() => {
+                              onAlertOpen();
+                            }}
+                          >
+                            Cancel Order
+                          </Button>
+                          <SendOrderModal
+                            orders_id={allData.id}
+                            orders_status={allData.status}
+                            func={getOrders}
+                          />
+                        </Flex>
                         <AlertDialog
                           isOpen={isAlertOpen}
                           leastDestructiveRef={cancelRef}
