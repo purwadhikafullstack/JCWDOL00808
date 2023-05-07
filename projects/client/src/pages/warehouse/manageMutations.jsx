@@ -54,7 +54,7 @@ function ManageMutations() {
 
   const getListMutations = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/mutations/getAllRequestMutation?search_query=${keyword}&page=${page}&limit=${limit}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/mutations/getAllRequestMutation?search_query=${keyword}&page=${page}&limit=${limit}`, {
         params: {
           sort,
           order,
@@ -78,7 +78,7 @@ function ManageMutations() {
   const handleStatusUpdate = async (id, status) => {
     try {
       await axios.patch(
-        `http://localhost:8000/mutations/confirm-mutation/${id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/mutations/confirm-mutation/${id}`,
         { status },
         {
           headers: { Authorization: token },
