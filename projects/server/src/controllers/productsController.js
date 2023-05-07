@@ -105,6 +105,7 @@ module.exports = {
                 FROM stocks
                 WHERE
                   stocks.products_id = products.id
+                  AND stocks.is_deleted = 0
               )`),
               "totalStock",
             ],

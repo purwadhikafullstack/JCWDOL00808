@@ -16,7 +16,7 @@ import ManageProducts from "./pages/admin/manageProducts";
 import PatchAdmin from "./pages/admin/patchAdmin";
 import UserList from "./pages/admin/userList";
 import AddUserAddress from "./pages/user/AddUserAddress";
-import History from "./pages/warehouse/History";
+import StockHistory from "./pages/warehouse/StockHistory";
 import Cart from "./pages/user/Cart";
 import EditProfile from "./pages/user/EditProfile";
 import EditUserAddress from "./pages/user/EditUserAddress";
@@ -27,7 +27,7 @@ import UserAddress from "./pages/user/UserAddress";
 import Verification from "./pages/user/Verification";
 import VerificationNewPassword from "./pages/user/VerificationNewPassword";
 import EditWarehouse from "./pages/warehouse/EditWarehouse";
-import StockHistory from "./pages/warehouse/StockHistory";
+import StockHistoryDetails from "./pages/warehouse/StockHistoryDetails";
 import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
 import WarehouseList from "./pages/warehouse/WarehouseList";
 import WarehouseStock from "./pages/warehouse/WarehouseStock";
@@ -109,7 +109,7 @@ function App() {
             <Route path="/warehouse/stock/:id" element={<WarehouseStock />} />
             <Route path="/warehouse/stock/0" element={<AdminWarehouseNotFound />} />
             <Route path="/warehouse/history" element={<StockHistory />} />
-            <Route path="/warehouse/history2" element={<History />} />
+            <Route path="/warehouse/history-details" element={<StockHistoryDetails />} />
             <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
             <Route path="/warehouse/list" element={<WarehouseList />} />
