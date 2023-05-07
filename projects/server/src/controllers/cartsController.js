@@ -157,45 +157,77 @@ module.exports = {
       const users_id = req.dataDecode.id;
       const { id, quantity } = req.body;
 
-      await carts.update({ quantity }, { where: { users_id, id } });
+      //Get cart data
+      const cartData = await carts.findByPk(id);
 
-      const cartsData = await carts.findAll({
-        where: { users_id },
+      //Get available stock for product in cart
+      const findAvailableStock = await stocks.findOne({
+        attributes: [
+          [
+            sequelize.literal("(SUM(stocks.stock) - product.booked_stock)"),
+            "availableStock",
+          ],
+        ],
         include: [
           {
             model: products,
             as: "product",
-            where: { is_deleted: 0 },
-            include: [
-              {
-                model: stocks,
-                attributes: [],
-                required: true,
-              },
-            ],
-            attributes: {
-              include: [
-                [
-                  sequelize.literal(`(
-              SELECT SUM(stock)
-              FROM stocks
-              WHERE
-                stocks.products_id = carts.products_id
-                AND stocks.is_deleted = 0                    
-            ) - product.booked_stock`),
-                  "availableStock",
-                ],
-              ],
+            attributes: [],
+            where: {
+              id: cartData.dataValues.products_id,
+              is_deleted: 0,
             },
           },
         ],
       });
 
-      res.status(200).send({
-        isError: false,
-        message: "Update cart data success",
-        data: cartsData,
-      });
+      if (quantity > findAvailableStock.dataValues.availableStock) {
+        res.status(404).send({
+          isError: true,
+          message: "Product in your cart exceeds available stocks",
+          data: null,
+        });
+      } else {
+        await carts.update({ quantity }, { where: { users_id, id } });
+
+        const cartsData = await carts.findAll({
+          where: { users_id },
+          include: [
+            {
+              model: products,
+              as: "product",
+              where: { is_deleted: 0 },
+              include: [
+                {
+                  model: stocks,
+                  attributes: [],
+                  required: true,
+                },
+              ],
+              attributes: {
+                include: [
+                  [
+                    sequelize.literal(`(
+                SELECT SUM(stock)
+                FROM stocks
+                WHERE
+                  stocks.products_id = carts.products_id
+                  AND stocks.is_deleted = 0                    
+              ) - product.booked_stock`),
+                    "availableStock",
+                  ],
+                ],
+              },
+            },
+          ],
+        });
+
+        res.status(200).send({
+          isError: false,
+          message: "Update cart data success",
+          data: cartsData,
+        });
+      }
     } catch (error) {
       res.status(404).send({
         isError: true,
