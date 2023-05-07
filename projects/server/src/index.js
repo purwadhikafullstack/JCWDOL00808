@@ -87,7 +87,6 @@ const {
   historiesRouter,
   ordersRouter,
   confirmOrderRouter,
-  testRouter,
   salesReportRouter,
 } = require("./routers"); //refer to index.js in routers folder
 
@@ -111,12 +110,12 @@ app.use(express.static("."));
 
 // #region CLIENT
 const clientPath = "../../client/build";
-app.use(express.static(join(__dirname, clientPath)));
+// app.use(express.static(join(__dirname, clientPath)));
 
 // Serve the HTML page
-app.get("*", (req, res) => {
-  res.sendFile(join(__dirname, clientPath, "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(join(__dirname, clientPath, "index.html"));
+// });
 
 //#endregion
 

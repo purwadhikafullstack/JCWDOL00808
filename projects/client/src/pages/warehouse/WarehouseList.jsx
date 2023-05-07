@@ -167,7 +167,7 @@ const WarehouseList = (props) => {
               }}>
               Details
             </Button>
-            <>
+            {/* <>
               {role === "1" && (
                 <Button colorScheme="red" onClick={onAlertOpen}>
                   Delete
@@ -202,7 +202,7 @@ const WarehouseList = (props) => {
                   </AlertDialogContent>
                 </AlertDialogOverlay>
               </AlertDialog>
-            </>
+            </> */}
           </Td>
         </Tr>
       );
