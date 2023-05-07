@@ -284,22 +284,27 @@ module.exports = {
 
       const data = await stocks.findAll({
         where: {
-          warehouses_id: id,
-          [Op.or]: [
+          [Op.and]: [
+            { warehouses_id: id },
+            { is_deleted: 0 },
             {
-              "$warehouse.name$": {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              "$product.name$": {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              "$product.product_category.name$": {
-                [Op.like]: "%" + search + "%",
-              },
+              [Op.or]: [
+                {
+                  "$warehouse.name$": {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+                {
+                  "$product.name$": {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+                {
+                  "$product.product_category.name$": {
+                    [Op.like]: "%" + search + "%",
+                  },
+                },
+              ],
             },
           ],
         },
@@ -400,13 +405,17 @@ module.exports = {
           stock_after: 0,
           products_id: fromStock.products_id,
           warehouses_id: fromStock.warehouses_id,
-          description: "Stock di delete oleh admin",
+          description: "Stock deleted by admin",
         },
         { transaction: t }
       );
+      // await stocks.destroy({ where: { id } });
+      await stocks.update(
+        { is_deleted: 1 }, // Set is_deleted to 1
+        { where: { id }, transaction: t }
+      );
       t.commit();
       const deletedWarehouseProduct = await stocks.findAll({ where: { id } });
-      await stocks.destroy({ where: { id } });
       res.status(200).send({
         success: true,
         message: `Warehouse product ${deletedWarehouseProduct[0].name} has been deleted!`,

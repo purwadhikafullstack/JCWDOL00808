@@ -25,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
       recipient: DataTypes.STRING,
       phone_number: DataTypes.STRING,
       is_primary: DataTypes.BOOLEAN,
+      is_deleted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {
       sequelize,

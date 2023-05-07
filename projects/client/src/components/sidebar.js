@@ -1,6 +1,19 @@
 import { useState, useEffect } from "react";
-import { BsArrowLeftShort, BsSearch, BsChevronDown, BsReverseLayoutTextSidebarReverse, BsBuilding } from "react-icons/bs";
-import { AiFillEnvironment, AiOutlineFileText, AiOutlineBarChart, AiOutlineSetting, AiOutlineLogout, AiOutlineContainer } from "react-icons/ai";
+import {
+  BsArrowLeftShort,
+  BsSearch,
+  BsChevronDown,
+  BsReverseLayoutTextSidebarReverse,
+  BsBuilding,
+} from "react-icons/bs";
+import {
+  AiFillEnvironment,
+  AiOutlineFileText,
+  AiOutlineBarChart,
+  AiOutlineSetting,
+  AiOutlineLogout,
+  AiOutlineContainer,
+} from "react-icons/ai";
 import { RiDashboardFill } from "react-icons/ri";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -46,7 +59,9 @@ export default function Sidebar() {
 
   const fetchWarehouseData = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/warehouses/getAllWarehouse`);
+      const response = await axios.get(
+        `http://localhost:8000/warehouses/getAllWarehouse`
+      );
       setWarehouseData(response.data);
     } catch (error) {
       toast({
@@ -79,7 +94,10 @@ export default function Sidebar() {
       title: "Product",
       icon: <AiOutlineFileText />,
       submenu: true,
-      submenuItems: [{ title: "Manage Product" }, { title: "Manage Category Product" }],
+      submenuItems: [
+        { title: "Manage Product" },
+        { title: "Manage Category Product" },
+      ],
     },
     {
       title: "Account",
@@ -92,6 +110,7 @@ export default function Sidebar() {
       icon: <BsBuilding />,
       submenu: true,
       submenuItems: [{ title: "Stock Mutations" }, { title: "Stock History" }, { title: "Warehouse List" }, { title: "Warehouse Stock" }],
+
     },
     {
       title: "Orders",
@@ -99,22 +118,53 @@ export default function Sidebar() {
       submenu: true,
       submenuItems: [{ title: "List Orders" }],
     },
-    { title: "Sales Report", spacing: true, icon: <AiOutlineBarChart />, onClick: () => navigate("/admin/sales-report") },
+    {
+      title: "Sales Report",
+      spacing: true,
+      icon: <AiOutlineBarChart />,
+      onClick: () => navigate("/admin/sales-report"),
+    },
     { title: "Logout", icon: <AiOutlineLogout />, onClick: handleOpen },
   ];
 
   return (
-    <div className="flex" style={{ position: "sticky", top: 0, height: "100vh" }}>
-      <div className={`bg-dark-purple h-screen p-5 pt-8 ${open ? "w-72" : "w-20"} duration-300 relative`}>
+    <div
+      className="flex"
+      style={{ position: "sticky", top: 0, height: "100vh" }}>
+      <div
+        className={`bg-dark-purple h-screen p-5 pt-8 ${
+          open ? "w-72" : "w-20"
+        } duration-300 relative`}>
         <BsArrowLeftShort
           className={`bg-white text-dark-purple text-3xl rounded-full 
-        absolute -right-3 top-9 border border-dark-purple cursor-pointer ${!open && "rotate-180"}`}
+        absolute -right-3 top-9 border border-dark-purple cursor-pointer ${
+          !open && "rotate-180"
+        }`}
           onClick={() => setOpen(!open)}
         />
 
         <div className="inline-flex">
-          <AiFillEnvironment className={`bg-amber-300 text-4xl rounded cursor-pointer block float-left mr-2 duration-500 ${open && "rotate-[360deg]"}`} />
-          <h1 className={`text-white p-2 font-medium text-2xl duration-300 ${!open && "scale-0"}`}>Big4Commerce</h1>
+          <AiFillEnvironment
+            className={`bg-amber-300 text-4xl rounded cursor-pointer block float-left mr-2 duration-500 my-1 ${
+              open && "rotate-[360deg]"
+            }`}
+          />
+          <h1
+            className={`text-white p-1 font-medium text-2xl duration-300 text-center align-middle ${
+              !open && "scale-0"
+            }`}>
+            Big4Commerce
+          </h1>
+        </div>
+        <div className="inline-flex">
+          <h2
+            className={`text-white p-1 duration-300 text-center align-middle ${
+              !open && "scale-0"
+            }`}>
+            {role === "2" && warehouseAdmin.length === 0
+              ? "Not assigned to any warehouse"
+              : warehouseAdmin[0]?.name}
+          </h2>
         </div>
 
         {/* <div className={`flex items-center rounded-md bg-light-white mt-6 ${!open ? "px-2.5" : "px-4"} py-2 `}>
@@ -133,23 +183,55 @@ export default function Sidebar() {
                   onClick={menu.onClick}
                   // onClick={handleOpen}
                 >
-                  <span className="text-2xl block float-left">{menu.icon ? menu.icon : <RiDashboardFill />}</span>
-                  <span className={`text-base font-medium duration-200 ${!open && "hidden"}`}>{menu.title}</span>
-                  {menu.submenu && open && <BsChevronDown className={`${openSubMenuIndex === index && "rotate-180"} `} onClick={() => setOpenSubMenuIndex(openSubMenuIndex === index ? -1 : index)} />}
-                  {menu.title === "Logout" && <LogoutDialog onLogout={handleLogout} isOpen={isOpen} onClose={handleClose} />}
+                  <span className="text-2xl block float-left">
+                    {menu.icon ? menu.icon : <RiDashboardFill />}
+                  </span>
+                  <span
+                    className={`text-base font-medium duration-200 ${
+                      !open && "hidden"
+                    }`}>
+                    {menu.title}
+                  </span>
+                  {menu.submenu && open && (
+                    <BsChevronDown
+                      className={`${
+                        openSubMenuIndex === index && "rotate-180"
+                      } `}
+                      onClick={() =>
+                        setOpenSubMenuIndex(
+                          openSubMenuIndex === index ? -1 : index
+                        )
+                      }
+                    />
+                  )}
+                  {menu.title === "Logout" && (
+                    <LogoutDialog
+                      onLogout={handleLogout}
+                      isOpen={isOpen}
+                      onClose={handleClose}
+                    />
+                  )}
                 </li>
               )}
 
               {menu.submenu && openSubMenuIndex === index && open && (
                 <ul>
                   {menu.submenuItems.map((submenuItem, submenuIndex) => {
-                    if (submenuItem.title === "Warehouse Stock" && role === "1") {
+                    if (
+                      submenuItem.title === "Warehouse Stock" &&
+                      role === "1"
+                    ) {
                       return null;
-                    }
-                    return (
-                      <li
-                        key={submenuIndex}
-                        className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
+                    } else if (
+                      submenuItem.title === "Warehouse List" &&
+                      role === "2"
+                    ) {
+                      return null;
+                    } else
+                      return (
+                        <li
+                          key={submenuIndex}
+                          className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
           p-2 px-5 hover:bg-light-white rounded-md"
                         onClick={() => {
                           if (submenuItem.title === "Admin Account") {
@@ -176,6 +258,7 @@ export default function Sidebar() {
                         {submenuItem.title}
                       </li>
                     );
+
                   })}
                 </ul>
               )}
