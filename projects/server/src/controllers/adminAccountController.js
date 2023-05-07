@@ -316,20 +316,20 @@ module.exports = {
       }
 
       // step 2: delete admin data from database
-      await products.update(
+      let deleteAdmin = await admins.update(
         { is_deleted: 1 },
-        { where: { id: id }, transaction: t }
+        { where: { id }, transaction: t }
       );
 
       // step 3: send response
-      await t.commit();
+      t.commit();
       res.status(200).send({
         isError: false,
         message: "Admin data deleted successfully",
         data: null,
       });
     } catch (error) {
-      await t.rollback();
+      t.rollback();
       res.status(400).send({
         isError: true,
         message: error.message,

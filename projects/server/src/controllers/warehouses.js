@@ -93,6 +93,7 @@ module.exports = {
         offset,
         order: [[sort, order]],
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -127,6 +128,7 @@ module.exports = {
     }
   },
   addWarehouse: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
       // 2. destructure object request body
       let { name, address, province, city, district } = req.body;
@@ -137,23 +139,28 @@ module.exports = {
         q: `${address}, ${district}, ${province}, ${city}`,
         countrycode: "id",
         limit: 1,
-        key: process.env.OPENCAGE_API_KEY,
+        // key: process.env.OPENCAGE_API_KEY,
+        key: process.env.API_KEY,
       });
-      console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
+      // console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
 
       // 4. destructure response dari geocode
       let { lat, lng } = response.results[0].geometry;
 
       // 5. gunakan latitude & longitude sesuai kebutuhan
-      let createNewWarehouse = await WarehousesModel.create({
-        name,
-        address,
-        province,
-        city,
-        district,
-        latitude: lat,
-        longitude: lng,
-      });
+      let createNewWarehouse = await WarehousesModel.create(
+        {
+          name,
+          address,
+          province,
+          city,
+          district,
+          latitude: lat,
+          longitude: lng,
+        },
+        { transaction: t }
+      );
+      t.commit();
 
       res.status(200).send({
         success: true,
@@ -200,12 +207,13 @@ module.exports = {
     }
   },
   deleteWarehouseData: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
       let deletedWarehouse = await WarehousesModel.findAll({
         where: { id: req.query.id },
       });
 
-      await WarehousesModel.update(
+      let deleteWarehouse = await WarehousesModel.update(
         { is_deleted: 1 },
         { where: { id: req.query.id } }
       );

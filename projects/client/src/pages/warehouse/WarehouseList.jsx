@@ -112,13 +112,13 @@ const WarehouseList = (props) => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
 
-  const deleteButton = () => {
-    Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${warehouseId}`)
+  const deleteButton = (id) => {
+    Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${id}`)
       .then((response) => {
         toast({
           title: `${response.data.message}`,
           status: "success",
-          duration: 9000,
+          duration: 1000,
           isClosable: true,
           onCloseComplete: () => window.location.reload(false),
         });
@@ -324,27 +324,27 @@ const WarehouseList = (props) => {
             </Card>
           </Flex>
         </Box>
-        <Card>
-          <CardBody>
-            <TableContainer className="my-5">
-              <Table size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>No.</Th>
-                    <Th>Warehouse Name</Th>
-                    <Th>Address</Th>
-                    <Th>Province</Th>
-                    <Th>City</Th>
-                    <Th isNumeric className="mr-5">
-                      Action
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{showWarehouseData()}</Tbody>
-              </Table>
-            </TableContainer>
-          </CardBody>
-        </Card>
+        {/* <Card> */}
+        {/* <CardBody> */}
+        <TableContainer className="my-5">
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>No.</Th>
+                <Th>Warehouse Name</Th>
+                <Th>Address</Th>
+                <Th>Province</Th>
+                <Th>City</Th>
+                <Th isNumeric className="mr-5">
+                  Action
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>{showWarehouseData()}</Tbody>
+          </Table>
+        </TableContainer>
+        {/* </CardBody> */}
+        {/* </Card> */}
         <div id="pagination" className="mt-5 flex items-center justify-center">
           <ReactPaginate
             previousLabel={"< Previous"}
@@ -468,10 +468,10 @@ const WarehouseList = (props) => {
               </ModalBody>
 
               <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={onAddClose}>
+                <Button colorScheme="red" mr={3} onClick={onAddClose}>
                   Close
                 </Button>
-                <Button variant="ghost" type="submit">
+                <Button colorScheme="blue" type="submit">
                   Add warehouse data
                 </Button>
               </ModalFooter>
