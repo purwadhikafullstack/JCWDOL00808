@@ -1,9 +1,10 @@
-import { Select, Button, Card, CardHeader, CardBody, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Flex } from "@chakra-ui/react";
+import { Select, Button, Card, CardHeader, CardBody, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Flex, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Axios from "axios";
 import { API_url } from "../../helper";
 import { useLocation } from "react-router-dom";
 import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
+import ReactPaginate from "react-paginate";
 
 const StockHistory = () => {
   const [warehouseData, setWarehouseData] = useState([]);
@@ -12,6 +13,9 @@ const StockHistory = () => {
   const [warehouseQuery, setWarehouseQuery] = useState("");
   const [stockHistories, setStockHistories] = useState([]);
   const [productName, setProductName] = useState("");
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const { search } = useLocation();
   const id = search.split("=")[1];
@@ -19,7 +23,6 @@ const StockHistory = () => {
   const getWarehouseData = () => {
     Axios.get(API_url + `/warehouses/getAllWarehouse`)
       .then((response) => {
-        console.log(response.data);
         setWarehouseData(response.data);
       })
       .catch((err) => console.log(err));
@@ -35,14 +38,16 @@ const StockHistory = () => {
 
   let token = localStorage.getItem("token");
   const historyDetails = () => {
-    Axios.get(API_url + `/histories/getHistoryDetails?products_id=${id}&stockQuery=${stockQuery}&warehouseQuery=${warehouseQuery}&month=${month}`, {
+    Axios.get(API_url + `/histories/getHistoryDetails?products_id=${id}&stockQuery=${stockQuery}&warehouseQuery=${warehouseQuery}&month=${month}&page=${page}`, {
       headers: { Authorization: token },
     })
       .then((response) => {
         setStockHistories(response.data.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.log(error.message);
+        setLoading(false);
       });
   };
 
@@ -50,7 +55,7 @@ const StockHistory = () => {
     getProductsData();
     getWarehouseData();
     historyDetails();
-  }, [stockQuery, warehouseQuery, month]);
+  }, [stockQuery, warehouseQuery, month, page]);
 
   const handleFilterButton = () => {
     // getStockHistories();
@@ -79,11 +84,62 @@ const StockHistory = () => {
     });
   };
 
+  const handlePageClick = (data) => {
+    setPage(data.selected);
+  };
+  console.log("SH", stockHistories.length);
+
   return (
     <>
-      <Flex minWidth="fit-content" alignItems="center" gap="5" paddingX={5} paddingY={10}>
-        <div style={{ position: "sticky", top: 50, left: 100, display: "inline-block" }}>
-          <Card>
+      <Flex flexDirection="row">
+        <Flex flexDirection="column" minWidth="fit-content" alignItems="center" gap="5" paddingX={5}>
+          <div style={{ marginRight: "50px" }}>
+            <Box>
+              <Text fontSize="2xl" my={12}>
+                Product: {productName}
+              </Text>
+              {loading ? (
+                <Spinner />
+              ) : stockHistories.length !== 0 && !loading ? (
+                <TableContainer>
+                  <Table variant="striped" size="md">
+                    <Thead>
+                      <Tr>
+                        <Th>Date & Time</Th>
+                        <Th>Description</Th>
+                        <Th>Stock Out</Th>
+                        <Th>Stock In</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>{showStockHistories()}</Tbody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Text as="b" fontSize="3xl">
+                  Data unavailable
+                </Text>
+              )}
+            </Box>
+          </div>
+          <div id="pagination" className="mt-5 flex items-center justify-center">
+            <ReactPaginate
+              previousLabel={"< Previous"}
+              nextLabel={"Next >"}
+              breakLabel={"..."}
+              pageCount={totalPage}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={2}
+              onPageChange={handlePageClick}
+              containerClassName={"flex"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+              previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+              nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            />
+          </div>
+        </Flex>
+        <div style={{ position: "sticky", top: 100, left: 100, display: "inline-block" }}>
+          <Card mt="12" mr="12">
             <CardHeader>
               <Heading size="md" textTransform="uppercase">
                 Stock History Details
@@ -96,7 +152,6 @@ const StockHistory = () => {
 
             <CardBody>
               <Stack divider={<StackDivider />} spacing="4">
-                <Text fontSize="md">Product: {productName}</Text>
                 <Box>
                   <Text pt="2" fontSize="md">
                     Filter data by:
@@ -123,30 +178,10 @@ const StockHistory = () => {
                     <option value={1}>January</option>;<option value={2}>February</option>;<option value={3}>March</option>;<option value={4}>April</option>;<option value={5}>May</option>;<option value={6}>June</option>;
                     <option value={7}>July</option>;<option value={8}>August</option>;<option value={9}>September</option>;<option value={10}>October</option>;<option value={11}>November</option>;<option value={12}>December</option>;
                   </Select>
-                  {/* <Button className="mt-5" onClick={handleFilterButton}>
-                  View stock history
-                </Button> */}
                 </Box>
               </Stack>
             </CardBody>
           </Card>
-        </div>
-        <div style={{ marginRight: "80px" }}>
-          <Box rounded={"lg"}>
-            <TableContainer>
-              <Table variant="striped" size="md">
-                <Thead>
-                  <Tr>
-                    <Th>Date & Time</Th>
-                    <Th>Description</Th>
-                    <Th>Stock Out</Th>
-                    <Th>Stock In</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{showStockHistories()}</Tbody>
-              </Table>
-            </TableContainer>
-          </Box>
         </div>
       </Flex>
     </>

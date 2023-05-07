@@ -41,10 +41,6 @@ const History = () => {
   let role = localStorage.getItem("role");
   let token = localStorage.getItem("token");
 
-  const [sort, setSort] = useState("id");
-  const [order, setOrder] = useState("ASC");
-  const [search, setSearch] = useState("");
-  const [keyword, setKeyword] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [stockHistories, setStockHistories] = useState([]);
@@ -79,10 +75,6 @@ const History = () => {
     getHistoryData();
   }, [selectedWarehouse, page, month, year]);
 
-  // const handleSearchButton = () => {
-  //   setKeyword(search);
-  // };
-
   // const handleResetButton = () => {
   //   setKeyword("");
   // };
@@ -94,11 +86,16 @@ const History = () => {
           <Td>{value.name}</Td>
           <Td>
             <Flex>
-              <AiOutlineArrowDown />
+              <AiOutlineArrowDown style={{ marginTop: 1, marginRight: 10 }} />
               {value.stockIn}
             </Flex>
           </Td>
-          <Td>{value.stockOut}</Td>
+          <Td>
+            <Flex>
+              <AiOutlineArrowUp style={{ marginTop: 1, marginRight: 10 }} />
+              {value.stockOut}
+            </Flex>
+          </Td>
           <Td>{value.latestStock}</Td>
           <Td>
             {role == 1 ? (
@@ -121,8 +118,34 @@ const History = () => {
   return (
     <>
       <Flex flexDirection="column">
-        <Flex px="0">
-          <Box id="sort filter and search" mx="100" mt="100">
+        <Box mt="10">
+          <Text fontSize="3xl" as="b">
+            Stock History
+          </Text>
+          <Text>Monitor and manage product availability to track your warehouses' performance. View history of all products.</Text>
+        </Box>
+        <Flex>
+          {stockHistories.length == 0 ? (
+            <Spinner color="red.500" />
+          ) : (
+            <Box id="tabel stock histories" mt="10" mb="14">
+              <TableContainer bg="white" border="1px" borderColor="gray.200">
+                <Table variant="striped" size="md">
+                  <Thead>
+                    <Tr>
+                      <Th>Product Name</Th>
+                      <Th>Stock In</Th>
+                      <Th>Stock Out</Th>
+                      <Th>Latest Stock</Th>
+                      {role == 1 ? <Th isNumeric>Action</Th> : null}
+                    </Tr>
+                  </Thead>
+                  <Tbody>{showStockHistories()}</Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
+          <Box id="sort filter and search" mx="50" mt="100">
             <Card maxW="xs" border="1px" borderColor="gray.200">
               <CardBody>
                 <VStack>
@@ -173,46 +196,9 @@ const History = () => {
                 </VStack>
               </CardBody>
             </Card>
-
-            {/* <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
-              <CardBody>
-                <VStack>
-                  <FormControl>
-                    <FormLabel>Search:</FormLabel>
-                    <Input placeholder="type warehouse or product name..." onChange={(element) => setSearch(element.target.value)} />
-                    <Button colorScheme="blue" mt="25" mr="25" onClick={handleResetButton}>
-                      Reset
-                    </Button>
-                    <Button colorScheme="blue" mt="25" onClick={handleSearchButton}>
-                      Search
-                    </Button>
-                  </FormControl>
-                </VStack>
-              </CardBody>
-            </Card> */}
           </Box>
-          {stockHistories.length == 0 ? (
-            <Spinner color="red.500" />
-          ) : (
-            <Box id="tabel stock histories" mr="30" my="100">
-              <TableContainer bg="white" border="1px" borderColor="gray.200">
-                <Table variant="striped" size="md">
-                  <Thead>
-                    <Tr>
-                      <Th>Product Name</Th>
-                      <Th>Stock In</Th>
-                      <Th>Stock Out</Th>
-                      <Th>Latest Stock</Th>
-                      {role == 1 ? <Th isNumeric>Action</Th> : null}
-                    </Tr>
-                  </Thead>
-                  <Tbody>{showStockHistories()}</Tbody>
-                </Table>
-              </TableContainer>
-            </Box>
-          )}
         </Flex>
-        <Box id="pagination" className="mt-5 flex items-center justify-center">
+        <Box id="pagination" className="flex items-center justify-center">
           <ReactPaginate
             previousLabel={"< Previous"}
             nextLabel={"Next >"}
