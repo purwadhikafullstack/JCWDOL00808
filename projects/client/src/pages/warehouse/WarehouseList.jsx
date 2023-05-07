@@ -5,17 +5,9 @@ import {
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
   Button,
-  ButtonGroup,
   useToast,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
   useDisclosure,
   Flex,
   FormControl,
@@ -33,21 +25,11 @@ import {
   Select,
   VStack,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Heading,
-  Stack,
-  StackDivider,
-  Box,
-  Text,
-} from "@chakra-ui/react";
+
+import { Card, CardBody, Box } from "@chakra-ui/react";
 import Axios from "axios";
 import { API_url } from "../../helper";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
@@ -56,7 +38,7 @@ import * as yup from "yup";
 
 const WarehouseList = (props) => {
   const toast = useToast();
-  const cancelRef = React.useRef();
+
   const navigate = useNavigate();
   const [role, setRole] = useState(localStorage.getItem("role"));
 
@@ -112,19 +94,19 @@ const WarehouseList = (props) => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
 
-  const deleteButton = (id) => {
-    Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${id}`)
-      .then((response) => {
-        toast({
-          title: `${response.data.message}`,
-          status: "success",
-          duration: 1000,
-          isClosable: true,
-          onCloseComplete: () => window.location.reload(false),
-        });
-      })
-      .catch((err) => console.log(err));
-  };
+  // const deleteButton = (id) => {
+  //   Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${id}`)
+  //     .then((response) => {
+  //       toast({
+  //         title: `${response.data.message}`,
+  //         status: "success",
+  //         duration: 1000,
+  //         isClosable: true,
+  //         onCloseComplete: () => window.location.reload(false),
+  //       });
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
   const getSpecificWarehouse = () => {
     Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${warehouseId}`)
