@@ -51,6 +51,10 @@ module.exports = {
           "weight",
           "imageUrl",
           [Sequelize.fn("SUM", Sequelize.col("stocks.stock")), "totalStock"],
+          [
+            Sequelize.literal("(SUM(stocks.stock) - products.booked_stock)"),
+            "availableStock",
+          ],
         ],
         group: ["products.id"],
       });
