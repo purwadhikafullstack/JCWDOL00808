@@ -104,7 +104,7 @@ const UserAddress = () => {
 
   return (
     <>
-      <Box mb={4} w={"full"}>
+      <Box minH={"70vh"} mb={4} w={"full"}>
         {/* <HStack mb={4} mt={2} mr={4} justify="flex-end">
           <Link to="/">
             <IconButton

@@ -66,7 +66,7 @@ export default function Cart() {
 
   return (
     <>
-      <div className="flex flex-col justify-between w-full">
+      <div className="min-h-[70vh] flex flex-col justify-between w-full">
         <div className="bg-white py-5">
           <h1 className="mb-10 text-center text-2xl font-bold font-[Oswald]">
             Cart Items
@@ -203,7 +203,7 @@ export default function Cart() {
               )}
             </div>
             <div
-              className={`sticky top-[5.7rem] mt-6 h-full rounded-none border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
+              className={`sticky top-[1rem] mt-6 h-full rounded-none border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
                 carts.length === 0 ? "hidden" : null
               }`}
             >
