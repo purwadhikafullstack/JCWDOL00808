@@ -113,31 +113,17 @@ const WarehouseList = (props) => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
 
-  // const deleteButton = () => {
-  //   Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${warehouseId}`)
+  // const getSpecificWarehouse = () => {
+  //   Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${warehouseId}`)
   //     .then((response) => {
-  //       toast({
-  //         title: `${response.data.message}`,
-  //         status: "success",
-  //         duration: 9000,
-  //         isClosable: true,
-  //         onCloseComplete: () => window.location.reload(false),
-  //       });
+  //       setName(response.data.name);
+  //       setAddress(response.data.address);
+  //       setCity(response.data.city);
+  //       setProvince(response.data.province);
+  //       // setDetailsDistrict(response.data.district)
   //     })
-  //     .catch((err) => console.log(err));
+  //     .catch((error) => console.log(error));
   // };
-
-  const getSpecificWarehouse = () => {
-    Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${warehouseId}`)
-      .then((response) => {
-        setName(response.data.name);
-        setAddress(response.data.address);
-        setCity(response.data.city);
-        setProvince(response.data.province);
-        // setDetailsDistrict(response.data.district)
-      })
-      .catch((error) => console.log(error));
-  };
 
   const showWarehouseData = () => {
     let count = 0;
@@ -168,42 +154,6 @@ const WarehouseList = (props) => {
               }}>
               Details
             </Button>
-            {/* <>
-              {role === "1" && (
-                <Button colorScheme="red" onClick={onAlertOpen}>
-                  Delete
-                </Button>
-              )}
-              <AlertDialog
-                isOpen={isAlertOpen}
-                leastDestructiveRef={cancelRef}
-                onClose={onAlertClose}>
-                <AlertDialogOverlay>
-                  <AlertDialogContent>
-                    <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                      Delete Warehouse
-                    </AlertDialogHeader>
-
-                    <AlertDialogBody>
-                      Are you sure you want to delete this data? This can't be
-                      undone.
-                    </AlertDialogBody>
-
-                    <AlertDialogFooter>
-                      <Button ref={cancelRef} onClick={onAlertClose}>
-                        Cancel
-                      </Button>
-                      <Button
-                        colorScheme="red"
-                        onClick={() => deleteButton(value.id)}
-                        ml={3}>
-                        Delete
-                      </Button>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialogOverlay>
-              </AlertDialog>
-            </> */}
           </Td>
         </Tr>
       );

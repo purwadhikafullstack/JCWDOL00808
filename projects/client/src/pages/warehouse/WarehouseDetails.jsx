@@ -3,6 +3,10 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
   Image,
   Stack,
   Heading,
@@ -168,6 +172,7 @@ const WarehouseDetails = (props) => {
       actions.resetForm();
     },
   });
+
   return (
     <Box w="50%">
       <Card maxW="lg" border="1px" borderColor="gray.300">
@@ -228,12 +233,68 @@ const WarehouseDetails = (props) => {
                     </AlertDialogContent>
                   </AlertDialogOverlay>
                 </AlertDialog>
-                <Modal isOpen={isEditOpen} onClose={onEditClose}>
-                  <ModalOverlay />
-                  <ModalContent>
-                    <ModalHeader>Edit warehouse data</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
+                <form onSubmit={formik.handleSubmit}>
+                  <Modal isOpen={isEditOpen} onClose={onEditClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Edit warehouse data</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                        <FormControl isInvalid={formik.errors.name && formik.touched.name}>
+                          <FormLabel>Name:</FormLabel>
+                          <Input id="name" placeholder="Warehouse name" value={formik.values.name} onChange={formik.handleChange} />
+                          <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={formik.errors.address && formik.touched.address}>
+                          <FormLabel>Address:</FormLabel>
+                          <InputGroup>
+                            <Input id="address" placeholder="Address" value={formik.values.address} onChange={formik.handleChange} />
+                          </InputGroup>
+                          <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={formik.errors.province && formik.touched.province}>
+                          <FormLabel>Province:</FormLabel>
+                          <Select
+                            id="province"
+                            placeholder="Select province"
+                            onChange={(e) => {
+                              console.log(e.target.value);
+                              formik.setFieldValue("province", e.target.value.split(",")[1]);
+                              onGetCity(e.target.value.split(",")[0]);
+                            }}
+                          >
+                            {provinceData.map((value) => {
+                              return (
+                                <option id="province" value={value.province_id + "," + value.province} key={value.province_id}>
+                                  {value.province}
+                                </option>
+                              );
+                            })}
+                          </Select>
+                          <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={formik.errors.city && formik.touched.city}>
+                          <FormLabel>City:</FormLabel>
+                          <Select id="city" placeholder="Select city" onChange={formik.handleChange}>
+                            {cityData.map((value) => {
+                              return (
+                                <option id="city" value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                                  {value.type} {value.city_name}
+                                </option>
+                              );
+                            })}
+                          </Select>
+                          <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={formik.errors.district && formik.touched.district}>
+                          <FormLabel>District (Kecamatan):</FormLabel>
+                          <InputGroup>
+                            <Input id="district" placeholder="District" value={formik.values.district} onChange={formik.handleChange} />
+                          </InputGroup>
+                          <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
+                        </FormControl>
+                      </ModalBody>
+                      {/* <ModalBody>
                       <div className="mt-4 text-muted fw-bold text-start">
                         <Text fontSize="md">Name</Text>
                         <Input placeholder={detailsName} size="md" onChange={(element) => setName(element.target.value)} />
@@ -280,24 +341,25 @@ const WarehouseDetails = (props) => {
                           <Input placeholder={detailsDistrict} onChange={(element) => setDistrict(element.target.value)}></Input>
                         </div>
                       </div>
-                    </ModalBody>
+                    </ModalBody> */}
 
-                    <ModalFooter>
-                      <Button mr={3} onClick={onEditClose}>
-                        Close
-                      </Button>
-                      <Button
-                        colorScheme="blue"
-                        onClick={() => {
-                          onEditClose();
-                          buttonEditWarehouse();
-                        }}
-                      >
-                        Edit warehouse data
-                      </Button>
-                    </ModalFooter>
-                  </ModalContent>
-                </Modal>
+                      <ModalFooter>
+                        <Button mr={3} onClick={onEditClose}>
+                          Close
+                        </Button>
+                        <Button
+                          colorScheme="blue"
+                          onClick={() => {
+                            onEditClose();
+                            buttonEditWarehouse();
+                          }}
+                        >
+                          Edit warehouse data
+                        </Button>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
+                </form>
               </ButtonGroup>
             </CardFooter>
           </>
