@@ -32,6 +32,7 @@ import {
   ModalCloseButton,
   Select,
   VStack,
+  Spinner,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
@@ -73,32 +74,24 @@ const WarehouseList = (props) => {
   const [city, setCity] = React.useState("");
   const [districtData, setDistrictData] = React.useState([]);
   const [district, setDistrict] = React.useState("");
+  const [loading, setLoading] = useState(true);
 
   const getWarehouseData = () => {
     Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
       .then((response) => {
-        console.log(response.data);
         setTotalPage(response.data.totalPage);
         setWarehouseData(response.data.rows);
+        setLoading(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
-
-  // const getSpecificWarehouse = () => {
-  //   Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${warehouseId}`)
-  //     .then((response) => {
-  //       setName(response.data.name);
-  //       setAddress(response.data.address);
-  //       setCity(response.data.city);
-  //       setProvince(response.data.province);
-  //       // setDetailsDistrict(response.data.district)
-  //     })
-  //     .catch((error) => console.log(error));
-  // };
 
   const showWarehouseData = () => {
     let count = 0;
@@ -240,27 +233,36 @@ const WarehouseList = (props) => {
             </Card>
           </Flex>
         </Box>
-        <Card>
-          <CardBody>
-            <TableContainer className="my-5">
-              <Table size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>No.</Th>
-                    <Th>Warehouse Name</Th>
-                    <Th>Address</Th>
-                    <Th>Province</Th>
-                    <Th>City</Th>
-                    <Th isNumeric className="mr-5">
-                      Action
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{showWarehouseData()}</Tbody>
-              </Table>
-            </TableContainer>
-          </CardBody>
-        </Card>
+        {loading ? (
+          <Spinner />
+        ) : warehouseData.length !== 0 && !loading ? (
+          <Card>
+            <CardBody>
+              <TableContainer className="my-5">
+                <Table size="sm">
+                  <Thead>
+                    <Tr>
+                      <Th>No.</Th>
+                      <Th>Warehouse Name</Th>
+                      <Th>Address</Th>
+                      <Th>Province</Th>
+                      <Th>City</Th>
+                      <Th isNumeric className="mr-5">
+                        Action
+                      </Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>{showWarehouseData()}</Tbody>
+                </Table>
+              </TableContainer>
+            </CardBody>
+          </Card>
+        ) : (
+          <Text as="b" fontSize="3xl">
+            Warehouse data is currently unavailable
+          </Text>
+        )}
+
         <div id="pagination" className="mt-5 flex items-center justify-center">
           <ReactPaginate
             previousLabel={"< Previous"}

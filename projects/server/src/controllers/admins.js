@@ -76,14 +76,11 @@ module.exports = {
 
       let data = await AdminsModel.findAll({ where: { id: admins_id } });
       if (data.length > 0) {
-      let update = await WarehouseModel.update(
-        { admins_id },
-        { where: { id } }
-      );
-      return res.status(200).send({
-        success: true,
-        message: "Admin has been assigned!",
-      });
+        let update = await WarehouseModel.update({ admins_id }, { where: { id } });
+        return res.status(200).send({
+          success: true,
+          message: "Admin has been assigned!",
+        });
       } else {
         return res.status(200).send({
           success: false,
@@ -95,7 +92,20 @@ module.exports = {
       return res.status(500).send(err);
     }
   },
-  cancelUserOrder: async (req, res) => {
-    
-  }
+  dashboardData: async (req, res) => {
+    try {
+      // total user
+      let users = await UsersModel.findAndCountAll();
+      // total order
+      // total warehouse
+      // total admin assigned
+      // total income?
+      res.status(200).send({
+        success: true,
+      });
+    } catch (error) {
+      console.log(err);
+      return res.status(500).send(err);
+    }
+  },
 };

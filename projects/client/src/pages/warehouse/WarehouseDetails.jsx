@@ -59,7 +59,7 @@ const WarehouseDetails = (props) => {
   const [detailsCity, setDetailsCity] = useState("");
   const [detailsProvince, setDetailsProvince] = useState("");
   const [detailsDistrict, setDetailsDistrict] = useState("");
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const toast = useToast();
   const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
@@ -74,19 +74,25 @@ const WarehouseDetails = (props) => {
   const getSpecificWarehouse = () => {
     Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${id}`)
       .then((response) => {
-        setName(response.data[0].name);
-        setAddress(response.data[0].address);
-        setCity(response.data[0].city);
-        setProvince(response.data[0].province);
-        setDistrict(response.data[0].district);
+        setTimeout(() => {
+          setName(response.data[0].name);
+          setAddress(response.data[0].address);
+          setCity(response.data[0].city);
+          setProvince(response.data[0].province);
+          setDistrict(response.data[0].district);
 
-        setDetailsName(response.data[0].name);
-        setDetailsAddress(response.data[0].address);
-        setDetailsCity(response.data[0].city);
-        setDetailsProvince(response.data[0].province);
-        setDetailsDistrict(response.data[0].district);
+          setDetailsName(response.data[0].name);
+          setDetailsAddress(response.data[0].address);
+          setDetailsCity(response.data[0].city);
+          setDetailsProvince(response.data[0].province);
+          setDetailsDistrict(response.data[0].district);
+          setIsLoading(false);
+        }, 1000);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setIsLoading(false);
+        console.log(error);
+      });
   };
 
   const getProvinceData = () => {
@@ -165,18 +171,17 @@ const WarehouseDetails = (props) => {
     }),
     onSubmit: (values, actions) => {
       buttonEditWarehouse(values);
-      // actions.resetForm();
       onEditClose();
     },
   });
 
   return (
-    <Box w="50%">
-      <Card maxW="lg" border="1px" borderColor="gray.300">
-        {props.loading ? (
-          <Spinner color="red.500" />
+    <div className="flex flex-col items-center w-full">
+      <Box w={[300, 400, 500]}>
+        {isLoading ? (
+          <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" mt="250px" />
         ) : (
-          <>
+          <Card maxW="lg" border="1px" borderColor="gray.300">
             <CardBody>
               <Image src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg" alt="Green double couch with wooden legs" borderRadius="lg" />
               <Stack mt="6" spacing="3">
@@ -199,7 +204,7 @@ const WarehouseDetails = (props) => {
                     onEditOpen();
                   }}
                 >
-                  Edit warehouse data
+                  Edit
                 </Button>
                 <Button
                   colorScheme="red"
@@ -207,7 +212,7 @@ const WarehouseDetails = (props) => {
                     onAlertOpen();
                   }}
                 >
-                  Delete warehouse data
+                  Delete
                 </Button>
                 <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
                   <AlertDialogOverlay>
@@ -291,54 +296,6 @@ const WarehouseDetails = (props) => {
                           <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
                         </FormControl>
                       </ModalBody>
-                      {/* <ModalBody>
-                      <div className="mt-4 text-muted fw-bold text-start">
-                        <Text fontSize="md">Name</Text>
-                        <Input placeholder={detailsName} size="md" onChange={(element) => setName(element.target.value)} />
-                        <div className="mt-4 text-muted fw-bold text-start">
-                          <Text fontSize="md">Address</Text>
-                          <InputGroup size="md">
-                            <Input pr="4.5rem" placeholder={detailsAddress} onChange={(element) => setAddress(element.target.value)} />
-                          </InputGroup>
-                        </div>
-                        <div className="mt-4 text-muted fw-bold text-start">
-                          <Text fontSize="md">Province</Text>
-                          <Select
-                            placeholder={detailsProvince}
-                            onChange={(element) => {
-                              setProvince(element.target.value.split(",")[1]);
-                              onGetCity(element.target.value.split(",")[0]);
-                            }}
-                          >
-                            {provinceData.map((value) => {
-                              return (
-                                <option value={value.province_id + "," + value.province} key={value.province_id}>
-                                  {value.province}
-                                </option>
-                              );
-                            })}
-                          </Select>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="mt-4 text-muted fw-bold text-start">
-                          <Text fontSize="md">City</Text>
-                          <Select className="text-muted" placeholder={detailsCity} value={city} onChange={(element) => setCity(element.target.value)}>
-                            {cityData.map((value) => {
-                              return (
-                                <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
-                                  {value.type} {value.city_name}
-                                </option>
-                              );
-                            })}
-                          </Select>
-                        </div>
-                        <div className="mt-4 text-muted fw-bold text-start">
-                          <Text fontSize="md">District (Kecamatan)</Text>
-                          <Input placeholder={detailsDistrict} onChange={(element) => setDistrict(element.target.value)}></Input>
-                        </div>
-                      </div>
-                    </ModalBody> */}
 
                       <ModalFooter>
                         <Button mr={3} onClick={onEditClose}>
@@ -353,10 +310,10 @@ const WarehouseDetails = (props) => {
                 </Modal>
               </ButtonGroup>
             </CardFooter>
-          </>
+          </Card>
         )}
-      </Card>
-    </Box>
+      </Box>
+    </div>
   );
 };
 

@@ -79,7 +79,7 @@ const AdminLogin = (props) => {
         <Box w={[300, 400, 500]} className="shadow p-5">
           <Stack align={"center"}>
             <Heading fontSize={"4xl"} textAlign={"center"} fontFamily={"Oswald"}>
-              Login
+              Login as admin
             </Heading>
           </Stack>
           <form onSubmit={formik.handleSubmit}>

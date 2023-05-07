@@ -1,4 +1,4 @@
-import { Select, Button, Card, CardHeader, CardBody, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Flex } from "@chakra-ui/react";
+import { Select, Button, Card, CardHeader, CardBody, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Flex, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Axios from "axios";
 import { API_url } from "../../helper";
@@ -15,6 +15,7 @@ const StockHistory = () => {
   const [productName, setProductName] = useState("");
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const { search } = useLocation();
   const id = search.split("=")[1];
@@ -42,9 +43,11 @@ const StockHistory = () => {
     })
       .then((response) => {
         setStockHistories(response.data.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.log(error.message);
+        setLoading(false);
       });
   };
 
@@ -84,94 +87,101 @@ const StockHistory = () => {
   const handlePageClick = (data) => {
     setPage(data.selected);
   };
+  console.log("SH", stockHistories.length);
 
   return (
     <>
-      <Flex flexDirection="column">
-        <Flex flexDirection="row" minWidth="fit-content" alignItems="center" gap="5" paddingX={5}>
-          <div style={{ position: "sticky", top: 50, left: 100, display: "inline-block" }}>
-            <Card>
-              <CardHeader>
-                <Heading size="md" textTransform="uppercase">
-                  Stock History Details
-                </Heading>
-                <Text fontSize="md" pt="4">
-                  See a detailed analysis of all your product stocks.
+      <Flex flexDirection="row">
+        <Flex flexDirection="column" minWidth="fit-content" alignItems="center" gap="5" paddingX={5}>
+          <div style={{ marginRight: "50px" }}>
+            <Box>
+              <Text fontSize="2xl" my={12}>
+                Product: {productName}
+              </Text>
+              {loading ? (
+                <Spinner />
+              ) : stockHistories.length !== 0 && !loading ? (
+                <TableContainer>
+                  <Table variant="striped" size="md">
+                    <Thead>
+                      <Tr>
+                        <Th>Date & Time</Th>
+                        <Th>Description</Th>
+                        <Th>Stock Out</Th>
+                        <Th>Stock In</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>{showStockHistories()}</Tbody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Text as="b" fontSize="3xl">
+                  Data unavailable
                 </Text>
-                <Text fontSize="md">View a history of your products over the last month.</Text>
-              </CardHeader>
-
-              <CardBody>
-                <Stack divider={<StackDivider />} spacing="4">
-                  {/* <Text fontSize="md">Product: {productName}</Text> */}
-                  <Box>
-                    <Text pt="2" fontSize="md">
-                      Filter data by:
-                    </Text>
-                    <Select placeholder="Stock in / stock out" onChange={(element) => setStockQuery(element.target.value)}>
-                      <option value="stockIn">Stock In</option>
-                      <option value="stockOut">Stock Out</option>
-                    </Select>
-
-                    <Text pt="2" fontSize="md">
-                      Warehouse location:
-                    </Text>
-
-                    <Select placeholder="Select warehouse" onChange={(element) => setWarehouseQuery(element.target.value)}>
-                      {warehouseData.map((value) => {
-                        return <option value={value.name}>{value.name}</option>;
-                      })}
-                    </Select>
-
-                    <Text pt="2" fontSize="md">
-                      Month:
-                    </Text>
-                    <Select placeholder="Select month" onChange={(element) => setMonth(element.target.value)}>
-                      <option value={1}>January</option>;<option value={2}>February</option>;<option value={3}>March</option>;<option value={4}>April</option>;<option value={5}>May</option>;<option value={6}>June</option>;
-                      <option value={7}>July</option>;<option value={8}>August</option>;<option value={9}>September</option>;<option value={10}>October</option>;<option value={11}>November</option>;<option value={12}>December</option>;
-                    </Select>
-                    {/* <Button className="mt-5" onClick={handleFilterButton}>
-                  View stock history
-                </Button> */}
-                  </Box>
-                </Stack>
-              </CardBody>
-            </Card>
-          </div>
-          <div style={{ marginRight: "80px" }}>
-            <Box rounded={"lg"}>
-              <Text fontSize="2xl">Product: {productName}</Text>
-              <TableContainer>
-                <Table variant="striped" size="md">
-                  <Thead>
-                    <Tr>
-                      <Th>Date & Time</Th>
-                      <Th>Description</Th>
-                      <Th>Stock Out</Th>
-                      <Th>Stock In</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>{showStockHistories()}</Tbody>
-                </Table>
-              </TableContainer>
+              )}
             </Box>
           </div>
+          <div id="pagination" className="mt-5 flex items-center justify-center">
+            <ReactPaginate
+              previousLabel={"< Previous"}
+              nextLabel={"Next >"}
+              breakLabel={"..."}
+              pageCount={totalPage}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={2}
+              onPageChange={handlePageClick}
+              containerClassName={"flex"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+              previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+              nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            />
+          </div>
         </Flex>
-        <div id="pagination" className="mt-5 flex items-center justify-center">
-          <ReactPaginate
-            previousLabel={"< Previous"}
-            nextLabel={"Next >"}
-            breakLabel={"..."}
-            pageCount={totalPage}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={2}
-            onPageChange={handlePageClick}
-            containerClassName={"flex"}
-            pageClassName={"page-item"}
-            pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-            previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-            nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          />
+        <div style={{ position: "sticky", top: 100, left: 100, display: "inline-block" }}>
+          <Card mt="12" mr="12">
+            <CardHeader>
+              <Heading size="md" textTransform="uppercase">
+                Stock History Details
+              </Heading>
+              <Text fontSize="md" pt="4">
+                See a detailed analysis of all your product stocks.
+              </Text>
+              <Text fontSize="md">View a history of your products over the last month.</Text>
+            </CardHeader>
+
+            <CardBody>
+              <Stack divider={<StackDivider />} spacing="4">
+                <Box>
+                  <Text pt="2" fontSize="md">
+                    Filter data by:
+                  </Text>
+                  <Select placeholder="Stock in / stock out" onChange={(element) => setStockQuery(element.target.value)}>
+                    <option value="stockIn">Stock In</option>
+                    <option value="stockOut">Stock Out</option>
+                  </Select>
+
+                  <Text pt="2" fontSize="md">
+                    Warehouse location:
+                  </Text>
+
+                  <Select placeholder="Select warehouse" onChange={(element) => setWarehouseQuery(element.target.value)}>
+                    {warehouseData.map((value) => {
+                      return <option value={value.name}>{value.name}</option>;
+                    })}
+                  </Select>
+
+                  <Text pt="2" fontSize="md">
+                    Month:
+                  </Text>
+                  <Select placeholder="Select month" onChange={(element) => setMonth(element.target.value)}>
+                    <option value={1}>January</option>;<option value={2}>February</option>;<option value={3}>March</option>;<option value={4}>April</option>;<option value={5}>May</option>;<option value={6}>June</option>;
+                    <option value={7}>July</option>;<option value={8}>August</option>;<option value={9}>September</option>;<option value={10}>October</option>;<option value={11}>November</option>;<option value={12}>December</option>;
+                  </Select>
+                </Box>
+              </Stack>
+            </CardBody>
+          </Card>
         </div>
       </Flex>
     </>

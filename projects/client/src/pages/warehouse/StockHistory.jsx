@@ -118,8 +118,34 @@ const History = () => {
   return (
     <>
       <Flex flexDirection="column">
-        <Flex px="0">
-          <Box id="sort filter and search" mx="100" mt="100">
+        <Box mt="10">
+          <Text fontSize="3xl" as="b">
+            Stock History
+          </Text>
+          <Text>Monitor and manage product availability to track your warehouses' performance. View history of all products.</Text>
+        </Box>
+        <Flex>
+          {stockHistories.length == 0 ? (
+            <Spinner color="red.500" />
+          ) : (
+            <Box id="tabel stock histories" mt="10" mb="14">
+              <TableContainer bg="white" border="1px" borderColor="gray.200">
+                <Table variant="striped" size="md">
+                  <Thead>
+                    <Tr>
+                      <Th>Product Name</Th>
+                      <Th>Stock In</Th>
+                      <Th>Stock Out</Th>
+                      <Th>Latest Stock</Th>
+                      {role == 1 ? <Th isNumeric>Action</Th> : null}
+                    </Tr>
+                  </Thead>
+                  <Tbody>{showStockHistories()}</Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
+          <Box id="sort filter and search" mx="50" mt="100">
             <Card maxW="xs" border="1px" borderColor="gray.200">
               <CardBody>
                 <VStack>
@@ -171,28 +197,8 @@ const History = () => {
               </CardBody>
             </Card>
           </Box>
-          {stockHistories.length == 0 ? (
-            <Spinner color="red.500" />
-          ) : (
-            <Box id="tabel stock histories" mr="30" my="100">
-              <TableContainer bg="white" border="1px" borderColor="gray.200">
-                <Table variant="striped" size="md">
-                  <Thead>
-                    <Tr>
-                      <Th>Product Name</Th>
-                      <Th>Stock In</Th>
-                      <Th>Stock Out</Th>
-                      <Th>Latest Stock</Th>
-                      {role == 1 ? <Th isNumeric>Action</Th> : null}
-                    </Tr>
-                  </Thead>
-                  <Tbody>{showStockHistories()}</Tbody>
-                </Table>
-              </TableContainer>
-            </Box>
-          )}
         </Flex>
-        <Box id="pagination" className="mt-5 flex items-center justify-center">
+        <Box id="pagination" className="flex items-center justify-center">
           <ReactPaginate
             previousLabel={"< Previous"}
             nextLabel={"Next >"}
