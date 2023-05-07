@@ -69,13 +69,40 @@ module.exports = {
         where: { users_id, products_id },
       });
 
-      if (findProduct) {
-        await carts.update(
+      const findAvailableStock = await stocks.findOne({
+        attributes: [
+          [
+            sequelize.literal("(SUM(stocks.stock) - product.booked_stock)"),
+            "availableStock",
+          ],
+        ],
+        include: [
           {
-            quantity: sequelize.literal(`quantity + ${quantity}`),
+            model: products,
+            as: "product",
+            attributes: [],
+            where: {
+              id: products_id,
+              is_deleted: 0,
+            },
           },
-          { where: { id: findProduct.dataValues.id } }
-        );
+        ],
+      });
+
+      if (findProduct) {
+        if (
+          findProduct.dataValues.quantity + quantity >
+          findAvailableStock.dataValues.availableStock
+        ) {
+          throw new Error("Product in your cart exceeds available stocks");
+        } else {
+          await carts.update(
+            {
+              quantity: sequelize.literal(`quantity + ${quantity}`),
+            },
+            { where: { id: findProduct.dataValues.id } }
+          );
+        }
       } else {
         await carts.create({ quantity, users_id, products_id });
       }
@@ -102,7 +129,7 @@ module.exports = {
               FROM stocks
               WHERE
                 stocks.products_id = carts.products_id
-                AND stocks.is_deleted = 0                    
+                AND stocks.is_deleted = 0
             ) - product.booked_stock`),
                   "availableStock",
                 ],
