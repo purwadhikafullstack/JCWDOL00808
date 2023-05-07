@@ -579,11 +579,6 @@ function ListOrders() {
                           >
                             Cancel Order
                           </Button>
-                          <SendOrderModal
-                            orders_id={allData.id}
-                            orders_status={allData.status}
-                            func={getOrders}
-                          />
                         </Flex>
                         <AlertDialog
                           isOpen={isAlertOpen}
@@ -632,7 +627,11 @@ function ListOrders() {
                     width="200"
                   />
                 )}
-                <Text mb="4"></Text>
+                <SendOrderModal
+                  orders_id={allData.id}
+                  orders_status={allData.status}
+                  func={getOrders}
+                />
               </Box>
             </Box>
           </ModalBody>
