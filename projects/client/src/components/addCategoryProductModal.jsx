@@ -40,7 +40,7 @@ const AddCategoryProductModal = ({ isOpen, onClose, onCategoryUpdate }) => {
 
   const registerCategory = async (values) => {
     try {
-      await axios.post("http://localhost:8000/productcategory/addcategoryproduct", values);
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/productcategory/addcategoryproduct`, values);
       toast({
         title: `Add Category Success`,
         status: "success",

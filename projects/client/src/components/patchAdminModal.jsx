@@ -59,7 +59,7 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8000/admin/getAdminById/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/admin/getAdminById/${id}`);
       const adminData = response.data;
       console.log(response);
       formik.setValues({
@@ -103,7 +103,7 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
         role: values.role,
       };
 
-      await axios.patch(`http://localhost:8000/admin/patchAdmin/${id}`, data);
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/admin/patchAdmin/${id}`, data);
       onClose();
       formik.resetForm();
       //   setImage("");

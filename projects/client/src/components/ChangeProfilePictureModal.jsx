@@ -46,7 +46,7 @@ const ChangeImageModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
         formData.append("profile_picture", values.profile_picture[0]);
       }
 
-      await axios.patch(`http://localhost:8000/admin/patchAdminImage/${adminId}`, formData, {
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/admin/patchAdminImage/${adminId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

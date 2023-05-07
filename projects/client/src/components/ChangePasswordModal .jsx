@@ -23,7 +23,7 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
 
       // Handle password change
       try {
-        const response = await axios.patch(`http://localhost:8000/admin/changePassword/${adminId}`, {
+        const response = await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/admin/changePassword/${adminId}`, {
           password: values.password,
         });
 

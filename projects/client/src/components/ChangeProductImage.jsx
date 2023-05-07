@@ -46,7 +46,7 @@ const ChangeProductImage = ({ isOpen, onClose, categoryId, onProductUpdate }) =>
         formData.append("imageUrl", values.imageUrl[0]);
       }
 
-      await axios.patch(`http://localhost:8000/product/patchproductImage/${categoryId}`, formData, {
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/product/patchproductImage/${categoryId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

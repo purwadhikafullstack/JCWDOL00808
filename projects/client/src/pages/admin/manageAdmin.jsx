@@ -4,8 +4,33 @@ import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import { API_url } from "../../helper";
 import { useNavigate } from "react-router-dom";
-import { Flex, Box, Menu, MenuButton, MenuList, MenuItem, Icon, Text, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, Button, useToast } from "@chakra-ui/react";
-import { FaSort, FaFilter } from "react-icons/fa";
+import {
+  Flex,
+  Box,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Icon,
+  Text,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  Button,
+  useToast,
+  Input,
+  Table,
+  Tr,
+  Td,
+  Th,
+  Tbody,
+  TableCaption,
+  Thead,
+} from "@chakra-ui/react";
+import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import RegisterAdminModal from "../../components/addAdminModal";
 import PatchAdminModal from "../../components/patchAdminModal";
 
@@ -34,7 +59,7 @@ const ManageAdmin = () => {
   }, [page, keyword, sort, order, roleAdmin]);
 
   const getUsers = async () => {
-    const response = await axios.get(`http://localhost:8000/admin/getAdmin?search_query=${keyword}&page=${page}&limit=${limit}&role_admin=${roleAdmin}`, {
+    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/admin/getAdmin?search_query=${keyword}&page=${page}&limit=${limit}&role_admin=${roleAdmin}`, {
       params: {
         sort,
         order,
@@ -52,7 +77,7 @@ const ManageAdmin = () => {
 
   const deleteAdmin = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/admin/deleteAdmin/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/admin/deleteAdmin/${id}`);
       getUsers();
       toast({
         title: `Admin is deleted`,
@@ -138,161 +163,153 @@ const ManageAdmin = () => {
   const navigate = useNavigate();
 
   return (
-    <div class="container mx-auto mt-5">
-      <div class="grid grid-cols-5 md:grid-cols-1">
-        <div class="mx-4">
-          <form onSubmit={searchData}>
-            <div class="flex justify-center my-2">
-              <div class="relative mr-2">
-                <input type="text" class="h-10 w-96 pl-3 pr-8 rounded-lg z-0 border-2 focus:shadow focus:outline-none" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search here..." />
-                <div class=" top-0 right-0 mt-3 mr-2">
-                  <button type="submit" class="bg-dark-purple hover:bg-blue-700 text-white font-bold  py-2 px-4 rounded">
-                    Search
+    <div className="container mx-auto px-4 mb-3">
+      {/* fitur search */}
+
+      <form onSubmit={searchData}>
+        <Flex mt="2" size="sm">
+          <Input type="text" placeholder="Search" mr={2} width="30%" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Button colorScheme="blue" type="submit">
+            Search
+          </Button>
+        </Flex>
+      </form>
+
+      {/* fitur untuk filter, sort dan add Admin */}
+      <Flex alignItems="center" mt="2">
+        <Box mr={2}>
+          <Icon as={FaSort} />
+        </Box>
+        <Text fontWeight="bold">Sort by:</Text>
+        <Menu>
+          <MenuButton ml={2} variant="ghost">
+            {sortText}
+          </MenuButton>
+          <MenuList>
+            <MenuItem value={sort} onClick={() => handleSort("full_name")}>
+              Name
+            </MenuItem>
+            <MenuItem value={sort} onClick={() => handleSort("email")}>
+              Email
+            </MenuItem>
+          </MenuList>
+        </Menu>
+        <Box mr={2} ml="4">
+          <Icon as={FaFilter} />
+        </Box>
+        <Text fontWeight="bold">Order:</Text>
+        <Menu>
+          <MenuButton ml={2} variant="ghost">
+            {order}
+          </MenuButton>
+          <MenuList>
+            <MenuItem value="ASC" onClick={(e) => handleOrder(e)}>
+              Ascending
+            </MenuItem>
+            <MenuItem value="DESC" onClick={(e) => handleOrder(e)}>
+              Descending
+            </MenuItem>
+          </MenuList>
+        </Menu>
+        <Box mr={2} ml="4">
+          <Icon as={FaFilter} />
+        </Box>
+        <Text fontWeight="bold">Role Admin :</Text>
+        <Menu>
+          <MenuButton ml={2} variant="ghost">
+            {roleAdmin === 1 ? "Admin" : roleAdmin === 2 ? "Admin Warehouse" : "All"}
+          </MenuButton>
+
+          <MenuList>
+            <MenuItem onClick={() => handleRoleAdmin("")}>All</MenuItem>
+            <MenuItem onClick={() => handleRoleAdmin(1)}>Admin</MenuItem>
+            <MenuItem onClick={() => handleRoleAdmin(2)}>Admin Warehouse</MenuItem>
+          </MenuList>
+        </Menu>
+
+        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />} onClick={handleFirstModalOpen}>
+          Add Admin
+        </Button>
+        <RegisterAdminModal isOpen={isFirstModalOpen} onClose={handleModalClose} onAdminPatch={handleAdminUpdate} />
+      </Flex>
+
+      {/* tabel list Admin */}
+      <Table variant="striped" size="sm" mt="2" textAlign="center" border="1px solid gray">
+        <TableCaption mb="2">
+          Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
+        </TableCaption>
+        <Thead>
+          <Tr>
+            <Th>No</Th>
+            <Th>Name</Th>
+            <Th>Email</Th>
+            <Th>Phone Number</Th>
+            <Th>Profile Picture</Th>
+            <Th>Role Admin</Th>
+            <Th style={{ textAlign: "center" }}>Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {users.map((user, index) => (
+            <Tr key={user.id} align="center">
+              <Td fontSize="sm" fontWeight="medium">
+                {index + 1 + page * limit}
+              </Td>
+              <Td fontSize="sm" fontWeight="medium">
+                {user.full_name}
+              </Td>
+              <Td fontSize="sm">{user.email}</Td>
+              <Td fontSize="sm">{user.phone_number}</Td>
+              <Td fontSize="sm">
+                <img src={`${process.env.REACT_APP_API_BASE_URL}/${user.profile_picture}`} alt="Admin" width="50" />
+              </Td>
+              <Td fontSize="sm">{user.role == 1 ? "Admin" : "Admin Warehouse"}</Td>
+              <Td>
+                <Flex justifyContent="space-between">
+                  {/* button patch admin */}
+                  <button
+                    class="bg-teal-600 hover:bg-teal-800 text-white font-bold py-2 px-4 rounded"
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      openPatchAdminModal(user.id);
+                    }}
+                  >
+                    Edit
                   </button>
-                </div>
-              </div>
-            </div>
-          </form>
+                  {/* button assign admin */}
+                  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate(`/admin/assign/${user.id}`)}>
+                    Assign
+                  </button>
+                  {/* button delete admin */}
+                  <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onMouseDown={() => openDeleteDialog(user.id)}>
+                    Delete
+                  </button>
+                </Flex>
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
 
-          <div className="flex items-center justify-between mb-4 md:mb-0">
-            {/* fitur sort and order */}
-            <Flex alignItems="center" mt="2">
-              <Box mr={2}>
-                <Icon as={FaSort} />
-              </Box>
-              <Text fontWeight="bold">Sort by:</Text>
-              <Menu>
-                <MenuButton ml={2} variant="ghost">
-                  {sortText}
-                </MenuButton>
-                <MenuList>
-                  <MenuItem value={sort} onClick={() => handleSort("full_name")}>
-                    Name
-                  </MenuItem>
-                  <MenuItem value={sort} onClick={() => handleSort("email")}>
-                    Email
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-              <Box mr={2} ml="4">
-                <Icon as={FaFilter} />
-              </Box>
-              <Text fontWeight="bold">Order:</Text>
-              <Menu>
-                <MenuButton ml={2} variant="ghost">
-                  {order}
-                </MenuButton>
-                <MenuList>
-                  <MenuItem value="ASC" onClick={(e) => handleOrder(e)}>
-                    Ascending
-                  </MenuItem>
-                  <MenuItem value="DESC" onClick={(e) => handleOrder(e)}>
-                    Descending
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-              <Box mr={2} ml="4">
-                <Icon as={FaFilter} />
-              </Box>
-              <Text fontWeight="bold">Role Admin :</Text>
-              <Menu>
-                <MenuButton ml={2} variant="ghost">
-                  {roleAdmin === 1 ? "Admin" : roleAdmin === 2 ? "Admin Warehouse" : "All"}
-                </MenuButton>
+      {/* Modal Patch Admin */}
+      <PatchAdminModal adminId={selectedAdminId} isOpen={isSecondModalOpen} onClose={handleModalClose} onAdminPatch={handleAdminUpdate} />
+      {/* Batas Modal Patch Admin */}
 
-                <MenuList>
-                  <MenuItem onClick={() => handleRoleAdmin("")}>All</MenuItem>
-                  <MenuItem onClick={() => handleRoleAdmin(1)}>Admin</MenuItem>
-                  <MenuItem onClick={() => handleRoleAdmin(2)}>Admin Warehouse</MenuItem>
-                </MenuList>
-              </Menu>
-            </Flex>
+      <nav class="flex items-center justify-center mt-4 mb-10" key={rows} role="navigation" aria-label="pagination">
+        <ReactPaginate
+          previousLabel={"< Prev"}
+          nextLabel={"Next >"}
+          pageCount={Math.min(10, pages)}
+          onPageChange={changePage}
+          containerClassName={"flex"}
+          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
+          disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
+        />
+      </nav>
 
-            <div className="flex items-center ml-auto">
-              {/* <Link to={"/admin/registeradmin"}> */}
-              <button
-                onClick={() => {
-                  handleFirstModalOpen();
-                }}
-                className="bg-dark-purple hover:bg-blue-700 text-white font-bold p-2 ml-6 rounded"
-              >
-                Add Admin
-              </button>
-              {/* </Link> */}
-              <RegisterAdminModal isOpen={isFirstModalOpen} onClose={handleModalClose} onAdminPatch={handleAdminUpdate} />
-            </div>
-          </div>
-          <form>
-            <table class=" w-full border-collapse border border-gray-300 mt-2">
-              <thead>
-                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                  <th class="py-3 px-3 text-left">No</th>
-                  <th class="py-3 px-6 text-left">Name</th>
-                  <th class="py-3 px-6 text-left">Email</th>
-                  <th class="py-3 px-6 text-left">Phone Number</th>
-                  <th class="py-3 px-6 text-left">Profile Picture</th>
-                  <th class="py-3 px-6 text-left">Role Admin</th>
-                  <th class="py-3 px-4 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody class="text-gray-600 text-sm font-light">
-                {users.map((user, index) => (
-                  <tr key={user.id}>
-                    <td class="py-3 px-3 text-left">{index + 1 + page * limit}</td>
-                    <td class="py-3 px-6 text-left">{user.full_name}</td>
-                    <td class="py-3 px-6 text-left">{user.email}</td>
-                    <td class="py-3 px-6 text-left">{user.phone_number}</td>
-                    <td class="py-3 px-6 text-left">
-                      <img src={`http://localhost:8000/${user.profile_picture}`} alt="Admin" width="50" />
-                    </td>
-                    <td class="py-3 px-6 text-left">{user.role == 1 ? "Admin" : "Admin Warehouse"}</td>
-                    <td class="py-3 px-4 text-left flex">
-                      {/* button patch admin */}
-                      <button
-                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          openPatchAdminModal(user.id);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      {/* button assign admin */}
-                      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate(`/admin/assign/${user.id}`)}>
-                        Assign
-                      </button>
-                      {/* button delete admin */}
-                      <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onMouseDown={() => openDeleteDialog(user.id)}>
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </form>
-          {/* Modal Patch Admin */}
-          <PatchAdminModal adminId={selectedAdminId} isOpen={isSecondModalOpen} onClose={handleModalClose} onAdminPatch={handleAdminUpdate} />
-          {/* Batas Modal Patch Admin */}
-          <p class="my-4">
-            Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
-          </p>
-          <nav class="flex items-center justify-center mt-4 mb-10" key={rows} role="navigation" aria-label="pagination">
-            <ReactPaginate
-              previousLabel={"< Prev"}
-              nextLabel={"Next >"}
-              pageCount={Math.min(10, pages)}
-              onPageChange={changePage}
-              containerClassName={"flex"}
-              pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-              previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-              nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-              activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
-              disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
-            />
-          </nav>
-        </div>
-      </div>
       {/* Modal to dialog alert delete Admin */}
       <AlertDialog isOpen={isDeleteDialogOpen} onClose={closeDeleteDialog} leastDestructiveRef={cancelRef} motionPreset="slideInBottom">
         <AlertDialogOverlay />

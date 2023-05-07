@@ -1,4 +1,4 @@
-import { Flex, Box, Menu, MenuButton, MenuList, MenuItem, Icon, Text } from "@chakra-ui/react";
+import { Flex, Box, Menu, MenuButton, MenuList, MenuItem, Icon, Text, Input, Button, Table, Tr, Td, Th, Tbody, TableCaption, Thead } from "@chakra-ui/react";
 import { FaSort, FaFilter } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -22,7 +22,7 @@ const UserList = () => {
   }, [page, keyword, sort, order, verificationStatus]);
 
   const getUsers = async () => {
-    const response = await axios.get(`http://localhost:8000/admin/getAdminUserList?search_query=${keyword}&page=${page}&limit=${limit}&verification_status=${verificationStatus}`, {
+    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/admin/getAdminUserList?search_query=${keyword}&page=${page}&limit=${limit}&verification_status=${verificationStatus}`, {
       params: {
         sort,
         order,
@@ -82,126 +82,124 @@ const UserList = () => {
   };
 
   return (
-    <div class="container mx-auto mt-5 ">
-      <div class="grid grid-cols-5 md:grid-cols-1">
-        <div class="mx-4">
-          <form onSubmit={searchData}>
-            <div class="flex justify-center my-2">
-              <div class="relative mr-2">
-                <input type="text" class="h-10 w-96 pl-3 pr-8 rounded-lg z-0 border-2 focus:shadow focus:outline-none" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search here..." />
-                <div class=" top-0 right-0 mt-3 mr-2">
-                  <button type="submit" class="bg-dark-purple hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Search
-                  </button>
-                </div>
-              </div>
-            </div>
-          </form>
+    <div className="container mx-auto px-4 mb-3">
+      {/* fitur search */}
+      <form onSubmit={searchData}>
+        <Flex mt="2" size="sm">
+          <Input type="text" placeholder="Search" mr={2} width="30%" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Button colorScheme="blue" type="submit">
+            Search
+          </Button>
+        </Flex>
+      </form>
 
-          {/* fitur sort and order */}
-          <Flex alignItems="center" mt="2">
-            <Box mr={2}>
-              <Icon as={FaSort} />
-            </Box>
-            <Text fontWeight="bold">Sort by:</Text>
-            <Menu>
-              <MenuButton ml={2} variant="ghost">
-                {sortText}
-              </MenuButton>
-              <MenuList>
-                <MenuItem value={sort} onClick={() => handleSort("full_name")}>
-                  Name
-                </MenuItem>
-                <MenuItem value={sort} onClick={() => handleSort("email")}>
-                  Email
-                </MenuItem>
-                <MenuItem value={sort} onClick={() => handleSort("updatedAt")}>
-                  Date
-                </MenuItem>
-              </MenuList>
-            </Menu>
-            <Box mr={2} ml="4">
-              <Icon as={FaFilter} />
-            </Box>
-            <Text fontWeight="bold">Order:</Text>
-            <Menu>
-              <MenuButton ml={2} variant="ghost">
-                {order}
-              </MenuButton>
-              <MenuList>
-                <MenuItem value={order} onClick={() => handleOrder("ASC")}>
-                  Ascending
-                </MenuItem>
-                <MenuItem value={order} onClick={() => handleOrder("DESC")}>
-                  Descending
-                </MenuItem>
-              </MenuList>
-            </Menu>
-            <Box mr={2} ml="4">
-              <Icon as={FaFilter} />
-            </Box>
-            <Text fontWeight="bold">Verification Status:</Text>
-            <Menu>
-              <MenuButton ml={2} variant="ghost">
-                {verificationStatus === 1 ? "Verified" : verificationStatus === 0 ? "Not Verified" : "All"}
-              </MenuButton>
+      {/* fitur sort and order */}
+      <Flex alignItems="center" mt="2">
+        <Box mr={2}>
+          <Icon as={FaSort} />
+        </Box>
+        <Text fontWeight="bold">Sort by:</Text>
+        <Menu>
+          <MenuButton ml={2} variant="ghost">
+            {sortText}
+          </MenuButton>
+          <MenuList>
+            <MenuItem value={sort} onClick={() => handleSort("full_name")}>
+              Name
+            </MenuItem>
+            <MenuItem value={sort} onClick={() => handleSort("email")}>
+              Email
+            </MenuItem>
+            <MenuItem value={sort} onClick={() => handleSort("updatedAt")}>
+              Date
+            </MenuItem>
+          </MenuList>
+        </Menu>
+        <Box mr={2} ml="4">
+          <Icon as={FaFilter} />
+        </Box>
+        <Text fontWeight="bold">Order:</Text>
+        <Menu>
+          <MenuButton ml={2} variant="ghost">
+            {order}
+          </MenuButton>
+          <MenuList>
+            <MenuItem value={order} onClick={() => handleOrder("ASC")}>
+              Ascending
+            </MenuItem>
+            <MenuItem value={order} onClick={() => handleOrder("DESC")}>
+              Descending
+            </MenuItem>
+          </MenuList>
+        </Menu>
+        <Box mr={2} ml="4">
+          <Icon as={FaFilter} />
+        </Box>
+        <Text fontWeight="bold">Verification Status:</Text>
+        <Menu>
+          <MenuButton ml={2} variant="ghost">
+            {verificationStatus === 1 ? "Verified" : verificationStatus === 0 ? "Not Verified" : "All"}
+          </MenuButton>
 
-              <MenuList>
-                <MenuItem onClick={() => handleVerificationStatus("")}>All</MenuItem>
-                <MenuItem onClick={() => handleVerificationStatus(1)}>Verified</MenuItem>
-                <MenuItem onClick={() => handleVerificationStatus(0)}>Not Verified</MenuItem>
-              </MenuList>
-            </Menu>
-          </Flex>
+          <MenuList>
+            <MenuItem onClick={() => handleVerificationStatus("")}>All</MenuItem>
+            <MenuItem onClick={() => handleVerificationStatus(1)}>Verified</MenuItem>
+            <MenuItem onClick={() => handleVerificationStatus(0)}>Not Verified</MenuItem>
+          </MenuList>
+        </Menu>
+      </Flex>
 
-          {/* tabel list user */}
-          <table class=" w-full border-collapse border border-gray-300 mt-2">
-            <thead>
-              <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                <th class="py-3 px-6 text-left">No</th>
-                <th class="py-3 px-6 text-left">Name</th>
-                <th class="py-3 px-6 text-left">Email</th>
-                <th class="py-3 px-6 text-left">Phone Number</th>
-                <th class="py-3 px-6 text-left">Date</th>
-                <th class="py-3 px-6 text-left">Profile Picture</th>
-                <th class="py-3 px-6 text-left">Verification Status</th>
-              </tr>
-            </thead>
-            <tbody class="text-gray-600 text-sm font-light">
-              {users.map((user, index) => (
-                <tr key={user.id}>
-                  <td class="py-3 px-6 text-left">{index + 1 + page * limit}</td>
-                  <td class="py-3 px-6 text-left">{user.full_name}</td>
-                  <td class="py-3 px-6 text-left">{user.email}</td>
-                  <td class="py-3 px-6 text-left">{user.phone_number}</td>
-                  <td class="py-3 px-6 text-left">{formatDate(user.updatedAt)}</td>
-                  <td class="py-3 px-6 text-left">
-                    <img src={`http://localhost:8000/${user.profile_picture}`} alt="user" width="50" />
-                  </td>
-                  <td class="py-3 px-6 text-left">{user.is_verified ? "Verified" : "Not Verified"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p class="my-4">
-            Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
-          </p>
-          <nav class="flex items-center justify-center mt-4 mb-10" key={rows} role="navigation" aria-label="pagination">
-            <ReactPaginate
-              previousLabel={"< Prev"}
-              nextLabel={"Next >"}
-              pageCount={Math.min(10, pages)}
-              onPageChange={changePage}
-              containerClassName={"flex"}
-              pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-              previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-              nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-              activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
-              disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
-            />
-          </nav>
-        </div>
-      </div>
+      {/* tabel list user */}
+      <Table variant="striped" size="sm" mt="2" textAlign="center" border="1px solid gray">
+        <TableCaption mb="2">
+          Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
+        </TableCaption>
+        <Thead>
+          <Tr>
+            <Th>No</Th>
+            <Th>Name</Th>
+            <Th>Email</Th>
+            <Th>Phone Number</Th>
+            <Th>Date</Th>
+            <Th>Profile Picture</Th>
+            <Th>Verification Status</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {users.map((user, index) => (
+            <Tr key={user.id} align="center">
+              <Td fontSize="sm" fontWeight="medium">
+                {index + 1 + page * limit}
+              </Td>
+              <Td fontSize="sm" fontWeight="medium">
+                {user.full_name}
+              </Td>
+              <Td fontSize="sm">{user.email}</Td>
+              <Td fontSize="sm">{user.phone_number}</Td>
+              <Td fontSize="sm">{formatDate(user.updatedAt)}</Td>
+              <Td fontSize="sm">
+                <img src={`${process.env.REACT_APP_API_BASE_URL}/${user.profile_picture}`} alt="user" width="50" />
+              </Td>
+              <Td>{user.is_verified ? "Verified" : "Not Verified"}</Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+
+      <nav class="flex items-center justify-center mt-4 mb-10" key={rows} role="navigation" aria-label="pagination">
+        <ReactPaginate
+          previousLabel={"< Prev"}
+          nextLabel={"Next >"}
+          pageCount={Math.min(10, pages)}
+          onPageChange={changePage}
+          containerClassName={"flex"}
+          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
+          disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
+        />
+      </nav>
     </div>
   );
 };

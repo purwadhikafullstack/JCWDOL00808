@@ -91,7 +91,7 @@ const PatchProductModal = ({ isOpen, onClose, categoryId, onProductUpdate }) => 
           weight: values.weight,
         };
 
-        await axios.patch(`http://localhost:8000/product/patchproduct/${id}`, data);
+        await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/product/patchproduct/${id}`, data);
         setIsSubmitting(false);
         formik.resetForm();
         // setImage("");
@@ -123,7 +123,7 @@ const PatchProductModal = ({ isOpen, onClose, categoryId, onProductUpdate }) => 
   }, [categoryId]);
 
   const fetchCategories = async () => {
-    const response = await axios.get(`http://localhost:8000/productcategory/listproductcategory`);
+    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`);
     setCategories(response.data.result);
   };
 
@@ -135,7 +135,7 @@ const PatchProductModal = ({ isOpen, onClose, categoryId, onProductUpdate }) => 
 
     try {
       setIsLoading(true); // set loading state
-      const response = await axios.get(`http://localhost:8000/product/productId/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/productId/${id}`);
       const productData = response.data;
       //   console.log(response.data);
       formik.setValues({

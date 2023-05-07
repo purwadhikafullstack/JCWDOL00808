@@ -98,7 +98,7 @@ function ListOrders() {
 
   const getOrders = async (userRole) => {
     try {
-      const response = await axios.get(`http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}&role=${userRole}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/orders/get-order?search=${keyword}&page=${page}&limit=${limit}&role=${userRole}`, {
         params: {
           sort,
           order,
@@ -122,11 +122,11 @@ function ListOrders() {
 
   const fetchOrderDetailsAndOpenModal = async (orderId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/orders/get-order-details/${orderId}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/orders/get-order-details/${orderId}`, {
         headers: { Authorization: token },
       });
       setOrderDetails(response.data);
-      const responses = await axios.get(`http://localhost:8000/orders/allorders-data/${orderId}`, {
+      const responses = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/orders/allorders-data/${orderId}`, {
         headers: { Authorization: token },
       });
       getAllData(responses.data);
@@ -184,7 +184,7 @@ function ListOrders() {
 
   const handleAcceptPayment = async (id) => {
     try {
-      await axios.post(`http://localhost:8000/admin/acceptPayment/${id}`, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/admin/acceptPayment/${id}`, {
         headers: { Authorization: token },
       });
       closeConfirmAcceptModal();
@@ -210,7 +210,7 @@ function ListOrders() {
 
   const handleRejectPayment = async (id) => {
     try {
-      await axios.post(`http://localhost:8000/admin/rejectPayment/${id}`, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/admin/rejectPayment/${id}`, {
         headers: { Authorization: token },
       });
       closeConfirmRejectModal();
@@ -452,7 +452,7 @@ function ListOrders() {
                       <Td>{formatRupiah(item.quantity * item.product_price)}</Td>
                       <Td>{formatWeight(item.product_weight)}</Td>
                       <Td>
-                        <img src={`http://localhost:8000/${item.imageUrl}`} alt="Product" width="50" />
+                        <img src={`${process.env.REACT_APP_API_BASE_URL}/${item.imageUrl}`} alt="Product" width="50" />
                       </Td>
                       <Td>{item.products_id}</Td>
                     </Tr>
@@ -534,7 +534,7 @@ function ListOrders() {
                     )}
                   </>
                 ) : (
-                  <img src={`http://localhost:8000/${allData.payment_proof}`} alt="Payment Proof" width="200" />
+                  <img src={`${process.env.REACT_APP_API_BASE_URL}/${allData.payment_proof}`} alt="Payment Proof" width="200" />
                 )}
                 <Text mb="4"></Text>
               </Box>

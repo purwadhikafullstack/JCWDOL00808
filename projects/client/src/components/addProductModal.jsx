@@ -73,7 +73,7 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
       formData.append("product_categories_id", values.product_categories_id);
 
       try {
-        await axios.post("http://localhost:8000/product/addproduct", formData, {
+        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/product/addproduct`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -106,7 +106,7 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
   }, []);
 
   const fetchCategories = async () => {
-    const response = await axios.get(`http://localhost:8000/productcategory/listproductcategory`);
+    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`);
     setCategories(response.data.result);
   };
 

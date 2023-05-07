@@ -63,7 +63,7 @@ const RegisterAdminModal = ({ isOpen, onClose, onAdminPatch }) => {
       formData.append("role", values.role);
       formData.append("profile_picture", values.profile_picture[0]);
 
-      await axios.post("http://localhost:8000/admin/registerAdmin", formData, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/admin/registerAdmin`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
