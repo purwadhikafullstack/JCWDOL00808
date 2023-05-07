@@ -60,8 +60,16 @@ const WarehouseDetails = (props) => {
   // const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
-  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
-  const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
+  } = useDisclosure();
+  const {
+    isOpen: isAlertOpen,
+    onOpen: onAlertOpen,
+    onClose: onAlertClose,
+  } = useDisclosure();
   const cancelRef = React.useRef();
 
   const navigate = useNavigate();
@@ -124,7 +132,7 @@ const WarehouseDetails = (props) => {
         toast({
           title: `${response.data.message}`,
           status: "success",
-          duration: 9000,
+          duration: 1000,
           onCloseComplete: () => getSpecificWarehouse(),
         });
       })
@@ -142,7 +150,7 @@ const WarehouseDetails = (props) => {
         toast({
           title: `${response.data.message}`,
           status: "success",
-          duration: 9000,
+          duration: 1000,
           isClosable: true,
           onCloseComplete: () => navigate("/warehouse/list"),
         });
@@ -176,7 +184,11 @@ const WarehouseDetails = (props) => {
         ) : (
           <>
             <CardBody>
-              <Image src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg" alt="Green double couch with wooden legs" borderRadius="lg" />
+              <Image
+                src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg"
+                alt="Green double couch with wooden legs"
+                borderRadius="lg"
+              />
               <Stack mt="6" spacing="3">
                 <Heading size="md">Warehouse name: {name}</Heading>
                 <Text size="sm">Address: {address}</Text>
@@ -188,7 +200,11 @@ const WarehouseDetails = (props) => {
             <Divider />
             <CardFooter>
               <ButtonGroup spacing="6">
-                <Button variant="solid" onClick={() => navigate("/warehouse/list", { replace: true })}>
+                <Button
+                  variant="solid"
+                  onClick={() =>
+                    navigate("/warehouse/list", { replace: true })
+                  }>
                   <BiArrowBack />
                 </Button>
                 <Button
@@ -196,26 +212,30 @@ const WarehouseDetails = (props) => {
                   onClick={() => {
                     // setWarehouseId(value.id);
                     onEditOpen();
-                  }}
-                >
+                  }}>
                   Edit warehouse data
                 </Button>
                 <Button
                   colorScheme="red"
                   onClick={() => {
                     onAlertOpen();
-                  }}
-                >
+                  }}>
                   Delete warehouse data
                 </Button>
-                <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
+                <AlertDialog
+                  isOpen={isAlertOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onAlertClose}>
                   <AlertDialogOverlay>
                     <AlertDialogContent>
                       <AlertDialogHeader fontSize="lg" fontWeight="bold">
                         Delete Warehouse
                       </AlertDialogHeader>
 
-                      <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
+                      <AlertDialogBody>
+                        Are you sure you want to delete this data? This can't be
+                        undone.
+                      </AlertDialogBody>
 
                       <AlertDialogFooter>
                         <Button ref={cancelRef} onClick={onAlertClose}>
@@ -236,11 +256,21 @@ const WarehouseDetails = (props) => {
                     <ModalBody>
                       <div className="mt-4 text-muted fw-bold text-start">
                         <Text fontSize="md">Name</Text>
-                        <Input placeholder={detailsName} size="md" onChange={(element) => setName(element.target.value)} />
+                        <Input
+                          placeholder={detailsName}
+                          size="md"
+                          onChange={(element) => setName(element.target.value)}
+                        />
                         <div className="mt-4 text-muted fw-bold text-start">
                           <Text fontSize="md">Address</Text>
                           <InputGroup size="md">
-                            <Input pr="4.5rem" placeholder={detailsAddress} onChange={(element) => setAddress(element.target.value)} />
+                            <Input
+                              pr="4.5rem"
+                              placeholder={detailsAddress}
+                              onChange={(element) =>
+                                setAddress(element.target.value)
+                              }
+                            />
                           </InputGroup>
                         </div>
                         <div className="mt-4 text-muted fw-bold text-start">
@@ -250,11 +280,14 @@ const WarehouseDetails = (props) => {
                             onChange={(element) => {
                               setProvince(element.target.value.split(",")[1]);
                               onGetCity(element.target.value.split(",")[0]);
-                            }}
-                          >
+                            }}>
                             {provinceData.map((value) => {
                               return (
-                                <option value={value.province_id + "," + value.province} key={value.province_id}>
+                                <option
+                                  value={
+                                    value.province_id + "," + value.province
+                                  }
+                                  key={value.province_id}>
                                   {value.province}
                                 </option>
                               );
@@ -265,10 +298,18 @@ const WarehouseDetails = (props) => {
                       <div>
                         <div className="mt-4 text-muted fw-bold text-start">
                           <Text fontSize="md">City</Text>
-                          <Select className="text-muted" placeholder={detailsCity} value={city} onChange={(element) => setCity(element.target.value)}>
+                          <Select
+                            className="text-muted"
+                            placeholder={detailsCity}
+                            value={city}
+                            onChange={(element) =>
+                              setCity(element.target.value)
+                            }>
                             {cityData.map((value) => {
                               return (
-                                <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                                <option
+                                  value={`${value.type} ${value.city_name}`}
+                                  key={value.city_id}>
                                   {value.type} {value.city_name}
                                 </option>
                               );
@@ -277,7 +318,11 @@ const WarehouseDetails = (props) => {
                         </div>
                         <div className="mt-4 text-muted fw-bold text-start">
                           <Text fontSize="md">District (Kecamatan)</Text>
-                          <Input placeholder={detailsDistrict} onChange={(element) => setDistrict(element.target.value)}></Input>
+                          <Input
+                            placeholder={detailsDistrict}
+                            onChange={(element) =>
+                              setDistrict(element.target.value)
+                            }></Input>
                         </div>
                       </div>
                     </ModalBody>
@@ -291,8 +336,7 @@ const WarehouseDetails = (props) => {
                         onClick={() => {
                           onEditClose();
                           buttonEditWarehouse();
-                        }}
-                      >
+                        }}>
                         Edit warehouse data
                       </Button>
                     </ModalFooter>

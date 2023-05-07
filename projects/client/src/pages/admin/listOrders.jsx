@@ -8,13 +8,9 @@ import {
   Table,
   Thead,
   Tbody,
-  VStack,
-  Heading,
-  Image,
   Tr,
   Th,
   Td,
-  IconButton,
   Flex,
   Box,
   Input,
@@ -36,19 +32,13 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@chakra-ui/react";
-import {
-  EditIcon,
-  DeleteIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@chakra-ui/icons";
-import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
+
+import { FaSort, FaFilter } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
 import SendOrderModal from "../../components/SendOrderModal";
-import { get } from "lodash";
+
 import { API_url } from "../../helper";
 
 function ListOrders() {
@@ -62,7 +52,6 @@ function ListOrders() {
   const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
   const toast = useToast();
-  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
@@ -429,8 +418,7 @@ function ListOrders() {
                     mr={2}
                     _hover={{ bg: "yellow.500" }}
                     colorScheme="yellow"
-                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}
-                  >
+                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}>
                     Order Details
                   </Button>
                 </Box>
@@ -468,8 +456,7 @@ function ListOrders() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        size="6xl"
-      >
+        size="6xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Payment Information</ModalHeader>
@@ -481,8 +468,7 @@ function ListOrders() {
               mt="8"
               maxHeight="70vh"
               overflowY="auto"
-              width="100%"
-            >
+              width="100%">
               <Text fontSize="2xl" fontWeight="bold" mb="4">
                 Order Confirmation Payment
               </Text>
@@ -565,65 +551,6 @@ function ListOrders() {
                 {allData.payment_proof === null ? (
                   <>
                     <Text mb="4">No Payment Proof</Text>
-                    {allData.status === "Canceled" ? null : (
-                      <>
-                        <Flex>
-                          <Button
-                            size="sm"
-                            mr={2}
-                            _hover={{ bg: "red" }}
-                            colorScheme="red"
-                            onClick={() => {
-                              onAlertOpen();
-                            }}
-                          >
-                            Cancel Order
-                          </Button>
-                          <SendOrderModal
-                            orders_id={allData.id}
-                            orders_status={allData.status}
-                            func={getOrders}
-                          />
-                        </Flex>
-                        <AlertDialog
-                          isOpen={isAlertOpen}
-                          leastDestructiveRef={cancelRef}
-                          onClose={onAlertClose}
-                        >
-                          <AlertDialogOverlay>
-                            <AlertDialogContent>
-                              <AlertDialogHeader
-                                fontSize="lg"
-                                fontWeight="bold"
-                              >
-                                Cancel order
-                              </AlertDialogHeader>
-
-                              <AlertDialogBody>
-                                Are you sure cancelling this order? This action
-                                can't be undone.
-                              </AlertDialogBody>
-
-                              <AlertDialogFooter>
-                                <Button ref={cancelRef} onClick={onAlertClose}>
-                                  Cancel
-                                </Button>
-                                <Button
-                                  colorScheme="red"
-                                  onClick={() => {
-                                    handleCancelOrder(allData.id);
-                                    onAlertClose();
-                                  }}
-                                  ml={3}
-                                >
-                                  Yes, cancel this order
-                                </Button>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialogOverlay>
-                        </AlertDialog>
-                      </>
-                    )}
                   </>
                 ) : (
                   <img
@@ -632,19 +559,72 @@ function ListOrders() {
                     width="200"
                   />
                 )}
-                <Text mb="4"></Text>
               </Box>
             </Box>
           </ModalBody>
 
           <ModalFooter>
-            {allData.status === "Confirmed Payment" ? (
+            {allData.status === "Canceled" ||
+            allData.status === "Waiting for confirmation" ||
+            allData.status === "Shipped" ||
+            allData.status === "Order confirmed" ? null : (
+              <>
+                <Flex mt={3}>
+                  <SendOrderModal
+                    orders_id={allData.id}
+                    orders_status={allData.status}
+                    func={getOrders}
+                  />
+                  <Button
+                    mr={2}
+                    _hover={{ bg: "red.600" }}
+                    colorScheme="red"
+                    onClick={() => {
+                      onAlertOpen();
+                    }}>
+                    Cancel Order
+                  </Button>
+                </Flex>
+                <AlertDialog
+                  isOpen={isAlertOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onAlertClose}>
+                  <AlertDialogOverlay>
+                    <AlertDialogContent>
+                      <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                        Cancel order
+                      </AlertDialogHeader>
+
+                      <AlertDialogBody>
+                        Are you sure cancelling this order? This action can't be
+                        undone.
+                      </AlertDialogBody>
+
+                      <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onAlertClose}>
+                          Cancel
+                        </Button>
+                        <Button
+                          colorScheme="red"
+                          onClick={() => {
+                            handleCancelOrder(allData.id);
+                            onAlertClose();
+                          }}
+                          ml={3}>
+                          Yes, cancel this order
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialogOverlay>
+                </AlertDialog>
+              </>
+            )}
+            {allData.status === "Waiting for confirmation" ? (
               <>
                 <Button
                   colorScheme="green"
                   mr={3}
-                  onClick={openConfirmAcceptModal}
-                >
+                  onClick={openConfirmAcceptModal}>
                   Accept
                 </Button>
                 <Button colorScheme="red" onClick={openConfirmRejectModal}>
@@ -659,8 +639,7 @@ function ListOrders() {
       {/* Modal for reject Payment */}
       <Modal
         isOpen={isConfirmRejectModalOpen}
-        onClose={closeConfirmRejectModal}
-      >
+        onClose={closeConfirmRejectModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Reject Payment</ModalHeader>
@@ -672,8 +651,7 @@ function ListOrders() {
             <Button
               colorScheme="red"
               mr={3}
-              onClick={() => handleRejectPayment(allData.id)}
-            >
+              onClick={() => handleRejectPayment(allData.id)}>
               Reject
             </Button>
             <Button onClick={closeConfirmRejectModal}>Cancel</Button>
@@ -684,8 +662,7 @@ function ListOrders() {
       {/* Modal for Accepted Payment */}
       <Modal
         isOpen={isConfirmAcceptModalOpen}
-        onClose={closeConfirmAcceptModal}
-      >
+        onClose={closeConfirmAcceptModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Accept Payment</ModalHeader>
@@ -697,9 +674,8 @@ function ListOrders() {
             <Button
               colorScheme="teal"
               mr={3}
-              onClick={() => handleAcceptPayment(allData.id)}
-            >
-              Reject
+              onClick={() => handleAcceptPayment(allData.id)}>
+              Accept
             </Button>
             <Button onClick={closeConfirmAcceptModal}>Cancel</Button>
           </ModalFooter>

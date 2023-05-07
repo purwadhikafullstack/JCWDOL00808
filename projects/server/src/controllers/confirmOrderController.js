@@ -86,7 +86,7 @@ module.exports = {
         return res.status(404).json({ message: "Order not found" });
       }
       // Update order status to "Processed"
-      await order.update({ status: "On Process" }, { transaction: t });
+      await order.update({ status: "On process" }, { transaction: t });
 
       // Update product stock and generate stock transfer request if necessary
       const orderDetail = await orderDetails.findAll({
@@ -118,7 +118,9 @@ module.exports = {
 
           if (warehouses.length === 0) {
             // await order.update({ status: 'FAILED' });
-            return res.status(400).json({ message: "Not enough stock available" });
+            return res
+              .status(400)
+              .json({ message: "Not enough stock available" });
           }
 
           const currentWarehouse = await Warehouse.findByPk(warehouse.id);
@@ -127,7 +129,12 @@ module.exports = {
           let minDistance = Number.MAX_VALUE;
 
           warehouses.forEach((warehouse) => {
-            const distance = haversineDistance(currentWarehouse.latitude, currentWarehouse.longitude, warehouse.latitude, warehouse.longitude);
+            const distance = haversineDistance(
+              currentWarehouse.latitude,
+              currentWarehouse.longitude,
+              warehouse.latitude,
+              warehouse.longitude
+            );
 
             if (distance < minDistance) {
               minDistance = distance;
@@ -139,7 +146,10 @@ module.exports = {
           const transferQuantity = detail.quantity - (stock ? stock.stock : 0);
 
           const nearestWarehouseStock = await Stock.findOne({
-            where: { products_id: detail.products_id, warehouses_id: nearestWarehouse.id },
+            where: {
+              products_id: detail.products_id,
+              warehouses_id: nearestWarehouse.id,
+            },
           });
 
           // create Stock Mutation Auto
@@ -207,8 +217,12 @@ module.exports = {
             {
               // stock_before: stock.stock + transferQuantity,
               // stock_after: stock.stock + transferQuantity - detail.quantity,
-              stock_before: stock ? stock.stock + transferQuantity : detail.quantity,
-              stock_after: stock ? stock.stock + transferQuantity - detail.quantity : 0,
+              stock_before: stock
+                ? stock.stock + transferQuantity
+                : detail.quantity,
+              stock_after: stock
+                ? stock.stock + transferQuantity - detail.quantity
+                : 0,
               products_id: detail.products_id,
               warehouses_id: warehouse.id,
               description: "Send to buyer address",
@@ -216,7 +230,10 @@ module.exports = {
             { transaction: t }
           );
           if (stock) {
-            await stock.update({ stock: stock.stock + transferQuantity - detail.quantity }, { transaction: t });
+            await stock.update(
+              { stock: stock.stock + transferQuantity - detail.quantity },
+              { transaction: t }
+            );
           }
           await nearestWarehouseStock.update(
             {
@@ -225,7 +242,10 @@ module.exports = {
             { transaction: t }
           );
         } else {
-          await stock.update({ stock: stock.stock - detail.quantity }, { transaction: t });
+          await stock.update(
+            { stock: stock.stock - detail.quantity },
+            { transaction: t }
+          );
           await StockHistory.create(
             {
               stock_before: stock.stock + detail.quantity,
@@ -253,9 +273,11 @@ module.exports = {
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
-      // Update order status to "Waiting for Payment"
-      await order.update({ status: "Waiting for Payment" });
-      res.json({ message: 'Order rejected and status reverted to "Waiting for Payment"' });
+      // Update order status to "Waiting for payment"
+      await order.update({ status: "Waiting for payment" });
+      res.json({
+        message: 'Order rejected and status reverted to "Waiting for payment"',
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Internal Server Error" });
