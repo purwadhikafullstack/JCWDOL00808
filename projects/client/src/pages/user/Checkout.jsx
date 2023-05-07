@@ -23,10 +23,9 @@ import {
   Skeleton,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   cartSelector,
-  getCarts,
   getTotalPriceInCart,
   getTotalProductsInCart,
   getTotalWeightInCart,
@@ -65,8 +64,6 @@ const Checkout = () => {
   const totalProductsInCart = useSelector(getTotalProductsInCart);
   const totalWeightInCart = useSelector(getTotalWeightInCart);
 
-  const dispatch = useDispatch();
-
   const toast = useToast();
 
   const navigate = useNavigate();
@@ -92,7 +89,7 @@ const Checkout = () => {
         const primary = fetchedAddresses.find(
           (address) => address.is_primary === true
         );
-
+        console.log(primary);
         setPrimaryAddress(primary);
         setSelectedAddress(primary);
 
@@ -103,6 +100,8 @@ const Checkout = () => {
             warehouseResponse.data
           );
           setNearestWarehouse(nearest);
+          formik.setFieldValue("user_addresses_id", primary.id);
+          formik.setFieldValue("warehouses_id", nearest.id);
         }
       } catch (error) {
         toast({
@@ -114,6 +113,7 @@ const Checkout = () => {
       }
       setLoading(false);
     };
+    console.log(primaryAddress);
     fetchAddressesData();
   }, []);
 

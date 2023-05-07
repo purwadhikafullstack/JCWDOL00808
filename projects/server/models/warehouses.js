@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
       district: DataTypes.STRING,
       latitude: DataTypes.STRING,
       longitude: DataTypes.STRING,
+      is_deleted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {
       sequelize,

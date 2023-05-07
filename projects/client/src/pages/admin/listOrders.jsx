@@ -8,13 +8,9 @@ import {
   Table,
   Thead,
   Tbody,
-  VStack,
-  Heading,
-  Image,
   Tr,
   Th,
   Td,
-  IconButton,
   Flex,
   Box,
   Input,
@@ -36,19 +32,13 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@chakra-ui/react";
-import {
-  EditIcon,
-  DeleteIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@chakra-ui/icons";
-import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
+
+import { FaSort, FaFilter } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
 import SendOrderModal from "../../components/SendOrderModal";
-import { get } from "lodash";
+
 import { API_url } from "../../helper";
 
 function ListOrders() {
@@ -62,7 +52,6 @@ function ListOrders() {
   const [sort, setSort] = useState("id");
   const [order, setOrder] = useState("DESC");
   const toast = useToast();
-  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
@@ -106,7 +95,7 @@ function ListOrders() {
   const getOrders = async (userRole) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/orders/get-order?search=${keyword}&page=${page}&limit=${limit}&role=${userRole}`,
+        `${process.env.REACT_APP_API_BASE_URL}/orders/get-order?search=${keyword}&page=${page}&limit=${limit}&role=${userRole}`,
         {
           params: {
             sort,
@@ -137,14 +126,14 @@ function ListOrders() {
   const fetchOrderDetailsAndOpenModal = async (orderId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/orders/get-order-details/${orderId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/orders/get-order-details/${orderId}`,
         {
           headers: { Authorization: token },
         }
       );
       setOrderDetails(response.data);
       const responses = await axios.get(
-        `http://localhost:8000/orders/allorders-data/${orderId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/orders/allorders-data/${orderId}`,
         {
           headers: { Authorization: token },
         }
@@ -204,9 +193,12 @@ function ListOrders() {
 
   const handleAcceptPayment = async (id) => {
     try {
-      await axios.post(`http://localhost:8000/admin/acceptPayment/${id}`, {
-        headers: { Authorization: token },
-      });
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/acceptPayment/${id}`,
+        {
+          headers: { Authorization: token },
+        }
+      );
       closeConfirmAcceptModal();
       setIsModalOpen(false);
       toast({
@@ -230,9 +222,12 @@ function ListOrders() {
 
   const handleRejectPayment = async (id) => {
     try {
-      await axios.post(`http://localhost:8000/admin/rejectPayment/${id}`, {
-        headers: { Authorization: token },
-      });
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/rejectPayment/${id}`,
+        {
+          headers: { Authorization: token },
+        }
+      );
       closeConfirmRejectModal();
       setIsModalOpen(false);
       toast({
@@ -464,6 +459,7 @@ function ListOrders() {
           }
         />
       </Flex>
+
       {/* modal untuk order details */}
       <Modal
         isOpen={isModalOpen}
@@ -517,7 +513,7 @@ function ListOrders() {
                       <Td>{formatWeight(item.product_weight)}</Td>
                       <Td>
                         <img
-                          src={`http://localhost:8000/${item.imageUrl}`}
+                          src={`${process.env.REACT_APP_API_BASE_URL}/${item.imageUrl}`}
                           alt="Product"
                           width="50"
                         />
@@ -565,79 +561,78 @@ function ListOrders() {
                 {allData.payment_proof === null ? (
                   <>
                     <Text mb="4">No Payment Proof</Text>
-                    {allData.status === "Canceled" ? null : (
-                      <>
-                        <Flex>
-                          <Button
-                            size="sm"
-                            mr={2}
-                            _hover={{ bg: "red" }}
-                            colorScheme="red"
-                            onClick={() => {
-                              onAlertOpen();
-                            }}
-                          >
-                            Cancel Order
-                          </Button>
-                        </Flex>
-                        <AlertDialog
-                          isOpen={isAlertOpen}
-                          leastDestructiveRef={cancelRef}
-                          onClose={onAlertClose}
-                        >
-                          <AlertDialogOverlay>
-                            <AlertDialogContent>
-                              <AlertDialogHeader
-                                fontSize="lg"
-                                fontWeight="bold"
-                              >
-                                Cancel order
-                              </AlertDialogHeader>
-
-                              <AlertDialogBody>
-                                Are you sure cancelling this order? This action
-                                can't be undone.
-                              </AlertDialogBody>
-
-                              <AlertDialogFooter>
-                                <Button ref={cancelRef} onClick={onAlertClose}>
-                                  Cancel
-                                </Button>
-                                <Button
-                                  colorScheme="red"
-                                  onClick={() => {
-                                    handleCancelOrder(allData.id);
-                                    onAlertClose();
-                                  }}
-                                  ml={3}
-                                >
-                                  Yes, cancel this order
-                                </Button>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialogOverlay>
-                        </AlertDialog>
-                      </>
-                    )}
                   </>
                 ) : (
                   <img
-                    src={`http://localhost:8000/${allData.payment_proof}`}
+                    src={`${process.env.REACT_APP_API_BASE_URL}/${allData.payment_proof}`}
                     alt="Payment Proof"
                     width="200"
                   />
                 )}
-                <SendOrderModal
-                  orders_id={allData.id}
-                  orders_status={allData.status}
-                  func={getOrders}
-                />
               </Box>
             </Box>
           </ModalBody>
 
           <ModalFooter>
-            {allData.status === "Confirmed Payment" ? (
+            {allData.status === "Canceled" ||
+            allData.status === "Waiting for confirmation" ||
+            allData.status === "Shipped" ||
+            allData.status === "Order confirmed" ? null : (
+              <>
+                <Flex mt={3}>
+                  <SendOrderModal
+                    orders_id={allData.id}
+                    orders_status={allData.status}
+                    func={getOrders}
+                  />
+                  <Button
+                    mr={2}
+                    _hover={{ bg: "red.600" }}
+                    colorScheme="red"
+                    onClick={() => {
+                      onAlertOpen();
+                    }}
+                  >
+                    Cancel Order
+                  </Button>
+                </Flex>
+                <AlertDialog
+                  isOpen={isAlertOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onAlertClose}
+                >
+                  <AlertDialogOverlay>
+                    <AlertDialogContent>
+                      <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                        Cancel order
+                      </AlertDialogHeader>
+
+                      <AlertDialogBody>
+                        Are you sure cancelling this order? This action can't be
+                        undone.
+                      </AlertDialogBody>
+
+                      <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onAlertClose}>
+                          Cancel
+                        </Button>
+                        <Button
+                          colorScheme="red"
+                          onClick={() => {
+                            handleCancelOrder(allData.id);
+                            onAlertClose();
+                          }}
+                          ml={3}
+                        >
+                          Yes, cancel this order
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialogOverlay>
+                </AlertDialog>
+              </>
+            )}
+            {allData.status === "Waiting for confirmation" ? (
               <>
                 <Button
                   colorScheme="green"
@@ -698,7 +693,7 @@ function ListOrders() {
               mr={3}
               onClick={() => handleAcceptPayment(allData.id)}
             >
-              Reject
+              Accept
             </Button>
             <Button onClick={closeConfirmAcceptModal}>Cancel</Button>
           </ModalFooter>

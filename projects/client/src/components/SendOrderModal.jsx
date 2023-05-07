@@ -51,12 +51,10 @@ export default function SendOrderModal(props) {
     <>
       <Button
         display={props.orders_status !== "On process" ? "none" : "block"}
-        size="sm"
         mr={2}
         _hover={{ bg: "green.600" }}
         colorScheme="green"
-        onClick={onOpen}
-      >
+        onClick={onOpen}>
         Send Order
       </Button>
 
@@ -81,8 +79,7 @@ export default function SendOrderModal(props) {
                 onClose();
               }}
               colorScheme="blue"
-              variant="solid"
-            >
+              variant="solid">
               Send
             </Button>
           </ModalFooter>

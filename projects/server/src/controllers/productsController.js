@@ -14,6 +14,9 @@ module.exports = {
     try {
       const allCategories = await product_categories.findAll({
         order: [["name", "asc"]],
+        where: {
+          is_deleted: 0,
+        },
       });
 
       res.status(200).send({
@@ -35,7 +38,7 @@ module.exports = {
       const { productId } = req.params;
 
       const product = await products.findOne({
-        where: { id: productId },
+        where: { id: productId, is_deleted: 0 },
         include: [
           {
             model: stocks,

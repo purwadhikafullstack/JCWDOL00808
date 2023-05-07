@@ -14,7 +14,7 @@ module.exports = {
     try {
       let products_id = req.query.id;
       let data = await ProductsModel.findAll({
-        where: {id: products_id}
+        where: { id: products_id },
       });
       return res.status(200).send(data);
     } catch (error) {
@@ -136,6 +136,10 @@ module.exports = {
       let warehouseQuery = req.query.warehouseQuery || "";
       let month = req.query.month || "";
 
+      const page = parseInt(req.query.page) || 0;
+      const limit = 5;
+      const offset = limit * page;
+
       let whereQuery = {};
       if (month !== "") {
         whereQuery = {
@@ -154,7 +158,9 @@ module.exports = {
         };
       }
 
-      let historyDetails = await StockHistoriesModel.findAll({
+      let historyDetails = await StockHistoriesModel.findAndCountAll({
+        limit,
+        offset,
         include: {
           model: WarehousesModel,
           as: "warehouse",
@@ -162,8 +168,9 @@ module.exports = {
         where: whereQuery,
       });
 
-      for (let i = 0; i < historyDetails.length; i++) {
-        const dateA = historyDetails[i].createdAt;
+      for (let i = 0; i < historyDetails.rows.length; i++) {
+        // convert createdAt into date and time
+        const dateA = historyDetails.rows[i].createdAt;
         const dateB = new Date(dateA);
 
         const options = { day: "numeric", month: "long", year: "numeric" };
@@ -174,10 +181,10 @@ module.exports = {
 
         const dateTimeString = `${formattedDate} ${formattedTime}`;
 
-        historyDetails[i].dataValues.time = dateTimeString;
+        historyDetails.rows[i].dataValues.time = dateTimeString;
 
         // add qty in and qty out
-        let difference = historyDetails[i].stock_after - historyDetails[i].stock_before;
+        let difference = historyDetails.rows[i].stock_after - historyDetails.rows[i].stock_before;
         let stockIn = 0;
         let stockOut = 0;
         if (difference < 0) {
@@ -186,22 +193,20 @@ module.exports = {
           stockIn += difference;
         }
 
-        historyDetails[i].dataValues.stockIn = stockIn;
-        historyDetails[i].dataValues.stockOut = stockOut;
+        historyDetails.rows[i].dataValues.stockIn = stockIn;
+        historyDetails.rows[i].dataValues.stockOut = stockOut;
       }
 
       // filter history details by admin's input
-      let stockInData = historyDetails.filter((value) => value.dataValues.stockIn > 0);
-      let stockOutData = historyDetails.filter((value) => value.dataValues.stockOut > 0);
+      let stockInData = historyDetails.rows.filter((value) => value.dataValues.stockIn > 0);
+      let stockOutData = historyDetails.rows.filter((value) => value.dataValues.stockOut > 0);
 
-      // cari nama product berdasarkan products_id
-
-      //
+      // send data based on request from FE
       if (stockQuery == "") {
         res.status(200).send({
           success: true,
           message: "Ok",
-          data: historyDetails,
+          data: historyDetails.rows,
         });
       } else if (stockQuery == "stockIn") {
         res.status(200).send({

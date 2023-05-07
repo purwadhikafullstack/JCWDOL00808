@@ -1,7 +1,8 @@
 const db = require("../../models/index");
 const AdminsModel = db.admins;
 const UsersModel = db.users;
-const WarehouseModel = db.warehouses;
+const WarehousesModel = db.warehouses;
+const OrdersModel = db.orders;
 
 const { sequelize } = require("../../models");
 const { Op, where } = require("sequelize");
@@ -76,14 +77,11 @@ module.exports = {
 
       let data = await AdminsModel.findAll({ where: { id: admins_id } });
       if (data.length > 0) {
-      let update = await WarehouseModel.update(
-        { admins_id },
-        { where: { id } }
-      );
-      return res.status(200).send({
-        success: true,
-        message: "Admin has been assigned!",
-      });
+        let update = await WarehousesModel.update({ admins_id }, { where: { id } });
+        return res.status(200).send({
+          success: true,
+          message: "Admin has been assigned!",
+        });
       } else {
         return res.status(200).send({
           success: false,
@@ -95,7 +93,40 @@ module.exports = {
       return res.status(500).send(err);
     }
   },
-  cancelUserOrder: async (req, res) => {
-    
-  }
+  dashboardData: async (req, res) => {
+    try {
+      let admins_id = req.dataDecode.id
+      let data = {};
+      
+      // total user
+      let users = await UsersModel.findAndCountAll({});
+      data.users = users.count;
+
+      // total order
+      let orders = await OrdersModel.findAndCountAll({
+        where: {
+          status: {
+            [Op.not]: ["Canceled", "Waiting for payment"],
+          },
+        },
+      });
+      data.orders = orders.count;
+
+      // total warehouse
+      let warehouses = await WarehousesModel.findAndCountAll({});
+      data.warehouses = warehouses.count;
+
+      // total admin assigned
+      let warehouseAdmin = await AdminsModel.findAndCountAll({ where: { role: 2 } });
+      data.warehouseAdmin = warehouseAdmin.count;
+
+      return res.status(200).send({
+        success: true,
+        data: data,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  },
 };

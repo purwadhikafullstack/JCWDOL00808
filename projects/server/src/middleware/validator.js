@@ -4,6 +4,33 @@ const registerSchema = Joi.object({
   email: Joi.string().email().required(),
 });
 
+const loginAdminSchema = Joi.object({
+  email: Joi.string().email(),
+  password: Joi.string()
+    .min(8)
+    .required()
+    .pattern(/[a-z]/) // At least one lowercase letter
+    .pattern(/[A-Z]/) // At least one uppercase letter
+    .pattern(/\d/) // At least one digit
+    .pattern(/[@$!%*?&]/), // At least one special character
+});
+
+const addWarehouseSchema = Joi.object({
+  name: Joi.string(),
+  address: Joi.string(),
+  province: Joi.string(),
+  city: Joi.string(),
+  district: Joi.string(),
+});
+
+const editWarehouseSchema = Joi.object({
+  name: Joi.string(),
+  address: Joi.string(),
+  province: Joi.string(),
+  city: Joi.string(),
+  district: Joi.string(),
+});
+
 const verifySchema = Joi.object({
   email: Joi.string().email(),
   password: Joi.string()
@@ -70,4 +97,7 @@ module.exports = {
   validateEditProfile: validate(editProfileSchema),
   validateEditPassword: validate(editPasswordSchema),
   validateRequestStock: validate(requestStockSchema),
+  validateLoginAdmin: validate(loginAdminSchema),
+  validateAddWarehouse: validate(addWarehouseSchema),
+  validateEditWarehouse: validate(editWarehouseSchema),
 };

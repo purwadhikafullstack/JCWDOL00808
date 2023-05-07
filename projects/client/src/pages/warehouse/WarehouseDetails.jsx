@@ -3,6 +3,10 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
   Image,
   Stack,
   Heading,
@@ -42,8 +46,6 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 
 const WarehouseDetails = (props) => {
-  const [warehouseId, setWarehouseId] = useState();
-
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
@@ -57,11 +59,19 @@ const WarehouseDetails = (props) => {
   const [detailsCity, setDetailsCity] = useState("");
   const [detailsProvince, setDetailsProvince] = useState("");
   const [detailsDistrict, setDetailsDistrict] = useState("");
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const toast = useToast();
-  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
-  const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
+  } = useDisclosure();
+  const {
+    isOpen: isAlertOpen,
+    onOpen: onAlertOpen,
+    onClose: onAlertClose,
+  } = useDisclosure();
   const cancelRef = React.useRef();
 
   const navigate = useNavigate();
@@ -72,19 +82,25 @@ const WarehouseDetails = (props) => {
   const getSpecificWarehouse = () => {
     Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${id}`)
       .then((response) => {
-        setName(response.data[0].name);
-        setAddress(response.data[0].address);
-        setCity(response.data[0].city);
-        setProvince(response.data[0].province);
-        setDistrict(response.data[0].district);
+        setTimeout(() => {
+          setName(response.data[0].name);
+          setAddress(response.data[0].address);
+          setCity(response.data[0].city);
+          setProvince(response.data[0].province);
+          setDistrict(response.data[0].district);
 
-        setDetailsName(response.data[0].name);
-        setDetailsAddress(response.data[0].address);
-        setDetailsCity(response.data[0].city);
-        setDetailsProvince(response.data[0].province);
-        setDetailsDistrict(response.data[0].district);
+          setDetailsName(response.data[0].name);
+          setDetailsAddress(response.data[0].address);
+          setDetailsCity(response.data[0].city);
+          setDetailsProvince(response.data[0].province);
+          setDetailsDistrict(response.data[0].district);
+          setIsLoading(false);
+        }, 1000);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setIsLoading(false);
+        console.log(error);
+      });
   };
 
   const getProvinceData = () => {
@@ -110,21 +126,17 @@ const WarehouseDetails = (props) => {
       });
   };
 
-  const buttonEditWarehouse = () => {
-    Axios.patch(API_url + `/warehouses/updateWarehouseData`, {
-      id: warehouseId,
-      name,
-      address,
-      province,
-      city,
-      district,
+  const buttonEditWarehouse = (values) => {
+    Axios.post(API_url + `/warehouses/updateWarehouseData`, {
+      id,
+      ...values,
     })
       .then((response) => {
         console.log(response.data);
         toast({
           title: `${response.data.message}`,
           status: "success",
-          duration: 9000,
+          duration: 1000,
           onCloseComplete: () => getSpecificWarehouse(),
         });
       })
@@ -142,7 +154,7 @@ const WarehouseDetails = (props) => {
         toast({
           title: `${response.data.message}`,
           status: "success",
-          duration: 9000,
+          duration: 1000,
           isClosable: true,
           onCloseComplete: () => navigate("/warehouse/list"),
         });
@@ -156,6 +168,7 @@ const WarehouseDetails = (props) => {
       address: detailsAddress,
       province: detailsProvince,
       city: detailsCity,
+      district: detailsDistrict,
     },
     validationSchema: yup.object().shape({
       name: yup.string().required("Required"),
@@ -165,18 +178,24 @@ const WarehouseDetails = (props) => {
       district: yup.string().required("Required"),
     }),
     onSubmit: (values, actions) => {
-      actions.resetForm();
+      buttonEditWarehouse(values);
+      onEditClose();
     },
   });
+
   return (
-    <Box w="50%">
-      <Card maxW="lg" border="1px" borderColor="gray.300">
-        {props.loading ? (
-          <Spinner color="red.500" />
+    <div className="flex flex-col items-center w-full">
+      <Box w={[300, 400, 500]}>
+        {isLoading ? (
+          <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" mt="250px" />
         ) : (
-          <>
+          <Card maxW="lg" border="1px" borderColor="gray.300">
             <CardBody>
-              <Image src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg" alt="Green double couch with wooden legs" borderRadius="lg" />
+              <Image
+                src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg"
+                alt="Green double couch with wooden legs"
+                borderRadius="lg"
+              />
               <Stack mt="6" spacing="3">
                 <Heading size="md">Warehouse name: {name}</Heading>
                 <Text size="sm">Address: {address}</Text>
@@ -188,17 +207,21 @@ const WarehouseDetails = (props) => {
             <Divider />
             <CardFooter>
               <ButtonGroup spacing="6">
-                <Button variant="solid" onClick={() => navigate("/warehouse/list", { replace: true })}>
+                <Button
+                  variant="solid"
+                  onClick={() =>
+                    navigate("/warehouse/list", { replace: true })
+                  }>
                   <BiArrowBack />
                 </Button>
                 <Button
                   colorScheme="blue"
                   onClick={() => {
-                    // setWarehouseId(value.id);
                     onEditOpen();
                   }}
                 >
-                  Edit warehouse data
+                  Edit
+
                 </Button>
                 <Button
                   colorScheme="red"
@@ -206,16 +229,22 @@ const WarehouseDetails = (props) => {
                     onAlertOpen();
                   }}
                 >
-                  Delete warehouse data
+                  Delete
                 </Button>
-                <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
+                <AlertDialog
+                  isOpen={isAlertOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onAlertClose}>
                   <AlertDialogOverlay>
                     <AlertDialogContent>
                       <AlertDialogHeader fontSize="lg" fontWeight="bold">
                         Delete Warehouse
                       </AlertDialogHeader>
 
-                      <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
+                      <AlertDialogBody>
+                        Are you sure you want to delete this data? This can't be
+                        undone.
+                      </AlertDialogBody>
 
                       <AlertDialogFooter>
                         <Button ref={cancelRef} onClick={onAlertClose}>
@@ -233,77 +262,86 @@ const WarehouseDetails = (props) => {
                   <ModalContent>
                     <ModalHeader>Edit warehouse data</ModalHeader>
                     <ModalCloseButton />
-                    <ModalBody>
-                      <div className="mt-4 text-muted fw-bold text-start">
-                        <Text fontSize="md">Name</Text>
-                        <Input placeholder={detailsName} size="md" onChange={(element) => setName(element.target.value)} />
-                        <div className="mt-4 text-muted fw-bold text-start">
-                          <Text fontSize="md">Address</Text>
-                          <InputGroup size="md">
-                            <Input pr="4.5rem" placeholder={detailsAddress} onChange={(element) => setAddress(element.target.value)} />
+
+                    <form onSubmit={formik.handleSubmit}>
+                      <ModalBody>
+                        <FormControl isInvalid={formik.errors.name && formik.touched.name}>
+                          <FormLabel>Name:</FormLabel>
+                          <Input id="name" placeholder={detailsName} value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                          <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={formik.errors.address && formik.touched.address}>
+                          <FormLabel>Address:</FormLabel>
+                          <InputGroup>
+                            <Input id="address" placeholder={detailsAddress} value={formik.values.address} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                           </InputGroup>
-                        </div>
-                        <div className="mt-4 text-muted fw-bold text-start">
-                          <Text fontSize="md">Province</Text>
+                          <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={formik.errors.province && formik.touched.province}>
+                          <FormLabel>Province:</FormLabel>
                           <Select
+                            id="province"
                             placeholder={detailsProvince}
-                            onChange={(element) => {
-                              setProvince(element.target.value.split(",")[1]);
-                              onGetCity(element.target.value.split(",")[0]);
+
+                            onChange={(e) => {
+                              console.log(e.target.value);
+                              formik.setFieldValue("province", e.target.value.split(",")[1]);
+                              onGetCity(e.target.value.split(",")[0]);
                             }}
+                            onBlur={formik.handleBlur}
                           >
                             {provinceData.map((value) => {
                               return (
-                                <option value={value.province_id + "," + value.province} key={value.province_id}>
+                                <option id="province" value={value.province_id + "," + value.province} key={value.province_id}>
+
                                   {value.province}
                                 </option>
                               );
                             })}
                           </Select>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="mt-4 text-muted fw-bold text-start">
-                          <Text fontSize="md">City</Text>
-                          <Select className="text-muted" placeholder={detailsCity} value={city} onChange={(element) => setCity(element.target.value)}>
+                          <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={formik.errors.city && formik.touched.city}>
+                          <FormLabel>City:</FormLabel>
+                          <Select id="city" placeholder={detailsCity} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                             {cityData.map((value) => {
                               return (
-                                <option value={`${value.type} ${value.city_name}`} key={value.city_id}>
+                                <option id="city" value={`${value.type} ${value.city_name}`} key={value.city_id}>
                                   {value.type} {value.city_name}
                                 </option>
                               );
                             })}
                           </Select>
-                        </div>
-                        <div className="mt-4 text-muted fw-bold text-start">
-                          <Text fontSize="md">District (Kecamatan)</Text>
-                          <Input placeholder={detailsDistrict} onChange={(element) => setDistrict(element.target.value)}></Input>
-                        </div>
-                      </div>
-                    </ModalBody>
 
-                    <ModalFooter>
-                      <Button mr={3} onClick={onEditClose}>
-                        Close
-                      </Button>
-                      <Button
-                        colorScheme="blue"
-                        onClick={() => {
-                          onEditClose();
-                          buttonEditWarehouse();
-                        }}
-                      >
-                        Edit warehouse data
-                      </Button>
-                    </ModalFooter>
+                          <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={formik.errors.district && formik.touched.district}>
+                          <FormLabel>District (Kecamatan):</FormLabel>
+                          <InputGroup>
+                            <Input id="district" placeholder={detailsDistrict} value={formik.values.district} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                          </InputGroup>
+                          <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
+                        </FormControl>
+                      </ModalBody>
+
+                      <ModalFooter>
+                        <Button mr={3} onClick={onEditClose}>
+                          Close
+                        </Button>
+                        <Button colorScheme="blue" type="submit">
+                          Save
+                        </Button>
+                      </ModalFooter>
+                    </form>
+
                   </ModalContent>
                 </Modal>
               </ButtonGroup>
             </CardFooter>
-          </>
+          </Card>
         )}
-      </Card>
-    </Box>
+      </Box>
+    </div>
   );
 };
 

@@ -16,5 +16,6 @@ Router.get("/get-order-details/:id", ordersController.getOrderDetails);
 Router.get("/allorders-data/:id", ordersController.getOrdersById);
 Router.post("/upload-payment-proof", verifyToken, uploadPaymentProof, ordersController.uploadPaymentProof);
 Router.post("/cancel-order", verifyToken, ordersController.cancelUserOrder);
+Router.post("/confirmDelivery", verifyToken, ordersController.confirmDelivery)
 
 module.exports = Router;

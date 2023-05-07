@@ -288,7 +288,7 @@ module.exports = {
                 products_id: productIds,
               },
             })
-            .then((stocks) => {
+            .then(async (stocks) => {
               // Check if any products have no data
               const foundIds = stocks.map((stock) => stock.products_id);
               const missingIds = productIds.filter(
@@ -303,12 +303,21 @@ module.exports = {
                   data: null,
                 });
               } else {
-                orders.update(
+                await orders.update(
                   { status: "Shipped" },
                   { where: { id } },
                   { transaction: t }
                 );
                 t.commit();
+
+                // Create the MySQL event to update the order status after 7 days
+                //     await sequelize.query(`
+                //   CREATE EVENT update_order_status_${id}
+                //   ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 7 DAY
+                //   DO
+                //     UPDATE orders SET status = 'Order confirmed' WHERE id = ${id};
+                // `);
+
                 res.status(200).send({
                   isError: false,
                   message: "Orders has been shipped",
@@ -317,40 +326,6 @@ module.exports = {
               }
             });
         });
-
-      //Check if all product stocks are available
-      // const checkStocks = await stocks.findOne({
-      //   where: {
-      //     products_id: findOrderDetails.dataValues.id,
-      //     warehouses_id: findOrder.dataValues.warehouse_id,
-      //   },
-      // });
-
-      //If one or more products stock is not available, send error
-      // if ("Products not available") {
-      //   res.status(404).send({
-      //     isError: true,
-      //     message: "Some products are not available",
-      //     data: null,
-      //   });
-      // } else {
-      //   await orders.update(
-      //     { status: "Dikirim" },
-      //     { where: id },
-      //     { transaction: t }
-      //   );
-      //   t.commit();
-      //   res.status(200).send({
-      //     isError: false,
-      //     message: "Orders has been shipped",
-      //     data: null,
-      //   });
-      // }
-      // res.status(200).send({
-      //   isError: false,
-      //   message: "Orders has been shipped",
-      //   data: findOrderDetails,
-      // });
     } catch (error) {
       t.rollback();
       res.status(404).send({

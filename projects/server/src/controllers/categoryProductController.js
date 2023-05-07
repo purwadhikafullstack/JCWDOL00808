@@ -20,6 +20,7 @@ module.exports = {
       const order = req.query.order || "DESC"; //default order DESC
       const totalRows = await product_categories.count({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -32,6 +33,7 @@ module.exports = {
       const totalPage = Math.ceil(totalRows / limit);
       const result = await product_categories.findAll({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -98,7 +100,10 @@ module.exports = {
         });
 
       // insert data ke category
-      await product_categories.create({ name, description }, { transaction: t });
+      await product_categories.create(
+        { name, description },
+        { transaction: t }
+      );
 
       //step 5 kirim response
       await t.commit();
@@ -137,7 +142,9 @@ module.exports = {
 
       // step 1: retrieve admin data from database
       const { id } = req.params;
-      let productCategory = await product_categories.findOne({ where: { id: id } });
+      let productCategory = await product_categories.findOne({
+        where: { id: id },
+      });
       if (!productCategory) {
         await t.rollback();
         return res.status(404).send({
@@ -151,6 +158,7 @@ module.exports = {
       if (name) {
         let findNameCategory = await product_categories.findOne({
           where: {
+            is_deleted: 0,
             name,
             id: { [Op.ne]: productCategory.id }, // exclude current product
           },
@@ -193,7 +201,9 @@ module.exports = {
     try {
       // step 1: retrieve category data from database
       const { id } = req.params;
-      let productCategory = await product_categories.findOne({ where: { id: id } });
+      let productCategory = await product_categories.findOne({
+        where: { id: id },
+      });
       if (!productCategory) {
         return res.status(404).send({
           isError: true,
@@ -203,7 +213,10 @@ module.exports = {
       }
 
       // step 2: delete category data from database
-      await productCategory.destroy({ where: { id: id } }, { transaction: t });
+      await productCategory.update(
+        { is_deleted: 1 }, // Set is_deleted to 1
+        { where: { id }, transaction: t }
+      );
 
       // step 3: send response
       await t.commit();

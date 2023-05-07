@@ -1,12 +1,4 @@
-import {
-  Box,
-  Text,
-  InputGroup,
-  Input,
-  InputRightElement,
-  Button,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Text, InputGroup, Input, InputRightElement, Button, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { API_url } from "../../helper";
 import Axios from "axios";
@@ -36,9 +28,7 @@ const UploadPaymentProof = () => {
           duration: 9000,
           isClosable: true,
         });
-        setTimeout(
-          () => (navigate("/user/order-list", { replace: true }), 2000)
-        );
+        setTimeout(() => (navigate("/user/order-list", { replace: true }), 2000));
       })
       .catch((error) => {
         console.log(error);
@@ -53,23 +43,15 @@ const UploadPaymentProof = () => {
   return (
     <div className="flex justify-center items-center h-screen w-full">
       <Box w={[300, 400, 500]} className="shadow p-5">
-        <Text className="font-bold" fontSize="2xl">
+        <Text fontSize="2xl" className="font-[Oswald]">
           Upload proof for payment
         </Text>
         <Text className="mt-3" fontSize="lg">
           Payment proof
         </Text>
-        <Input
-          type="file"
-          placeholder="upload .jpeg/ .jpg/ .png file less than 5MB"
-          onChange={(element) => setProof(element.target.files[0])}
-        />
+        <Input type="file" placeholder="upload .jpeg/ .jpg/ .png file less than 5MB" onChange={(element) => setProof(element.target.files[0])} />
 
-        <Button
-          onClick={handleUploadButton}
-          variant="buttonBlack"
-          className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600"
-        >
+        <Button onClick={handleUploadButton} variant="buttonBlack" className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
           Upload
         </Button>
       </Box>
