@@ -360,4 +360,26 @@ module.exports = {
       });
     }
   },
+  getProductQuantityInCart: async (req, res) => {
+    try {
+      const users_id = req.dataDecode.id;
+      const { products_id } = req.params;
+
+      const productData = await carts.findOne({
+        where: { users_id, products_id },
+      });
+
+      res.status(200).send({
+        isError: false,
+        message: "Get product quantity success",
+        data: productData.dataValues.quantity,
+      });
+    } catch (error) {
+      res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
 };
