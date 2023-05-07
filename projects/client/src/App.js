@@ -27,7 +27,6 @@ import ResetPassword from "./pages/user/ResetPassword";
 import UserAddress from "./pages/user/UserAddress";
 import Verification from "./pages/user/Verification";
 import VerificationNewPassword from "./pages/user/VerificationNewPassword";
-import EditWarehouse from "./pages/warehouse/EditWarehouse";
 import StockHistoryDetails from "./pages/warehouse/StockHistoryDetails";
 import WarehouseDetails from "./pages/warehouse/WarehouseDetails";
 import WarehouseList from "./pages/warehouse/WarehouseList";
@@ -99,7 +98,6 @@ function App() {
             <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
 
             <Route path="/warehouse/list" element={<WarehouseList />} />
-            <Route path="/warehouse/edit" element={<EditWarehouse />} />
 
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
             <Route path="/warehouse/details" element={<WarehouseDetails />} />

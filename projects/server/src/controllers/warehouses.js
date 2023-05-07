@@ -137,7 +137,7 @@ module.exports = {
         q: `${address}, ${district}, ${province}, ${city}`,
         countrycode: "id",
         limit: 1,
-        key: process.env.OPENCAGE_API_KEY,
+        key: process.env.API_KEY,
       });
       console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
 
@@ -171,7 +171,7 @@ module.exports = {
         q: `${address}, ${district}, ${province}, ${city}`,
         countrycode: "id",
         limit: 1,
-        key: process.env.OPENCAGE_API_KEY,
+        key: process.env.API_KEY,
       });
       let { lat, lng } = response.results[0].geometry;
 
