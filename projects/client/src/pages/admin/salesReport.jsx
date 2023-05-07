@@ -32,7 +32,7 @@ const SalesReport = () => {
       const email = decodedToken.email;
 
       // Replace the URL below with the correct endpoint for your API.
-      let url = `http://localhost:8000/admin/sales-report?email=${email}&start_date=${startDate}&end_date=${endDate}`;
+      let url = `${process.env.REACT_APP_API_BASE_URL}/admin/sales-report?email=${email}&start_date=${startDate}&end_date=${endDate}`;
       if (warehouse) url += `&warehouse_filter=${warehouse}`;
       if (category) url += `&category_filter=${category}`;
       if (product) url += `&product_filter=${product}`;
@@ -46,13 +46,13 @@ const SalesReport = () => {
   };
 
   const fetchData = async () => {
-    const responseWarehouse = await axios.get("http://localhost:8000/warehouses/getAllWarehouse");
+    const responseWarehouse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getAllWarehouse`);
     setWarehouses(responseWarehouse.data);
 
-    const responseProduct = await axios.get(`http://localhost:8000/product/listAllproduct`);
+    const responseProduct = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/listAllproduct`);
     setProducts(responseProduct.data.result);
 
-    const responseCategory = await axios.get(`http://localhost:8000/productcategory/listproductcategory`);
+    const responseCategory = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`);
     setCategoriesProducts(responseCategory.data.result);
   };
 

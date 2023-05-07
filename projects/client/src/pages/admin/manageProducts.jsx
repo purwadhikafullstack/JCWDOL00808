@@ -32,7 +32,7 @@ function ManageProducts() {
   }, [page, keyword, sort, order, selectedCategoryId]);
 
   const getProducts = async () => {
-    const response = await axios.get(`http://localhost:8000/product/listproduct?search_query=${keyword}&page=${page}&limit=${limit}`, {
+    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/listproduct?search_query=${keyword}&page=${page}&limit=${limit}`, {
       params: {
         sort,
         order,
@@ -47,7 +47,7 @@ function ManageProducts() {
 
   const deleteProducts = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/product/deleteproduct/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/product/deleteproduct/${id}`);
       getProducts();
       toast({
         title: `Product success deleted`,
@@ -57,7 +57,7 @@ function ManageProducts() {
       });
     } catch (error) {
       toast({
-        title: `${error.message}`,
+        title: `${error.response.data.message}`,
         status: "error",
         duration: 9000,
         isClosable: true,
@@ -67,7 +67,7 @@ function ManageProducts() {
 
   const fetchData = async () => {
     // Fetch the product data here, and update the productData state.
-    const response = await axios.get(`http://localhost:8000/product/productId/${selectedCategoryId}`);
+    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/productId/${selectedCategoryId}`);
     setProductData(response.data);
   };
 
@@ -208,7 +208,7 @@ function ManageProducts() {
       </Flex>
 
       {/* fitur table */}
-      <Table variant="striped" size="sm" mt="2" textAlign="center">
+      <Table variant="striped" size="sm" mt="2" textAlign="center" border="1px solid gray">
         <TableCaption mb="2">
           Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
         </TableCaption>
@@ -236,7 +236,7 @@ function ManageProducts() {
               <Td fontSize="sm">{formatRupiah(product.price)}</Td>
               <Td fontSize="sm">{formatWeight(product.weight)}</Td>
               <Td fontSize="sm">
-                <img src={`http://localhost:8000/${product.imageUrl}`} alt="product" width="50" />
+                <img src={`${process.env.REACT_APP_API_BASE_URL}/${product.imageUrl}`} alt="product" width="50" />
               </Td>
               <Td>
                 <Box display="flex">
