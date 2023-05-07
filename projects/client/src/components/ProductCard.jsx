@@ -38,7 +38,8 @@ export const ProductCard = (props) => {
         </p>
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-[Oswald] py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          onClick={() => props.func("")}>
+          onClick={() => props.func("")}
+        >
           Go Back
         </button>
       </div>
@@ -51,7 +52,8 @@ export const ProductCard = (props) => {
         return (
           <div
             key={product.id}
-            className="flex flex-col justify-between md:flex-none w-full max-w-sm bg-white border border-gray-200 rounded-none shadow dark:bg-gray-800 dark:border-gray-700">
+            className="flex flex-col justify-between md:flex-none w-full max-w-sm bg-white border border-gray-200 rounded-none shadow dark:bg-gray-800 dark:border-gray-700"
+          >
             <Link to={`/product-details/${product.id}`}>
               <img
                 className="p-4"
@@ -77,8 +79,9 @@ export const ProductCard = (props) => {
                 <Button
                   variant="buttonBlack"
                   onClick={() => handleAddToCart(product.id, 1)}
-                  disabled={!user?.is_verified || product.totalStock === "0"}
-                  className="md:col-span-3 text-white bg-blue-700 hover:bg-blue-700 active:bg-blue-900  rounded-sm text-md px-2 py-2 text-center dark:bg-blue-600 enabled:dark:hover:bg-blue-700 enabled:dark:active:bg-blue-900 disabled:dark:bg-gray-700 disabled:cursor-not-allowed disabled:dark:text-black disabled:bg-blue-300 disabled:text-white">
+                  isDisabled={!user?.is_verified || product.totalStock === "0"}
+                  className="md:col-span-3 text-white bg-blue-700 hover:bg-blue-700 active:bg-blue-900  rounded-sm text-md px-2 py-2 text-center dark:bg-blue-600 enabled:dark:hover:bg-blue-700 enabled:dark:active:bg-blue-900 disabled:dark:bg-gray-700 disabled:cursor-not-allowed disabled:dark:text-black disabled:bg-blue-300 disabled:text-white"
+                >
                   {product.totalStock !== "0" ? "Add to cart" : "Out of stock"}
                 </Button>
               </div>

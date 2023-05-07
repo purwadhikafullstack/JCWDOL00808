@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { isAuth } from "../apis/userAPIs";
 import Big4Logo from "../assets/Big4Logo.svg";
+import { userProfile } from "./../reducers/authSlice";
 import { getCarts, getTotalProductsInCart } from "./../reducers/cartSlice";
 import AvatarButton from "./AvatarButton";
 import HamburgerMenuButton from "./HamburgerMenu";
@@ -22,7 +23,7 @@ import { useDisclosure } from "@chakra-ui/react";
 
 export default function Navbar() {
   const token = localStorage.getItem("user_token");
-  const [profile, setProfile] = useState(null);
+  const profile = useSelector(userProfile);
   const totalProductsInCart = useSelector(getTotalProductsInCart);
   const queryParams = new URLSearchParams(window.location.search);
   const search = queryParams.get("search");
@@ -32,7 +33,7 @@ export default function Navbar() {
   useEffect(() => {
     if (token) {
       dispatch(getCarts());
-      isAuth().then((data) => setProfile(data));
+      isAuth();
     }
   }, [token, dispatch, navigate]);
 

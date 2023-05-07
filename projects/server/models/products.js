@@ -27,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
       weight: DataTypes.INTEGER,
       imageUrl: DataTypes.STRING,
       booked_stock: DataTypes.INTEGER,
+      is_deleted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {
       sequelize,

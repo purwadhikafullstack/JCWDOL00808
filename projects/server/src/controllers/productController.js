@@ -25,6 +25,7 @@ module.exports = {
       const order = req.query.order || "DESC"; //default order DESC
       const totalRows = await products.count({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -42,6 +43,7 @@ module.exports = {
       const totalPage = Math.ceil(totalRows / limit);
       const result = await products.findAll({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -129,7 +131,10 @@ module.exports = {
         });
 
       // insert data ke products
-      await products.create({ name, description, price, weight, imageUrl, product_categories_id }, { transaction: t });
+      await products.create(
+        { name, description, price, weight, imageUrl, product_categories_id },
+        { transaction: t }
+      );
 
       //step 5 kirim response
       await t.commit();
@@ -192,15 +197,20 @@ module.exports = {
 
       // step 2 validasi
       if (product_categories_id) {
-        const productCategory = await categories.findByPk(product_categories_id);
+        const productCategory = await categories.findByPk(
+          product_categories_id
+        );
         if (!productCategory) {
-          return res.status(404).send({ message: "Product category not found" });
+          return res
+            .status(404)
+            .send({ message: "Product category not found" });
         }
       }
 
       if (name) {
         let findNameProducts = await products.findOne({
           where: {
+            is_deleted: 0,
             name: name,
             id: { [Op.not]: product.id },
           },
@@ -215,7 +225,10 @@ module.exports = {
       }
 
       // Update the product
-      await product.update({ name, description, price, weight, imageUrl, product_categories_id }, { transaction: t });
+      await product.update(
+        { name, description, price, weight, imageUrl, product_categories_id },
+        { transaction: t }
+      );
 
       await t.commit();
       res.status(200).send({
@@ -251,7 +264,10 @@ module.exports = {
       }
 
       // step 2: delete admin data from database
-      await products.destroy({ where: { id: id } }, { transaction: t });
+      await products.update(
+        { is_deleted: 1 },
+        { where: { id: id }, transaction: t }
+      );
 
       // step 3: send response
       await t.commit();
@@ -313,13 +329,14 @@ module.exports = {
   getProductsByCategoryId: async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 0;
-      const limit = parseInt(req.query.limit) || 10;
+      // const limit = parseInt(req.query.limit) || 10000;
       const search = req.query.search_query || "";
-      const offset = limit * page;
+      // const offset = limit * page;
       const sort = req.query.sort || "name"; //default sorting by name
       const order = req.query.order || "DESC"; //default order DESC
       const totalRows = await products.count({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -334,9 +351,10 @@ module.exports = {
           ],
         },
       });
-      const totalPage = Math.ceil(totalRows / limit);
+      // const totalPage = Math.ceil(totalRows / limit);
       const result = await products.findAll({
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               product_categories_id: {
@@ -350,8 +368,8 @@ module.exports = {
             },
           ],
         },
-        offset: offset,
-        limit: limit,
+        // offset: offset,
+        // limit: limit,
         order: [[sort, order]], // add order clause with the sort and order parameters
       });
 
@@ -363,9 +381,9 @@ module.exports = {
       res.json({
         result: result,
         page: page,
-        limit: limit,
+        // limit: limit,
         totalRows: totalRows,
-        totalPage: totalPage,
+        // totalPage: totalPage,
       });
     } catch (error) {
       // console.error(error);

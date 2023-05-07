@@ -20,6 +20,7 @@ module.exports = {
         include: [
           {
             model: products,
+            where: { is_deleted: 0 },
             include: [
               {
                 model: stocks,
@@ -36,6 +37,7 @@ module.exports = {
                     FROM stocks
                     WHERE
                       stocks.products_id = carts.products_id
+                      AND stocks.is_deleted = 0
                   )`),
                   "totalStock",
                 ],
@@ -106,6 +108,7 @@ module.exports = {
         include: [
           {
             model: products,
+            where: { is_deleted: 0 },
             include: [
               {
                 model: stocks,
@@ -122,6 +125,7 @@ module.exports = {
                     FROM stocks
                     WHERE
                       stocks.products_id = carts.products_id
+                      AND stocks.is_deleted = 0
                   )`),
                   "totalStock",
                 ],
@@ -156,6 +160,7 @@ module.exports = {
         include: [
           {
             model: products,
+            where: { is_deleted: 0 },
             include: [
               {
                 model: stocks,
@@ -172,6 +177,7 @@ module.exports = {
                     FROM stocks
                     WHERE
                       stocks.products_id = carts.products_id
+                      AND stocks.is_deleted = 0
                   )`),
                   "totalStock",
                 ],
