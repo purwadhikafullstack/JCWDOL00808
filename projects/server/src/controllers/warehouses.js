@@ -15,7 +15,7 @@ const { Op } = require("sequelize");
 module.exports = {
   getAllWarehouse: async (req, res) => {
     try {
-      let data = await WarehousesModel.findAll();
+      let data = await WarehousesModel.findAll({ where: { is_deleted: 0 } });
       return res.status(200).send(data);
     } catch (error) {
       console.log(error);

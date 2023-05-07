@@ -12,7 +12,14 @@ const ProductCategory = db.product_categories;
 module.exports = {
   getSalesReport: async (req, res) => {
     try {
-      const { email, start_date, end_date, warehouse_filter, category_filter, product_filter } = req.query;
+      const {
+        email,
+        start_date,
+        end_date,
+        warehouse_filter,
+        category_filter,
+        product_filter,
+      } = req.query;
 
       // Authenticate user
       const authenticatedAdmin = await admin.findOne({
@@ -68,7 +75,9 @@ module.exports = {
       };
 
       if (category_filter) {
-        productInclude.where = { product_categories_id: parseInt(category_filter) };
+        productInclude.where = {
+          product_categories_id: parseInt(category_filter),
+        };
       }
 
       let orderInclude = {
@@ -110,7 +119,11 @@ module.exports = {
       res.status(200).json(report);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "An error occurred while generating the sales report" });
+      res
+        .status(500)
+        .json({
+          message: "An error occurred while generating the sales report",
+        });
     }
 
     function generateReport(salesData) {
@@ -119,7 +132,9 @@ module.exports = {
 
       for (const sale of salesData) {
         const month = sale.createdAt.toISOString().slice(0, 7);
-        const week = `${sale.createdAt.getFullYear()}-W${getWeekNumber(sale.createdAt)}`;
+        const week = `${sale.createdAt.getFullYear()}-W${getWeekNumber(
+          sale.createdAt
+        )}`;
 
         let monthReport = monthly.find((m) => m.timePeriod === month);
         if (!monthReport) {
@@ -157,8 +172,12 @@ module.exports = {
         const productID = sale.product.id;
         const productName = sale.product.name;
 
-        const category = monthReport.categories.find((c) => c.id === categoryID) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
-        const product = monthReport.products.find((p) => p.id === productID) || { id: productID, name: productName, total: 0, quantity: 0 };
+        const category = monthReport.categories.find(
+          (c) => c.id === categoryID
+        ) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
+        const product = monthReport.products.find(
+          (p) => p.id === productID
+        ) || { id: productID, name: productName, total: 0, quantity: 0 };
 
         category.total += amount;
         category.quantity += sale.quantity;
@@ -173,8 +192,12 @@ module.exports = {
           monthReport.products.push(product);
         }
 
-        const weekCategory = weekReport.categories.find((c) => c.id === categoryID) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
-        const weekProduct = weekReport.products.find((p) => p.id === productID) || { id: productID, name: productName, total: 0, quantity: 0 };
+        const weekCategory = weekReport.categories.find(
+          (c) => c.id === categoryID
+        ) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
+        const weekProduct = weekReport.products.find(
+          (p) => p.id === productID
+        ) || { id: productID, name: productName, total: 0, quantity: 0 };
 
         weekCategory.total += amount;
         weekCategory.quantity += sale.quantity;
@@ -194,8 +217,18 @@ module.exports = {
         reports.map((r) => ({
           ...r,
           total: r.total.toFixed(2),
-          categories: r.categories.map((c) => ({ id: c.id, name: c.name, total: c.total.toFixed(2), quantity: c.quantity })),
-          products: r.products.map((p) => ({ id: p.id, name: p.name, total: p.total.toFixed(2), quantity: p.quantity })),
+          categories: r.categories.map((c) => ({
+            id: c.id,
+            name: c.name,
+            total: c.total.toFixed(2),
+            quantity: c.quantity,
+          })),
+          products: r.products.map((p) => ({
+            id: p.id,
+            name: p.name,
+            total: p.total.toFixed(2),
+            quantity: p.quantity,
+          })),
         }));
 
       return {

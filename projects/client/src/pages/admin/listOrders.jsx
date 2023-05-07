@@ -551,61 +551,6 @@ function ListOrders() {
                 {allData.payment_proof === null ? (
                   <>
                     <Text mb="4">No Payment Proof</Text>
-                    {allData.status === "Canceled" ? null : (
-                      <>
-                        <Flex>
-                          <Button
-                            size="sm"
-                            mr={2}
-                            _hover={{ bg: "red" }}
-                            colorScheme="red"
-                            onClick={() => {
-                              onAlertOpen();
-                            }}>
-                            Cancel Order
-                          </Button>
-                          <SendOrderModal
-                            orders_id={allData.id}
-                            orders_status={allData.status}
-                            func={getOrders}
-                          />
-                        </Flex>
-                        <AlertDialog
-                          isOpen={isAlertOpen}
-                          leastDestructiveRef={cancelRef}
-                          onClose={onAlertClose}>
-                          <AlertDialogOverlay>
-                            <AlertDialogContent>
-                              <AlertDialogHeader
-                                fontSize="lg"
-                                fontWeight="bold">
-                                Cancel order
-                              </AlertDialogHeader>
-
-                              <AlertDialogBody>
-                                Are you sure cancelling this order? This action
-                                can't be undone.
-                              </AlertDialogBody>
-
-                              <AlertDialogFooter>
-                                <Button ref={cancelRef} onClick={onAlertClose}>
-                                  Cancel
-                                </Button>
-                                <Button
-                                  colorScheme="red"
-                                  onClick={() => {
-                                    handleCancelOrder(allData.id);
-                                    onAlertClose();
-                                  }}
-                                  ml={3}>
-                                  Yes, cancel this order
-                                </Button>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialogOverlay>
-                        </AlertDialog>
-                      </>
-                    )}
                   </>
                 ) : (
                   <img
@@ -614,12 +559,66 @@ function ListOrders() {
                     width="200"
                   />
                 )}
-                <Text mb="4"></Text>
               </Box>
             </Box>
           </ModalBody>
 
           <ModalFooter>
+            {allData.status === "Canceled" ||
+            allData.status === "Waiting for confirmation" ||
+            allData.status === "Shipped" ||
+            allData.status === "Order confirmed" ? null : (
+              <>
+                <Flex mt={3}>
+                  <SendOrderModal
+                    orders_id={allData.id}
+                    orders_status={allData.status}
+                    func={getOrders}
+                  />
+                  <Button
+                    mr={2}
+                    _hover={{ bg: "red.600" }}
+                    colorScheme="red"
+                    onClick={() => {
+                      onAlertOpen();
+                    }}>
+                    Cancel Order
+                  </Button>
+                </Flex>
+                <AlertDialog
+                  isOpen={isAlertOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onAlertClose}>
+                  <AlertDialogOverlay>
+                    <AlertDialogContent>
+                      <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                        Cancel order
+                      </AlertDialogHeader>
+
+                      <AlertDialogBody>
+                        Are you sure cancelling this order? This action can't be
+                        undone.
+                      </AlertDialogBody>
+
+                      <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onAlertClose}>
+                          Cancel
+                        </Button>
+                        <Button
+                          colorScheme="red"
+                          onClick={() => {
+                            handleCancelOrder(allData.id);
+                            onAlertClose();
+                          }}
+                          ml={3}>
+                          Yes, cancel this order
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialogOverlay>
+                </AlertDialog>
+              </>
+            )}
             {allData.status === "Waiting for confirmation" ? (
               <>
                 <Button

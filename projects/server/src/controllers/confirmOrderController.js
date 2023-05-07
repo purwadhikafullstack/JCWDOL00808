@@ -86,7 +86,7 @@ module.exports = {
         return res.status(404).json({ message: "Order not found" });
       }
       // Update order status to "Processed"
-      await order.update({ status: "On Process" }, { transaction: t });
+      await order.update({ status: "On process" }, { transaction: t });
 
       // Update product stock and generate stock transfer request if necessary
       const orderDetail = await orderDetails.findAll({
