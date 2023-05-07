@@ -83,7 +83,8 @@ export default function ProductDetails() {
         <Flex
           direction={{ base: "column", sm: "row" }}
           justifyContent="center"
-          alignItems="center">
+          alignItems="center"
+        >
           <Box flex="1" maxW="lg">
             <Image
               src={`${process.env.REACT_APP_API_BASE_URL}/${product?.imageUrl}`}
@@ -111,10 +112,11 @@ export default function ProductDetails() {
                 onChange={(qty) => setQuantity(Number(qty))}
                 defaultValue={1}
                 min={1}
-                max={product.totalStock}
+                max={product.availableStock}
                 keepWithinRange
                 clampValueOnBlur
-                borderRadius="none">
+                borderRadius="none"
+              >
                 <NumberInputField />
                 <NumberInputStepper borderRadius="none">
                   <NumberIncrementStepper />
@@ -126,9 +128,11 @@ export default function ProductDetails() {
               variant="buttonBlack"
               onClick={() => handleAddToCart(product.id, quantity)}
               isDisabled={!profile?.is_verified || product.totalStock === "0"}
-              width="100%">
+              width="100%"
+            >
               {product.totalStock !== "0" ? "Add to cart" : "Out of stock"}
             </Button>
+            <Text>Available products: {product.availableStock} Pcs</Text>
           </VStack>
         </Flex>
       </div>
