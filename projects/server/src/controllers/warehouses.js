@@ -15,7 +15,7 @@ const { Op } = require("sequelize");
 module.exports = {
   getAllWarehouse: async (req, res) => {
     try {
-      let data = await WarehousesModel.findAll();
+      let data = await WarehousesModel.findAll({ where: { is_deleted: 0 } });
       return res.status(200).send(data);
     } catch (error) {
       console.log(error);
@@ -93,6 +93,7 @@ module.exports = {
         offset,
         order: [[sort, order]],
         where: {
+          is_deleted: 0,
           [Op.or]: [
             {
               name: {
@@ -127,6 +128,7 @@ module.exports = {
     }
   },
   addWarehouse: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
       // 2. destructure object request body
       let { name, address, province, city, district } = req.body;
@@ -137,23 +139,28 @@ module.exports = {
         q: `${address}, ${district}, ${province}, ${city}`,
         countrycode: "id",
         limit: 1,
+
         key: process.env.API_KEY,
       });
-      console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
+      // console.log(response); // buat liat hasil olah dari fungsi geocode. response berupa lat, lng
 
       // 4. destructure response dari geocode
       let { lat, lng } = response.results[0].geometry;
 
       // 5. gunakan latitude & longitude sesuai kebutuhan
-      let createNewWarehouse = await WarehousesModel.create({
-        name,
-        address,
-        province,
-        city,
-        district,
-        latitude: lat,
-        longitude: lng,
-      });
+      let createNewWarehouse = await WarehousesModel.create(
+        {
+          name,
+          address,
+          province,
+          city,
+          district,
+          latitude: lat,
+          longitude: lng,
+        },
+        { transaction: t }
+      );
+      t.commit();
 
       res.status(200).send({
         success: true,
@@ -188,7 +195,9 @@ module.exports = {
         { where: { id: req.body.id } }
       );
 
-      res.status(200).send({ success: true, message: "Warehouse data update success!" });
+      res
+        .status(200)
+        .send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -198,12 +207,16 @@ module.exports = {
     }
   },
   deleteWarehouseData: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
       let deletedWarehouse = await WarehousesModel.findAll({
         where: { id: req.query.id },
       });
 
-      await WarehousesModel.destroy({ where: { id: req.query.id } });
+      let deleteWarehouse = await WarehousesModel.update(
+        { is_deleted: 1 },
+        { where: { id: req.query.id } }
+      );
 
       res.status(200).send({
         success: true,
@@ -220,7 +233,9 @@ module.exports = {
   getWarehouseDetails: async (req, res) => {
     try {
       const id = req.query.id;
-      let data = await WarehousesModel.findAll({ where: { id } });
+      let data = await WarehousesModel.findAll({
+        where: { id },
+      });
       console.log("data details: ", data);
 
       res.status(200).send(data);
@@ -250,7 +265,10 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id: id }, { transaction: t });
+      const addedProductToWarehouse = await stocks.create(
+        { stock, products_id, warehouses_id: id },
+        { transaction: t }
+      );
       const updateHistories = await stock_histories.create(
         {
           stock_before: 0,
@@ -446,7 +464,9 @@ module.exports = {
   getWarehouseIdByAdminsId: async (req, res) => {
     try {
       let { id } = req.dataDecode;
-      let data = await WarehousesModel.findAll({ where: { admins_id: id } });
+      let data = await WarehousesModel.findAll({
+        where: { admins_id: id },
+      });
       return res.status(200).send(data);
     } catch (error) {
       console.log(error);

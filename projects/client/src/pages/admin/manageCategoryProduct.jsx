@@ -30,7 +30,7 @@ function ManageCategoryProducts() {
   }, [page, keyword, sort, order]);
 
   const getCategoryProducts = async () => {
-    const response = await axios.get(`http://localhost:8000/productcategory/listproductcategory?search_query=${keyword}&page=${page}&limit=${limit}`, {
+    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory?search_query=${keyword}&page=${page}&limit=${limit}`, {
       params: {
         sort,
         order,
@@ -44,7 +44,7 @@ function ManageCategoryProducts() {
 
   const deleteProducts = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/productcategory/deletecategoryproduct/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/productcategory/deletecategoryproduct/${id}`);
       toast({
         title: `Delete Category Success`,
         status: "success",
@@ -54,7 +54,7 @@ function ManageCategoryProducts() {
       getCategoryProducts();
     } catch (error) {
       toast({
-        title: `${error.message}`,
+        title: `${error.response.data.message}`,
         status: "error",
         duration: 9000,
         isClosable: true,
@@ -185,7 +185,7 @@ function ManageCategoryProducts() {
       </Flex>
 
       {/* fitur table */}
-      <Table variant="striped" size="sm" mt="2" textAlign="center">
+      <Table variant="striped" size="sm" mt="2" textAlign="center" border="1px solid gray">
         <TableCaption mb="2">
           Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
         </TableCaption>

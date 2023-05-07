@@ -86,7 +86,7 @@ module.exports = {
         return res.status(404).json({ message: "Order not found" });
       }
       // Update order status to "Processed"
-      await order.update({ status: "On Process" }, { transaction: t });
+      await order.update({ status: "On process" }, { transaction: t });
 
       // Update product stock and generate stock transfer request if necessary
       const orderDetail = await orderDetails.findAll({
@@ -139,7 +139,10 @@ module.exports = {
           const transferQuantity = detail.quantity - (stock ? stock.stock : 0);
 
           const nearestWarehouseStock = await Stock.findOne({
-            where: { products_id: detail.products_id, warehouses_id: nearestWarehouse.id },
+            where: {
+              products_id: detail.products_id,
+              warehouses_id: nearestWarehouse.id,
+            },
           });
 
           // create Stock Mutation Auto
@@ -237,6 +240,10 @@ module.exports = {
             { transaction: t }
           );
         }
+        
+        // Decrease booked_stock in the Product table
+        const product = await Product.findByPk(detail.products_id);
+        await product.update({ booked_stock: product.booked_stock - detail.quantity }, { transaction: t });
       }
       await t.commit();
       res.json({ message: "Order accepted and processed" });
@@ -254,7 +261,7 @@ module.exports = {
         return res.status(404).json({ message: "Order not found" });
       }
       // Update order status to "Waiting for Payment"
-      await order.update({ status: "Waiting for Payment" });
+      await order.update({ status: "Waiting for payment" });
       res.json({ message: 'Order rejected and status reverted to "Waiting for Payment"' });
     } catch (err) {
       console.error(err);

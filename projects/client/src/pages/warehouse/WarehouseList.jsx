@@ -5,17 +5,9 @@ import {
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
   Button,
-  ButtonGroup,
   useToast,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
   useDisclosure,
   Flex,
   FormControl,
@@ -36,9 +28,10 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
+
 import Axios from "axios";
 import { API_url } from "../../helper";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
@@ -47,7 +40,7 @@ import * as yup from "yup";
 
 const WarehouseList = (props) => {
   const toast = useToast();
-  const cancelRef = React.useRef();
+
   const navigate = useNavigate();
   const [role, setRole] = useState(localStorage.getItem("role"));
 
@@ -92,6 +85,7 @@ const WarehouseList = (props) => {
   useEffect(() => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
+
 
   const showWarehouseData = () => {
     let count = 0;
@@ -233,6 +227,7 @@ const WarehouseList = (props) => {
             </Card>
           </Flex>
         </Box>
+
         {loading ? (
           <Spinner />
         ) : warehouseData.length !== 0 && !loading ? (
@@ -262,6 +257,7 @@ const WarehouseList = (props) => {
             Warehouse data is currently unavailable
           </Text>
         )}
+
 
         <div id="pagination" className="mt-5 flex items-center justify-center">
           <ReactPaginate
@@ -307,8 +303,11 @@ const WarehouseList = (props) => {
                     id="province"
                     placeholder="Select province"
                     onChange={(e) => {
-                      console.log(e.target.value);
-                      formik.setFieldValue("province", e.target.value.split(",")[1]);
+                      formik.setFieldValue(
+                        "province",
+                        e.target.value.split(",")[1]
+                      );
+
                       onGetCity(e.target.value.split(",")[0]);
                     }}
                     onBlur={formik.handleBlur}
@@ -346,10 +345,10 @@ const WarehouseList = (props) => {
               </ModalBody>
 
               <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={onAddClose}>
+                <Button colorScheme="red" mr={3} onClick={onAddClose}>
                   Close
                 </Button>
-                <Button variant="ghost" type="submit">
+                <Button colorScheme="blue" type="submit">
                   Add warehouse data
                 </Button>
               </ModalFooter>

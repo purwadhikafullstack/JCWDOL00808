@@ -41,6 +41,11 @@ module.exports = (sequelize, DataTypes) => {
       phone_number: DataTypes.STRING,
       role: DataTypes.INTEGER,
       profile_picture: DataTypes.STRING,
+      is_deleted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {
       sequelize,

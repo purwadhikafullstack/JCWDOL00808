@@ -12,7 +12,16 @@ const ProductCategory = db.product_categories;
 module.exports = {
   getSalesReport: async (req, res) => {
     try {
-      const { email, start_date, end_date, warehouse_filter, category_filter, product_filter } = req.query;
+      const {
+        email,
+        start_date,
+        end_date,
+        warehouse_filter,
+        category_filter,
+        product_filter,
+        page = 0, // default page value is 0
+        limit = 10, // default limit is 10
+      } = req.query;
 
       // Authenticate user
       const authenticatedAdmin = await admin.findOne({
@@ -68,7 +77,9 @@ module.exports = {
       };
 
       if (category_filter) {
-        productInclude.where = { product_categories_id: parseInt(category_filter) };
+        productInclude.where = {
+          product_categories_id: parseInt(category_filter),
+        };
       }
 
       let orderInclude = {
@@ -98,19 +109,38 @@ module.exports = {
         };
       }
 
+      const offset = limit * page;
+
       let salesData = await OrderDetail.findAll({
         where: whereCondition,
         include: [productInclude, orderInclude],
+        limit: parseInt(limit), // Apply limit for pagination
+        offset: offset, // Apply the offset for pagination
       });
+
+      const totalRows = await OrderDetail.count({
+        where: whereCondition,
+        include: [productInclude, orderInclude],
+      });
+
+      const totalPage = Math.ceil(totalRows / limit);
 
       // Generate report
       const report = generateReport(salesData);
 
       // Send the report as a response
-      res.status(200).json(report);
+      res.status(200).json({
+        report: report,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "An error occurred while generating the sales report" });
+      res.status(500).json({
+        message: "An error occurred while generating the sales report",
+      });
     }
 
     function generateReport(salesData) {
@@ -194,8 +224,18 @@ module.exports = {
         reports.map((r) => ({
           ...r,
           total: r.total.toFixed(2),
-          categories: r.categories.map((c) => ({ id: c.id, name: c.name, total: c.total.toFixed(2), quantity: c.quantity })),
-          products: r.products.map((p) => ({ id: p.id, name: p.name, total: p.total.toFixed(2), quantity: p.quantity })),
+          categories: r.categories.map((c) => ({
+            id: c.id,
+            name: c.name,
+            total: c.total.toFixed(2),
+            quantity: c.quantity,
+          })),
+          products: r.products.map((p) => ({
+            id: p.id,
+            name: p.name,
+            total: p.total.toFixed(2),
+            quantity: p.quantity,
+          })),
         }));
 
       return {

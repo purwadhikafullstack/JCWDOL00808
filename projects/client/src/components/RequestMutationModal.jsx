@@ -51,7 +51,7 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        await axios.post("http://localhost:8000/mutations/request-stock", values, {
+        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/mutations/request-stock`, values, {
           headers: {
             Authorization: token,
           },
@@ -85,7 +85,7 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
 
   const fetchProducts = async () => {
     if (selectedId) {
-      const response = await axios.get(`http://localhost:8000/product/getProductOnWarehouse?warehouses_id=${selectedId}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/getProductOnWarehouse?warehouses_id=${selectedId}`);
       setProduct(response.data);
       console.log(response.data);
     } else {
@@ -94,7 +94,7 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
   };
 
   const fetchWarehouse = async () => {
-    const response = await axios.get("http://localhost:8000/warehouses/getAllWarehouse");
+    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getAllWarehouse`);
     setWarehouse(response.data);
   };
 

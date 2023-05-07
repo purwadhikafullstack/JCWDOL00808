@@ -14,7 +14,6 @@ import ManageAdmin from "./pages/admin/manageAdmin";
 import ManageCategoryProducts from "./pages/admin/manageCategoryProduct";
 import ManageProducts from "./pages/admin/manageProducts";
 import PatchAdmin from "./pages/admin/patchAdmin";
-import RegisterAdmin from "./pages/admin/registerAdmin";
 import UserList from "./pages/admin/userList";
 import AddUserAddress from "./pages/user/AddUserAddress";
 import StockHistory from "./pages/warehouse/StockHistory";
@@ -36,12 +35,12 @@ import Navbar from "./components/Navbar";
 import StockRequestList from "./pages/warehouse/GetRequestMutation";
 import ManageMutations from "./pages/warehouse/manageMutations";
 import Checkout from "./pages/user/Checkout";
+import SalesReport from "./pages/admin/salesReport";
 //Protected route function
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import SuperAdminRoutes from "./utils/SuperAdminRoutes";
 import WarehouseAdminRoutes from "./utils/WarehouseAdminRoutes";
 import ListOrders from "./pages/admin/listOrders";
-import SalesReport from "./pages/admin/salesReport";
 import OrderList from "./pages/user/OrderList";
 import UploadPaymentProof from "./pages/user/UploadPaymentProof";
 import "@fontsource/oswald/500.css";
@@ -92,10 +91,8 @@ function App() {
             <Route path="/admin/assign/:id" element={<AssignAdmin />} />
             <Route path="/admin/adminuserlist" element={<UserList />} />
             <Route path="/admin/manageadmin" element={<ManageAdmin />} />
-            <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
             <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
             {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
-            <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
 
             <Route path="/warehouse/list" element={<WarehouseList />} />
 
@@ -117,9 +114,9 @@ function App() {
             <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
             <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
+            <Route path="/admin/sales-report" element={<SalesReport />} />
+            <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
           </Route>
-          <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
-          <Route path="/admin/sales-report" element={<SalesReport />} />
 
           {/* Fallback route */}
           <Route path="/*" element={<NotFound />} />

@@ -48,7 +48,7 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId, onCategoryUpdate })
 
     setIsLoading(true); // set loading state
     try {
-      const response = await axios.get(`http://localhost:8000/productcategory/productcategory/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/productcategory/productcategory/${id}`);
       const categoryData = response.data;
 
       formik.setValues({
@@ -69,7 +69,7 @@ const PatchCategoryProduct = ({ isOpen, onClose, categoryId, onCategoryUpdate })
 
   const patchCategory = async (values) => {
     try {
-      await axios.patch(`http://localhost:8000/productcategory/patchcategoryproduct/${id}`, values);
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/productcategory/patchcategoryproduct/${id}`, values);
 
       toast({
         title: `Edit Category Success`,

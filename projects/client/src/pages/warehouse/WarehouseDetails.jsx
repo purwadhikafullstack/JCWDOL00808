@@ -62,8 +62,16 @@ const WarehouseDetails = (props) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const toast = useToast();
-  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
-  const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
+  } = useDisclosure();
+  const {
+    isOpen: isAlertOpen,
+    onOpen: onAlertOpen,
+    onClose: onAlertClose,
+  } = useDisclosure();
   const cancelRef = React.useRef();
 
   const navigate = useNavigate();
@@ -128,7 +136,7 @@ const WarehouseDetails = (props) => {
         toast({
           title: `${response.data.message}`,
           status: "success",
-          duration: 9000,
+          duration: 1000,
           onCloseComplete: () => getSpecificWarehouse(),
         });
       })
@@ -146,7 +154,7 @@ const WarehouseDetails = (props) => {
         toast({
           title: `${response.data.message}`,
           status: "success",
-          duration: 9000,
+          duration: 1000,
           isClosable: true,
           onCloseComplete: () => navigate("/warehouse/list"),
         });
@@ -183,7 +191,11 @@ const WarehouseDetails = (props) => {
         ) : (
           <Card maxW="lg" border="1px" borderColor="gray.300">
             <CardBody>
-              <Image src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg" alt="Green double couch with wooden legs" borderRadius="lg" />
+              <Image
+                src="https://www.paper.id/blog/wp-content/uploads/2022/11/istockphoto-1138429558-612x612-1.jpg"
+                alt="Green double couch with wooden legs"
+                borderRadius="lg"
+              />
               <Stack mt="6" spacing="3">
                 <Heading size="md">Warehouse name: {name}</Heading>
                 <Text size="sm">Address: {address}</Text>
@@ -195,7 +207,11 @@ const WarehouseDetails = (props) => {
             <Divider />
             <CardFooter>
               <ButtonGroup spacing="6">
-                <Button variant="solid" onClick={() => navigate("/warehouse/list", { replace: true })}>
+                <Button
+                  variant="solid"
+                  onClick={() =>
+                    navigate("/warehouse/list", { replace: true })
+                  }>
                   <BiArrowBack />
                 </Button>
                 <Button
@@ -205,6 +221,7 @@ const WarehouseDetails = (props) => {
                   }}
                 >
                   Edit
+
                 </Button>
                 <Button
                   colorScheme="red"
@@ -214,14 +231,20 @@ const WarehouseDetails = (props) => {
                 >
                   Delete
                 </Button>
-                <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={onAlertClose}>
+                <AlertDialog
+                  isOpen={isAlertOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onAlertClose}>
                   <AlertDialogOverlay>
                     <AlertDialogContent>
                       <AlertDialogHeader fontSize="lg" fontWeight="bold">
                         Delete Warehouse
                       </AlertDialogHeader>
 
-                      <AlertDialogBody>Are you sure you want to delete this data? This can't be undone.</AlertDialogBody>
+                      <AlertDialogBody>
+                        Are you sure you want to delete this data? This can't be
+                        undone.
+                      </AlertDialogBody>
 
                       <AlertDialogFooter>
                         <Button ref={cancelRef} onClick={onAlertClose}>
@@ -239,6 +262,7 @@ const WarehouseDetails = (props) => {
                   <ModalContent>
                     <ModalHeader>Edit warehouse data</ModalHeader>
                     <ModalCloseButton />
+
                     <form onSubmit={formik.handleSubmit}>
                       <ModalBody>
                         <FormControl isInvalid={formik.errors.name && formik.touched.name}>
@@ -258,6 +282,7 @@ const WarehouseDetails = (props) => {
                           <Select
                             id="province"
                             placeholder={detailsProvince}
+
                             onChange={(e) => {
                               console.log(e.target.value);
                               formik.setFieldValue("province", e.target.value.split(",")[1]);
@@ -268,6 +293,7 @@ const WarehouseDetails = (props) => {
                             {provinceData.map((value) => {
                               return (
                                 <option id="province" value={value.province_id + "," + value.province} key={value.province_id}>
+
                                   {value.province}
                                 </option>
                               );
@@ -286,6 +312,7 @@ const WarehouseDetails = (props) => {
                               );
                             })}
                           </Select>
+
                           <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={formik.errors.district && formik.touched.district}>
@@ -306,6 +333,7 @@ const WarehouseDetails = (props) => {
                         </Button>
                       </ModalFooter>
                     </form>
+
                   </ModalContent>
                 </Modal>
               </ButtonGroup>
