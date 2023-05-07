@@ -12,14 +12,17 @@ const Models = require("../../models");
 module.exports = {
   getAllProducts: async (req, res) => {
     try {
-      let data = await ProductsModel.findAll();
+      let products_id = req.query.id;
+      let data = await ProductsModel.findAll({
+        where: {id: products_id}
+      });
       return res.status(200).send(data);
     } catch (error) {
       return res.status(500).send(error);
     }
   },
 
-  test: async (req, res) => {
+  getAllHistories: async (req, res) => {
     try {
       const admins_id = req.dataDecode.id;
 
@@ -124,7 +127,7 @@ module.exports = {
       });
     }
   },
-  test2: async (req, res) => {
+  getHistoryDetails: async (req, res) => {
     try {
       let admins_id = req.dataDecode.id;
 
@@ -133,19 +136,30 @@ module.exports = {
       let warehouseQuery = req.query.warehouseQuery || "";
       let month = req.query.month || "";
 
-      let historyDetails = await StockHistoriesModel.findAll({
-        include: {
-          as: "warehouse",
-        },
-        where: {
+      let whereQuery = {};
+      if (month !== "") {
+        whereQuery = {
           products_id,
           "$warehouse.name$": {
             [Op.like]: "%" + warehouseQuery + "%",
           },
-          // sequelize.where(sequelize.fn("MONTH", sequelize.col("stock_histories.createdAt")), month),
-          // sequelize.where()
-          // sequelize.fn("MONTH", sequelize.col("TransactionItem.createdAt")),
+          createdAt: Models.sequelize.where(Models.sequelize.fn("MONTH", Models.sequelize.col("stock_histories.createdAt")), month),
+        };
+      } else {
+        whereQuery = {
+          products_id,
+          "$warehouse.name$": {
+            [Op.like]: "%" + warehouseQuery + "%",
+          },
+        };
+      }
+
+      let historyDetails = await StockHistoriesModel.findAll({
+        include: {
+          model: WarehousesModel,
+          as: "warehouse",
         },
+        where: whereQuery,
       });
 
       for (let i = 0; i < historyDetails.length; i++) {
@@ -206,7 +220,7 @@ module.exports = {
       console.log(error);
       res.status(500).send({
         success: false,
-        message: "Something is wrong",
+        message: error,
       });
     }
   },

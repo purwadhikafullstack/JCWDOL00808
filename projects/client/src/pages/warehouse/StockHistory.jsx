@@ -57,7 +57,7 @@ const History = () => {
 
   const getHistoryData = () => {
     Axios.post(
-      API_url + `/histories/test?page=${page}`,
+      API_url + `/histories/getAllHistories?page=${page}`,
       {
         warehouse: selectedWarehouse,
         month: month,
