@@ -25,6 +25,7 @@ export default function ProductDetails() {
   const [profile, setProfile] = useState(null);
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const token = localStorage.getItem("user_token");
   const { productId } = useParams();
   const toast = useToast();
   const dispatch = useDispatch();
@@ -45,20 +46,44 @@ export default function ProductDetails() {
     }
   };
 
-  const handleAddToCart = (products_id, quantity) => {
-    // Add the product to the cart with the selected quantity
-    dispatch(
-      addProduct({
-        products_id,
-        quantity,
-      })
-    );
-    toast({
-      title: "Product added to cart",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
+  const handleAddToCart = async (products_id, quantity) => {
+    try {
+      //Get product quantity in existing cart
+      const productQuantity = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/cart/quantity/${products_id}`,
+        { headers: { Authorization: token } }
+      );
+
+      if (quantity + productQuantity.data.data > product.availableStock) {
+        toast({
+          title: "Product in your cart exceeds available stocks",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        // Add the product to the cart with the selected quantity
+        dispatch(
+          addProduct({
+            products_id,
+            quantity,
+          })
+        );
+        toast({
+          title: "Product added to cart",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   useEffect(() => {
