@@ -106,7 +106,7 @@ export default function Cart() {
                             grams
                           </p>
                           <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
-                            Stocks: {cart.product.totalStock} Pcs
+                            Stocks: {cart.product.availableStock} Pcs
                           </p>
                         </div>
                         <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
@@ -143,12 +143,12 @@ export default function Cart() {
                                 handleUpdateQuantity(event, cart.id);
                               }}
                               min={1}
-                              max={cart.product.totalStock}
+                              max={cart.product.availableStock}
                             />
                             <button
                               disabled={
                                 cart.quantity ===
-                                parseInt(cart.product.totalStock)
+                                parseInt(cart.product.availableStock)
                               }
                               onClick={() =>
                                 dispatch(
