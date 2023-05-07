@@ -11,4 +11,18 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
   return distance;
 };
 
-module.exports = { haversineDistance };
+const getCurrentWeek = () => {
+  const currentDate = new Date();
+  const weekStart = currentDate.getDate() - currentDate.getDay() + (currentDate.getDay() === 0 ? -6 : 1);
+  const weekEnd = weekStart + 6;
+  return [new Date(currentDate.setDate(weekStart)).toISOString().substring(0, 10), new Date(currentDate.setDate(weekEnd)).toISOString().substring(0, 10)];
+};
+
+const getCurrentMonth = () => {
+  const currentDate = new Date();
+  const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  return [monthStart.toISOString().substring(0, 10), monthEnd.toISOString().substring(0, 10)];
+};
+
+module.exports = { haversineDistance, getCurrentWeek, getCurrentMonth };

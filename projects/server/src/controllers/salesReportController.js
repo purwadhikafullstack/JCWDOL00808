@@ -9,6 +9,9 @@ const Warehouse = db.warehouses;
 const Order = db.orders;
 const ProductCategory = db.product_categories;
 
+//import utils function
+const { getCurrentMonth, getCurrentWeek } = require("../utils/function");
+
 module.exports = {
   getSalesReport: async (req, res) => {
     try {
@@ -19,9 +22,13 @@ module.exports = {
         warehouse_filter,
         category_filter,
         product_filter,
+        time_period = "weekly",
         page = 0, // default page value is 0
         limit = 10, // default limit is 10
       } = req.query;
+
+      const [defaultWeekStart, defaultWeekEnd] = getCurrentWeek();
+      const [defaultMonthStart, defaultMonthEnd] = getCurrentMonth();
 
       // Authenticate user
       const authenticatedAdmin = await admin.findOne({
@@ -32,8 +39,8 @@ module.exports = {
         return res.status(401).json({ message: "Invalid Email" });
       }
 
-      const startDate = new Date(start_date);
-      const endDate = new Date(end_date);
+      const startDate = req.query.start_date ? new Date(req.query.start_date) : time_period === "weekly" ? new Date(defaultWeekStart) : new Date(defaultMonthStart);
+      const endDate = req.query.end_date ? new Date(req.query.end_date) : time_period === "weekly" ? new Date(defaultWeekEnd) : new Date(defaultMonthEnd);
 
       // Ensure endDate includes the whole day
       endDate.setDate(endDate.getDate() + 1);
