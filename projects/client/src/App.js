@@ -96,7 +96,6 @@ function App() {
             <Route path="/admin/registeradmin" element={<RegisterAdmin />} />
             <Route path="/admin/patch-admin/:id" element={<PatchAdmin />} />
             {/* <Route path="/admin/addcategory" element={<AddCategoryProduct />} /> */}
-            <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
 
             <Route path="/warehouse/list" element={<WarehouseList />} />
             <Route path="/warehouse/edit" element={<EditWarehouse />} />
@@ -119,9 +118,10 @@ function App() {
             <Route path="/warehouse/getstockmutationrequest" element={<StockRequestList />} />
             <Route path="/warehouse/getAllstockmutationrequest" element={<ManageMutations />} />
             <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
+            <Route path="/admin/sales-report" element={<SalesReport />} />
+            <Route path="/admin/managecategory" element={<ManageCategoryProducts />} />
           </Route>
           <Route path="/warehouse/details/:id" element={<WarehouseDetails />} />
-          <Route path="/admin/sales-report" element={<SalesReport />} />
 
           {/* Fallback route */}
           <Route path="/*" element={<NotFound />} />
