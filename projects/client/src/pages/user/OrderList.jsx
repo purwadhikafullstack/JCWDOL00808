@@ -172,6 +172,7 @@ const OrderList = () => {
                   onClick={() => {
                     onCancelOpen();
                   }}
+                  fontFamily="roboto"
                 >
                   Cancel order
                 </Button>
@@ -181,7 +182,6 @@ const OrderList = () => {
                 <Button
                   variant="buttonBlack"
                   type="submit"
-                  isLoading={isLoading}
                   onClick={() =>
                     navigate(`/user/upload-payment-proof?id=${value.id}`)
                   }
@@ -224,6 +224,7 @@ const OrderList = () => {
                     getDetails(value.id);
                     onDetailsOpen();
                   }}
+                  className="font-[Oswald]"
                 >
                   Transaction details
                 </Button>

@@ -113,19 +113,19 @@ const WarehouseList = (props) => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
 
-  const deleteButton = () => {
-    Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${warehouseId}`)
-      .then((response) => {
-        toast({
-          title: `${response.data.message}`,
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-          onCloseComplete: () => window.location.reload(false),
-        });
-      })
-      .catch((err) => console.log(err));
-  };
+  // const deleteButton = () => {
+  //   Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${warehouseId}`)
+  //     .then((response) => {
+  //       toast({
+  //         title: `${response.data.message}`,
+  //         status: "success",
+  //         duration: 9000,
+  //         isClosable: true,
+  //         onCloseComplete: () => window.location.reload(false),
+  //       });
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
   const getSpecificWarehouse = () => {
     Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${warehouseId}`)
@@ -168,7 +168,7 @@ const WarehouseList = (props) => {
               }}>
               Details
             </Button>
-            <>
+            {/* <>
               {role === "1" && (
                 <Button colorScheme="red" onClick={onAlertOpen}>
                   Delete
@@ -203,7 +203,7 @@ const WarehouseList = (props) => {
                   </AlertDialogContent>
                 </AlertDialogOverlay>
               </AlertDialog>
-            </>
+            </> */}
           </Td>
         </Tr>
       );
@@ -284,6 +284,7 @@ const WarehouseList = (props) => {
     <>
       <div className="flex flex-col items-center w-full">
         <Box className="my-5">
+
           <Flex id="sort, search, and filter">
             <Card maxW="lg">
               <CardBody>
