@@ -1,6 +1,6 @@
 // Import Sequelize
 const { sequelize } = require("../../models");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 // Import models
 const db = require("../../models/index");
@@ -11,7 +11,7 @@ const usersList = db.users;
 const Joi = require("joi");
 
 //import hashing
-const { hashPassword, hashMatch } = require("../lib/hash");
+const { hashPassword } = require("../lib/hash");
 
 module.exports = {
   getUserAdmin: async (req, res) => {
@@ -22,47 +22,57 @@ module.exports = {
       const offset = limit * page;
       const sort = req.query.sort || "id"; //default sorting by id
       const order = req.query.order || "DESC"; //default order DESC
+      const role_admin = parseInt(req.query.role_admin);
+
+      let whereCondition = {
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            email: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            phone_number: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            role: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      };
+
+      if (role_admin !== undefined && role_admin !== null && !isNaN(role_admin)) {
+        whereCondition.role = role_admin;
+      }
+
       const totalRows = await admins.count({
-        where: {
-          [Op.or]: [
-            {
-              full_name: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              email: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-          ],
-        },
+        where: whereCondition,
       });
+
       const totalPage = Math.ceil(totalRows / limit);
+
       const result = await admins.findAll({
-        where: {
-          [Op.or]: [
-            {
-              full_name: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              email: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              phone_number: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-          ],
-        },
+        where: whereCondition,
         offset: offset,
         limit: limit,
         order: [[sort, order]], // add order clause with the sort and order parameters
       });
+
+      // //replace '\' with '/'
+      result.forEach((admin) => {
+        if (admin.profile_picture) {
+          admin.profile_picture = admin.profile_picture.replace(/\\/g, "/");
+        }
+      });
+
       res.json({
         result: result,
         page: page,
@@ -82,52 +92,58 @@ module.exports = {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const sort = req.query.sort || "updatedAt"; //default sorting by date
+      const order = req.query.order || "DESC"; //default order DESC
+      const verificationStatus = parseInt(req.query.verification_status);
+
+      let whereCondition = {
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            email: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            phone_number: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            is_verified: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      };
+
+      if (verificationStatus !== undefined && verificationStatus !== null && !isNaN(verificationStatus)) {
+        whereCondition.is_verified = verificationStatus === 1;
+      }
+
       const totalRows = await usersList.count({
-        where: {
-          [Op.or]: [
-            {
-              full_name: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              email: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-          ],
-        },
+        where: whereCondition,
       });
+
       const totalPage = Math.ceil(totalRows / limit);
       const result = await usersList.findAll({
-        where: {
-          [Op.or]: [
-            {
-              full_name: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              email: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              phone_number: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              is_verified: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-          ],
-        },
+        where: whereCondition,
         offset: offset,
         limit: limit,
-        order: [["id", "DESC"]],
+        order: [[sort, order]],
       });
+
+      //replace '\' with '/'
+      result.forEach((user) => {
+        if (user.profile_picture) {
+          user.profile_picture = user.profile_picture.replace(/\\/g, "/");
+        }
+      });
+
       res.json({
         result: result,
         page: page,
@@ -332,10 +348,47 @@ module.exports = {
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
       }
+
+      // Replace '\' with '/'
+      if (admin.profile_picture) {
+        admin.profile_picture = admin.profile_picture.replace(/\\/g, "/");
+      }
+
       return res.status(200).json(admin);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  changePassword: async (req, res) => {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    // Joi schema for input validation
+    const schema = Joi.object({
+      password: Joi.string().min(8).required(),
+    });
+
+    // Validate the input data
+    const { error } = schema.validate({ password });
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    try {
+      const admin = await admins.findByPk(id);
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+
+      // Update the admin's password
+      await admin.update({ password: await hashPassword(password) });
+
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
   },
 };

@@ -1,9 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import { API_url } from "../../helper";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import { Flex, Box, Menu, MenuButton, MenuList, MenuItem, Icon, Text, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, Button, useToast } from "@chakra-ui/react";
+import { FaSort, FaFilter } from "react-icons/fa";
+import RegisterAdminModal from "../../components/addAdminModal";
+import PatchAdminModal from "../../components/patchAdminModal";
 
 const ManageAdmin = () => {
   const [users, setUsers] = useState([]);
@@ -13,17 +17,24 @@ const ManageAdmin = () => {
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");
-  const [msg, setMsg] = useState("");
-  const [sort, setSort] = useState("id");
+  const [sort, setSort] = useState("updatedAt");
+  const [sortText, setSortText] = useState("Date");
   const [order, setOrder] = useState("DESC");
+  const [roleAdmin, setRoleAdmin] = useState("");
+  const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+  const [selectedAdminId, setSelectedAdminId] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [adminToDelete, setAdminToDelete] = useState(null);
+  const cancelRef = useRef();
+  const toast = useToast();
 
   useEffect(() => {
-    // set here !
     getUsers();
-  }, [page, keyword, sort, order]);
+  }, [page, keyword, sort, order, roleAdmin]);
 
   const getUsers = async () => {
-    const response = await axios.get(`http://localhost:8000/admin/getAdmin?search_query=${keyword}&page=${page}&limit=${limit}`, {
+    const response = await axios.get(`http://localhost:8000/admin/getAdmin?search_query=${keyword}&page=${page}&limit=${limit}&role_admin=${roleAdmin}`, {
       params: {
         sort,
         order,
@@ -34,44 +45,97 @@ const ManageAdmin = () => {
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
   };
- 
 
   const changePage = ({ selected }) => {
     setPage(selected);
-    if (selected === 9) {
-      setMsg("Jika tidak menemukan data yang Anda cari, silahkan cari data dengan kata kunci spesifik!");
-    } else {
-      setMsg("");
-    }
   };
 
   const deleteAdmin = async (id) => {
     try {
       await axios.delete(`http://localhost:8000/admin/deleteAdmin/${id}`);
       getUsers();
+      toast({
+        title: `Admin is deleted`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     } catch (error) {
       console.log(error);
+      toast({
+        title: `${error.response.data.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     }
   };
 
   const searchData = (e) => {
     e.preventDefault();
     setPage(0);
-    setMsg("");
     setKeyword(query);
   };
 
-  const handleSort = (e) => {
-    setSort(e.target.value);
+  const handleSort = (value) => {
+    setSort(value);
     setPage(0);
+    // add switch case to convert value to readable text
+    switch (value) {
+      case "full_name":
+        setSortText("Name");
+        break;
+      case "email":
+        setSortText("Email");
+        break;
+      default:
+        setSortText(value);
+    }
+  };
+
+  const handleAdminUpdate = () => {
+    getUsers();
+  };
+
+  const handleFirstModalOpen = () => {
+    setIsFirstModalOpen(true);
+  };
+
+  const handleSecondModalOpen = (isOpen) => {
+    setIsSecondModalOpen(isOpen);
+  };
+
+  const openPatchAdminModal = (adminId) => {
+    setSelectedAdminId(adminId);
+    handleSecondModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsFirstModalOpen(false);
+    setIsSecondModalOpen(false);
   };
 
   const handleOrder = (e) => {
-    setOrder(e.target.value);
+    setOrder(e.currentTarget.value);
     setPage(0);
   };
 
-  const navigate = useNavigate()
+  const handleRoleAdmin = (value) => {
+    setRoleAdmin(value);
+    setPage(0);
+  };
+
+  const openDeleteDialog = (adminId) => {
+    setAdminToDelete(adminId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+    setAdminToDelete(null);
+  };
+
+  const navigate = useNavigate();
 
   return (
     <div class="container mx-auto mt-5">
@@ -89,73 +153,116 @@ const ManageAdmin = () => {
               </div>
             </div>
           </form>
-          <form>
-            <div className="flex items-center justify-between mb-4 md:mb-0">
-              <div className="flex items-center">
-                <label htmlFor="sort" className="mr-2">
-                  Sort by:
-                </label>
-                <select id="sort" name="sort" value={sort} onChange={handleSort} className="border border-gray-400 p-2 rounded-lg">
-                  <option value="id">ID</option>
-                  <option value="full_name">Full Name</option>
-                  <option value="email">Email</option>
-                  <option value="phone_number">Phone Number</option>
-                </select>
 
-                <label htmlFor="order" className="ml-2 mr-2">
-                  Order:
-                </label>
-                <select id="order" name="order" value={order} onChange={handleOrder} className="border border-gray-400 p-2 rounded-lg mr-20">
-                  <option value="ASC">Ascending</option>
-                  <option value="DESC">Descending</option>
-                </select>
-              </div>
+          <div className="flex items-center justify-between mb-4 md:mb-0">
+            {/* fitur sort and order */}
+            <Flex alignItems="center" mt="2">
+              <Box mr={2}>
+                <Icon as={FaSort} />
+              </Box>
+              <Text fontWeight="bold">Sort by:</Text>
+              <Menu>
+                <MenuButton ml={2} variant="ghost">
+                  {sortText}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem value={sort} onClick={() => handleSort("full_name")}>
+                    Name
+                  </MenuItem>
+                  <MenuItem value={sort} onClick={() => handleSort("email")}>
+                    Email
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+              <Box mr={2} ml="4">
+                <Icon as={FaFilter} />
+              </Box>
+              <Text fontWeight="bold">Order:</Text>
+              <Menu>
+                <MenuButton ml={2} variant="ghost">
+                  {order}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem value="ASC" onClick={(e) => handleOrder(e)}>
+                    Ascending
+                  </MenuItem>
+                  <MenuItem value="DESC" onClick={(e) => handleOrder(e)}>
+                    Descending
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+              <Box mr={2} ml="4">
+                <Icon as={FaFilter} />
+              </Box>
+              <Text fontWeight="bold">Role Admin :</Text>
+              <Menu>
+                <MenuButton ml={2} variant="ghost">
+                  {roleAdmin === 1 ? "Admin" : roleAdmin === 2 ? "Admin Warehouse" : "All"}
+                </MenuButton>
 
-              <div className="flex items-center ml-auto">
-                <Link to={"/admin/registeradmin"}>
-                  <button
-                    onClick={() => {
-                      // logic to open a modal or redirect to a page to add data
-                    }}
-                    className="bg-dark-purple hover:bg-blue-700 text-white font-bold p-2 ml-6 rounded"
-                  >
-                    Add Admin
-                  </button>
-                </Link>
-              </div>
+                <MenuList>
+                  <MenuItem onClick={() => handleRoleAdmin("")}>All</MenuItem>
+                  <MenuItem onClick={() => handleRoleAdmin(1)}>Admin</MenuItem>
+                  <MenuItem onClick={() => handleRoleAdmin(2)}>Admin Warehouse</MenuItem>
+                </MenuList>
+              </Menu>
+            </Flex>
+
+            <div className="flex items-center ml-auto">
+              {/* <Link to={"/admin/registeradmin"}> */}
+              <button
+                onClick={() => {
+                  handleFirstModalOpen();
+                }}
+                className="bg-dark-purple hover:bg-blue-700 text-white font-bold p-2 ml-6 rounded"
+              >
+                Add Admin
+              </button>
+              {/* </Link> */}
+              <RegisterAdminModal isOpen={isFirstModalOpen} onClose={handleModalClose} onAdminPatch={handleAdminUpdate} />
             </div>
+          </div>
+          <form>
             <table class=" w-full border-collapse border border-gray-300 mt-2">
               <thead>
                 <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                  <th class="py-3 px-6 text-left">No</th>
+                  <th class="py-3 px-3 text-left">No</th>
                   <th class="py-3 px-6 text-left">Name</th>
                   <th class="py-3 px-6 text-left">Email</th>
                   <th class="py-3 px-6 text-left">Phone Number</th>
+                  <th class="py-3 px-6 text-left">Profile Picture</th>
                   <th class="py-3 px-6 text-left">Role Admin</th>
-                  <th class="py-3 px-6 text-left">Actions</th>
+                  <th class="py-3 px-4 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody class="text-gray-600 text-sm font-light">
                 {users.map((user, index) => (
                   <tr key={user.id}>
-                    <td class="py-3 px-6 text-left">{index + 1}</td>
+                    <td class="py-3 px-3 text-left">{index + 1 + page * limit}</td>
                     <td class="py-3 px-6 text-left">{user.full_name}</td>
                     <td class="py-3 px-6 text-left">{user.email}</td>
                     <td class="py-3 px-6 text-left">{user.phone_number}</td>
+                    <td class="py-3 px-6 text-left">
+                      <img src={`http://localhost:8000/${user.profile_picture}`} alt="Admin" width="50" />
+                    </td>
                     <td class="py-3 px-6 text-left">{user.role == 1 ? "Admin" : "Admin Warehouse"}</td>
-                    <td class="py-3 px-6 text-left flex">
-                      <Link to={`/admin/patch-admin/${user.id}`}>
-                        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Edit</button>
-                      </Link>
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  onClick={() => navigate(`/admin/assign/${user.id}`)}>Assign</button>
+                    <td class="py-3 px-4 text-left flex">
+                      {/* button patch admin */}
                       <button
-                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => {
-                          if (window.confirm("Are you sure you want to delete this admin?")) {
-                            deleteAdmin(user.id);
-                          }
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          openPatchAdminModal(user.id);
                         }}
                       >
+                        Edit
+                      </button>
+                      {/* button assign admin */}
+                      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate(`/admin/assign/${user.id}`)}>
+                        Assign
+                      </button>
+                      {/* button delete admin */}
+                      <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onMouseDown={() => openDeleteDialog(user.id)}>
                         Delete
                       </button>
                     </td>
@@ -164,10 +271,12 @@ const ManageAdmin = () => {
               </tbody>
             </table>
           </form>
+          {/* Modal Patch Admin */}
+          <PatchAdminModal adminId={selectedAdminId} isOpen={isSecondModalOpen} onClose={handleModalClose} onAdminPatch={handleAdminUpdate} />
+          {/* Batas Modal Patch Admin */}
           <p class="my-4">
             Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
           </p>
-          <p class="text-center text-red-600">{msg}</p>
           <nav class="flex items-center justify-center mt-4 mb-10" key={rows} role="navigation" aria-label="pagination">
             <ReactPaginate
               previousLabel={"< Prev"}
@@ -181,12 +290,34 @@ const ManageAdmin = () => {
               activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
               disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
             />
-            <Link to="/admin">
-              <button class="bg-dark-purple hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Back</button>
-            </Link>
           </nav>
         </div>
       </div>
+      {/* Modal to dialog alert delete Admin */}
+      <AlertDialog isOpen={isDeleteDialogOpen} onClose={closeDeleteDialog} leastDestructiveRef={cancelRef} motionPreset="slideInBottom">
+        <AlertDialogOverlay />
+        <AlertDialogContent>
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Delete Admin
+          </AlertDialogHeader>
+          <AlertDialogBody>Are you sure you want to delete this admin? This action cannot be undone.</AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRef} onClick={closeDeleteDialog}>
+              Cancel
+            </Button>
+            <Button
+              colorScheme="red"
+              onClick={() => {
+                deleteAdmin(adminToDelete);
+                closeDeleteDialog();
+              }}
+              ml={3}
+            >
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

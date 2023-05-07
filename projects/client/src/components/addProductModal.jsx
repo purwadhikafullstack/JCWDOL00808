@@ -205,6 +205,7 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
                     onClick={() => {
                       onClose();
                       formik.resetForm();
+                      setImage("");
                     }}
                   >
                     Cancel

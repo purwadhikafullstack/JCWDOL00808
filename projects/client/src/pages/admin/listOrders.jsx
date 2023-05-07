@@ -412,6 +412,7 @@ function ListOrders() {
           disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
         />
       </Flex>
+
       {/* modal untuk order details */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="6xl">
         <ModalOverlay />
@@ -541,7 +542,7 @@ function ListOrders() {
           </ModalBody>
 
           <ModalFooter>
-            {allData.status === "Confirmed Payment" ? (
+            {allData.status === "Waiting for confirmation" ? (
               <>
                 <Button colorScheme="green" mr={3} onClick={openConfirmAcceptModal}>
                   Accept
@@ -584,7 +585,7 @@ function ListOrders() {
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="teal" mr={3} onClick={() => handleAcceptPayment(allData.id)}>
-              Reject
+              Accept
             </Button>
             <Button onClick={closeConfirmAcceptModal}>Cancel</Button>
           </ModalFooter>

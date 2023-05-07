@@ -57,7 +57,7 @@ function ManageProducts() {
       });
     } catch (error) {
       toast({
-        title: `${error.message}`,
+        title: `${error.response.data.message}`,
         status: "error",
         duration: 9000,
         isClosable: true,
