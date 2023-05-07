@@ -85,13 +85,13 @@ const AdminLogin = (props) => {
           <form onSubmit={formik.handleSubmit}>
             <FormControl isInvalid={formik.errors.email && formik.touched.email}>
               <FormLabel>E-mail address</FormLabel>
-              <Input id="email" value={formik.values.email} onChange={formik.handleChange} />
+              <Input id="email" value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur} />
               <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={formik.errors.password && formik.touched.password}>
               <FormLabel>Password</FormLabel>
               <InputGroup>
-                <Input id="password" value={formik.values.password} onChange={formik.handleChange} type={show ? "text" : "password"} />
+                <Input id="password" value={formik.values.password} onChange={formik.handleChange} type={show ? "text" : "password"} onBlur={formik.handleBlur} />
                 <InputRightElement width="4.5rem">
                   <Button h="1.75rem" size="sm" onClick={handleClick}>
                     {show ? "Hide" : "Show"}

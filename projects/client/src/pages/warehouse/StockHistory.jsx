@@ -41,10 +41,6 @@ const History = () => {
   let role = localStorage.getItem("role");
   let token = localStorage.getItem("token");
 
-  const [sort, setSort] = useState("id");
-  const [order, setOrder] = useState("ASC");
-  const [search, setSearch] = useState("");
-  const [keyword, setKeyword] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [stockHistories, setStockHistories] = useState([]);
@@ -79,10 +75,6 @@ const History = () => {
     getHistoryData();
   }, [selectedWarehouse, page, month, year]);
 
-  // const handleSearchButton = () => {
-  //   setKeyword(search);
-  // };
-
   // const handleResetButton = () => {
   //   setKeyword("");
   // };
@@ -94,11 +86,16 @@ const History = () => {
           <Td>{value.name}</Td>
           <Td>
             <Flex>
-              <AiOutlineArrowDown />
+              <AiOutlineArrowDown style={{ marginTop: 1, marginRight: 10 }} />
               {value.stockIn}
             </Flex>
           </Td>
-          <Td>{value.stockOut}</Td>
+          <Td>
+            <Flex>
+              <AiOutlineArrowUp style={{ marginTop: 1, marginRight: 10 }} />
+              {value.stockOut}
+            </Flex>
+          </Td>
           <Td>{value.latestStock}</Td>
           <Td>
             {role == 1 ? (
@@ -173,23 +170,6 @@ const History = () => {
                 </VStack>
               </CardBody>
             </Card>
-
-            {/* <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
-              <CardBody>
-                <VStack>
-                  <FormControl>
-                    <FormLabel>Search:</FormLabel>
-                    <Input placeholder="type warehouse or product name..." onChange={(element) => setSearch(element.target.value)} />
-                    <Button colorScheme="blue" mt="25" mr="25" onClick={handleResetButton}>
-                      Reset
-                    </Button>
-                    <Button colorScheme="blue" mt="25" onClick={handleSearchButton}>
-                      Search
-                    </Button>
-                  </FormControl>
-                </VStack>
-              </CardBody>
-            </Card> */}
           </Box>
           {stockHistories.length == 0 ? (
             <Spinner color="red.500" />

@@ -103,7 +103,7 @@ const StockHistory = () => {
 
               <CardBody>
                 <Stack divider={<StackDivider />} spacing="4">
-                  <Text fontSize="md">Product: {productName}</Text>
+                  {/* <Text fontSize="md">Product: {productName}</Text> */}
                   <Box>
                     <Text pt="2" fontSize="md">
                       Filter data by:
@@ -140,6 +140,7 @@ const StockHistory = () => {
           </div>
           <div style={{ marginRight: "80px" }}>
             <Box rounded={"lg"}>
+              <Text fontSize="2xl">Product: {productName}</Text>
               <TableContainer>
                 <Table variant="striped" size="md">
                   <Thead>

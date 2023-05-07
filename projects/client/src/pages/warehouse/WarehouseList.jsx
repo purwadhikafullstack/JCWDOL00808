@@ -34,17 +34,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Heading,
-  Stack,
-  StackDivider,
-  Box,
-  Text,
-} from "@chakra-ui/react";
+import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
 import Axios from "axios";
 import { API_url } from "../../helper";
 import { useEffect, useState, useRef } from "react";
@@ -60,21 +50,9 @@ const WarehouseList = (props) => {
   const navigate = useNavigate();
   const [role, setRole] = useState(localStorage.getItem("role"));
 
-  const {
-    isOpen: isAlertOpen,
-    onOpen: onAlertOpen,
-    onClose: onAlertClose,
-  } = useDisclosure();
-  const {
-    isOpen: isAddOpen,
-    onOpen: onAddOpen,
-    onClose: onAddClose,
-  } = useDisclosure();
-  const {
-    isOpen: isEditOpen,
-    onOpen: onEditOpen,
-    onClose: onEditClose,
-  } = useDisclosure();
+  const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
+  const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
+  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
 
   const [warehouseData, setWarehouseData] = useState([]);
   const [warehouseId, setWarehouseId] = useState();
@@ -97,10 +75,7 @@ const WarehouseList = (props) => {
   const [district, setDistrict] = React.useState("");
 
   const getWarehouseData = () => {
-    Axios.get(
-      API_url +
-        `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`
-    )
+    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
       .then((response) => {
         console.log(response.data);
         setTotalPage(response.data.totalPage);
@@ -138,10 +113,7 @@ const WarehouseList = (props) => {
           <Td>{value.city}</Td>
           <Td isNumeric>
             {role === "1" && (
-              <Button
-                colorScheme="yellow"
-                className="mr-2"
-                onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
+              <Button colorScheme="yellow" className="mr-2" onClick={() => navigate(`/warehouse/stock/${value.id}`)}>
                 Stock
               </Button>
             )}
@@ -151,7 +123,8 @@ const WarehouseList = (props) => {
               onClick={() => {
                 setWarehouseId(value.id);
                 navigate(`/warehouse/details?id=${value.id}`);
-              }}>
+              }}
+            >
               Details
             </Button>
           </Td>
@@ -234,17 +207,12 @@ const WarehouseList = (props) => {
     <>
       <div className="flex flex-col items-center w-full">
         <Box className="my-5">
-
           <Flex id="sort, search, and filter">
             <Card maxW="lg">
               <CardBody>
                 <FormControl>
                   <FormLabel>Search</FormLabel>
-                  <Input
-                    placeholder="warehouse name, city, or province..."
-                    className="mb-5"
-                    onChange={(element) => setSearch(element.target.value)}
-                  />
+                  <Input placeholder="warehouse name, city, or province..." className="mb-5" onChange={(element) => setSearch(element.target.value)} />
                   <Button onClick={handleSearchButton}>Search</Button>
                 </FormControl>
               </CardBody>
@@ -254,17 +222,13 @@ const WarehouseList = (props) => {
                 <FormControl>
                   <FormLabel>Sort data by:</FormLabel>
                   <VStack>
-                    <Select
-                      placeholder="Select option"
-                      onChange={(element) => setSort(element.target.value)}>
+                    <Select placeholder="Select option" onChange={(element) => setSort(element.target.value)}>
                       <option value="name">Warehouse name</option>
                       <option value="province">Province</option>
                       <option value="city">City</option>
                       <option value="updatedAt">Date added</option>
                     </Select>
-                    <Select
-                      placeholder="Order"
-                      onChange={(element) => setOrder(element.target.value)}>
+                    <Select placeholder="Order" onChange={(element) => setOrder(element.target.value)}>
                       <option value="ASC">Ascending</option>
                       <option value="DESC">Descending</option>
                     </Select>
@@ -308,22 +272,12 @@ const WarehouseList = (props) => {
             onPageChange={handlePageClick}
             containerClassName={"flex"}
             pageClassName={"page-item"}
-            pageLinkClassName={
-              "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-            }
-            previousLinkClassName={
-              "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-            }
-            nextLinkClassName={
-              "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-            }
+            pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
           />
         </div>
-        <Button
-          size="md"
-          colorScheme="orange"
-          className="my-5"
-          onClick={onAddOpen}>
+        <Button size="md" colorScheme="orange" className="my-5" onClick={onAddOpen}>
           Add new warehouse
         </Button>
         <Modal isOpen={isAddOpen} onClose={onAddClose}>
@@ -333,50 +287,33 @@ const WarehouseList = (props) => {
             <ModalCloseButton />
             <form onSubmit={formik.handleSubmit}>
               <ModalBody>
-                <FormControl
-                  isInvalid={formik.errors.name && formik.touched.name}>
+                <FormControl isInvalid={formik.errors.name && formik.touched.name}>
                   <FormLabel>Name:</FormLabel>
-                  <Input
-                    id="name"
-                    placeholder="Warehouse name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                  />
+                  <Input id="name" placeholder="Warehouse name" value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                   <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
                 </FormControl>
-                <FormControl
-                  isInvalid={formik.errors.address && formik.touched.address}>
+                <FormControl isInvalid={formik.errors.address && formik.touched.address}>
                   <FormLabel>Address:</FormLabel>
                   <InputGroup>
-                    <Input
-                      id="address"
-                      placeholder="Address"
-                      value={formik.values.address}
-                      onChange={formik.handleChange}
-                    />
+                    <Input id="address" placeholder="Address" value={formik.values.address} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                   </InputGroup>
                   <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
                 </FormControl>
-                <FormControl
-                  isInvalid={formik.errors.province && formik.touched.province}>
+                <FormControl isInvalid={formik.errors.province && formik.touched.province}>
                   <FormLabel>Province:</FormLabel>
                   <Select
                     id="province"
                     placeholder="Select province"
                     onChange={(e) => {
                       console.log(e.target.value);
-                      formik.setFieldValue(
-                        "province",
-                        e.target.value.split(",")[1]
-                      );
+                      formik.setFieldValue("province", e.target.value.split(",")[1]);
                       onGetCity(e.target.value.split(",")[0]);
-                    }}>
+                    }}
+                    onBlur={formik.handleBlur}
+                  >
                     {provinceData.map((value) => {
                       return (
-                        <option
-                          id="province"
-                          value={value.province_id + "," + value.province}
-                          key={value.province_id}>
+                        <option id="province" value={value.province_id + "," + value.province} key={value.province_id}>
                           {value.province}
                         </option>
                       );
@@ -384,19 +321,12 @@ const WarehouseList = (props) => {
                   </Select>
                   <FormErrorMessage>{formik.errors.province}</FormErrorMessage>
                 </FormControl>
-                <FormControl
-                  isInvalid={formik.errors.city && formik.touched.city}>
+                <FormControl isInvalid={formik.errors.city && formik.touched.city}>
                   <FormLabel>City:</FormLabel>
-                  <Select
-                    id="city"
-                    placeholder="Select city"
-                    onChange={formik.handleChange}>
+                  <Select id="city" placeholder="Select city" onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     {cityData.map((value) => {
                       return (
-                        <option
-                          id="city"
-                          value={`${value.type} ${value.city_name}`}
-                          key={value.city_id}>
+                        <option id="city" value={`${value.type} ${value.city_name}`} key={value.city_id}>
                           {value.type} {value.city_name}
                         </option>
                       );
@@ -404,16 +334,10 @@ const WarehouseList = (props) => {
                   </Select>
                   <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
                 </FormControl>
-                <FormControl
-                  isInvalid={formik.errors.district && formik.touched.district}>
+                <FormControl isInvalid={formik.errors.district && formik.touched.district}>
                   <FormLabel>District (Kecamatan):</FormLabel>
                   <InputGroup>
-                    <Input
-                      id="district"
-                      placeholder="District"
-                      value={formik.values.district}
-                      onChange={formik.handleChange}
-                    />
+                    <Input id="district" placeholder="District" value={formik.values.district} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                   </InputGroup>
                   <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
                 </FormControl>

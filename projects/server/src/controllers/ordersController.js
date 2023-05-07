@@ -283,6 +283,35 @@ module.exports = {
       });
     }
   },
+  confirmDelivery: async (req, res) => {
+    try {
+      const users_id = req.dataDecode.id;
+
+      let checkUser = await orders.findOne({ where: { id: req.body.id } });
+      // check if user who wants to cancel order is the same user who is logging in
+      if (users_id == checkUser.users_id) {
+        let orders_id = req.body.id;
+
+        await orders.update({ status: "Order confirmed" }, { where: { id: orders_id } });
+
+        res.status(200).send({
+          success: true,
+          message: "Your special delivery has made it to its destination! Thank you for ordering it from Big4commerce.",
+        });
+      } else if (users_id != checkUser.users_id) {
+        res.status(500).send({
+          success: false,
+          message: "You don't own this transaction.",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Something is wrong.",
+      });
+    }
+  },
   getOrders: async (req, res) => {
     try {
       let { id } = req.dataDecode;

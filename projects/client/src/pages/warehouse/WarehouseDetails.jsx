@@ -46,8 +46,6 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 
 const WarehouseDetails = (props) => {
-  const [warehouseId, setWarehouseId] = useState();
-
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
@@ -114,14 +112,10 @@ const WarehouseDetails = (props) => {
       });
   };
 
-  const buttonEditWarehouse = () => {
-    Axios.patch(API_url + `/warehouses/updateWarehouseData`, {
-      id: warehouseId,
-      name,
-      address,
-      province,
-      city,
-      district,
+  const buttonEditWarehouse = (values) => {
+    Axios.post(API_url + `/warehouses/updateWarehouseData`, {
+      id,
+      ...values,
     })
       .then((response) => {
         console.log(response.data);
@@ -160,6 +154,7 @@ const WarehouseDetails = (props) => {
       address: detailsAddress,
       province: detailsProvince,
       city: detailsCity,
+      district: detailsDistrict,
     },
     validationSchema: yup.object().shape({
       name: yup.string().required("Required"),
@@ -169,7 +164,9 @@ const WarehouseDetails = (props) => {
       district: yup.string().required("Required"),
     }),
     onSubmit: (values, actions) => {
-      actions.resetForm();
+      buttonEditWarehouse(values);
+      // actions.resetForm();
+      onEditClose();
     },
   });
 
@@ -199,7 +196,6 @@ const WarehouseDetails = (props) => {
                 <Button
                   colorScheme="blue"
                   onClick={() => {
-                    // setWarehouseId(value.id);
                     onEditOpen();
                   }}
                 >
@@ -233,22 +229,22 @@ const WarehouseDetails = (props) => {
                     </AlertDialogContent>
                   </AlertDialogOverlay>
                 </AlertDialog>
-                <form onSubmit={formik.handleSubmit}>
-                  <Modal isOpen={isEditOpen} onClose={onEditClose}>
-                    <ModalOverlay />
-                    <ModalContent>
-                      <ModalHeader>Edit warehouse data</ModalHeader>
-                      <ModalCloseButton />
+                <Modal isOpen={isEditOpen} onClose={onEditClose}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>Edit warehouse data</ModalHeader>
+                    <ModalCloseButton />
+                    <form onSubmit={formik.handleSubmit}>
                       <ModalBody>
                         <FormControl isInvalid={formik.errors.name && formik.touched.name}>
                           <FormLabel>Name:</FormLabel>
-                          <Input id="name" placeholder="Warehouse name" value={formik.values.name} onChange={formik.handleChange} />
+                          <Input id="name" placeholder={detailsName} value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                           <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={formik.errors.address && formik.touched.address}>
                           <FormLabel>Address:</FormLabel>
                           <InputGroup>
-                            <Input id="address" placeholder="Address" value={formik.values.address} onChange={formik.handleChange} />
+                            <Input id="address" placeholder={detailsAddress} value={formik.values.address} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                           </InputGroup>
                           <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
                         </FormControl>
@@ -256,12 +252,13 @@ const WarehouseDetails = (props) => {
                           <FormLabel>Province:</FormLabel>
                           <Select
                             id="province"
-                            placeholder="Select province"
+                            placeholder={detailsProvince}
                             onChange={(e) => {
                               console.log(e.target.value);
                               formik.setFieldValue("province", e.target.value.split(",")[1]);
                               onGetCity(e.target.value.split(",")[0]);
                             }}
+                            onBlur={formik.handleBlur}
                           >
                             {provinceData.map((value) => {
                               return (
@@ -275,7 +272,7 @@ const WarehouseDetails = (props) => {
                         </FormControl>
                         <FormControl isInvalid={formik.errors.city && formik.touched.city}>
                           <FormLabel>City:</FormLabel>
-                          <Select id="city" placeholder="Select city" onChange={formik.handleChange}>
+                          <Select id="city" placeholder={detailsCity} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                             {cityData.map((value) => {
                               return (
                                 <option id="city" value={`${value.type} ${value.city_name}`} key={value.city_id}>
@@ -289,7 +286,7 @@ const WarehouseDetails = (props) => {
                         <FormControl isInvalid={formik.errors.district && formik.touched.district}>
                           <FormLabel>District (Kecamatan):</FormLabel>
                           <InputGroup>
-                            <Input id="district" placeholder="District" value={formik.values.district} onChange={formik.handleChange} />
+                            <Input id="district" placeholder={detailsDistrict} value={formik.values.district} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                           </InputGroup>
                           <FormErrorMessage>{formik.errors.district}</FormErrorMessage>
                         </FormControl>
@@ -347,19 +344,13 @@ const WarehouseDetails = (props) => {
                         <Button mr={3} onClick={onEditClose}>
                           Close
                         </Button>
-                        <Button
-                          colorScheme="blue"
-                          onClick={() => {
-                            onEditClose();
-                            buttonEditWarehouse();
-                          }}
-                        >
-                          Edit warehouse data
+                        <Button colorScheme="blue" type="submit">
+                          Save
                         </Button>
                       </ModalFooter>
-                    </ModalContent>
-                  </Modal>
-                </form>
+                    </form>
+                  </ModalContent>
+                </Modal>
               </ButtonGroup>
             </CardFooter>
           </>
