@@ -20,6 +20,7 @@ module.exports = {
         include: [
           {
             model: products,
+            as: "product",
             where: { is_deleted: 0 },
             include: [
               {
@@ -28,46 +29,22 @@ module.exports = {
                 required: true,
               },
             ],
-            //Add total stock from all the warehouse
             attributes: {
               include: [
                 [
                   sequelize.literal(`(
-                    SELECT SUM(stock)
-                    FROM stocks
-                    WHERE
-                      stocks.products_id = carts.products_id
-                      AND stocks.is_deleted = 0
-                  )`),
-                  "totalStock",
+              SELECT SUM(stock)
+              FROM stocks
+              WHERE
+                stocks.products_id = carts.products_id
+                AND stocks.is_deleted = 0                    
+            ) - product.booked_stock`),
+                  "availableStock",
                 ],
               ],
             },
           },
         ],
-
-        // include: [
-        //   {
-        //     model: products,
-        //     attributes: [
-        //       [sequelize.literal("`carts`.`id`"), "id"],
-        //       [sequelize.literal("`carts`.`quantity`"), "quantity"],
-        //       [sequelize.literal("`carts`.`createdAt`"), "createdAt"],
-        //       [sequelize.literal("`carts`.`updatedAt`"), "updatedAt"],
-        //       "id",
-        //       "name",
-        //       "description",
-        //       "price",
-        //       "weight",
-        //       "imageUrl",
-        //       "createdAt",
-        //       "updatedAt",
-        //       "product_categories_id",
-        //     ],
-        //     required: true,
-        //   },
-        // ],
-        // attributes: [], // Add this line to exclude carts attributes
       });
 
       res.status(200).send({
@@ -108,6 +85,7 @@ module.exports = {
         include: [
           {
             model: products,
+            as: "product",
             where: { is_deleted: 0 },
             include: [
               {
@@ -116,18 +94,17 @@ module.exports = {
                 required: true,
               },
             ],
-            //Add total stock from all the warehouse
             attributes: {
               include: [
                 [
                   sequelize.literal(`(
-                    SELECT SUM(stock)
-                    FROM stocks
-                    WHERE
-                      stocks.products_id = carts.products_id
-                      AND stocks.is_deleted = 0
-                  )`),
-                  "totalStock",
+              SELECT SUM(stock)
+              FROM stocks
+              WHERE
+                stocks.products_id = carts.products_id
+                AND stocks.is_deleted = 0                    
+            ) - product.booked_stock`),
+                  "availableStock",
                 ],
               ],
             },
@@ -160,6 +137,7 @@ module.exports = {
         include: [
           {
             model: products,
+            as: "product",
             where: { is_deleted: 0 },
             include: [
               {
@@ -168,18 +146,17 @@ module.exports = {
                 required: true,
               },
             ],
-            //Add total stock from all the warehouse
             attributes: {
               include: [
                 [
                   sequelize.literal(`(
-                    SELECT SUM(stock)
-                    FROM stocks
-                    WHERE
-                      stocks.products_id = carts.products_id
-                      AND stocks.is_deleted = 0
-                  )`),
-                  "totalStock",
+              SELECT SUM(stock)
+              FROM stocks
+              WHERE
+                stocks.products_id = carts.products_id
+                AND stocks.is_deleted = 0                    
+            ) - product.booked_stock`),
+                  "availableStock",
                 ],
               ],
             },
