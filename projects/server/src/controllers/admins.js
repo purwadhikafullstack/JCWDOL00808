@@ -95,7 +95,9 @@ module.exports = {
   },
   dashboardData: async (req, res) => {
     try {
+      let admins_id = req.dataDecode.id
       let data = {};
+      
       // total user
       let users = await UsersModel.findAndCountAll({});
       data.users = users.count;

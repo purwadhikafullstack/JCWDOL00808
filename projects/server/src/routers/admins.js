@@ -8,6 +8,6 @@ route.get("/getAdminsData", adminsController.getAdminsData);
 route.post("/login", validateLoginAdmin, adminsController.login);
 route.post("/register", adminsController.register);
 route.patch("/assignNewAdmin", adminsController.assignNewAdmin);
-route.get("/dashboardData", adminsController.dashboardData);
+route.get("/dashboardData", verifyToken, adminsController.dashboardData);
 
 module.exports = route;
