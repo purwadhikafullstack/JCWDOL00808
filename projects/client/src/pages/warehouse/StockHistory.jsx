@@ -1,177 +1,236 @@
-import { Select, Button, Card, CardHeader, CardBody, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Flex } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Card,
+  CardBody,
+  Text,
+  Select,
+  FormControl,
+  FormLabel,
+  FormHelperText,
+  Input,
+  VStack,
+  Button,
+  Spinner,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Axios from "axios";
 import { API_url } from "../../helper";
+import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
+import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
 
-const StockHistory = () => {
-  const [warehouseData, setWarehouseData] = useState([]);
-  const [productsData, setProductsData] = useState([]);
-  const [sortProductsId, setSortProductsId] = useState(0);
-  const [sortWarehouseId, setSortWarehouseId] = useState(0);
-  const [sortMonth, setSortMonth] = useState(0);
-  const [sortYear, setSortYear] = useState(0);
+const History = () => {
+  let role = localStorage.getItem("role");
+  let token = localStorage.getItem("token");
 
+  const [sort, setSort] = useState("id");
+  const [order, setOrder] = useState("ASC");
+  const [search, setSearch] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
   const [stockHistories, setStockHistories] = useState([]);
+  const [warehouseData, setWarehouseData] = useState([]);
+  const [selectedWarehouse, setSelectedWarehouse] = useState("");
 
-  const getWarehouseData = () => {
-    Axios.get(API_url + `/warehouses/getAllWarehouse`)
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+  const navigate = useNavigate();
+
+  const getHistoryData = () => {
+    Axios.post(
+      API_url + `/histories/getAllHistories?page=${page}`,
+      {
+        warehouse: selectedWarehouse,
+        month: month,
+        year: year,
+      },
+      {
+        headers: { Authorization: token },
+      }
+    )
       .then((response) => {
-        console.log(response.data);
-        setWarehouseData(response.data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const getProductsData = () => {
-    Axios.get(API_url + `/histories/getAllProducts`).then((response) => {
-      console.log(response.data);
-      setProductsData(response.data);
-    });
-  };
-
-  const autoGetStock = () => {
-    Axios.get(API_url + `/histories/autoGetStock`).then((response) => {
-      console.log("autoGetStock: ", response.data);
-      setStockHistories(response.data);
-    });
-  };
-
-  const getStockHistories = () => {
-    Axios.get(API_url + `/histories/getStockHistories?sortProductsId=${sortProductsId}&sortWarehouseId=${sortWarehouseId}&sortMonth=${sortMonth}&sortYear=${sortYear}`)
-      .then((response) => {
-        console.log(response.data);
-        setStockHistories(response.data);
+        setStockHistories(response.data.data);
+        setWarehouseData(response.data.warehouse);
+        setTotalPage(response.data.totalPage);
       })
       .catch((error) => console.log(error));
   };
 
   useEffect(() => {
-    getWarehouseData();
-    getProductsData();
-    // getStockHistories();
-    autoGetStock();
-  }, []);
+    getHistoryData();
+  }, [selectedWarehouse, page, month, year]);
 
-  const handleFilterButton = () => {
-    getStockHistories();
-  };
+  // const handleSearchButton = () => {
+  //   setKeyword(search);
+  // };
+
+  // const handleResetButton = () => {
+  //   setKeyword("");
+  // };
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {
-      let difference = value.stock_after - value.stock_before;
-      if (difference < 0) {
-        difference = Math.abs(difference);
-        return (
-          <Tr key={value.id}>
-            <Td>{value.stock_before}</Td>
-            <Td>{value.stock_after}</Td>
-            <Td>Berkurang sebanyak {difference}</Td>
-            <Td>{value.description}</Td>
-            {/* <Td>{value?.product.name}</Td> */}
-          </Tr>
-        );
-      } else {
-        return (
-          <Tr key={value.id}>
-            <Td>{value.stock_before}</Td>
-            <Td>{value.stock_after}</Td>
-            <Td>Bertambah sebanyak {difference}</Td>
-            <Td>{value.description}</Td>
-            {/* <Td>{value?.product.name}</Td> */}
-          </Tr>
-        );
-      }
+      return (
+        <Tr key={value.id}>
+          <Td>{value.name}</Td>
+          <Td>
+            <Flex>
+              <AiOutlineArrowDown />
+              {value.stockIn}
+            </Flex>
+          </Td>
+          <Td>{value.stockOut}</Td>
+          <Td>{value.latestStock}</Td>
+          <Td>
+            {role == 1 ? (
+              <>
+                <Button colorScheme="blue" onClick={() => navigate(`/warehouse/history-details?id=${value.products_id}`)}>
+                  View details
+                </Button>
+              </>
+            ) : null}
+          </Td>
+        </Tr>
+      );
     });
+  };
+
+  const handlePageClick = (data) => {
+    setPage(data.selected);
   };
 
   return (
     <>
-      <Flex minWidth="fit-content" alignItems="center" gap="5" paddingX={5} paddingY={10}>
-        <Card>
-          <CardHeader>
-            <Heading size="md" textTransform="uppercase">
-              Stock History
-            </Heading>
-          </CardHeader>
-
-          <CardBody>
-            <Stack divider={<StackDivider />} spacing="4">
-              <Box>
-                <Text fontSize="md">View a history of your products over the last month.</Text>
-
-                <Text pt="2" fontSize="md">
-                  Product:
-                </Text>
-                <Select placeholder="Select product" onChange={(element) => setSortProductsId(element.target.value)}>
-                  {productsData.map((value) => {
-                    return (
-                      <option value={value.id}>
-                        [{value.id}] {value.name}
-                      </option>
-                    );
-                  })}
-                </Select>
-
-                <Text pt="2" fontSize="md">
-                  Warehouse location:
-                </Text>
-
-                <Select placeholder="Select warehouse" onChange={(element) => setSortWarehouseId(element.target.value)}>
-                  {warehouseData.map((value) => {
-                    return (
-                      <option value={value.id}>
-                        [{value.id}] {value.name}
-                      </option>
-                    );
-                  })}
-                </Select>
-
-                <Text pt="2" fontSize="md">
-                  Period:
-                </Text>
-
-                <Flex>
-                  <Select placeholder="Month" onChange={(element) => setSortMonth(element.target.value)}>
-                    <option value={1}>January</option>;<option value={2}>February</option>;<option value={3}>March</option>;<option value={4}>April</option>;<option value={5}>May</option>;<option value={6}>June</option>;
-                    <option value={7}>July</option>;<option value={8}>August</option>;<option value={9}>September</option>;<option value={10}>October</option>;<option value={11}>November</option>;<option value={12}>December</option>;
+      <Flex flexDirection="column">
+        <Flex px="0">
+          <Box id="sort filter and search" mx="100" mt="100">
+            <Card maxW="xs" border="1px" borderColor="gray.200">
+              <CardBody>
+                <VStack>
+                  <FormControl>
+                    <FormLabel>Warehouse:</FormLabel>
+                    <Select onChange={(element) => setSelectedWarehouse(element.target.value)}>
+                      <option value="">All Warehouse</option>
+                      {warehouseData?.map((value) => {
+                        return <option value={value.id}>{value.name}</option>;
+                      })}
+                    </Select>
+                  </FormControl>
+                </VStack>
+              </CardBody>
+            </Card>
+            <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
+              <CardBody>
+                <FormControl>
+                  <FormLabel>Month:</FormLabel>
+                  <Select placeholder="Select month" onChange={(element) => setMonth(element.target.value)}>
+                    <option value={1}>January</option>
+                    <option value={2}>February</option>
+                    <option value={3}>March</option>
+                    <option value={4}>April</option>
+                    <option value={5}>Mei</option>
+                    <option value={6}>June</option>
+                    <option value={7}>July</option>
+                    <option value={8}>August</option>
+                    <option value={9}>September</option>
+                    <option value={10}>October</option>
+                    <option value={11}>November</option>
+                    <option value={12}>December</option>
                   </Select>
-                  <Select placeholder="Year" onChange={(element) => setSortYear(element.target.value)}>
-                    <option value={2021}>2021</option>;<option value={2022}>2022</option>;<option value={2023}>2023</option>;<option value={2024}>2024</option>;<option value={2025}>2025</option>;
-                  </Select>
-                </Flex>
-                <Button className="mt-5" onClick={handleFilterButton}>
-                  View stock history
-                </Button>
-              </Box>
-              <Box>
-                <Heading size="md">Stock Info</Heading>
-                <Text pt="2" fontSize="md">
-                  See a detailed analysis of all your product stocks.
-                </Text>
-                <Button className="mt-5">Manage Stock</Button>
-              </Box>
-            </Stack>
-          </CardBody>
-        </Card>
-        <Box rounded={"lg"}>
-          <TableContainer>
-            <Table variant="striped" size="md">
-              <Thead>
-                <Tr>
-                  <Th>Qty Before</Th>
-                  <Th>Qty After</Th>
-                  <Th>Qty difference</Th>
-                  <Th>Description</Th>
-                  <Th>Product</Th>
-                </Tr>
-              </Thead>
-              <Tbody>{showStockHistories()}</Tbody>
-            </Table>
-          </TableContainer>
+                </FormControl>
+              </CardBody>
+            </Card>
+            <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
+              <CardBody>
+                <VStack>
+                  <FormControl>
+                    <FormLabel>Year:</FormLabel>
+                    <Select placeholder="Select year" onChange={(element) => setYear(element.target.value)}>
+                      <option value={2022}>2022</option>
+                      <option value={2023}>2023</option>
+                      <option value={2024}>2024</option>
+                    </Select>
+                  </FormControl>
+                </VStack>
+              </CardBody>
+            </Card>
+
+            {/* <Card maxW="xs" border="1px" borderColor="gray.200" mt="30">
+              <CardBody>
+                <VStack>
+                  <FormControl>
+                    <FormLabel>Search:</FormLabel>
+                    <Input placeholder="type warehouse or product name..." onChange={(element) => setSearch(element.target.value)} />
+                    <Button colorScheme="blue" mt="25" mr="25" onClick={handleResetButton}>
+                      Reset
+                    </Button>
+                    <Button colorScheme="blue" mt="25" onClick={handleSearchButton}>
+                      Search
+                    </Button>
+                  </FormControl>
+                </VStack>
+              </CardBody>
+            </Card> */}
+          </Box>
+          {stockHistories.length == 0 ? (
+            <Spinner color="red.500" />
+          ) : (
+            <Box id="tabel stock histories" mr="30" my="100">
+              <TableContainer bg="white" border="1px" borderColor="gray.200">
+                <Table variant="striped" size="md">
+                  <Thead>
+                    <Tr>
+                      <Th>Product Name</Th>
+                      <Th>Stock In</Th>
+                      <Th>Stock Out</Th>
+                      <Th>Latest Stock</Th>
+                      {role == 1 ? <Th isNumeric>Action</Th> : null}
+                    </Tr>
+                  </Thead>
+                  <Tbody>{showStockHistories()}</Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
+        </Flex>
+        <Box id="pagination" className="mt-5 flex items-center justify-center">
+          <ReactPaginate
+            previousLabel={"< Previous"}
+            nextLabel={"Next >"}
+            breakLabel={"..."}
+            pageCount={totalPage}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={2}
+            onPageChange={handlePageClick}
+            containerClassName={"flex"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+            nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+          />
         </Box>
       </Flex>
     </>
   );
 };
 
-export default StockHistory;
+export default History;
