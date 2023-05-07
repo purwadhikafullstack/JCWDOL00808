@@ -19,6 +19,8 @@ module.exports = {
         warehouse_filter,
         category_filter,
         product_filter,
+        page = 0, // default page value is 0
+        limit = 10, // default limit is 10
       } = req.query;
 
       // Authenticate user
@@ -107,23 +109,38 @@ module.exports = {
         };
       }
 
+      const offset = limit * page;
+
       let salesData = await OrderDetail.findAll({
         where: whereCondition,
         include: [productInclude, orderInclude],
+        limit: parseInt(limit), // Apply limit for pagination
+        offset: offset, // Apply the offset for pagination
       });
+
+      const totalRows = await OrderDetail.count({
+        where: whereCondition,
+        include: [productInclude, orderInclude],
+      });
+
+      const totalPage = Math.ceil(totalRows / limit);
 
       // Generate report
       const report = generateReport(salesData);
 
       // Send the report as a response
-      res.status(200).json(report);
+      res.status(200).json({
+        report: report,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({
-          message: "An error occurred while generating the sales report",
-        });
+      res.status(500).json({
+        message: "An error occurred while generating the sales report",
+      });
     }
 
     function generateReport(salesData) {
@@ -132,9 +149,7 @@ module.exports = {
 
       for (const sale of salesData) {
         const month = sale.createdAt.toISOString().slice(0, 7);
-        const week = `${sale.createdAt.getFullYear()}-W${getWeekNumber(
-          sale.createdAt
-        )}`;
+        const week = `${sale.createdAt.getFullYear()}-W${getWeekNumber(sale.createdAt)}`;
 
         let monthReport = monthly.find((m) => m.timePeriod === month);
         if (!monthReport) {
@@ -172,12 +187,8 @@ module.exports = {
         const productID = sale.product.id;
         const productName = sale.product.name;
 
-        const category = monthReport.categories.find(
-          (c) => c.id === categoryID
-        ) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
-        const product = monthReport.products.find(
-          (p) => p.id === productID
-        ) || { id: productID, name: productName, total: 0, quantity: 0 };
+        const category = monthReport.categories.find((c) => c.id === categoryID) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
+        const product = monthReport.products.find((p) => p.id === productID) || { id: productID, name: productName, total: 0, quantity: 0 };
 
         category.total += amount;
         category.quantity += sale.quantity;
@@ -192,12 +203,8 @@ module.exports = {
           monthReport.products.push(product);
         }
 
-        const weekCategory = weekReport.categories.find(
-          (c) => c.id === categoryID
-        ) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
-        const weekProduct = weekReport.products.find(
-          (p) => p.id === productID
-        ) || { id: productID, name: productName, total: 0, quantity: 0 };
+        const weekCategory = weekReport.categories.find((c) => c.id === categoryID) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
+        const weekProduct = weekReport.products.find((p) => p.id === productID) || { id: productID, name: productName, total: 0, quantity: 0 };
 
         weekCategory.total += amount;
         weekCategory.quantity += sale.quantity;
