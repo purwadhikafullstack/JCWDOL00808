@@ -25,6 +25,7 @@ module.exports = {
       const role_admin = parseInt(req.query.role_admin);
 
       let whereCondition = {
+        is_deleted: 0,
         [Op.or]: [
           {
             full_name: {
@@ -187,6 +188,7 @@ module.exports = {
       // step 2 validasi
       let findEmail = await admins.findOne({
         where: {
+          is_deleted: 0,
           email: value.email,
         },
       });
@@ -200,7 +202,14 @@ module.exports = {
 
       //step 3 insert data ke users
       // await admins.create({ email, password: await hashPassword(password), full_name, phone_number, role, profile_picture }, { transaction: t });
-      await admins.create({ ...value, password: await hashPassword(value.password), profile_picture }, { transaction: t });
+      await admins.create(
+        {
+          ...value,
+          password: await hashPassword(value.password),
+          profile_picture,
+        },
+        { transaction: t }
+      );
 
       //step 5 kirim response
       await t.commit();
@@ -242,7 +251,7 @@ module.exports = {
 
       // step 1: retrieve admin data from database
       const { id } = req.params;
-      let admin = await admins.findOne({ where: { id: id } });
+      let admin = await admins.findOne({ where: { id: id, is_deleted: 0 } });
       if (!admin) {
         await t.rollback();
         return res.status(404).send({
@@ -322,17 +331,20 @@ module.exports = {
       }
 
       // step 2: delete admin data from database
-      await admins.destroy({ where: { id: id } }, { transaction: t });
+      let deleteAdmin = await admins.update(
+        { is_deleted: 1 },
+        { where: { id }, transaction: t }
+      );
 
       // step 3: send response
-      await t.commit();
+      t.commit();
       res.status(200).send({
         isError: false,
         message: "Admin data deleted successfully",
         data: null,
       });
     } catch (error) {
-      await t.rollback();
+      t.rollback();
       res.status(400).send({
         isError: true,
         message: error.message,

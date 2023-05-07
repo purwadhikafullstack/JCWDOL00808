@@ -5,17 +5,9 @@ import {
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
   Button,
-  ButtonGroup,
   useToast,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
   useDisclosure,
   Flex,
   FormControl,
@@ -33,21 +25,11 @@ import {
   Select,
   VStack,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Heading,
-  Stack,
-  StackDivider,
-  Box,
-  Text,
-} from "@chakra-ui/react";
+
+import { Card, CardBody, Box } from "@chakra-ui/react";
 import Axios from "axios";
 import { API_url } from "../../helper";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
@@ -56,7 +38,7 @@ import * as yup from "yup";
 
 const WarehouseList = (props) => {
   const toast = useToast();
-  const cancelRef = React.useRef();
+
   const navigate = useNavigate();
   const [role, setRole] = useState(localStorage.getItem("role"));
 
@@ -102,7 +84,6 @@ const WarehouseList = (props) => {
         `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`
     )
       .then((response) => {
-        console.log(response.data);
         setTotalPage(response.data.totalPage);
         setWarehouseData(response.data.rows);
       })
@@ -113,13 +94,13 @@ const WarehouseList = (props) => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
 
-  // const deleteButton = () => {
-  //   Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${warehouseId}`)
+  // const deleteButton = (id) => {
+  //   Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${id}`)
   //     .then((response) => {
   //       toast({
   //         title: `${response.data.message}`,
   //         status: "success",
-  //         duration: 9000,
+  //         duration: 1000,
   //         isClosable: true,
   //         onCloseComplete: () => window.location.reload(false),
   //       });
@@ -284,7 +265,6 @@ const WarehouseList = (props) => {
     <>
       <div className="flex flex-col items-center w-full">
         <Box className="my-5">
-
           <Flex id="sort, search, and filter">
             <Card maxW="lg">
               <CardBody>
@@ -326,27 +306,27 @@ const WarehouseList = (props) => {
             </Card>
           </Flex>
         </Box>
-        <Card>
-          <CardBody>
-            <TableContainer className="my-5">
-              <Table size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>No.</Th>
-                    <Th>Warehouse Name</Th>
-                    <Th>Address</Th>
-                    <Th>Province</Th>
-                    <Th>City</Th>
-                    <Th isNumeric className="mr-5">
-                      Action
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{showWarehouseData()}</Tbody>
-              </Table>
-            </TableContainer>
-          </CardBody>
-        </Card>
+        {/* <Card> */}
+        {/* <CardBody> */}
+        <TableContainer className="my-5">
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>No.</Th>
+                <Th>Warehouse Name</Th>
+                <Th>Address</Th>
+                <Th>Province</Th>
+                <Th>City</Th>
+                <Th isNumeric className="mr-5">
+                  Action
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>{showWarehouseData()}</Tbody>
+          </Table>
+        </TableContainer>
+        {/* </CardBody> */}
+        {/* </Card> */}
         <div id="pagination" className="mt-5 flex items-center justify-center">
           <ReactPaginate
             previousLabel={"< Previous"}
@@ -414,7 +394,7 @@ const WarehouseList = (props) => {
                     id="province"
                     placeholder="Select province"
                     onChange={(e) => {
-                      console.log(e.target.value);
+                      // console.log(e.target.value);
                       formik.setFieldValue(
                         "province",
                         e.target.value.split(",")[1]
@@ -470,10 +450,10 @@ const WarehouseList = (props) => {
               </ModalBody>
 
               <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={onAddClose}>
+                <Button colorScheme="red" mr={3} onClick={onAddClose}>
                   Close
                 </Button>
-                <Button variant="ghost" type="submit">
+                <Button colorScheme="blue" type="submit">
                   Add warehouse data
                 </Button>
               </ModalFooter>

@@ -32,7 +32,7 @@ import {
 } from "@chakra-ui/react";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import RegisterAdminModal from "../../components/addAdminModal";
-import PatchAdminModal from "../../components/patchAdminModal";
+import PatchAdminModal from "../../components/patchAdminModal";;
 
 const ManageAdmin = () => {
   const [users, setUsers] = useState([]);
