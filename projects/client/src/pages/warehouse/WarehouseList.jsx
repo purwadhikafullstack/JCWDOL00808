@@ -102,7 +102,6 @@ const WarehouseList = (props) => {
         `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`
     )
       .then((response) => {
-        console.log(response.data);
         setTotalPage(response.data.totalPage);
         setWarehouseData(response.data.rows);
       })
@@ -413,7 +412,7 @@ const WarehouseList = (props) => {
                     id="province"
                     placeholder="Select province"
                     onChange={(e) => {
-                      console.log(e.target.value);
+                      // console.log(e.target.value);
                       formik.setFieldValue(
                         "province",
                         e.target.value.split(",")[1]

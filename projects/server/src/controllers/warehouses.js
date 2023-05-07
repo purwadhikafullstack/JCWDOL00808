@@ -188,7 +188,9 @@ module.exports = {
         { where: { id: req.body.id } }
       );
 
-      res.status(200).send({ success: true, message: "Warehouse data update success!" });
+      res
+        .status(200)
+        .send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -203,7 +205,10 @@ module.exports = {
         where: { id: req.query.id },
       });
 
-      await WarehousesModel.destroy({ where: { id: req.query.id } });
+      await WarehousesModel.update(
+        { is_deleted: 1 },
+        { where: { id: req.query.id } }
+      );
 
       res.status(200).send({
         success: true,
@@ -220,7 +225,9 @@ module.exports = {
   getWarehouseDetails: async (req, res) => {
     try {
       const id = req.query.id;
-      let data = await WarehousesModel.findAll({ where: { id } });
+      let data = await WarehousesModel.findAll({
+        where: { id },
+      });
       console.log("data details: ", data);
 
       res.status(200).send(data);
@@ -250,7 +257,10 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id: id }, { transaction: t });
+      const addedProductToWarehouse = await stocks.create(
+        { stock, products_id, warehouses_id: id },
+        { transaction: t }
+      );
       const updateHistories = await stock_histories.create(
         {
           stock_before: 0,
@@ -446,7 +456,9 @@ module.exports = {
   getWarehouseIdByAdminsId: async (req, res) => {
     try {
       let { id } = req.dataDecode;
-      let data = await WarehousesModel.findAll({ where: { admins_id: id } });
+      let data = await WarehousesModel.findAll({
+        where: { admins_id: id },
+      });
       return res.status(200).send(data);
     } catch (error) {
       console.log(error);
