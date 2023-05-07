@@ -37,13 +37,14 @@ const SalesReport = () => {
       const email = decodedToken.email;
 
       // Replace the URL below with the correct endpoint for your API.
-      let url = `${process.env.REACT_APP_API_BASE_URL}/admin/sales-report?email=${email}&start_date=${startDate}&end_date=${endDate}`;
+      let url = `${process.env.REACT_APP_API_BASE_URL}/admin/sales-report?email=${email}&start_date=${startDate}&end_date=${endDate}&page=${page}&limit=${limit}`;
       if (warehouse) url += `&warehouse_filter=${warehouse}`;
       if (category) url += `&category_filter=${category}`;
       if (product) url += `&product_filter=${product}`;
 
       const response = await axios.get(url);
-      setReport(response.data);
+      console.log(response.data);
+      setReport(response.data.report);
       setPage(response.data.page);
       setPages(response.data.totalPage);
       setRows(response.data.totalRows);
@@ -70,7 +71,7 @@ const SalesReport = () => {
 
   const createChartData = (data) => {
     // Check if there is any data
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
       // If there is no data, create a dummy entry with zero values
       return [
         ["Time Period", "Total", "Total Quantity"],
@@ -85,6 +86,13 @@ const SalesReport = () => {
 
   const createCategoryPieChartData = (data) => {
     const categoryTotals = {};
+
+    if (!data) {
+      return [
+        ["Category", "Total"],
+        ["No data", 0],
+      ];
+    }
 
     data.forEach((item) => {
       item.categories.forEach((category) => {
@@ -120,19 +128,19 @@ const SalesReport = () => {
 
   const renderTable = (data) => (
     <Flex overflowX="auto">
-      <Table variant="simple">
+      <Table variant="simple" fontSize="14px">
         <TableCaption mb="2">{timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)} Sales Report</TableCaption>
         <Thead>
           <Tr>
             <Th maxW="100px">Time Period</Th>
             <Th maxW="100px">Total</Th>
-            <Th maxW="100px">Total Quantity</Th>
-            <Th maxW="100px">Category</Th>
+            <Th maxW="110px">Total Quantity</Th>
+            <Th maxW="120px">Category</Th>
             <Th maxW="100px">Product</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {data.length == 0 ? (
+          {!data || data.length == 0 ? (
             <Tr>
               <Td colSpan={5}>No Data</Td>
             </Tr>
