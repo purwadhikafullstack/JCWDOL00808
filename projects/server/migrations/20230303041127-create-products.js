@@ -39,6 +39,8 @@ module.exports = {
       },
       booked_stock: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
       },
     });
   },
