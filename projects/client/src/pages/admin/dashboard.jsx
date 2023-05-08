@@ -1,0 +1,39 @@
+import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import Axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { API_url } from "../../helper";
+import { useState } from "react";
+import { useEffect } from "react";
+
+export default function Dashboard() {
+  const token = localStorage.getItem("token");
+  const [data, setData] = useState([]);
+
+  const dashboardData = () => {
+    Axios.get(API_url + `/admins/dashboardData`, {
+      headers: { Authorization: token },
+    })
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  useEffect(() => {
+    dashboardData();
+  }, []);
+
+  return (
+    <Box textAlign="center" py={10} px={6} minH={"18.5rem"}>
+      <Heading display="inline-block" as="h2" size="2xl" bgGradient="linear(to-r, teal.400, teal.600)" backgroundClip="text">
+        Big4Commerce.com
+      </Heading>
+      <Text fontSize="18px" mt={5} mb={2}>
+        Dashboard Page
+      </Text>
+      {/* <Text color={"gray.500"} mb={6}>
+        The page you're looking is Dashboard
+      </Text> */}
+    </Box>
+  );
+}

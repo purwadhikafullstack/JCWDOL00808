@@ -19,5 +19,14 @@
   },
   "workspaces": [
     "projects/*"
-  ]
+  ],
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "formik": "^2.2.9",
+    "joi": "^17.8.3",
+    "nodemon": "^2.0.22",
+    "react-google-charts": "^4.0.0",
+    "react-paginate": "^8.1.4",
+    "yup": "^1.0.2"
+  }
 }
