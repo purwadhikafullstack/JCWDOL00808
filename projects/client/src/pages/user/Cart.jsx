@@ -66,7 +66,7 @@ export default function Cart() {
 
   return (
     <>
-      <div className="flex flex-col justify-between w-full">
+      <div className="min-h-[70vh] flex flex-col justify-between w-full">
         <div className="bg-white py-5">
           <h1 className="mb-10 text-center text-2xl font-bold font-[Oswald]">
             Cart Items
@@ -106,7 +106,7 @@ export default function Cart() {
                             grams
                           </p>
                           <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
-                            Stocks: {cart.product.totalStock} Pcs
+                            Stocks: {cart.product.availableStock} Pcs
                           </p>
                         </div>
                         <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
@@ -143,12 +143,12 @@ export default function Cart() {
                                 handleUpdateQuantity(event, cart.id);
                               }}
                               min={1}
-                              max={cart.product.totalStock}
+                              max={cart.product.availableStock}
                             />
                             <button
                               disabled={
                                 cart.quantity ===
-                                parseInt(cart.product.totalStock)
+                                parseInt(cart.product.availableStock)
                               }
                               onClick={() =>
                                 dispatch(
@@ -203,7 +203,7 @@ export default function Cart() {
               )}
             </div>
             <div
-              className={`sticky top-[5.7rem] mt-6 h-full rounded-none border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
+              className={`sticky top-[1rem] mt-6 h-full rounded-none border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
                 carts.length === 0 ? "hidden" : null
               }`}
             >

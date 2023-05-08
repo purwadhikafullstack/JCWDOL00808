@@ -5,6 +5,11 @@ const { verifyToken, verifyRoleAdmin } = require("../middleware/verifyToken");
 const { cartsController } = require("../controllers");
 
 Router.get("/", verifyToken, cartsController.getCartData);
+Router.get(
+  "/quantity/:products_id",
+  verifyToken,
+  cartsController.getProductQuantityInCart
+);
 Router.post("/", verifyToken, cartsController.addProduct);
 Router.patch("/", verifyToken, cartsController.updateCartData);
 Router.delete("/:id", verifyToken, cartsController.deleteCartData);
