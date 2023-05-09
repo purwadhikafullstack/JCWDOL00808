@@ -6,13 +6,7 @@ const registerSchema = Joi.object({
 
 const loginAdminSchema = Joi.object({
   email: Joi.string().email(),
-  password: Joi.string()
-    // .min(8)
-    .required(),
-  // .pattern(/[a-z]/) // At least one lowercase letter
-  // .pattern(/[A-Z]/) // At least one uppercase letter
-  // .pattern(/\d/) // At least one digit
-  // .pattern(/[@$!%*?&]/), // At least one special character
+  password: Joi.string().required(),
 });
 
 const addWarehouseSchema = Joi.object({
