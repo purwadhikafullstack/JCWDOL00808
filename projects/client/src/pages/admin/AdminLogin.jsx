@@ -2,10 +2,10 @@ import { Link, Input, InputGroup, InputRightElement, Box, Spacer, Button, Text, 
 import React from "react";
 import { useState } from "react";
 import Axios from "axios";
-import { API_url } from "../helper";
+import { API_url } from "../../helper";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginAction } from "../actions/adminsAction";
+import { loginAction } from "../../actions/adminsAction";
 import { useFormik } from "formik";
 import * as yup from "yup";
 

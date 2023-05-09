@@ -2,7 +2,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import "./App.css";
 import Sidebar from "./components/sidebar";
-import AdminLogin from "./pages/AdminLogin";
+import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/dashboard";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";

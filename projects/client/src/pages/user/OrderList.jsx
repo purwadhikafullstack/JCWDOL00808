@@ -49,7 +49,14 @@ const OrderList = () => {
   const [dataDetails, setDataDetails] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
+  const [date, setDate] = useState("");
   const [status, setStatus] = useState("");
+  const [statusModal, setStatusModal] = useState("");
+  const [grand_total, setGrand_total] = useState(0);
+  const [weight, setWeight] = useState(0);
+  const [shipping_cost, setShipping_cost] = useState(0);
+  const [shipping_method, setShipping_method] = useState(0);
+  const [total_price, setTotal_price] = useState(0);
 
   const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure();
   const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onClose: onDetailsClose } = useDisclosure();
@@ -121,19 +128,42 @@ const OrderList = () => {
   };
 
   const getDetails = (value) => {
+    console.log("value get details: ", value);
     Axios.get(API_url + `/orders/getDetails?orders_id=${value}`)
       .then((response) => {
-        setDataDetails(response.data);
+        setDataDetails(response.data.data);
+        setDate(response.data.date);
+        setStatusModal(response.data.status);
+        setShipping_method(response.data.status);
+        setWeight(response.data.weight);
+        setShipping_cost(response.data.shipping_cost);
+        setTotal_price(response.data.total_price);
+        setGrand_total(response.data.grand_total);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
+  console.log("dataDetails: ", dataDetails);
+  const showDetails = () => {
+    return dataDetails?.map((detail) => {
+      return (
+        <Box key={detail?.id}>
+          <Image src={`${API_url}/${detail?.imageUrl}`} boxSize="132px" />
+          <Text>{detail?.product_name}</Text>
+          <Text>
+            {detail?.quantity} x Rp {detail?.product_price}
+          </Text>
+        </Box>
+      );
+    });
+  };
+
   const showOrderList = () => {
     return list.map((value) => {
       return (
-        <Box boxSize="lg" border="1px" borderColor="gray.300" mt={4} px={8} py={6} className="rounded-none" height="200px" maxW="lg" p={4}>
+        <Box key={value.id} boxSize="lg" border="1px" borderColor="gray.300" mt={4} px={8} py={6} className="rounded-none" height="200px" maxW="lg" p={4}>
           <Flex>
             <Image src={`${process.env.REACT_APP_API_BASE_URL}/${value.order_details[0].imageUrl}`} boxSize="132px" />
             <Flex flexDirection="column" alignItems="flex-start">
@@ -154,7 +184,6 @@ const OrderList = () => {
                 </Badge>
               )}
               {value.order_details.length > 1 && value.order_details.length - 1 != 1 ? (
-
                 <Box ml={8} mt={4}>
                   {value.order_details[0].product_name} and {value.order_details.length - 1} other
                 </Box>
@@ -253,66 +282,9 @@ const OrderList = () => {
               >
                 Transaction details
               </Button>
-              <Modal isOpen={isDetailsOpen} onClose={onDetailsClose}>
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>Transaction Details</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    <Text as="b">Status:</Text>
-                    {value.status == "Confirmed" ? (
-                      <Text variant="subtle" colorScheme="green">
-                        done
-                      </Text>
-                    ) : value.status == "Canceled" ? (
-                      <Text variant="subtle" colorScheme="red">
-                        {value.status}
-                      </Text>
-                    ) : (
-                      <Text variant="subtle" colorScheme="blue">
-                        {value.status}
-                      </Text>
-                    )}
-                    <Text as="b">Transaction Date:</Text>
-                    <Text>{value.when}</Text>
-                    <Text as="b">Product Details:</Text>
-                    {dataDetails.map((detail) => {
-                      return (
-                        <Box key={detail.id}>
-                          <Image src={`${process.env.REACT_APP_API_BASE_URL}/${detail.imageUrl}`} boxSize="132px" />
-                          <Text>{detail.product_name}</Text>
-                          <Text>
-                            {detail.quantity} x Rp {detail.product_price}
-                          </Text>
-                          <Text>{detail.product_weight} gr</Text>
-                          <Text>Shipping method: {value.shipping_method}</Text>
-                          <Text as="b">Payment Details</Text>
-                          <Text>Payment method: Bank transfer</Text>
-                          <Text>Total price: Rp{value.total_price}</Text>
-                          <Text>
-                            Shipping cost {detail.product_weight} gr: Rp
-                            {value.shipping_cost}
-                          </Text>
-                          <Text as="b">
-                            Grand Total: Rp
-                            {value.total_price + value.shipping_cost}
-                          </Text>
-                        </Box>
-                      );
-                    })}
-                  </ModalBody>
-
-                  <ModalFooter>
-                    <Button colorScheme="blue" mr={3} onClick={onDetailsClose}>
-                      Close
-                    </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
             </>
           )}
         </Box>
-
       );
     });
   };
@@ -346,6 +318,49 @@ const OrderList = () => {
               My Transaction
             </Text>
             {showOrderList()}
+            <Modal isOpen={isDetailsOpen} onClose={onDetailsClose}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Transaction Details</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <Text as="b">Status:</Text>
+                  {statusModal == "Confirmed" ? (
+                    <Text variant="subtle" colorScheme="green">
+                      done
+                    </Text>
+                  ) : statusModal == "Canceled" ? (
+                    <Text variant="subtle" colorScheme="red">
+                      {statusModal}
+                    </Text>
+                  ) : (
+                    <Text variant="subtle" colorScheme="blue">
+                      {statusModal}
+                    </Text>
+                  )}
+                  <Text as="b">Transaction Date:</Text>
+                  <Text>{date}</Text>
+                  <Text as="b">Product Details:</Text>
+                  {showDetails()}
+                  <Text>Total weight: {weight} gr</Text>
+                  <Text>Shipping method: {shipping_method}</Text>
+                  <Text as="b">Payment Details</Text>
+                  <Text>Payment method: Bank transfer</Text>
+                  <Text>Shipping cost: Rp{shipping_cost}</Text>
+                  <Text>Total price: Rp{total_price}</Text>
+                  <Text as="b">
+                    Grand Total: Rp
+                    {grand_total}
+                  </Text>
+                </ModalBody>
+
+                <ModalFooter>
+                  <Button colorScheme="blue" mr={3} onClick={onDetailsClose}>
+                    Close
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </Box>
           <div className="mt-5 flex items-center justify-center">
             <ReactPaginate
@@ -363,7 +378,6 @@ const OrderList = () => {
               nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
             />
           </div>
-
         </Box>
       </div>
     </>
