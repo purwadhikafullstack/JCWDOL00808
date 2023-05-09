@@ -11,11 +11,11 @@ Router.get("/getOrderList", verifyToken, ordersController.getOrderList);
 Router.post("/cancelOrder", verifyToken, ordersController.cancelOrder);
 Router.post("/add-order", verifyToken, ordersController.addOrder);
 Router.get("/get-order", verifyToken, ordersController.getOrders);
-Router.get("/getDetails", ordersController.getDetails);
+Router.get("/getDetails", verifyToken, ordersController.getDetails);
 Router.get("/get-order-details/:id", ordersController.getOrderDetails);
 Router.get("/allorders-data/:id", ordersController.getOrdersById);
 Router.post("/upload-payment-proof", verifyToken, uploadPaymentProof, ordersController.uploadPaymentProof);
 Router.post("/cancel-order", verifyToken, ordersController.cancelUserOrder);
-Router.post("/confirmDelivery", verifyToken, ordersController.confirmDelivery)
+Router.post("/confirmDelivery", verifyToken, ordersController.confirmDelivery);
 
 module.exports = Router;

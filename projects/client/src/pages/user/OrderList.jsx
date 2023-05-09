@@ -39,6 +39,7 @@ import Axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
+import { compareAsc, format } from "date-fns";
 
 const OrderList = () => {
   const [list, setList] = useState([]);
@@ -128,11 +129,12 @@ const OrderList = () => {
   };
 
   const getDetails = (value) => {
-    console.log("value get details: ", value);
-    Axios.get(API_url + `/orders/getDetails?orders_id=${value}`)
+    Axios.get(API_url + `/orders/getDetails?orders_id=${value}`, {
+      headers: { Authorization: token },
+    })
       .then((response) => {
         setDataDetails(response.data.data);
-        setDate(response.data.date);
+        setDate(format(new Date(response.data.date), "dd-MMM-yyyy HH:mm"));
         setStatusModal(response.data.status);
         setShipping_method(response.data.status);
         setWeight(response.data.weight);
@@ -145,7 +147,6 @@ const OrderList = () => {
       });
   };
 
-  console.log("dataDetails: ", dataDetails);
   const showDetails = () => {
     return dataDetails?.map((detail) => {
       return (
