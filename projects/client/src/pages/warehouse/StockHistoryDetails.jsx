@@ -115,8 +115,8 @@ const StockHistory = () => {
                   </Table>
                 </TableContainer>
               ) : (
-                <Text as="b" fontSize="3xl">
-                  Data unavailable
+                <Text as="b" fontSize="xl">
+                  There was no stock changes.<br></br>You may check the filter that you are using.
                 </Text>
               )}
             </Box>
