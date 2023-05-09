@@ -142,7 +142,6 @@ module.exports = {
           },
         },
       });
-      // console.log("length:", data.length);
       res.status(200).send({
         data,
         totalPage: Math.ceil(dataLength.length / limit),
@@ -156,8 +155,40 @@ module.exports = {
     try {
       let data = await order_details.findAll({
         where: { orders_id: req.query.orders_id },
+        raw: true,
       });
-      return res.status(200).send(data);
+
+      let weight = 0;
+      for (let i = 0; i < data.length; i++) {
+        weight += data[i].product_weight;
+      }
+
+      let ordersData = await orders.findAll({
+        where: { id: req.query.orders_id },
+        raw: true,
+      });
+
+      console.log("ordersData: ", ordersData);
+
+      let status = ordersData[0].status;
+      let date = ordersData[0].createdAt;
+      let shipping_method = ordersData[0].shipping_method;
+      let total_price = ordersData[0].total_price;
+      let shipping_cost = ordersData[0].shipping_cost;
+      let grand_total = total_price + shipping_cost;
+
+      return res.status(200).send({
+        success: true,
+        message: "Data details available",
+        data,
+        date,
+        status,
+        shipping_method,
+        weight,
+        total_price,
+        shipping_cost,
+        grand_total,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send({
