@@ -1,9 +1,9 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const products = db.products;
 const categories = db.product_categories;
 const stocks = db.stocks;

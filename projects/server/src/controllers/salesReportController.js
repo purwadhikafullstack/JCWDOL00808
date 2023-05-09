@@ -1,7 +1,7 @@
-const { Sequelize } = require("../../models");
+const { Sequelize } = require("../models");
 const { Op } = require("sequelize");
 
-const db = require("../../models/index");
+const db = require("../models/index");
 const admin = db.admins;
 const OrderDetail = db.order_details;
 const Product = db.products;
@@ -39,8 +39,16 @@ module.exports = {
         return res.status(401).json({ message: "Invalid Email" });
       }
 
-      const startDate = req.query.start_date ? new Date(req.query.start_date) : time_period === "weekly" ? new Date(defaultWeekStart) : new Date(defaultMonthStart);
-      const endDate = req.query.end_date ? new Date(req.query.end_date) : time_period === "weekly" ? new Date(defaultWeekEnd) : new Date(defaultMonthEnd);
+      const startDate = req.query.start_date
+        ? new Date(req.query.start_date)
+        : time_period === "weekly"
+        ? new Date(defaultWeekStart)
+        : new Date(defaultMonthStart);
+      const endDate = req.query.end_date
+        ? new Date(req.query.end_date)
+        : time_period === "weekly"
+        ? new Date(defaultWeekEnd)
+        : new Date(defaultMonthEnd);
 
       // Ensure endDate includes the whole day
       endDate.setDate(endDate.getDate() + 1);
@@ -156,7 +164,9 @@ module.exports = {
 
       for (const sale of salesData) {
         const month = sale.createdAt.toISOString().slice(0, 7);
-        const week = `${sale.createdAt.getFullYear()}-W${getWeekNumber(sale.createdAt)}`;
+        const week = `${sale.createdAt.getFullYear()}-W${getWeekNumber(
+          sale.createdAt
+        )}`;
 
         let monthReport = monthly.find((m) => m.timePeriod === month);
         if (!monthReport) {
@@ -194,8 +204,12 @@ module.exports = {
         const productID = sale.product.id;
         const productName = sale.product.name;
 
-        const category = monthReport.categories.find((c) => c.id === categoryID) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
-        const product = monthReport.products.find((p) => p.id === productID) || { id: productID, name: productName, total: 0, quantity: 0 };
+        const category = monthReport.categories.find(
+          (c) => c.id === categoryID
+        ) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
+        const product = monthReport.products.find(
+          (p) => p.id === productID
+        ) || { id: productID, name: productName, total: 0, quantity: 0 };
 
         category.total += amount;
         category.quantity += sale.quantity;
@@ -210,8 +224,12 @@ module.exports = {
           monthReport.products.push(product);
         }
 
-        const weekCategory = weekReport.categories.find((c) => c.id === categoryID) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
-        const weekProduct = weekReport.products.find((p) => p.id === productID) || { id: productID, name: productName, total: 0, quantity: 0 };
+        const weekCategory = weekReport.categories.find(
+          (c) => c.id === categoryID
+        ) || { id: categoryID, name: categoryName, total: 0, quantity: 0 };
+        const weekProduct = weekReport.products.find(
+          (p) => p.id === productID
+        ) || { id: productID, name: productName, total: 0, quantity: 0 };
 
         weekCategory.total += amount;
         weekCategory.quantity += sale.quantity;

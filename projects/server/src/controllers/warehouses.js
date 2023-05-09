@@ -1,4 +1,4 @@
-const db = require("../../models/index");
+const db = require("../models/index");
 const WarehousesModel = db.warehouses;
 const stocks = db.stocks;
 const stock_histories = db.stock_histories;
@@ -9,7 +9,7 @@ const { geocode } = require("opencage-api-client");
 const fs = require("fs");
 const products = db.products;
 const product_categories = db.product_categories;
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 module.exports = {

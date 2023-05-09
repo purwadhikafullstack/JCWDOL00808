@@ -1,9 +1,9 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op, where } = require("sequelize");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const admins = db.admins;
 const usersList = db.users;
 
@@ -50,7 +50,11 @@ module.exports = {
         ],
       };
 
-      if (role_admin !== undefined && role_admin !== null && !isNaN(role_admin)) {
+      if (
+        role_admin !== undefined &&
+        role_admin !== null &&
+        !isNaN(role_admin)
+      ) {
         whereCondition.role = role_admin;
       }
 
@@ -122,7 +126,11 @@ module.exports = {
         ],
       };
 
-      if (verificationStatus !== undefined && verificationStatus !== null && !isNaN(verificationStatus)) {
+      if (
+        verificationStatus !== undefined &&
+        verificationStatus !== null &&
+        !isNaN(verificationStatus)
+      ) {
         whereCondition.is_verified = verificationStatus === 1;
       }
 

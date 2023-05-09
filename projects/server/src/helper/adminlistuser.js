@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
-// const users = require("../../models/users");
-// const User = require("../../models/users");
-const db = require("../../models/index");
+// const users = require("../models/users");
+// const User = require("../models/users");
+const db = require("../models/index");
 const user = db.users;
 
 async function getUsers({ limit, offset, sortBy, order, search, filter }) {
