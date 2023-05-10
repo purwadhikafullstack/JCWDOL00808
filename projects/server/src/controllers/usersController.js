@@ -43,7 +43,8 @@ module.exports = {
         );
         let compiledTemplate = handlebars.compile(template);
         let registerTemplate = compiledTemplate({
-          registrationLink: "http://localhost:3000/user/verify",
+          // registrationLink: "http://localhost:3000/user/verify",
+          registrationLink: `${process.env.WHITELISTED_DOMAIN}/user/verify`,
           email,
           token: createVerificationToken({ id: createAccount.dataValues.id }),
         });
@@ -180,7 +181,8 @@ module.exports = {
         );
         let compiledTemplate = handlebars.compile(template);
         let resetPasswordTemplate = compiledTemplate({
-          resetPasswordLink: "http://localhost:3000/user/verify-new-password",
+          // resetPasswordLink: "http://localhost:3000/user/verify-new-password",
+          resetPasswordLink: `${process.env.WHITELISTED_DOMAIN}/user/verify-new-password`,
           email,
           token: createToken({ id: findEmail.dataValues.id }),
         });
@@ -249,7 +251,10 @@ module.exports = {
       }
       //Get image path data from middleware
       // let profile_picture = req.files?.profile_picture[0]?.path;
-      let profile_picture = req.files?.profile_picture[0]?.path.replace("src\\", ""); //public moved to src;
+      let profile_picture = req.files?.profile_picture[0]?.path.replace(
+        "src\\",
+        ""
+      ); //public moved to src;
       //Update user's profile_picture with a new one
       await users.update(
         {

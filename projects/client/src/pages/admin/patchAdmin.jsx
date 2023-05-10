@@ -1,4 +1,15 @@
-import { Box, FormControl, FormLabel, Input, Select, Text, VStack, useDisclosure, useToast, FormErrorMessage } from "@chakra-ui/react";
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  Text,
+  VStack,
+  useDisclosure,
+  useToast,
+  FormErrorMessage,
+} from "@chakra-ui/react";
 import axios from "axios";
 import AddAdminConfirmation from "../../components/AddConfirmation";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,8 +33,12 @@ const PatchAdmin = () => {
     },
     validationSchema: Yup.object({
       full_name: Yup.string().required("Full Name is required"),
-      email: Yup.string().email("Invalid email address").required("Email is required"),
-      password: Yup.string().min(8, "Password must have 8 character").required("Password is required"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string()
+        .min(8, "Password must have 8 character")
+        .required("Password is required"),
       phone_number: Yup.string().required("Phone Number is required"),
       role: Yup.string().required("Role is required"),
       image: Yup.mixed().required("Image is required"),
@@ -44,7 +59,9 @@ const PatchAdmin = () => {
 
   const fetchAdminData = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/admin/getAdminById/${id}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/getAdminById/${id}`
+      );
       const adminData = response.data;
       console.log(response);
       formik.setValues({
@@ -77,11 +94,15 @@ const PatchAdmin = () => {
         formData.append("profile_picture", values.image);
       }
 
-      await axios.patch(`http://localhost:8000/admin/patchAdmin/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.patch(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/patchAdmin/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       toast({
         title: `Edit Admin Success`,
@@ -112,33 +133,68 @@ const PatchAdmin = () => {
       </Text>
       <form onSubmit={formik.handleSubmit}>
         <VStack spacing="1" align="stretch">
-          <FormControl id="fullName" isRequired isInvalid={formik.touched.full_name && formik.errors.full_name}>
+          <FormControl
+            id="fullName"
+            isRequired
+            isInvalid={formik.touched.full_name && formik.errors.full_name}>
             <FormLabel>Full Name</FormLabel>
-            <Input type="text" {...formik.getFieldProps("full_name")} placeholder="Input Admin Full Name" />
+            <Input
+              type="text"
+              {...formik.getFieldProps("full_name")}
+              placeholder="Input Admin Full Name"
+            />
             <FormErrorMessage>{formik.errors.full_name}</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="email" isRequired isInvalid={formik.touched.email && formik.errors.email}>
+          <FormControl
+            id="email"
+            isRequired
+            isInvalid={formik.touched.email && formik.errors.email}>
             <FormLabel>Email</FormLabel>
-            <Input type="email" {...formik.getFieldProps("email")} placeholder="Input Admin Email" />
+            <Input
+              type="email"
+              {...formik.getFieldProps("email")}
+              placeholder="Input Admin Email"
+            />
             <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="password" isRequired isInvalid={formik.touched.password && formik.errors.password}>
+          <FormControl
+            id="password"
+            isRequired
+            isInvalid={formik.touched.password && formik.errors.password}>
             <FormLabel>Password</FormLabel>
-            <Input type="password" {...formik.getFieldProps("password")} placeholder="Input Admin Password" />
+            <Input
+              type="password"
+              {...formik.getFieldProps("password")}
+              placeholder="Input Admin Password"
+            />
             <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="phoneNumber" isRequired isInvalid={formik.touched.phone_number && formik.errors.phone_number}>
+          <FormControl
+            id="phoneNumber"
+            isRequired
+            isInvalid={
+              formik.touched.phone_number && formik.errors.phone_number
+            }>
             <FormLabel>Phone Number</FormLabel>
-            <Input type="tel" {...formik.getFieldProps("phone_number")} placeholder="Input Phone Number" />
+            <Input
+              type="tel"
+              {...formik.getFieldProps("phone_number")}
+              placeholder="Input Phone Number"
+            />
             <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="role" isRequired isInvalid={formik.touched.role && formik.errors.role}>
+          <FormControl
+            id="role"
+            isRequired
+            isInvalid={formik.touched.role && formik.errors.role}>
             <FormLabel>Role</FormLabel>
-            <Select placeholder="Choose Admin Role" {...formik.getFieldProps("role")}>
+            <Select
+              placeholder="Choose Admin Role"
+              {...formik.getFieldProps("role")}>
               {[
                 { value: "1", label: "Admin" },
                 { value: "2", label: "Admin Warehouse" },
@@ -151,9 +207,17 @@ const PatchAdmin = () => {
             <FormErrorMessage>{formik.errors.role}</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="image" isRequired isInvalid={formik.touched.image && formik.errors.image}>
+          <FormControl
+            id="image"
+            isRequired
+            isInvalid={formik.touched.image && formik.errors.image}>
             <FormLabel>Profile Image</FormLabel>
-            <Input type="file" onChange={(event) => formik.setFieldValue("image", event.target.files[0])} />
+            <Input
+              type="file"
+              onChange={(event) =>
+                formik.setFieldValue("image", event.target.files[0])
+              }
+            />
             <FormErrorMessage>{formik.errors.image}</FormErrorMessage>
           </FormControl>
 
