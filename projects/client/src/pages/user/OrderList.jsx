@@ -6,6 +6,7 @@ import {
   CardBody,
   Text,
   Flex,
+  Divider,
   Box,
   VStack,
   Select,
@@ -58,6 +59,7 @@ const OrderList = () => {
   const [shipping_cost, setShipping_cost] = useState(0);
   const [shipping_method, setShipping_method] = useState(0);
   const [total_price, setTotal_price] = useState(0);
+  const [idToCancel, setIdToCancel] = useState(0);
 
   const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure();
   const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onClose: onDetailsClose } = useDisclosure();
@@ -136,7 +138,7 @@ const OrderList = () => {
         setDataDetails(response.data.data);
         setDate(format(new Date(response.data.date), "dd-MMM-yyyy HH:mm"));
         setStatusModal(response.data.status);
-        setShipping_method(response.data.status);
+        setShipping_method(response.data.shipping_method);
         setWeight(response.data.weight);
         setShipping_cost(response.data.shipping_cost);
         setTotal_price(response.data.total_price);
@@ -151,11 +153,15 @@ const OrderList = () => {
     return dataDetails?.map((detail) => {
       return (
         <Box key={detail?.id}>
-          <Image src={`${API_url}/${detail?.imageUrl}`} boxSize="132px" />
-          <Text>{detail?.product_name}</Text>
-          <Text>
-            {detail?.quantity} x Rp {detail?.product_price}
-          </Text>
+          <Flex>
+            <Image src={`${API_url}/${detail?.imageUrl}`} boxSize="132px" />
+            <>
+              <Text>{detail?.product_name}</Text>
+              <Text>
+                {detail?.quantity} x Rp {detail?.product_price}
+              </Text>
+            </>
+          </Flex>
         </Box>
       );
     });
@@ -177,6 +183,10 @@ const OrderList = () => {
                 </Badge>
               ) : value.status == "Canceled" ? (
                 <Badge variant="subtle" colorScheme="red" ml={8}>
+                  {value.status}
+                </Badge>
+              ) : value.status == "Previous payment proof rejected" ? (
+                <Badge variant="subtle" colorScheme="yellow" ml={8}>
                   {value.status}
                 </Badge>
               ) : (
@@ -205,13 +215,11 @@ const OrderList = () => {
                 variant="subtle"
                 onClick={() => {
                   onCancelOpen();
+                  // setIdToCancel(value.id);
                 }}
                 className="font-[Oswald]"
               >
                 Cancel order
-              </Button>
-              <Button variant="buttonBlack" type="submit" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
-                Upload payment proof
               </Button>
               <Modal isOpen={isCancelOpen} onClose={onCancelClose}>
                 <ModalOverlay />
@@ -234,6 +242,46 @@ const OrderList = () => {
                   </ModalFooter>
                 </ModalContent>
               </Modal>
+              <Button variant="buttonBlack" type="submit" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
+                Upload payment proof
+              </Button>
+            </>
+          ) : value.status == "Previous payment proof rejected" ? (
+            <>
+              <Button
+                colorScheme="gray"
+                variant="subtle"
+                onClick={() => {
+                  onCancelOpen();
+                }}
+                className="font-[Oswald]"
+              >
+                Cancel order
+              </Button>
+              <Modal isOpen={isCancelOpen} onClose={onCancelClose}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Request order cancellation?</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>This action can't be undone. Please add your reason for cancellation:</ModalBody>
+                  <Select placeholder="Select reason">
+                    <option>I bought the wrong item</option>
+                    <option>I don't need it anymore</option>
+                    <option>I want to change my address</option>
+                  </Select>
+                  <ModalFooter>
+                    <Button colorScheme="blue" mr={3} onClick={onCancelClose}>
+                      Close
+                    </Button>
+                    <Button variant="ghost" onClick={() => handleCancelButton(value.id)}>
+                      Cancel my order
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+              <Button variant="buttonBlack" type="submit" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
+                Re-upload payment proof
+              </Button>
             </>
           ) : value.status == "Shipped" ? (
             <>
@@ -305,6 +353,7 @@ const OrderList = () => {
                 <option value="Confirmed">Confirmed</option>
                 <option value="Waiting for payment">Waiting for payment</option>
                 <option value="Waiting for confirmation">Waiting for confirmation</option>
+                <option value="Previous payment proof rejected">Payment proof rejected</option>
                 <option value="Canceled">Canceled</option>
               </Select>
 
@@ -341,10 +390,12 @@ const OrderList = () => {
                   )}
                   <Text as="b">Transaction Date:</Text>
                   <Text>{date}</Text>
+                  <Divider my="4" />
                   <Text as="b">Product Details:</Text>
                   {showDetails()}
-                  <Text>Total weight: {weight} gr</Text>
+                  <Text mt="4">Total weight: {weight} gr</Text>
                   <Text>Shipping method: {shipping_method}</Text>
+                  <Divider my="4" />
                   <Text as="b">Payment Details</Text>
                   <Text>Payment method: Bank transfer</Text>
                   <Text>Shipping cost: Rp{shipping_cost}</Text>
