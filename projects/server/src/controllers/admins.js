@@ -33,7 +33,7 @@ module.exports = {
         phone_number,
         role,
       });
-      console.log("insertToAdmins:", insertToAdmins);
+      // console.log("insertToAdmins:", insertToAdmins);
     } catch (error) {
       res.status(500).send({
         success: false,

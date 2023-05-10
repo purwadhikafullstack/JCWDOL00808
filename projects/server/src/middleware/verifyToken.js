@@ -7,7 +7,7 @@ require("dotenv").config();
 const verifyToken = (req, res, next) => {
   // Get token from headers with authorization as the key name, change accordingly
   const token = req.headers.authorization;
-  console.log("token:", token);
+  // console.log("token:", token);
   if (!token || token === "null")
     return res
       .status(401)

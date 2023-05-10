@@ -80,7 +80,7 @@ export default function Sidebar() {
         { headers: { Authorization: token } }
       );
       setWarehouseAdmin(response.data);
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       toast({
         title: "Error fetching warehouses data.",

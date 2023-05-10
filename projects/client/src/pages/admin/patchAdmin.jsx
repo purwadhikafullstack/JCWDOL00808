@@ -63,7 +63,7 @@ const PatchAdmin = () => {
         `${process.env.REACT_APP_API_BASE_URL}/admin/getAdminById/${id}`
       );
       const adminData = response.data;
-      console.log(response);
+      // console.log(response);
       formik.setValues({
         full_name: adminData.full_name,
         email: adminData.email,

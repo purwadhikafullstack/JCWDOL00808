@@ -1,6 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Box, Table, Thead, Tbody, Tr, Th, Td, TableCaption, VStack, HStack, Heading, FormControl, FormLabel, Select, Input, Button, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  VStack,
+  HStack,
+  Heading,
+  FormControl,
+  FormLabel,
+  Select,
+  Input,
+  Button,
+  Flex,
+} from "@chakra-ui/react";
 import jwtDecode from "jwt-decode";
 import { Chart } from "react-google-charts";
 import ReactPaginate from "react-paginate";
@@ -43,7 +61,7 @@ const SalesReport = () => {
       if (product) url += `&product_filter=${product}`;
 
       const response = await axios.get(url);
-      console.log(response.data);
+      // console.log(response.data);
       setReport(response.data.report);
       setPage(response.data.page);
       setPages(response.data.totalPage);
@@ -54,19 +72,25 @@ const SalesReport = () => {
     }
   };
 
-  console.log("SD", startDate);
+  // console.log("SD", startDate);
   const changePage = ({ selected }) => {
     setPage(selected);
   };
 
   const fetchData = async () => {
-    const responseWarehouse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getAllWarehouse`);
+    const responseWarehouse = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/warehouses/getAllWarehouse`
+    );
     setWarehouses(responseWarehouse.data);
 
-    const responseProduct = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/listAllproduct`);
+    const responseProduct = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/product/listAllproduct`
+    );
     setProducts(responseProduct.data.result);
 
-    const responseCategory = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`);
+    const responseCategory = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`
+    );
     setCategoriesProducts(responseCategory.data.result);
   };
 
@@ -80,8 +104,15 @@ const SalesReport = () => {
       ];
     }
 
-    const chartData = [["Time Period", "Total", "Total Quantity"], ...data.map((item) => [item.timePeriod, Number(item.total), Number(item.totalQuantity)])];
-    console.log("Chart data:", chartData);
+    const chartData = [
+      ["Time Period", "Total", "Total Quantity"],
+      ...data.map((item) => [
+        item.timePeriod,
+        Number(item.total),
+        Number(item.totalQuantity),
+      ]),
+    ];
+    // console.log("Chart data:", chartData);
     return chartData;
   };
 
@@ -108,7 +139,13 @@ const SalesReport = () => {
       });
     });
 
-    const chartData = [["Category", "Total"], ...Object.values(categoryTotals).map((category) => [category.name, category.total])];
+    const chartData = [
+      ["Category", "Total"],
+      ...Object.values(categoryTotals).map((category) => [
+        category.name,
+        category.total,
+      ]),
+    ];
 
     return chartData;
   };
@@ -130,7 +167,10 @@ const SalesReport = () => {
   const renderTable = (data) => (
     <Flex overflowX="auto">
       <Table variant="simple" fontSize="14px">
-        <TableCaption mb="2">{timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)} Sales Report</TableCaption>
+        <TableCaption mb="2">
+          {timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)} Sales
+          Report
+        </TableCaption>
         <Thead>
           <Tr>
             <Th maxW="100px">Time Period</Th>
@@ -161,7 +201,8 @@ const SalesReport = () => {
                 <Td>
                   {item.products.map((product, index) => (
                     <div key={index}>
-                      {product.name} : {formatRupiah(product.total)} ({product.quantity} Pcs)
+                      {product.name} : {formatRupiah(product.total)} (
+                      {product.quantity} Pcs)
                     </div>
                   ))}
                 </Td>
@@ -178,10 +219,17 @@ const SalesReport = () => {
       <VStack spacing={8} align="stretch">
         <Heading>Sales Report</Heading>
         <form onSubmit={handleFilterSubmit}>
-          <Flex direction="row" wrap="wrap" justifyContent="space-between" alignItems="center">
+          <Flex
+            direction="row"
+            wrap="wrap"
+            justifyContent="space-between"
+            alignItems="center">
             <FormControl minWidth="100px" maxWidth="150px">
               <FormLabel>Warehouse</FormLabel>
-              <Select placeholder="Select Warehouse" value={warehouse} onChange={(e) => setWarehouse(e.target.value)}>
+              <Select
+                placeholder="Select Warehouse"
+                value={warehouse}
+                onChange={(e) => setWarehouse(e.target.value)}>
                 {warehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.name}
@@ -191,7 +239,10 @@ const SalesReport = () => {
             </FormControl>
             <FormControl minWidth="100px" maxWidth="150px">
               <FormLabel>Category</FormLabel>
-              <Select placeholder="Select Category" value={category} onChange={(e) => setCategory(e.target.value)}>
+              <Select
+                placeholder="Select Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -201,7 +252,10 @@ const SalesReport = () => {
             </FormControl>
             <FormControl minWidth="100px" maxWidth="150px">
               <FormLabel>Product</FormLabel>
-              <Select placeholder="Select Product" value={product} onChange={(e) => setProduct(e.target.value)}>
+              <Select
+                placeholder="Select Product"
+                value={product}
+                onChange={(e) => setProduct(e.target.value)}>
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -211,11 +265,19 @@ const SalesReport = () => {
             </FormControl>
             <FormControl minWidth="100px" maxWidth="150px">
               <FormLabel>Start Date</FormLabel>
-              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
             </FormControl>
             <FormControl minWidth="100px" maxWidth="150px">
               <FormLabel>End Date</FormLabel>
-              <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
             </FormControl>
             <Button mt={"8"} colorScheme="blue" type="submit">
               Apply Filters
@@ -231,7 +293,9 @@ const SalesReport = () => {
               loader={<div>Loading Chart...</div>}
               data={createChartData(report[timePeriod])}
               options={{
-                title: `${timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)} Sales Report`,
+                title: `${
+                  timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)
+                } Sales Report`,
                 hAxis: { title: "Time Period" },
                 vAxis: { title: "Total" },
                 series: {
@@ -266,7 +330,9 @@ const SalesReport = () => {
         <>
           <FormControl>
             <FormLabel>Time Period</FormLabel>
-            <Select value={timePeriod} onChange={(e) => setTimePeriod(e.target.value)}>
+            <Select
+              value={timePeriod}
+              onChange={(e) => setTimePeriod(e.target.value)}>
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>
             </Select>
@@ -282,11 +348,21 @@ const SalesReport = () => {
           pageCount={Math.min(10, pages)}
           onPageChange={changePage}
           containerClassName={"flex"}
-          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
-          disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
+          pageLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          previousLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          nextLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          activeLinkClassName={
+            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          }
+          disabledLinkClassName={
+            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+          }
         />
       </Flex>
     </div>

@@ -199,7 +199,7 @@ module.exports = {
         raw: true,
       });
 
-      console.log("ordersData: ", ordersData);
+      // console.log("ordersData: ", ordersData);
 
       let status = ordersData[0].status;
       let date = ordersData[0].createdAt;
@@ -230,7 +230,7 @@ module.exports = {
   },
   cancelOrder: async (req, res) => {
     try {
-      console.log("d", req.dataDecode.id);
+      // console.log("d", req.dataDecode.id);
       let users_id = req.dataDecode.id;
       let cek = [];
 
@@ -348,7 +348,10 @@ module.exports = {
       // check if user who wants to cancel order is the same user who is logging in
       if (users_id == checkUser.users_id) {
         // let payment_proof = req.files?.payment_proof[0]?.path;
-        let payment_proof = req.files?.payment_proof[0]?.path.replace("src\\", ""); //public moved to src;
+        let payment_proof = req.files?.payment_proof[0]?.path.replace(
+          "src\\",
+          ""
+        ); //public moved to src;
 
         await orders.update({ payment_proof }, { where: { id: req.body.id } });
 

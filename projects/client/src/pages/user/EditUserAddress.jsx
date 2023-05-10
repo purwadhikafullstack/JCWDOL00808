@@ -18,9 +18,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
-const token = localStorage.getItem("user_token");
 
 const EditUserAddress = () => {
+  const token = localStorage.getItem("user_token");
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
   const navigate = useNavigate();
@@ -109,7 +109,6 @@ const EditUserAddress = () => {
 
   const handleEditAddress = async (values) => {
     try {
-      console.log();
       // Replace with your API endpoint to update an address
       await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/address/edit-address/${id}`,

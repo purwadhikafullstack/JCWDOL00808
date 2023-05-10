@@ -1,4 +1,18 @@
-import { Modal, ModalOverlay, useToast, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, FormErrorMessage, Button, VStack } from "@chakra-ui/react";
+import {
+  Modal,
+  ModalOverlay,
+  useToast,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  Input,
+  FormErrorMessage,
+  Button,
+  VStack,
+} from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -13,19 +27,24 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
       confirm_new_password: "",
     },
     validationSchema: Yup.object({
-      password: Yup.string().min(8, "Password must have 8 characters").required("New password is required"),
+      password: Yup.string()
+        .min(8, "Password must have 8 characters")
+        .required("New password is required"),
       confirm_new_password: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Confirm new password is required"),
     }),
     onSubmit: async (values) => {
-      console.log("New password:", values.password);
+      // console.log("New password:", values.password);
 
       // Handle password change
       try {
-        const response = await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/admin/changePassword/${adminId}`, {
-          password: values.password,
-        });
+        const response = await axios.patch(
+          `${process.env.REACT_APP_API_BASE_URL}/admin/changePassword/${adminId}`,
+          {
+            password: values.password,
+          }
+        );
 
         if (response.status === 200) {
           toast({
@@ -69,16 +88,35 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
         <ModalBody>
           <form onSubmit={formik.handleSubmit}>
             <VStack spacing="1" align="stretch">
-              <FormControl id="password" isRequired isInvalid={formik.touched.password && formik.errors.password}>
+              <FormControl
+                id="password"
+                isRequired
+                isInvalid={formik.touched.password && formik.errors.password}>
                 <FormLabel>New Password</FormLabel>
-                <Input type="password" {...formik.getFieldProps("password")} placeholder="Input new password" />
+                <Input
+                  type="password"
+                  {...formik.getFieldProps("password")}
+                  placeholder="Input new password"
+                />
                 <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
               </FormControl>
 
-              <FormControl id="confirm_new_password" isRequired isInvalid={formik.touched.confirm_new_password && formik.errors.confirm_new_password}>
+              <FormControl
+                id="confirm_new_password"
+                isRequired
+                isInvalid={
+                  formik.touched.confirm_new_password &&
+                  formik.errors.confirm_new_password
+                }>
                 <FormLabel>Confirm New Password</FormLabel>
-                <Input type="password" {...formik.getFieldProps("confirm_new_password")} placeholder="Confirm new password" />
-                <FormErrorMessage>{formik.errors.confirm_new_password}</FormErrorMessage>
+                <Input
+                  type="password"
+                  {...formik.getFieldProps("confirm_new_password")}
+                  placeholder="Confirm new password"
+                />
+                <FormErrorMessage>
+                  {formik.errors.confirm_new_password}
+                </FormErrorMessage>
               </FormControl>
 
               <AddAdminConfirmation onSave={formik.handleSubmit} />

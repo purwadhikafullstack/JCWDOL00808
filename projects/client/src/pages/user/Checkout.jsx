@@ -89,7 +89,7 @@ const Checkout = () => {
         const primary = fetchedAddresses.find(
           (address) => address.is_primary === true
         );
-        console.log(primary);
+        // console.log(primary);
         setPrimaryAddress(primary);
         setSelectedAddress(primary);
 
@@ -113,7 +113,7 @@ const Checkout = () => {
       }
       setLoading(false);
     };
-    console.log(primaryAddress);
+    // console.log(primaryAddress);
     fetchAddressesData();
   }, []);
 

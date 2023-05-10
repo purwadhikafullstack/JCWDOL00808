@@ -70,7 +70,6 @@ const UserAddress = () => {
         }
       );
       setAddresses(response.data.result);
-      console.log(response.data.result);
     } catch (error) {
       toast({
         title: "Error fetching addresses.",

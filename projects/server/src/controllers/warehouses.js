@@ -236,7 +236,7 @@ module.exports = {
       let data = await WarehousesModel.findAll({
         where: { id },
       });
-      console.log("data details: ", data);
+      // console.log("data details: ", data);
 
       res.status(200).send(data);
     } catch (error) {
