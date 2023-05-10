@@ -261,8 +261,8 @@ module.exports = {
         return res.status(404).json({ message: "Order not found" });
       }
       // Update order status to "Waiting for Payment"
-      await order.update({ status: "Waiting for payment" });
-      res.json({ message: 'Order rejected and status reverted to "Waiting for Payment"' });
+      await order.update({ status: "Previous payment proof rejected" });
+      res.json({ message: 'Order rejected and status reverted to "Previous payment proof rejected"' });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Internal Server Error" });

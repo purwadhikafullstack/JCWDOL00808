@@ -54,6 +54,7 @@ const SalesReport = () => {
     }
   };
 
+  console.log("SD", startDate);
   const changePage = ({ selected }) => {
     setPage(selected);
   };
