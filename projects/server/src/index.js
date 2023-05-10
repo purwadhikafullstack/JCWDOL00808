@@ -20,7 +20,7 @@ app.use(express.json());
 
 // Sequelize Model Synchronization (comment if not used)
 // const Sequelize = require("sequelize");
-// const Models = require("../models");
+// const Models = require("./models");
 // Models.sequelize
 //   .sync({
 //     force: false,
