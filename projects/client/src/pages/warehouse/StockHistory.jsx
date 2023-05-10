@@ -46,6 +46,7 @@ const History = () => {
   const [stockHistories, setStockHistories] = useState([]);
   const [warehouseData, setWarehouseData] = useState([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
@@ -67,8 +68,12 @@ const History = () => {
         setStockHistories(response.data.data);
         setWarehouseData(response.data.warehouse);
         setTotalPage(response.data.totalPage);
+        setLoading(false);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+      });
   };
 
   useEffect(() => {
@@ -125,9 +130,9 @@ const History = () => {
           <Text>Monitor and manage product availability to track your warehouses' performance. View history of all products.</Text>
         </Box>
         <Flex>
-          {stockHistories.length == 0 ? (
+          {loading ? (
             <Spinner color="red.500" />
-          ) : (
+          ) : stockHistories.length !== 0 && !loading ? (
             <Box id="tabel stock histories" mt="10" mb="14">
               <TableContainer bg="white" border="1px" borderColor="gray.200">
                 <Table variant="striped" size="md">
@@ -144,6 +149,10 @@ const History = () => {
                 </Table>
               </TableContainer>
             </Box>
+          ) : (
+            <Text as="b" fontSize="xl" mt="40">
+              There was no stock changes.<br></br>You may check the filter that you are using.
+            </Text>
           )}
           <Box id="sort filter and search" mx="50" mt="100">
             <Card maxW="xs" border="1px" borderColor="gray.200">
