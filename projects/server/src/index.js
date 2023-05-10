@@ -104,13 +104,15 @@ app.use("/address", addressesRouter);
 app.use("/histories", historiesRouter);
 app.use("/orders", ordersRouter);
 
-app.use(express.static("."));
+// app.use(express.static("."));
 
 //#endregion
 
 // #region CLIENT
-const clientPath = "../../client/build";
-// app.use(express.static(join(__dirname, clientPath)));
+// const clientPath = "../../client/build";
+// app.use("/public", express.static(join(__dirname, "src/public")));
+// app.use(express.static(join(__dirname, "src/public")));
+app.use("/public", express.static(join(__dirname, "../src/public")));
 
 // Serve the HTML page
 // app.get("*", (req, res) => {
