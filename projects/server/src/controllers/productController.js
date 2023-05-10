@@ -96,8 +96,8 @@ module.exports = {
     try {
       // Check if req.files contains an imageUrl property
       if (req.files && req.files.imageUrl) {
-        imageUrl = req.files.imageUrl[0].path.replace("src\\", "");
         // imageUrl = req.files.imageUrl[0].path;
+        imageUrl = req.files.imageUrl[0].path.replace("src\\", ""); //public moved to src
       }
 
       // Validate input data against schema
@@ -181,7 +181,8 @@ module.exports = {
 
       // Check if req.files contains an imageUrl property
       if (req.files && req.files.imageUrl) {
-        imageUrl = req.files.imageUrl[0].path;
+        // imageUrl = req.files.imageUrl[0].path;
+        imageUrl = req.files.imageUrl[0].path.replace("src\\", ""); //public moved to src;
       }
 
       // Validate input data against schema

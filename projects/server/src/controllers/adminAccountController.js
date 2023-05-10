@@ -181,7 +181,8 @@ module.exports = {
     try {
       //step 1 ambil data dari client (body)
       // let { email, password, full_name, phone_number, role } = req.body;
-      let profile_picture = req.files.profile_picture[0].path;
+      // let profile_picture = req.files.profile_picture[0].path;
+      let profile_picture = req.files.profile_picture[0].path.replace("src\\", ""); //public moved to src
 
       // Validate input data against schema
       const { error, value } = schema.validate(req.body);
@@ -302,7 +303,8 @@ module.exports = {
         admin.role = role;
       }
       if (req.files && req.files.profile_picture) {
-        admin.profile_picture = req.files.profile_picture[0].path;
+        // admin.profile_picture = req.files.profile_picture[0].path;
+        admin.profile_picture = req.files.profile_picture[0].path.replace("src\\", ""); //public moved to src
       }
       await admin.save({ transaction: t });
 

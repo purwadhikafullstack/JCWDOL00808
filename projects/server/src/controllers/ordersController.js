@@ -346,7 +346,8 @@ module.exports = {
       let checkUser = await orders.findOne({ where: { id: req.body.id } });
       // check if user who wants to cancel order is the same user who is logging in
       if (users_id == checkUser.users_id) {
-        let payment_proof = req.files?.payment_proof[0]?.path;
+        // let payment_proof = req.files?.payment_proof[0]?.path;
+        let payment_proof = req.files?.payment_proof[0]?.path.replace("src\\", ""); //public moved to src;
 
         await orders.update({ payment_proof }, { where: { id: req.body.id } });
 

@@ -248,7 +248,8 @@ module.exports = {
         });
       }
       //Get image path data from middleware
-      let profile_picture = req.files?.profile_picture[0]?.path;
+      // let profile_picture = req.files?.profile_picture[0]?.path;
+      let profile_picture = req.files?.profile_picture[0]?.path.replace("src\\", ""); //public moved to src;
       //Update user's profile_picture with a new one
       await users.update(
         {

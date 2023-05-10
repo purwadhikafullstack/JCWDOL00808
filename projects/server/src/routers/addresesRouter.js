@@ -1,7 +1,7 @@
 const express = require("express");
 const Router = express.Router();
 const { verifyToken } = require("../middleware/verifyToken");
-const uploadImages = require("../middleware/uploadImage");
+// const uploadImages = require("../middleware/uploadImage");
 
 // Import Controller
 const { addressesController } = require("../controllers");
