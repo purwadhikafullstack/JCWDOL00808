@@ -49,26 +49,6 @@ res.status(200).json({
 });
 
 // ===========================
-
-// // not found
-app.use((req, res, next) => {
-  if (req.path.includes("/api/")) {
-    res.status(404).send("Not found !");
-  } else {
-    next();
-  }
-});
-
-// // error
-app.use((err, req, res, next) => {
-  if (req.path.includes("/api/")) {
-    console.error("Error : ", err.stack);
-    res.status(500).send(err);
-  } else {
-    next();
-  }
-});
-
 //Import router for controller from index.js inside routers folder
 
 const {
@@ -106,7 +86,24 @@ app.use("/api/orders", ordersRouter);
 // app.use(express.static("."));
 
 //#endregion
+// // not found
+app.use((req, res, next) => {
+  if (req.path.includes("/api/")) {
+    res.status(404).send("Not found !");
+  } else {
+    next();
+  }
+});
 
+// // error
+app.use((err, req, res, next) => {
+  if (req.path.includes("/api/")) {
+    console.error("Error : ", err.stack);
+    res.status(500).send(err);
+  } else {
+    next();
+  }
+});
 // #region CLIENT
 const clientPath = "../../client/build";
 // app.use("/public", express.static(join(__dirname, "src/public")));
