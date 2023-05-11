@@ -22,13 +22,13 @@ module.exports = {
         warehouse_filter,
         category_filter,
         product_filter,
-        time_period = "weekly",
+        // time_period = "weekly",
         page = 0, // default page value is 0
         limit = 10, // default limit is 10
       } = req.query;
 
-      const [defaultWeekStart, defaultWeekEnd] = getCurrentWeek();
-      const [defaultMonthStart, defaultMonthEnd] = getCurrentMonth();
+      // const [defaultWeekStart, defaultWeekEnd] = getCurrentWeek();
+      // const [defaultMonthStart, defaultMonthEnd] = getCurrentMonth();
 
       // Authenticate user
       const authenticatedAdmin = await admin.findOne({
@@ -39,17 +39,21 @@ module.exports = {
         return res.status(401).json({ message: "Invalid Email" });
       }
 
-      const startDate = req.query.start_date
-        ? new Date(req.query.start_date)
-        : time_period === "weekly"
-        ? new Date(defaultWeekStart)
-        : new Date(defaultMonthStart);
-      const endDate = req.query.end_date
-        ? new Date(req.query.end_date)
-        : time_period === "weekly"
-        ? new Date(defaultWeekEnd)
-        : new Date(defaultMonthEnd);
+      // const startDate = req.query.start_date
+      //   ? new Date(req.query.start_date)
+      //   : time_period === "weekly"
+      //   ? new Date(defaultWeekStart)
+      //   : new Date(defaultMonthStart);
+      // const endDate = req.query.end_date
+      //   ? new Date(req.query.end_date)
+      //   : time_period === "weekly"
+      //   ? new Date(defaultWeekEnd)
+      //   : new Date(defaultMonthEnd);
 
+      const startDate = new Date(start_date);
+      const endDate = new Date(end_date);
+
+      
       // Ensure endDate includes the whole day
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
@@ -129,8 +133,8 @@ module.exports = {
       let salesData = await OrderDetail.findAll({
         where: whereCondition,
         include: [productInclude, orderInclude],
-        limit: parseInt(limit), // Apply limit for pagination
-        offset: offset, // Apply the offset for pagination
+        // limit: parseInt(limit), // Apply limit for pagination
+        // offset: offset, // Apply the offset for pagination
       });
 
       const totalRows = await OrderDetail.count({
@@ -146,10 +150,10 @@ module.exports = {
       // Send the report as a response
       res.status(200).json({
         report: report,
-        page: page,
-        limit: limit,
-        totalRows: totalRows,
-        totalPage: totalPage,
+        // page: page,
+        // limit: limit,
+        // totalRows: totalRows,
+        // totalPage: totalPage,
       });
     } catch (error) {
       console.error(error);
@@ -270,6 +274,9 @@ module.exports = {
     }
 
     function getWeekNumber(d) {
+      // Add timezone offset for GMT+7
+      d = new Date(d.getTime() + 25200000); // 7 hours in milliseconds
+
       d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
       d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
       const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
