@@ -27,7 +27,7 @@ const AdminList = (props) => {
   const getAdminsData = () => {
     Axios.get(API_url + `/admins/getAdminsData`)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setAdminsData(response.data);
       })
       .catch((err) => console.log(err));
@@ -54,8 +54,7 @@ const AdminList = (props) => {
           <Td isNumeric>
             <Button
               className="mr-2"
-              onClick={() => navigate(`/admin/assign/${value.id}`)}
-            >
+              onClick={() => navigate(`/admin/assign/${value.id}`)}>
               Assign to warehouse
             </Button>
             <Button colorScheme="red">Delete</Button>
@@ -68,7 +67,7 @@ const AdminList = (props) => {
   const assignButton = () => {
     Axios.patch(API_url + `/admins/assignNewAdmin/`)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         alert(response.data.message);
       })
       .catch((err) => {

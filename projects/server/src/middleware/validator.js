@@ -6,8 +6,7 @@ const registerSchema = Joi.object({
 
 const loginAdminSchema = Joi.object({
   email: Joi.string().email(),
-  password: Joi.string()
-    .required()
+  password: Joi.string().required(),
 });
 
 const addWarehouseSchema = Joi.object({

@@ -1,9 +1,9 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const user_addresses = db.user_addresses;
 const users = db.users;
 const orders = db.orders;
@@ -20,7 +20,14 @@ module.exports = {
   addOrder: async (req, res) => {
     try {
       let { id } = req.dataDecode;
-      let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
+      let {
+        total_price,
+        status,
+        shipping_method,
+        shipping_cost,
+        user_addresses_id,
+        warehouses_id,
+      } = req.body;
 
       // Get all carts data owned by specific user and merged with products data
       const fetchCart = await carts.findAll({
@@ -32,7 +39,14 @@ module.exports = {
             model: products,
             as: "product",
             required: true,
-            attributes: ["id", "name", "price", "weight", "imageUrl", "booked_stock"],
+            attributes: [
+              "id",
+              "name",
+              "price",
+              "weight",
+              "imageUrl",
+              "booked_stock",
+            ],
           },
         ],
         attributes: ["id", "users_id", "quantity", "products_id"],
@@ -57,7 +71,10 @@ module.exports = {
         if (quantity <= stock) {
           validationChecker.push(i);
           booked_stock += quantity;
-          let updateBookedStock = await products.update({ booked_stock }, { where: { id } });
+          let updateBookedStock = await products.update(
+            { booked_stock },
+            { where: { id } }
+          );
         }
       }
 
@@ -134,7 +151,21 @@ module.exports = {
         limit,
         offset,
         order: [["id", order]],
-        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id", "shipping_method", "shipping_cost"],
+        attributes: [
+          [
+            sequelize.fn(
+              "DATE_FORMAT",
+              sequelize.col("orders.createdAt"),
+              "%Y-%m-%d"
+            ),
+            "when",
+          ],
+          "status",
+          "total_price",
+          "id",
+          "shipping_method",
+          "shipping_cost",
+        ],
         where: {
           users_id,
           status: {
@@ -168,7 +199,7 @@ module.exports = {
         raw: true,
       });
 
-      console.log("ordersData: ", ordersData);
+      // console.log("ordersData: ", ordersData);
 
       let status = ordersData[0].status;
       let date = ordersData[0].createdAt;
@@ -199,6 +230,7 @@ module.exports = {
   },
   cancelOrder: async (req, res) => {
     try {
+      // console.log("d", req.dataDecode.id);
       let users_id = req.dataDecode.id;
       let cek = [];
 
@@ -224,11 +256,17 @@ module.exports = {
           let stockToReturn = findToCancel[i].quantity;
           let booked_stock = findProducts.booked_stock - stockToReturn;
 
-          let updatedBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
+          let updatedBooked_stock = await products.update(
+            { booked_stock },
+            { where: { id: products_id } }
+          );
         }
 
         let newStatus = "Canceled";
-        let updateOrderStatus = await orders.update({ status: newStatus }, { where: { id: orders_id } });
+        let updateOrderStatus = await orders.update(
+          { status: newStatus },
+          { where: { id: orders_id } }
+        );
 
         res.status(200).send({
           success: true,
@@ -272,11 +310,17 @@ module.exports = {
           let stockToReturn = findToCancel[i].quantity;
           let booked_stock = findProducts.booked_stock - stockToReturn;
 
-          let updatedBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
+          let updatedBooked_stock = await products.update(
+            { booked_stock },
+            { where: { id: products_id } }
+          );
         }
 
         let newStatus = "Canceled";
-        let updateOrderStatus = await orders.update({ status: newStatus }, { where: { id: orders_id } });
+        let updateOrderStatus = await orders.update(
+          { status: newStatus },
+          { where: { id: orders_id } }
+        );
       } else {
         res.status(500).send({
           success: false,
@@ -303,11 +347,18 @@ module.exports = {
       let checkUser = await orders.findOne({ where: { id: req.body.id } });
       // check if user who wants to cancel order is the same user who is logging in
       if (users_id == checkUser.users_id) {
-        let payment_proof = req.files?.payment_proof[0]?.path;
+        // let payment_proof = req.files?.payment_proof[0]?.path;
+        let payment_proof = req.files?.payment_proof[0]?.path.replace(
+          "src\\",
+          ""
+        ); //public moved to src;
 
         await orders.update({ payment_proof }, { where: { id: req.body.id } });
 
-        await orders.update({ status: "Waiting for confirmation" }, { where: { id: req.body.id } });
+        await orders.update(
+          { status: "Waiting for confirmation" },
+          { where: { id: req.body.id } }
+        );
 
         res.status(200).send({
           success: true,
@@ -336,11 +387,15 @@ module.exports = {
       if (users_id == checkUser.users_id) {
         let orders_id = req.body.id;
 
-        await orders.update({ status: "Order confirmed" }, { where: { id: orders_id } });
+        await orders.update(
+          { status: "Order confirmed" },
+          { where: { id: orders_id } }
+        );
 
         res.status(200).send({
           success: true,
-          message: "Your special delivery has made it to its destination! Thank you for ordering it from Big4commerce.",
+          message:
+            "Your special delivery has made it to its destination! Thank you for ordering it from Big4commerce.",
         });
       } else if (users_id != checkUser.users_id) {
         res.status(500).send({
@@ -449,9 +504,13 @@ module.exports = {
         }
       });
       if (result.length === 0 && search !== "") {
-        return res.status(404).json({ message: "No matching results found for the search query" });
+        return res
+          .status(404)
+          .json({ message: "No matching results found for the search query" });
       } else if (result.length === 0) {
-        return res.status(404).json({ message: "Please assign warehouse first" });
+        return res
+          .status(404)
+          .json({ message: "Please assign warehouse first" });
       }
       res.json({
         result: result,
@@ -480,7 +539,15 @@ module.exports = {
           },
           {
             model: user_addresses,
-            attributes: ["recipient", "phone_number", "address", "province", "city", "district", "postal_code"],
+            attributes: [
+              "recipient",
+              "phone_number",
+              "address",
+              "province",
+              "city",
+              "district",
+              "postal_code",
+            ],
           },
         ],
       });

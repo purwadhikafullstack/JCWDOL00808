@@ -18,9 +18,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
-const token = localStorage.getItem("user_token");
 
 const EditUserAddress = () => {
+  const token = localStorage.getItem("user_token");
   const [addresses, setAddresses] = useState([]);
   const toast = useToast();
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const EditUserAddress = () => {
 
   const getProvinceData = async () => {
     await axios
-      .get(`http://localhost:8000/warehouses/getProvinceData`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -55,7 +55,7 @@ const EditUserAddress = () => {
 
     await axios
       .get(
-        `http://localhost:8000/warehouses/getCityData?province_id=${province_id}`
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses/getCityData?province_id=${province_id}`
       )
       .then((response) => {
         setCityData(response.data);
@@ -80,7 +80,7 @@ const EditUserAddress = () => {
     try {
       // Replace with your API endpoint to get all addresses
       const response = await axios.get(
-        `http://localhost:8000/address/get-address/${id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/address/get-address/${id}`,
         {
           headers: { Authorization: token },
         }
@@ -109,10 +109,9 @@ const EditUserAddress = () => {
 
   const handleEditAddress = async (values) => {
     try {
-      console.log();
       // Replace with your API endpoint to update an address
       await axios.patch(
-        `http://localhost:8000/address/edit-address/${id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/address/edit-address/${id}`,
         values,
         {
           headers: { Authorization: token },
@@ -176,8 +175,7 @@ const EditUserAddress = () => {
         <form onSubmit={formik.handleSubmit}>
           <VStack spacing={4} mt={4} mx="auto" maxW="480px">
             <FormControl
-              isInvalid={formik.errors.address && formik.touched.address}
-            >
+              isInvalid={formik.errors.address && formik.touched.address}>
               <FormLabel htmlFor="address">Address</FormLabel>
               <Input
                 id="address"
@@ -190,8 +188,7 @@ const EditUserAddress = () => {
               <FormErrorMessage>{formik.errors.address}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.province && formik.touched.province}
-            >
+              isInvalid={formik.errors.province && formik.touched.province}>
               <FormLabel htmlFor="province">Province</FormLabel>
               <Select
                 id="province"
@@ -205,14 +202,12 @@ const EditUserAddress = () => {
                   formik.handleChange(element);
                 }}
                 // onBlur={formik.handleBlur}
-                value={formik.values.province}
-              >
+                value={formik.values.province}>
                 {provinceData.map((value) => {
                   return (
                     <option
                       value={value.province_id + "," + value.province}
-                      key={value.province_id}
-                    >
+                      key={value.province_id}>
                       {value.province}
                     </option>
                   );
@@ -233,14 +228,12 @@ const EditUserAddress = () => {
                   formik.handleChange(element);
                 }}
                 onBlur={formik.handleBlur}
-                value={formik.values.city}
-              >
+                value={formik.values.city}>
                 {cityData.map((value) => {
                   return (
                     <option
                       value={`${value.type} ${value.city_name}`}
-                      key={value.city_id}
-                    >
+                      key={value.city_id}>
                       {value.type} {value.city_name}
                     </option>
                   );
@@ -249,8 +242,7 @@ const EditUserAddress = () => {
               <FormErrorMessage>{formik.errors.city}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.district && formik.touched.district}
-            >
+              isInvalid={formik.errors.district && formik.touched.district}>
               <FormLabel htmlFor="district">District</FormLabel>
               <Input
                 id="district"
@@ -265,8 +257,7 @@ const EditUserAddress = () => {
             <FormControl
               isInvalid={
                 formik.errors.postal_code && formik.touched.postal_code
-              }
-            >
+              }>
               <FormLabel htmlFor="postal_code">Postal Code</FormLabel>
               <Input
                 id="postal_code"
@@ -279,8 +270,7 @@ const EditUserAddress = () => {
               <FormErrorMessage>{formik.errors.postal_code}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.recipient && formik.touched.recipient}
-            >
+              isInvalid={formik.errors.recipient && formik.touched.recipient}>
               <FormLabel htmlFor="recipient">Recipient</FormLabel>
               <Input
                 id="recipient"
@@ -295,8 +285,7 @@ const EditUserAddress = () => {
             <FormControl
               isInvalid={
                 formik.errors.phone_number && formik.touched.phone_number
-              }
-            >
+              }>
               <FormLabel htmlFor="phone_number">Phone Number</FormLabel>
               <Input
                 id="phone_number"
@@ -309,8 +298,7 @@ const EditUserAddress = () => {
               <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={formik.errors.is_primary && formik.touched.is_primary}
-            >
+              isInvalid={formik.errors.is_primary && formik.touched.is_primary}>
               <FormLabel htmlFor="is_primary">Primary Address</FormLabel>
               <Select
                 id="is_primary"
@@ -318,8 +306,7 @@ const EditUserAddress = () => {
                 type="number"
                 placeholder=" "
                 {...formik.getFieldProps("is_primary")}
-                onChange={formik.handleChange}
-              >
+                onChange={formik.handleChange}>
                 {[
                   { value: 1, label: "Yes" },
                   { value: 0, label: "No" },
@@ -335,8 +322,7 @@ const EditUserAddress = () => {
             <Button
               type="submit"
               colorScheme="blue"
-              isLoading={formik.isSubmitting}
-            >
+              isLoading={formik.isSubmitting}>
               Edit Address
             </Button>
           </VStack>

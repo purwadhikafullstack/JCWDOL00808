@@ -60,7 +60,7 @@ export default function Sidebar() {
   const fetchWarehouseData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/warehouses/getAllWarehouse`
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses/getAllWarehouse`
       );
       setWarehouseData(response.data);
     } catch (error) {
@@ -75,9 +75,12 @@ export default function Sidebar() {
 
   const fetchWarehouseAdmin = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/warehouses/warehouse-id-by-admins-id`, { headers: { Authorization: token } });
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses/warehouse-id-by-admins-id`,
+        { headers: { Authorization: token } }
+      );
       setWarehouseAdmin(response.data);
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       toast({
         title: "Error fetching warehouses data.",
@@ -109,8 +112,12 @@ export default function Sidebar() {
       title: "Warehouse",
       icon: <BsBuilding />,
       submenu: true,
-      submenuItems: [{ title: "Stock Mutations" }, { title: "Stock History" }, { title: "Warehouse List" }, { title: "Warehouse Stock" }],
-
+      submenuItems: [
+        { title: "Stock Mutations" },
+        { title: "Stock History" },
+        { title: "Warehouse List" },
+        { title: "Warehouse Stock" },
+      ],
     },
     {
       title: "Orders",
@@ -233,32 +240,46 @@ export default function Sidebar() {
                           key={submenuIndex}
                           className="text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer
           p-2 px-5 hover:bg-light-white rounded-md"
-                        onClick={() => {
-                          if (submenuItem.title === "Admin Account") {
-                            navigate("/admin/manageadmin");
-                          } else if (submenuItem.title === "List User") {
-                            navigate("/admin/adminuserlist");
-                          } else if (submenuItem.title === "Manage Category Product") {
-                            navigate("/admin/managecategory");
-                          } else if (submenuItem.title === "Manage Product") {
-                            navigate("/admin/manageProducts");
-                          } else if (submenuItem.title === "Stock Mutations") {
-                            navigate(role === "1" ? "/warehouse/getAllstockmutationrequest" : "/warehouse/getstockmutationrequest");
-                          } else if (submenuItem.title === "Warehouse List") {
-                            navigate("/warehouse/list");
-                          } else if (submenuItem.title === "Warehouse Stock") {
-                            navigate(role === "2" ? (warehouseAdmin.length === 0 ? "/warehouse/stock/0" : `/warehouse/stock/${warehouseAdmin[0]?.id}`) : null);
-                          } else if (submenuItem.title === "List Orders") {
-                            navigate("/admin/list-orders");
-                          } else if (submenuItem.title === "Stock History") {
-                            navigate("/warehouse/history");
-                          }
-                        }}
-                      >
-                        {submenuItem.title}
-                      </li>
-                    );
-
+                          onClick={() => {
+                            if (submenuItem.title === "Admin Account") {
+                              navigate("/admin/manageadmin");
+                            } else if (submenuItem.title === "List User") {
+                              navigate("/admin/adminuserlist");
+                            } else if (
+                              submenuItem.title === "Manage Category Product"
+                            ) {
+                              navigate("/admin/managecategory");
+                            } else if (submenuItem.title === "Manage Product") {
+                              navigate("/admin/manageProducts");
+                            } else if (
+                              submenuItem.title === "Stock Mutations"
+                            ) {
+                              navigate(
+                                role === "1"
+                                  ? "/warehouse/getAllstockmutationrequest"
+                                  : "/warehouse/getstockmutationrequest"
+                              );
+                            } else if (submenuItem.title === "Warehouse List") {
+                              navigate("/warehouse/list");
+                            } else if (
+                              submenuItem.title === "Warehouse Stock"
+                            ) {
+                              navigate(
+                                role === "2"
+                                  ? warehouseAdmin.length === 0
+                                    ? "/warehouse/stock/0"
+                                    : `/warehouse/stock/${warehouseAdmin[0]?.id}`
+                                  : null
+                              );
+                            } else if (submenuItem.title === "List Orders") {
+                              navigate("/admin/list-orders");
+                            } else if (submenuItem.title === "Stock History") {
+                              navigate("/warehouse/history");
+                            }
+                          }}>
+                          {submenuItem.title}
+                        </li>
+                      );
                   })}
                 </ul>
               )}

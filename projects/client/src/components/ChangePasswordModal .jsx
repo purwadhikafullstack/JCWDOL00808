@@ -39,7 +39,7 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
         .required("Confirm new password is required"),
     }),
     onSubmit: async (values) => {
-      console.log("New password:", values.password);
+      // console.log("New password:", values.password);
 
       // Handle password change
       try {
@@ -103,6 +103,11 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
                   {...formik.getFieldProps("password")}
                   placeholder="Input new password"
                 />
+                <Input
+                  type="password"
+                  {...formik.getFieldProps("password")}
+                  placeholder="Input new password"
+                />
                 <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
               </FormControl>
 
@@ -115,6 +120,14 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
                 }
               >
                 <FormLabel>Confirm New Password</FormLabel>
+                <Input
+                  type="password"
+                  {...formik.getFieldProps("confirm_new_password")}
+                  placeholder="Confirm new password"
+                />
+                <FormErrorMessage>
+                  {formik.errors.confirm_new_password}
+                </FormErrorMessage>
                 <Input
                   type="password"
                   {...formik.getFieldProps("confirm_new_password")}

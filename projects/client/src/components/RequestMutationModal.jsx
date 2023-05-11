@@ -24,16 +24,23 @@ import * as Yup from "yup";
 import axios from "axios";
 import AddAdminConfirmation from "./AddConfirmation";
 
-const token = localStorage.getItem("token");
-
 const validationSchema = Yup.object().shape({
-  from_warehouse_id: Yup.number().min(1, "please select warehouse").required("Warehouse Name is required"),
-  to_warehouse_id: Yup.number().min(1, "please select warehouse").required("Warehouse Name is required"),
-  quantity: Yup.number().min(0, "Price must be greater than or equal to 0").required("quantity is required"),
-  products_id: Yup.number().min(1, "Please select a product name").required("Product name is required"),
+  from_warehouse_id: Yup.number()
+    .min(1, "please select warehouse")
+    .required("Warehouse Name is required"),
+  to_warehouse_id: Yup.number()
+    .min(1, "please select warehouse")
+    .required("Warehouse Name is required"),
+  quantity: Yup.number()
+    .min(0, "Price must be greater than or equal to 0")
+    .required("quantity is required"),
+  products_id: Yup.number()
+    .min(1, "Please select a product name")
+    .required("Product name is required"),
 });
 
 const StockMutationsModal = ({ isOpen, onClose }) => {
+  const token = localStorage.getItem("token");
   const [products, setProduct] = useState([]);
   const [warehouse, setWarehouse] = useState([]);
   const [selectedId, setSelectedId] = useState("");
@@ -51,11 +58,15 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/mutations/request-stock`, values, {
-          headers: {
-            Authorization: token,
-          },
-        });
+        await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}/mutations/request-stock`,
+          values,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
         setIsSubmitting(false);
         formik.resetForm();
         toast({
@@ -85,16 +96,20 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
 
   const fetchProducts = async () => {
     if (selectedId) {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/getProductOnWarehouse?warehouses_id=${selectedId}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/product/getProductOnWarehouse?warehouses_id=${selectedId}`
+      );
       setProduct(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     } else {
       setProduct([]);
     }
   };
 
   const fetchWarehouse = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getAllWarehouse`);
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/warehouses/getAllWarehouse`
+    );
     setWarehouse(response.data);
   };
 
@@ -106,7 +121,13 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={formik.handleSubmit}>
-            <FormControl mb={2} id="from_warehouse_id" isInvalid={formik.touched.from_warehouse_id && formik.errors.from_warehouse_id}>
+            <FormControl
+              mb={2}
+              id="from_warehouse_id"
+              isInvalid={
+                formik.touched.from_warehouse_id &&
+                formik.errors.from_warehouse_id
+              }>
               <FormLabel>Select from Warehouse Name</FormLabel>
               <Select
                 placeholder="Select Warehouse name"
@@ -114,20 +135,28 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
                 onChange={(event) => {
                   setSelectedId(event.target.value);
                   formik.handleChange(event);
-                }}
-              >
+                }}>
                 {warehouse.map((warehouses) => (
                   <option key={warehouses.id} value={warehouses.id}>
                     {warehouses.name}
                   </option>
                 ))}
               </Select>
-              <FormErrorMessage>{formik.errors.from_warehouse_id}</FormErrorMessage>
+              <FormErrorMessage>
+                {formik.errors.from_warehouse_id}
+              </FormErrorMessage>
             </FormControl>
 
-            <FormControl mb={2} id="products_id" isInvalid={formik.touched.products_id && formik.errors.products_id}>
+            <FormControl
+              mb={2}
+              id="products_id"
+              isInvalid={
+                formik.touched.products_id && formik.errors.products_id
+              }>
               <FormLabel>Product Name</FormLabel>
-              <Select placeholder="Select Product Name" {...formik.getFieldProps("products_id")}>
+              <Select
+                placeholder="Select Product Name"
+                {...formik.getFieldProps("products_id")}>
                 {products.map((product) => {
                   if (product.stocks.some((stock) => stock.stock > 0)) {
                     return (
@@ -147,21 +176,36 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
               <FormErrorMessage>{formik.errors.products_id}</FormErrorMessage>
             </FormControl>
 
-            <FormControl mb={2} id="to_warehouse_id" isInvalid={formik.touched.to_warehouse_id && formik.errors.to_warehouse_id}>
+            <FormControl
+              mb={2}
+              id="to_warehouse_id"
+              isInvalid={
+                formik.touched.to_warehouse_id && formik.errors.to_warehouse_id
+              }>
               <FormLabel>Select to Warehouse Name</FormLabel>
-              <Select placeholder="Select Warehouse name" {...formik.getFieldProps("to_warehouse_id")}>
+              <Select
+                placeholder="Select Warehouse name"
+                {...formik.getFieldProps("to_warehouse_id")}>
                 {warehouse.map((warehouses) => (
                   <option key={warehouses.id} value={warehouses.id}>
                     {warehouses.name}
                   </option>
                 ))}
               </Select>
-              <FormErrorMessage>{formik.errors.to_warehouse_id}</FormErrorMessage>
+              <FormErrorMessage>
+                {formik.errors.to_warehouse_id}
+              </FormErrorMessage>
             </FormControl>
 
-            <FormControl mb={2} id="quantity" isInvalid={formik.touched.quantity && formik.errors.quantity}>
+            <FormControl
+              mb={2}
+              id="quantity"
+              isInvalid={formik.touched.quantity && formik.errors.quantity}>
               <FormLabel>quantity</FormLabel>
-              <NumberInput min={0} {...formik.getFieldProps("quantity")} onChange={(value) => formik.setFieldValue("quantity", value)}>
+              <NumberInput
+                min={0}
+                {...formik.getFieldProps("quantity")}
+                onChange={(value) => formik.setFieldValue("quantity", value)}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
@@ -178,13 +222,15 @@ const StockMutationsModal = ({ isOpen, onClose }) => {
                 onClick={() => {
                   onClose();
                   formik.resetForm();
-                }}
-              >
+                }}>
                 Cancel
               </Button>
 
               {/* {button for confirmation} */}
-              <AddAdminConfirmation onSave={formik.handleSubmit} isLoading={isSubmitting} />
+              <AddAdminConfirmation
+                onSave={formik.handleSubmit}
+                isLoading={isSubmitting}
+              />
             </Flex>
           </form>
         </ModalBody>

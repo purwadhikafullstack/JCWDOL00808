@@ -1,9 +1,9 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op, where } = require("sequelize");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const admins = db.admins;
 const usersList = db.users;
 
@@ -50,7 +50,11 @@ module.exports = {
         ],
       };
 
-      if (role_admin !== undefined && role_admin !== null && !isNaN(role_admin)) {
+      if (
+        role_admin !== undefined &&
+        role_admin !== null &&
+        !isNaN(role_admin)
+      ) {
         whereCondition.role = role_admin;
       }
 
@@ -122,7 +126,11 @@ module.exports = {
         ],
       };
 
-      if (verificationStatus !== undefined && verificationStatus !== null && !isNaN(verificationStatus)) {
+      if (
+        verificationStatus !== undefined &&
+        verificationStatus !== null &&
+        !isNaN(verificationStatus)
+      ) {
         whereCondition.is_verified = verificationStatus === 1;
       }
 
@@ -173,7 +181,8 @@ module.exports = {
     try {
       //step 1 ambil data dari client (body)
       // let { email, password, full_name, phone_number, role } = req.body;
-      let profile_picture = req.files.profile_picture[0].path;
+      // let profile_picture = req.files.profile_picture[0].path;
+      let profile_picture = req.files.profile_picture[0].path.replace("src\\", ""); //public moved to src
 
       // Validate input data against schema
       const { error, value } = schema.validate(req.body);
@@ -294,7 +303,8 @@ module.exports = {
         admin.role = role;
       }
       if (req.files && req.files.profile_picture) {
-        admin.profile_picture = req.files.profile_picture[0].path;
+        // admin.profile_picture = req.files.profile_picture[0].path;
+        admin.profile_picture = req.files.profile_picture[0].path.replace("src\\", ""); //public moved to src
       }
       await admin.save({ transaction: t });
 
