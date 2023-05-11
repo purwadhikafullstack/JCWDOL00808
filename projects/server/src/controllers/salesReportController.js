@@ -22,13 +22,13 @@ module.exports = {
         warehouse_filter,
         category_filter,
         product_filter,
-        // time_period = "weekly",
-        page = 0, // default page value is 0
-        limit = 10, // default limit is 10
+        time_period = "weekly",
+        // page = 0, // default page value is 0
+        // limit = 10, // default limit is 10
       } = req.query;
 
-      // const [defaultWeekStart, defaultWeekEnd] = getCurrentWeek();
-      // const [defaultMonthStart, defaultMonthEnd] = getCurrentMonth();
+      const [defaultWeekStart, defaultWeekEnd] = getCurrentWeek();
+      const [defaultMonthStart, defaultMonthEnd] = getCurrentMonth();
 
       // Authenticate user
       const authenticatedAdmin = await admin.findOne({
@@ -39,21 +39,20 @@ module.exports = {
         return res.status(401).json({ message: "Invalid Email" });
       }
 
-      // const startDate = req.query.start_date
-      //   ? new Date(req.query.start_date)
-      //   : time_period === "weekly"
-      //   ? new Date(defaultWeekStart)
-      //   : new Date(defaultMonthStart);
-      // const endDate = req.query.end_date
-      //   ? new Date(req.query.end_date)
-      //   : time_period === "weekly"
-      //   ? new Date(defaultWeekEnd)
-      //   : new Date(defaultMonthEnd);
+      const startDate = req.query.start_date
+        ? new Date(req.query.start_date)
+        : time_period === "weekly"
+        ? new Date(defaultWeekStart)
+        : new Date(defaultMonthStart);
+      const endDate = req.query.end_date
+        ? new Date(req.query.end_date)
+        : time_period === "weekly"
+        ? new Date(defaultWeekEnd)
+        : new Date(defaultMonthEnd);
 
-      const startDate = new Date(start_date);
-      const endDate = new Date(end_date);
+      // const startDate = new Date(start_date);
+      // const endDate = new Date(end_date);
 
-      
       // Ensure endDate includes the whole day
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
@@ -68,7 +67,7 @@ module.exports = {
 
       const warehouseIds = await Warehouse.findAll({
         attributes: ["id"],
-        where: { admins_id: authenticatedAdmin.id },
+        where: { admins_id: authenticatedAdmin.id, is_deleted: 0 },
       });
 
       const warehouseIdArray = warehouseIds.map((warehouse) => warehouse.id);
@@ -108,6 +107,9 @@ module.exports = {
           model: Warehouse,
           attributes: [],
           as: "warehouse",
+          where: {
+            is_deleted: 0,
+          },
         },
         where: {
           status: {
@@ -119,6 +121,9 @@ module.exports = {
       if (authenticatedAdmin.role === 1 && warehouse_filter) {
         orderInclude.where = {
           $warehouses_id$: warehouseFilter.id,
+          status: {
+            [Op.or]: ["On process", "Shipped", "Order confirmed"],
+          },
         };
       } else if (authenticatedAdmin.role !== 1) {
         orderInclude.where = {
@@ -128,7 +133,7 @@ module.exports = {
         };
       }
 
-      const offset = limit * page;
+      // const offset = limit * page;
 
       let salesData = await OrderDetail.findAll({
         where: whereCondition,
@@ -136,13 +141,14 @@ module.exports = {
         // limit: parseInt(limit), // Apply limit for pagination
         // offset: offset, // Apply the offset for pagination
       });
+      // console.log("salesData:", salesData);
 
       const totalRows = await OrderDetail.count({
         where: whereCondition,
         include: [productInclude, orderInclude],
       });
 
-      const totalPage = Math.ceil(totalRows / limit);
+      // const totalPage = Math.ceil(totalRows / limit);
 
       // Generate report
       const report = generateReport(salesData);
