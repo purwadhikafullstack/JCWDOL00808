@@ -1,9 +1,9 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const user_addresses = db.user_addresses;
 const users = db.users;
 const orders = db.orders;
@@ -173,7 +173,6 @@ module.exports = {
           },
         },
       });
-      // console.log("length:", data.length);
       res.status(200).send({
         data,
         totalPage: Math.ceil(dataLength.length / limit),
@@ -187,8 +186,40 @@ module.exports = {
     try {
       let data = await order_details.findAll({
         where: { orders_id: req.query.orders_id },
+        raw: true,
       });
-      return res.status(200).send(data);
+
+      let weight = 0;
+      for (let i = 0; i < data.length; i++) {
+        weight += data[i].product_weight;
+      }
+
+      let ordersData = await orders.findAll({
+        where: { id: req.query.orders_id },
+        raw: true,
+      });
+
+      // console.log("ordersData: ", ordersData);
+
+      let status = ordersData[0].status;
+      let date = ordersData[0].createdAt;
+      let shipping_method = ordersData[0].shipping_method;
+      let total_price = ordersData[0].total_price;
+      let shipping_cost = ordersData[0].shipping_cost;
+      let grand_total = total_price + shipping_cost;
+
+      return res.status(200).send({
+        success: true,
+        message: "Data details available",
+        data,
+        date,
+        status,
+        shipping_method,
+        weight,
+        total_price,
+        shipping_cost,
+        grand_total,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send({
@@ -199,7 +230,9 @@ module.exports = {
   },
   cancelOrder: async (req, res) => {
     try {
+      // console.log("d", req.dataDecode.id);
       let users_id = req.dataDecode.id;
+      let cek = [];
 
       let checkUser = await orders.findOne({ where: { id: req.body.id } });
 
@@ -212,6 +245,7 @@ module.exports = {
           where: { orders_id },
           raw: true,
         });
+
         for (let i = 0; i < findToCancel.length; i++) {
           let products_id = findToCancel[i].products_id;
 
@@ -219,11 +253,10 @@ module.exports = {
             where: { id: products_id },
             raw: true,
           });
+          let stockToReturn = findToCancel[i].quantity;
+          let booked_stock = findProducts.booked_stock - stockToReturn;
 
-          let stockToReturn = parseInt(findToCancel[i].qty);
-          let booked_stock =
-            parseInt(findProducts.booked_stock) - stockToReturn;
-          let updateBooked_stock = await products.update(
+          let updatedBooked_stock = await products.update(
             { booked_stock },
             { where: { id: products_id } }
           );
@@ -238,7 +271,7 @@ module.exports = {
         res.status(200).send({
           success: true,
           message: "Order cancelled.",
-          data: null,
+          findToCancel,
         });
       } else if (users_id != checkUser.users_id) {
         res.status(500).send({
@@ -262,11 +295,11 @@ module.exports = {
       let checkAdmin = await admins.findOne({ where: { id: admins_id } });
 
       if (checkAdmin) {
-        // find order details
         let findToCancel = await order_details.findAll({
           where: { orders_id },
           raw: true,
         });
+
         for (let i = 0; i < findToCancel.length; i++) {
           let products_id = findToCancel[i].products_id;
 
@@ -274,17 +307,18 @@ module.exports = {
             where: { id: products_id },
             raw: true,
           });
+          let stockToReturn = findToCancel[i].quantity;
+          let booked_stock = findProducts.booked_stock - stockToReturn;
 
-          let stockToReturn = parseInt(findToCancel[i].qty);
-          let booked_stock =
-            parseInt(findProducts.booked_stock) - stockToReturn;
-          let updateBooked_stock = await products.update(
+          let updatedBooked_stock = await products.update(
             { booked_stock },
             { where: { id: products_id } }
           );
         }
+
+        let newStatus = "Canceled";
         let updateOrderStatus = await orders.update(
-          { status: "Canceled" },
+          { status: newStatus },
           { where: { id: orders_id } }
         );
       } else {
@@ -313,7 +347,11 @@ module.exports = {
       let checkUser = await orders.findOne({ where: { id: req.body.id } });
       // check if user who wants to cancel order is the same user who is logging in
       if (users_id == checkUser.users_id) {
-        let payment_proof = req.files?.payment_proof[0]?.path;
+        // let payment_proof = req.files?.payment_proof[0]?.path;
+        let payment_proof = req.files?.payment_proof[0]?.path.replace(
+          "src\\",
+          ""
+        ); //public moved to src;
 
         await orders.update({ payment_proof }, { where: { id: req.body.id } });
 
@@ -349,11 +387,15 @@ module.exports = {
       if (users_id == checkUser.users_id) {
         let orders_id = req.body.id;
 
-        await orders.update({ status: "Order confirmed" }, { where: { id: orders_id } });
+        await orders.update(
+          { status: "Order confirmed" },
+          { where: { id: orders_id } }
+        );
 
         res.status(200).send({
           success: true,
-          message: "Your special delivery has made it to its destination! Thank you for ordering it from Big4commerce.",
+          message:
+            "Your special delivery has made it to its destination! Thank you for ordering it from Big4commerce.",
         });
       } else if (users_id != checkUser.users_id) {
         res.status(500).send({

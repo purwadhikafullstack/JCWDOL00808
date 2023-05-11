@@ -1,9 +1,9 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const product_categories = db.product_categories;
 
 // import JOI untuk validasi input dari user

@@ -64,13 +64,12 @@ const UserAddress = () => {
     try {
       // Replace with your API endpoint to get all addresses
       const response = await axios.get(
-        `http://localhost:8000/address/get-address?search_query=${searchTerm}`,
+        `${process.env.REACT_APP_API_BASE_URL}/address/get-address?search_query=${searchTerm}`,
         {
           headers: { Authorization: token },
         }
       );
       setAddresses(response.data.result);
-      console.log(response.data.result);
     } catch (error) {
       toast({
         title: "Error fetching addresses.",
@@ -84,7 +83,9 @@ const UserAddress = () => {
   const handleDeleteAddress = async (id) => {
     try {
       // Replace with your API endpoint to delete an address
-      await axios.delete(`http://localhost:8000/address/delete-address/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/address/delete-address/${id}`
+      );
       toast({
         title: "Address deleted.",
         status: "success",
@@ -144,8 +145,7 @@ const UserAddress = () => {
             <Tooltip
               label={address.is_primary === true ? "Primary Address" : ""}
               isDisabled={address.is_primary !== true}
-              placement="top-start"
-            >
+              placement="top-start">
               <Box
                 key={address.id}
                 borderWidth={address.is_primary === true ? "5px" : "1px"}
@@ -155,8 +155,7 @@ const UserAddress = () => {
                 borderRadius="0"
                 p={4}
                 w="100%"
-                fontFamily="Roboto"
-              >
+                fontFamily="Roboto">
                 <Text fontFamily="Oswald" fontSize="lg">
                   {address.recipient}
                 </Text>
@@ -173,8 +172,7 @@ const UserAddress = () => {
                       variant="buttonBlack"
                       aria-label="Edit Address"
                       borderRadius={0}
-                      mr={2}
-                    >
+                      mr={2}>
                       Edit
                     </Button>
                   </Link>

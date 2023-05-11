@@ -101,7 +101,7 @@ const WarehouseStock = () => {
   const handleDeleteStock = async (id) => {
     try {
       await axios.delete(
-        `http://localhost:8000/warehouses//delete-warehouse-product/${id}`
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses//delete-warehouse-product/${id}`
       );
       toast({
         title: "Stock deleted.",
@@ -126,7 +126,7 @@ const WarehouseStock = () => {
   const handleUpdateStock = async (id, values) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/warehouses/update-stock-product/${id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses/update-stock-product/${id}`,
         {
           ...values,
           stock: parseInt(values.stock),
@@ -183,7 +183,7 @@ const WarehouseStock = () => {
   const handleCreateStock = async (values, { setSubmitting, resetForm }) => {
     try {
       const response = await axios.post(
-        `http://localhost:8000/warehouses/add-warehouse-product/${id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses/add-warehouse-product/${id}`,
         values
       );
 
@@ -215,7 +215,9 @@ const WarehouseStock = () => {
 
   const getSpecificWarehouse = () => {
     axios
-      .get(`http://localhost:8000/warehouses/getWarehouseDetails/${id}`)
+      .get(
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses/getWarehouseDetails/${id}`
+      )
       .then((response) => {
         setWarehouseName(response.data.name);
       })
@@ -225,7 +227,7 @@ const WarehouseStock = () => {
   const fetchWarehouseProducts = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/warehouses/get-warehouse-product/${id}?search_query=${searchTerm}&role=${userRole}`,
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses/get-warehouse-product/${id}?search_query=${searchTerm}&role=${userRole}`,
         { headers: { Authorization: token } }
       );
       // setWarehouseName(response?.[0].warehouse?.name)
@@ -241,14 +243,14 @@ const WarehouseStock = () => {
   };
   const fetchCategoryProductsModal = async () => {
     const response = await axios.get(
-      "http://localhost:8000/productcategory/listproductcategory"
+      `${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`
     );
     setProductsCategoryModal(response.data.result);
   };
 
   const fetchProductsModal = async (product_category_id) => {
     const response = await axios.get(
-      `http://localhost:8000/product/listproductbycategory?search_query=${product_category_id}`
+      `${process.env.REACT_APP_API_BASE_URL}/product/listproductbycategory?search_query=${product_category_id}`
     );
     setProductsModal(response.data.result);
   };
