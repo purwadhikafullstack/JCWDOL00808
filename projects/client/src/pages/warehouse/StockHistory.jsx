@@ -47,16 +47,23 @@ const History = () => {
   const [warehouseData, setWarehouseData] = useState([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [loading, setLoading] = useState(true);
+  const [warehouseId, setWarehouseId] = useState(0);
 
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
   const navigate = useNavigate();
 
   const getHistoryData = () => {
+    let warehouse = "";
+    if (role == 1) {
+      warehouse = selectedWarehouse;
+    } else if (role == 2) {
+      warehouse = warehouseId;
+    }
     Axios.post(
       API_url + `/histories/getAllHistories?page=${page}`,
       {
-        warehouse: selectedWarehouse,
+        warehouse,
         month: month,
         year: year,
       },
@@ -76,13 +83,22 @@ const History = () => {
       });
   };
 
+  const getWarehouseId = () => {
+    Axios.get(API_url + `/histories/getWarehouseId`, {
+      headers: { Authorization: token },
+    })
+      .then((response) => {
+        setWarehouseId(response.data.id);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  console.log("warehouseId: ", warehouseId);
+
   useEffect(() => {
     getHistoryData();
+    getWarehouseId();
   }, [selectedWarehouse, page, month, year]);
-
-  // const handleResetButton = () => {
-  //   setKeyword("");
-  // };
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {
@@ -103,13 +119,9 @@ const History = () => {
           </Td>
           <Td>{value.latestStock}</Td>
           <Td>
-            {role == 1 ? (
-              <>
-                <Button colorScheme="blue" onClick={() => navigate(`/warehouse/history-details?id=${value.products_id}`)}>
-                  View details
-                </Button>
-              </>
-            ) : null}
+            <Button colorScheme="blue" onClick={() => navigate(`/warehouse/history-details?id=${value.products_id}`)}>
+              View details
+            </Button>
           </Td>
         </Tr>
       );
@@ -142,7 +154,7 @@ const History = () => {
                       <Th>Stock In</Th>
                       <Th>Stock Out</Th>
                       <Th>Latest Stock</Th>
-                      {role == 1 ? <Th isNumeric>Action</Th> : null}
+                      <Th isNumeric>Action</Th>
                     </Tr>
                   </Thead>
                   <Tbody>{showStockHistories()}</Tbody>
@@ -151,11 +163,11 @@ const History = () => {
             </Box>
           ) : (
             <Text as="b" fontSize="xl" mt="40">
-              There was no stock changes.<br></br>You may check the filter that you are using.
+              There was no stock changes, or<br></br>you may check the filter that you are using.
             </Text>
           )}
           <Box id="sort filter and search" mx="50" mt="100">
-            <Card maxW="xs" border="1px" borderColor="gray.200">
+            <Card maxW="xs" border="1px" borderColor="gray.200" display={role == 1 ? "block" : "none"}>
               <CardBody>
                 <VStack>
                   <FormControl>

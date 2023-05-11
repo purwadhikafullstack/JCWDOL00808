@@ -22,6 +22,23 @@ module.exports = {
     }
   },
 
+  getWarehouseId: async (req, res) => {
+    try {
+      const admins_id = req.dataDecode.id;
+
+      let warehouseId = await WarehousesModel.findAll({
+        where: { admins_id },
+        attributes: ["id"],
+        raw: true,
+      });
+
+      // console.log("wh id", warehouseId[0].id);
+      return res.status(200).send(warehouseId[0]);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  },
+
   getAllHistories: async (req, res) => {
     try {
       const admins_id = req.dataDecode.id;
@@ -40,19 +57,11 @@ module.exports = {
         filterStockHistory.warehouses_id = warehouse;
       }
 
-      if (
-        year !== "" &&
-        typeof year !== "undefined" &&
-        month1 !== "" &&
-        typeof month1 !== "undefined"
-      ) {
+      if (year !== "" && typeof year !== "undefined" && month1 !== "" && typeof month1 !== "undefined") {
         let bulan = parseInt(month1);
         let tahun = parseInt(year);
         startDate = new Date(`${tahun}-${bulan}-01`);
-        endDate =
-          bulan < 12
-            ? new Date(`${tahun}-${bulan + 1}-01`)
-            : new Date(`${tahun + 1}-1-01`);
+        endDate = bulan < 12 ? new Date(`${tahun}-${bulan + 1}-01`) : new Date(`${tahun + 1}-1-01`);
 
         filterStockHistory.updatedAt = {
           [Op.and]: {
@@ -98,8 +107,7 @@ module.exports = {
 
         // loop untuk mencari stock in & stock out per product
         for (let j = 0; j < stockCount.length; j++) {
-          let difference =
-            stockCount[j].stock_after - stockCount[j].stock_before;
+          let difference = stockCount[j].stock_after - stockCount[j].stock_before;
           if (difference < 0) {
             stockOut += Math.abs(difference);
           } else if (difference > 0) {
@@ -156,13 +164,7 @@ module.exports = {
           "$warehouse.name$": {
             [Op.like]: "%" + warehouseQuery + "%",
           },
-          createdAt: Models.sequelize.where(
-            Models.sequelize.fn(
-              "MONTH",
-              Models.sequelize.col("stock_histories.createdAt")
-            ),
-            month
-          ),
+          createdAt: Models.sequelize.where(Models.sequelize.fn("MONTH", Models.sequelize.col("stock_histories.createdAt")), month),
         };
       } else {
         whereQuery = {
@@ -196,19 +198,14 @@ module.exports = {
           minute: "2-digit",
           hour12: false,
         };
-        const formattedTime = dateB.toLocaleTimeString(
-          "id-ID",
-          timeFormatterOptions
-        );
+        const formattedTime = dateB.toLocaleTimeString("id-ID", timeFormatterOptions);
 
         const dateTimeString = `${formattedDate} ${formattedTime}`;
 
         historyDetails.rows[i].dataValues.time = dateTimeString;
 
         // add qty in and qty out
-        let difference =
-          historyDetails.rows[i].stock_after -
-          historyDetails.rows[i].stock_before;
+        let difference = historyDetails.rows[i].stock_after - historyDetails.rows[i].stock_before;
         let stockIn = 0;
         let stockOut = 0;
         if (difference < 0) {
@@ -222,12 +219,8 @@ module.exports = {
       }
 
       // filter history details by admin's input
-      let stockInData = historyDetails.rows.filter(
-        (value) => value.dataValues.stockIn > 0
-      );
-      let stockOutData = historyDetails.rows.filter(
-        (value) => value.dataValues.stockOut > 0
-      );
+      let stockInData = historyDetails.rows.filter((value) => value.dataValues.stockIn > 0);
+      let stockOutData = historyDetails.rows.filter((value) => value.dataValues.stockOut > 0);
 
       // send data based on request from FE
       if (stockQuery == "") {
