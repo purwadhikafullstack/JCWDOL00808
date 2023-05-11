@@ -6,13 +6,15 @@ const deleteFiles = require("./../helper/deleteFiles");
 
 //function untuk mengupload profile_picture
 const uploadImages = (req, res, next) => {
-  const multerResult = multerUpload.fields([{ name: "profile_picture", maxCount: 1 }]);
+  const multerResult = multerUpload.fields([
+    { name: "profile_picture", maxCount: 1 },
+  ]);
 
   multerResult(req, res, function (err) {
     try {
       if (err) throw err;
 
-      req.files.profile_picture.forEach((value) => {
+      req.files.profile_picture?.forEach((value) => {
         //adjust max file sizes in bytes
         if (value.size > 5000000)
           throw {
@@ -41,7 +43,7 @@ const uploadImagesProduct = (req, res, next) => {
     try {
       if (err) throw err;
 
-      req.files.imageUrl.forEach((value) => {
+      req.files.imageUrl?.forEach((value) => {
         //adjust max file sizes in bytes
         if (value.size > 700000)
           throw {
@@ -65,12 +67,14 @@ const uploadImagesProduct = (req, res, next) => {
 
 // mengupload proof of payment
 const uploadPaymentProof = (req, res, next) => {
-  const multerResult = multerUpload.fields([{ name: "payment_proof", maxCount: 1 }]);
+  const multerResult = multerUpload.fields([
+    { name: "payment_proof", maxCount: 1 },
+  ]);
   multerResult(req, res, function (err) {
     try {
       if (err) throw err;
 
-      req.files.payment_proof.forEach((value) => {
+      req.files.payment_proof?.forEach((value) => {
         //adjust max file sizes in bytes
         if (value.size > 700000)
           throw {
