@@ -1,7 +1,6 @@
 import { Select, Button, Card, CardHeader, CardBody, Heading, Stack, StackDivider, Box, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Flex, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Axios from "axios";
-import { API_url } from "../../helper";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
@@ -23,7 +22,7 @@ const StockHistory = () => {
   const id = search.split("=")[1];
 
   const getWarehouseData = () => {
-    Axios.get(API_url + `/warehouses/getAllWarehouse`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getAllWarehouse`)
       .then((response) => {
         setWarehouseData(response.data);
       })
@@ -31,7 +30,7 @@ const StockHistory = () => {
   };
 
   const getProductsData = () => {
-    Axios.get(API_url + `/histories/getAllProducts?id=${id}`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/histories/getAllProducts?id=${id}`)
       .then((response) => {
         setProductName(response.data[0].name);
       })
@@ -40,7 +39,7 @@ const StockHistory = () => {
 
   let token = localStorage.getItem("token");
   const historyDetails = () => {
-    Axios.get(API_url + `/histories/getHistoryDetails?products_id=${id}&stockQuery=${stockQuery}&warehouseQuery=${warehouseQuery}&month=${month}&page=${page}`, {
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/histories/getHistoryDetails?products_id=${id}&stockQuery=${stockQuery}&warehouseQuery=${warehouseQuery}&month=${month}&page=${page}`, {
       headers: { Authorization: token },
     })
       .then((response) => {
@@ -58,10 +57,6 @@ const StockHistory = () => {
     getWarehouseData();
     historyDetails();
   }, [stockQuery, warehouseQuery, month, page]);
-
-  const handleFilterButton = () => {
-    // getStockHistories();
-  };
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {

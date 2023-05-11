@@ -3,7 +3,6 @@ import { Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup, MenuOp
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import Axios from "axios";
 import React, { useState } from "react";
-import { API_url } from "../../helper";
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -20,7 +19,7 @@ const AssignAdmin = (props) => {
   const navigate = useNavigate();
 
   const getWarehouseData = () => {
-    Axios.get(API_url + `/admins/availableWarehouse`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/admins/availableWarehouse`)
       .then((response) => {
         setWarehouseData(response.data.data);
       })
@@ -32,7 +31,7 @@ const AssignAdmin = (props) => {
   }, []);
 
   const assignButton = () => {
-    Axios.patch(API_url + `/admins/assignNewAdmin`, {
+    Axios.patch(`${process.env.REACT_APP_API_BASE_URL}/admins/assignNewAdmin`, {
       admins_id: id,
       id: warehouse,
     })

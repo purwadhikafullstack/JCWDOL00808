@@ -32,7 +32,6 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Axios from "axios";
-import { API_url } from "../../helper";
 import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import { useNavigate } from "react-router-dom";
@@ -61,7 +60,7 @@ const History = () => {
       warehouse = warehouseId;
     }
     Axios.post(
-      API_url + `/histories/getAllHistories?page=${page}`,
+      `${process.env.REACT_APP_API_BASE_URL}/histories/getAllHistories?page=${page}`,
       {
         warehouse,
         month: month,
@@ -84,7 +83,7 @@ const History = () => {
   };
 
   const getWarehouseId = () => {
-    Axios.get(API_url + `/histories/getWarehouseId`, {
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/histories/getWarehouseId`, {
       headers: { Authorization: token },
     })
       .then((response) => {
