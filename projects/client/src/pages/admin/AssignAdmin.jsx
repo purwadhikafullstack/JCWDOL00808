@@ -39,7 +39,7 @@ const AssignAdmin = (props) => {
   const getWarehouseData = () => {
     Axios.get(API_url + `/warehouses/getAllWarehouse`)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setWarehouseData(response.data);
       })
       .catch((err) => console.log(err));
@@ -55,7 +55,7 @@ const AssignAdmin = (props) => {
       id: warehouse,
     })
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         toast({
           title: "Admin assigned!",
           status: "success",
@@ -96,8 +96,7 @@ const AssignAdmin = (props) => {
               onChange={(element) => {
                 setWarehouse(element.target.value.split(",")[0]);
                 setCity(element.target.value.split(",")[1]);
-              }}
-            >
+              }}>
               {warehouseData.map((value) => {
                 return (
                   <option value={value.id + "," + value.city} key={value.id}>
@@ -118,8 +117,7 @@ const AssignAdmin = (props) => {
       <Button
         colorScheme="facebook"
         style={{ width: "15%", marginInline: "auto", marginBottom: 50 }}
-        onClick={assignButton}
-      >
+        onClick={assignButton}>
         Assign admin
       </Button>
     </div>

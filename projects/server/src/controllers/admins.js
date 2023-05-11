@@ -1,10 +1,10 @@
-const db = require("../../models/index");
+const db = require("../models/index");
 const AdminsModel = db.admins;
 const UsersModel = db.users;
 const WarehousesModel = db.warehouses;
 const OrdersModel = db.orders;
 
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op, where } = require("sequelize");
 
 const { hashPassword } = require("./../lib/hash");
@@ -23,9 +23,17 @@ module.exports = {
   },
   register: async (req, res) => {
     try {
-      let { email, password, full_name, is_verified, phone_number, role } = req.body;
-      let insertToAdmins = await AdminsModel.create({ email, password: await hashPassword, full_name, is_verified, phone_number, role });
-      console.log("insertToAdmins:", insertToAdmins);
+      let { email, password, full_name, is_verified, phone_number, role } =
+        req.body;
+      let insertToAdmins = await AdminsModel.create({
+        email,
+        password: await hashPassword,
+        full_name,
+        is_verified,
+        phone_number,
+        role,
+      });
+      // console.log("insertToAdmins:", insertToAdmins);
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -43,7 +51,10 @@ module.exports = {
       });
 
       if (data.length > 0) {
-        let checkPass = bcrypt.compareSync(password, data[0].dataValues.password);
+        let checkPass = bcrypt.compareSync(
+          password,
+          data[0].dataValues.password
+        );
         if (checkPass) {
           let token = createToken({ ...data[0].dataValues });
           return res.status(200).send({
@@ -63,7 +74,8 @@ module.exports = {
       } else {
         return res.status(200).send({
           success: false,
-          message: "This account doesn't exists, please enter the correct e-mail.",
+          message:
+            "This account doesn't exists, please enter the correct e-mail.",
         });
       }
     } catch (err) {
@@ -77,7 +89,10 @@ module.exports = {
 
       let data = await AdminsModel.findAll({ where: { id: admins_id } });
       if (data.length > 0) {
-        let update = await WarehousesModel.update({ admins_id }, { where: { id } });
+        let update = await WarehousesModel.update(
+          { admins_id },
+          { where: { id } }
+        );
         return res.status(200).send({
           success: true,
           message: "Admin has been assigned!",
@@ -95,9 +110,9 @@ module.exports = {
   },
   dashboardData: async (req, res) => {
     try {
-      let admins_id = req.dataDecode.id
+      let admins_id = req.dataDecode.id;
       let data = {};
-      
+
       // total user
       let users = await UsersModel.findAndCountAll({});
       data.users = users.count;
@@ -117,7 +132,9 @@ module.exports = {
       data.warehouses = warehouses.count;
 
       // total admin assigned
-      let warehouseAdmin = await AdminsModel.findAndCountAll({ where: { role: 2 } });
+      let warehouseAdmin = await AdminsModel.findAndCountAll({
+        where: { role: 2 },
+      });
       data.warehouseAdmin = warehouseAdmin.count;
 
       return res.status(200).send({

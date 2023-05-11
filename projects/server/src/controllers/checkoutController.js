@@ -1,9 +1,9 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const user_addresses = db.user_addresses;
 const users = db.users;
 const carts = db.carts;
@@ -55,7 +55,14 @@ module.exports = {
     const transaction = await sequelize.transaction();
     try {
       let { id } = req.dataDecode;
-      const { address_id, payment_method, shipping_method, shipping_cost, total_price, cart_id } = req.body;
+      const {
+        address_id,
+        payment_method,
+        shipping_method,
+        shipping_cost,
+        total_price,
+        cart_id,
+      } = req.body;
       const addOrder = await orders.create(
         {
           users_id: id,

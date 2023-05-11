@@ -1,4 +1,25 @@
-import { Box, FormControl, FormLabel, Input, Select, Text, VStack, useToast, FormErrorMessage, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Image, Button, Checkbox, Stack, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  Text,
+  VStack,
+  useToast,
+  FormErrorMessage,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Image,
+  Button,
+  Checkbox,
+  Stack,
+  Flex,
+} from "@chakra-ui/react";
 import axios from "axios";
 import AddAdminConfirmation from "./AddConfirmation";
 import { useFormik } from "formik";
@@ -12,7 +33,8 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
   const toast = useToast();
   const id = adminId;
   //   const [image, setImage] = useState("");
-  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
   const [isChangeImageModalOpen, setIsChangeImageModalOpen] = useState(false);
 
   const formik = useFormik({
@@ -25,7 +47,9 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
     },
     validationSchema: Yup.object({
       full_name: Yup.string().required("Full Name is required"),
-      email: Yup.string().email("Invalid email address").required("Email is required"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
       phone_number: Yup.string().required("Phone Number is required"),
       role: Yup.string().required("Role is required"),
       //   profile_picture: Yup.mixed()
@@ -59,9 +83,11 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
     }
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/admin/getAdminById/${id}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/getAdminById/${id}`
+      );
       const adminData = response.data;
-      console.log(response);
+      // console.log(response);
       formik.setValues({
         full_name: adminData.full_name,
         email: adminData.email,
@@ -103,7 +129,10 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
         role: values.role,
       };
 
-      await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/admin/patchAdmin/${id}`, data);
+      await axios.patch(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/patchAdmin/${id}`,
+        data
+      );
       onClose();
       formik.resetForm();
       //   setImage("");
@@ -167,27 +196,61 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
             <Box w="100%" maxW="600px" mx="auto" my="auto" mt="3" mb="10">
               <form onSubmit={formik.handleSubmit}>
                 <VStack spacing="4" align="stretch">
-                  <FormControl id="fullName" isRequired isInvalid={formik.touched.full_name && formik.errors.full_name}>
+                  <FormControl
+                    id="fullName"
+                    isRequired
+                    isInvalid={
+                      formik.touched.full_name && formik.errors.full_name
+                    }>
                     <FormLabel>Full Name</FormLabel>
-                    <Input type="text" {...formik.getFieldProps("full_name")} placeholder="Input Admin Full Name" />
-                    <FormErrorMessage>{formik.errors.full_name}</FormErrorMessage>
+                    <Input
+                      type="text"
+                      {...formik.getFieldProps("full_name")}
+                      placeholder="Input Admin Full Name"
+                    />
+                    <FormErrorMessage>
+                      {formik.errors.full_name}
+                    </FormErrorMessage>
                   </FormControl>
 
-                  <FormControl id="email" isRequired isInvalid={formik.touched.email && formik.errors.email}>
+                  <FormControl
+                    id="email"
+                    isRequired
+                    isInvalid={formik.touched.email && formik.errors.email}>
                     <FormLabel>Email</FormLabel>
-                    <Input type="email" {...formik.getFieldProps("email")} placeholder="Input Admin Email" />
+                    <Input
+                      type="email"
+                      {...formik.getFieldProps("email")}
+                      placeholder="Input Admin Email"
+                    />
                     <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl id="phoneNumber" isRequired isInvalid={formik.touched.phone_number && formik.errors.phone_number}>
+                  <FormControl
+                    id="phoneNumber"
+                    isRequired
+                    isInvalid={
+                      formik.touched.phone_number && formik.errors.phone_number
+                    }>
                     <FormLabel>Phone Number</FormLabel>
-                    <Input type="tel" {...formik.getFieldProps("phone_number")} placeholder="Input Phone Number" />
-                    <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
+                    <Input
+                      type="tel"
+                      {...formik.getFieldProps("phone_number")}
+                      placeholder="Input Phone Number"
+                    />
+                    <FormErrorMessage>
+                      {formik.errors.phone_number}
+                    </FormErrorMessage>
                   </FormControl>
 
-                  <FormControl id="role" isRequired isInvalid={formik.touched.role && formik.errors.role}>
+                  <FormControl
+                    id="role"
+                    isRequired
+                    isInvalid={formik.touched.role && formik.errors.role}>
                     <FormLabel>Role</FormLabel>
-                    <Select placeholder="Choose Admin Role" {...formik.getFieldProps("role")}>
+                    <Select
+                      placeholder="Choose Admin Role"
+                      {...formik.getFieldProps("role")}>
                       {[
                         { value: "1", label: "Admin" },
                         { value: "2", label: "Admin Warehouse" },
@@ -213,9 +276,13 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
                     </Flex>
                   </FormControl> */}
 
-                  <Button onClick={openChangeImageModal}>Change Profile Picture</Button>
+                  <Button onClick={openChangeImageModal}>
+                    Change Profile Picture
+                  </Button>
 
-                  <Button onClick={openChangePasswordModal}>Change Password</Button>
+                  <Button onClick={openChangePasswordModal}>
+                    Change Password
+                  </Button>
 
                   {/* button for cancel and submit */}
                   <Flex justifyContent="flex-end">
@@ -225,8 +292,7 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
                       onClick={() => {
                         onClose();
                         // setImage("");
-                      }}
-                    >
+                      }}>
                       Cancel
                     </Button>
                     <AddAdminConfirmation onSave={formik.handleSubmit} />
@@ -239,8 +305,17 @@ const PatchAdminModal = ({ isOpen, onClose, adminId, onAdminPatch }) => {
       </Modal>
 
       {/* Modal for change password and change profile_picture */}
-      <ChangePasswordModal isOpen={isChangePasswordModalOpen} onClose={closeChangePasswordModal} adminId={adminId} />
-      <ChangeImageModal isOpen={isChangeImageModalOpen} onClose={closeChangeImageModal} adminId={adminId} onAdminPatch={onAdminPatch} />
+      <ChangePasswordModal
+        isOpen={isChangePasswordModalOpen}
+        onClose={closeChangePasswordModal}
+        adminId={adminId}
+      />
+      <ChangeImageModal
+        isOpen={isChangeImageModalOpen}
+        onClose={closeChangeImageModal}
+        adminId={adminId}
+        onAdminPatch={onAdminPatch}
+      />
     </>
   );
 };

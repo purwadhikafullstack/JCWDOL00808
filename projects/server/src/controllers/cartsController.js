@@ -1,8 +1,8 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const carts = db.carts;
 const products = db.products;
 const stocks = db.stocks;

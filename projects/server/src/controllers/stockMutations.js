@@ -1,9 +1,9 @@
 // Import Sequelize
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 // Import models
-const db = require("../../models/index");
+const db = require("../models/index");
 const stocks = db.stocks;
 const stock_mutations = db.stock_mutations;
 const stock_histories = db.stock_histories;
@@ -15,7 +15,8 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
-      const { from_warehouse_id, to_warehouse_id, quantity, products_id } = req.body;
+      const { from_warehouse_id, to_warehouse_id, quantity, products_id } =
+        req.body;
 
       const stock = await stocks.findOne({
         where: { warehouses_id: from_warehouse_id, products_id },
@@ -115,7 +116,9 @@ module.exports = {
 
         //commit transaction
         await t.commit();
-        res.status(200).json({ message: "Stock request accepted", stockMutation });
+        res
+          .status(200)
+          .json({ message: "Stock request accepted", stockMutation });
       } else if (status === "REJECT") {
         stockMutation.mutation_type = "REJECTED";
         stockMutation.approvedAt = new Date();
@@ -123,7 +126,9 @@ module.exports = {
         await stockMutation.save({ transaction: t });
         await t.commit();
 
-        res.status(200).json({ message: "Stock request rejected", stockMutation });
+        res
+          .status(200)
+          .json({ message: "Stock request rejected", stockMutation });
       } else {
         res.status(400).json({ message: "Invalid status" });
       }
@@ -268,7 +273,9 @@ module.exports = {
       // to find warehouse according admin place at warehouse
       const warehouse = await warehouses.findOne({ where: { admins_id: id } });
       if (!warehouse) {
-        return res.status(404).json({ message: "Admin is not assign in the Warehouses" });
+        return res
+          .status(404)
+          .json({ message: "Admin is not assign in the Warehouses" });
       }
       const warehouse_id = warehouse?.id;
 

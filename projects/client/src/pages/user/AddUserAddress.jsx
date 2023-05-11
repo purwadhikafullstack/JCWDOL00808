@@ -36,7 +36,7 @@ const AddUserAddress = () => {
 
   const getProvinceData = () => {
     axios
-      .get(`http://localhost:8000/warehouses/getProvinceData`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -53,7 +53,7 @@ const AddUserAddress = () => {
   const onGetCity = (province_id) => {
     axios
       .get(
-        `http://localhost:8000/warehouses/getCityData?province_id=${province_id}`
+        `${process.env.REACT_APP_API_BASE_URL}/warehouses/getCityData?province_id=${province_id}`
       )
       .then((response) => {
         setCityData(response.data);
@@ -75,7 +75,7 @@ const AddUserAddress = () => {
   const fetchAddresses = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/address/get-address`,
+        `${process.env.REACT_APP_API_BASE_URL}/address/get-address`,
         {
           headers: { Authorization: token },
         }
@@ -94,7 +94,7 @@ const AddUserAddress = () => {
   const handleAddAddress = async (values, { setSubmitting, resetForm }) => {
     try {
       const response = await axios.post(
-        `http://localhost:8000/address/add-address`,
+        `${process.env.REACT_APP_API_BASE_URL}/address/add-address`,
         values,
         {
           headers: { Authorization: token },
