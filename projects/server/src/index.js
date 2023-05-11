@@ -47,7 +47,7 @@ res.status(200).json({
      message: "Hello, Student !",
    });
 });
-
+app.use("/api/public", express.static(join(__dirname, "../src/public")));
 // ===========================
 //Import router for controller from index.js inside routers folder
 
@@ -108,7 +108,6 @@ app.use((err, req, res, next) => {
 const clientPath = "../../client/build";
 // app.use("/public", express.static(join(__dirname, "src/public")));
 app.use(express.static(join(__dirname, clientPath)));
-app.use("/public", express.static(join(__dirname, "../src/public")));
 
 // Serve the HTML page
 app.get("*", (req, res) => {
