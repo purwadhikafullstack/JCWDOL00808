@@ -35,7 +35,6 @@ import {
   AlertDialogOverlay,
 } from "@chakra-ui/react";
 import React from "react";
-import { API_url } from "../../helper";
 import Axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -68,7 +67,7 @@ const OrderList = () => {
 
   let token = localStorage.getItem("user_token");
   const getTransactionList = async () => {
-    await Axios.get(API_url + `/orders/getOrderList?page=${page}&order=${order}&status=${status}`, {
+    await Axios.get(`${process.env.REACT_APP_API_BASE_URL}/orders/getOrderList?page=${page}&order=${order}&status=${status}`, {
       headers: { Authorization: token },
     })
       .then((response) => {
@@ -86,7 +85,7 @@ const OrderList = () => {
 
   const handleCancelButton = (value) => {
     Axios.post(
-      API_url + `/orders/cancelOrder`,
+      `${process.env.REACT_APP_API_BASE_URL}/orders/cancelOrder`,
       {
         id: value,
       },
@@ -109,7 +108,7 @@ const OrderList = () => {
 
   const handleConfirmButton = (value) => {
     Axios.post(
-      API_url + `/orders/confirmDelivery`,
+      `${process.env.REACT_APP_API_BASE_URL}/orders/confirmDelivery`,
       {
         id: value,
       },
@@ -131,7 +130,7 @@ const OrderList = () => {
   };
 
   const getDetails = (value) => {
-    Axios.get(API_url + `/orders/getDetails?orders_id=${value}`, {
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/orders/getDetails?orders_id=${value}`, {
       headers: { Authorization: token },
     })
       .then((response) => {
@@ -154,7 +153,7 @@ const OrderList = () => {
       return (
         <Box key={detail?.id}>
           <Flex>
-            <Image src={`${API_url}/${detail?.imageUrl}`} boxSize="132px" />
+            <Image src={`${process.env.REACT_APP_API_BASE_URL}/detail?.imageUrl}`} boxSize="132px" />
             <>
               <Text>{detail?.product_name}</Text>
               <Text>

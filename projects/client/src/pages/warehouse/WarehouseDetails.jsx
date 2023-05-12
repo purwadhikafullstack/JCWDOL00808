@@ -38,7 +38,6 @@ import {
 } from "@chakra-ui/react";
 import { BiArrowBack } from "react-icons/bi";
 import { useState, useEffect } from "react";
-import { API_url } from "../../helper";
 import Axios from "axios";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import React from "react";
@@ -80,7 +79,7 @@ const WarehouseDetails = (props) => {
   const id = search.split("=")[1];
 
   const getSpecificWarehouse = () => {
-    Axios.get(API_url + `/warehouses/getWarehouseDetails?id=${id}`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getWarehouseDetails?id=${id}`)
       .then((response) => {
         setTimeout(() => {
           setName(response.data[0].name);
@@ -104,7 +103,7 @@ const WarehouseDetails = (props) => {
   };
 
   const getProvinceData = () => {
-    Axios.get(API_url + `/warehouses/getProvinceData`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -114,12 +113,9 @@ const WarehouseDetails = (props) => {
   };
 
   const onGetCity = (province_id) => {
-    Axios.get(API_url + `/warehouses/getCityData?province_id=${province_id}`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
         setCityData(response.data);
-
-        // setProvince("");
-        // setCity("");
       })
       .catch((err) => {
         console.log(err);
@@ -127,12 +123,11 @@ const WarehouseDetails = (props) => {
   };
 
   const buttonEditWarehouse = (values) => {
-    Axios.post(API_url + `/warehouses/updateWarehouseData`, {
+    Axios.post(`${process.env.REACT_APP_API_BASE_URL}/warehouses/updateWarehouseData`, {
       id,
       ...values,
     })
       .then((response) => {
-        // console.log(response.data);
         toast({
           title: `${response.data.message}`,
           status: "success",
@@ -149,7 +144,7 @@ const WarehouseDetails = (props) => {
   }, []);
 
   const deleteButton = () => {
-    Axios.delete(API_url + `/warehouses/deleteWarehouseData?id=${id}`)
+    Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/warehouses/deleteWarehouseData?id=${id}`)
       .then((response) => {
         toast({
           title: `${response.data.message}`,
@@ -310,7 +305,6 @@ const WarehouseDetails = (props) => {
                             id="province"
                             placeholder={detailsProvince}
                             onChange={(e) => {
-                              // console.log(e.target.value);
                               formik.setFieldValue(
                                 "province",
                                 e.target.value.split(",")[1]

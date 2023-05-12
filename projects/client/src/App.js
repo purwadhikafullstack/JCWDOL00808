@@ -8,7 +8,6 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import AdminWarehouseNotFound from "./pages/AdminWarehouseNotFound";
 import ProductDetails from "./pages/ProductDetails";
-import AdminList from "./pages/admin/AdminList";
 import AssignAdmin from "./pages/admin/AssignAdmin";
 import ManageAdmin from "./pages/admin/manageAdmin";
 import ManageCategoryProducts from "./pages/admin/manageCategoryProduct";
@@ -87,7 +86,6 @@ function App() {
 
           {/*Super admin's route */}
           <Route element={<SuperAdminRoutes />}>
-            <Route path="/admin/list" element={<AdminList />} />
             <Route path="/admin/assign/:id" element={<AssignAdmin />} />
             <Route path="/admin/adminuserlist" element={<UserList />} />
             <Route path="/admin/manageadmin" element={<ManageAdmin />} />
