@@ -39,7 +39,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import SendOrderModal from "../../components/SendOrderModal";
 
-import { API_url } from "../../helper";
 
 function ListOrders() {
   const [orders, setOrders] = useState([]);
@@ -261,7 +260,7 @@ function ListOrders() {
   const handleCancelOrder = (value) => {
     axios
       .post(
-        API_url + `/orders/cancel-order`,
+        `${process.env.REACT_APP_API_BASE_URL}/orders/cancel-order`,
         {
           id: value,
         },

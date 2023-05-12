@@ -7,6 +7,7 @@ const { validateLoginAdmin } = require("../middleware/validator");
 route.get("/getAdminsData", adminsController.getAdminsData);
 route.post("/login", validateLoginAdmin, adminsController.login);
 route.post("/register", adminsController.register);
+route.get("/availableWarehouse", adminsController.availableWarehouse);
 route.patch("/assignNewAdmin", adminsController.assignNewAdmin);
 route.get("/dashboardData", verifyToken, adminsController.dashboardData);
 
