@@ -14,7 +14,7 @@ function AvatarButton(props) {
   }
 
   return (
-    <div>
+    <div className="relative">
       <Avatar
         onClick={handleMenuClick}
         cursor="context-menu"
@@ -33,7 +33,7 @@ function AvatarButton(props) {
           {props.profile ? (
             <div
               onMouseLeave={() => setIsOpen(false)}
-              className="absolute top-5 right-0 z-50 w-48 mt-12 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="absolute top-2 right-0 z-50 w-48 mt-12 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div className="px-4 py-3">
                 <p className="text-sm font-medium text-gray-900 font-[Oswald]">
