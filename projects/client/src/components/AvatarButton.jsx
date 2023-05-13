@@ -16,16 +16,18 @@ function AvatarButton(props) {
   return (
     <div className="relative">
       <Avatar
+        crossOrigin="true"
         onClick={handleMenuClick}
         cursor="context-menu"
         display={{ base: "none", sm: "block" }}
         size="md"
         name={props.profile.full_name}
+        bg={"black"}
         src={
           props.profile.profile_picture &&
           `${process.env.REACT_APP_API_BASE_URL}/${props.profile.profile_picture}`
         }
-        className="border dark:border-white"
+        className="border"
       />
 
       {isOpen && (
