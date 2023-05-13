@@ -13,7 +13,7 @@ function HamburgerMenuButton(props) {
   }
 
   return (
-    <div className="md:hidden">
+    <div className="md:hidden relative">
       <button
         type="button"
         className="block text-gray-500 hover:text-white focus:text-white focus:outline-none"
@@ -30,7 +30,7 @@ function HamburgerMenuButton(props) {
       {isOpen && (
         <>
           {props.profile ? (
-            <div className="absolute top-1 right-0 z-50 w-48 mt-12 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <div className="absolute top-0 right-0 z-50 w-48 mt-12 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="px-4 py-3">
                 <p className="text-sm font-medium text-gray-900 font-[Oswald]">
                   Signed in as

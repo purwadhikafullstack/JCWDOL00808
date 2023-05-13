@@ -17,7 +17,6 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
-  Button,
 } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/react";
 
@@ -48,7 +47,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center">
             <img
               src={Big4Logo}
-              className="h-12 mr-3 sm:h-14 dark:invert invert"
+              className="h-12 mr-3 sm:h-14 invert"
               alt="Big4Commerce Logo"
             />
           </Link>
@@ -86,13 +85,12 @@ export default function Navbar() {
               </div>
             ) : (
               <Link to="/user/register">
-                <Button
+                <button
                   type="button"
-                  variant="buttonBlack"
-                  className="rounded-none font-[Oswald] hidden md:flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium  text-sm px-5 py-2.5 text-center mr-3 ml-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="font-[Oswald] hidden md:flex text-white bg-black hover:bg-gray-700 font-medium text-sm px-5 py-2.5 text-center mr-3 ml-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700"
                 >
                   Create account
-                </Button>
+                </button>
               </Link>
             )}
 

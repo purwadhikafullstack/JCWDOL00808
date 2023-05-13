@@ -185,12 +185,11 @@ export default function EditProfile() {
                 crossOrigin="true"
                 size="xl"
                 name={profile.full_name}
+                bg={"black"}
                 src={
                   profile?.profile_picture &&
                   `${process.env.REACT_APP_API_BASE_URL}/${profile?.profile_picture}`
                 }
-                border="2px"
-                borderColor="papayawhip"
               >
                 <RemovePicConfirmation
                   picture={profile?.profile_picture}

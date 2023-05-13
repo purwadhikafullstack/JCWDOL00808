@@ -162,7 +162,7 @@ export default function Footer() {
           </Link>
           . All Rights Reserved.
         </span>
-        <div className="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
+        <div className="flex mt-4 space-x-6 justify-center sm:mt-0">
           <Link
             to="http://facebook.com"
             target="_blank"

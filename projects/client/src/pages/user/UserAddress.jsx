@@ -140,12 +140,13 @@ const UserAddress = () => {
             </Link>
           </Tooltip>
         </HStack>
-        <VStack mt={8} w={"2xl"} spacing={4} mx={"auto"} justify="center">
+        <VStack mt={8} w={"70vw"} spacing={4} mx={"auto"} justify="center">
           {addresses.map((address) => (
             <Tooltip
               label={address.is_primary === true ? "Primary Address" : ""}
               isDisabled={address.is_primary !== true}
-              placement="top-start">
+              placement="top-start"
+            >
               <Box
                 key={address.id}
                 borderWidth={address.is_primary === true ? "5px" : "1px"}
@@ -155,7 +156,8 @@ const UserAddress = () => {
                 borderRadius="0"
                 p={4}
                 w="100%"
-                fontFamily="Roboto">
+                fontFamily="Roboto"
+              >
                 <Text fontFamily="Oswald" fontSize="lg">
                   {address.recipient}
                 </Text>
@@ -172,7 +174,8 @@ const UserAddress = () => {
                       variant="buttonBlack"
                       aria-label="Edit Address"
                       borderRadius={0}
-                      mr={2}>
+                      mr={2}
+                    >
                       Edit
                     </Button>
                   </Link>
