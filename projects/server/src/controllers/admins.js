@@ -129,6 +129,7 @@ module.exports = {
       return res.status(500).send(err);
     }
   },
+  
   dashboardData: async (req, res) => {
     try {
       let admins_id = req.dataDecode.id;

@@ -309,15 +309,6 @@ module.exports = {
                   { transaction: t }
                 );
                 t.commit();
-
-                // Create the MySQL event to update the order status after 7 days
-                //     await sequelize.query(`
-                //   CREATE EVENT update_order_status_${id}
-                //   ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 7 DAY
-                //   DO
-                //     UPDATE orders SET status = 'Order confirmed' WHERE id = ${id};
-                // `);
-
                 res.status(200).send({
                   isError: false,
                   message: "Orders has been shipped",
@@ -347,7 +338,7 @@ module.exports = {
       res.status(200).send({
         isError: false,
         message: "Get product quantity success",
-        data: productData.dataValues.quantity,
+        data: productData?.dataValues?.quantity || 0,
       });
     } catch (error) {
       res.status(404).send({

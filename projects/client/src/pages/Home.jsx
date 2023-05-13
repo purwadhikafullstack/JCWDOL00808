@@ -10,14 +10,7 @@ import Carousel4 from "../assets/carousel/carousel4.jpg";
 import CategoryCard from "../components/CategoryCard";
 import { ProductCard } from "../components/ProductCard";
 import ScrollToTopButton from "../components/ScrollToTopButton";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  Box,
-} from "@chakra-ui/react";
+import { Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Box } from "@chakra-ui/react";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -32,21 +25,7 @@ export default function Home() {
   const [pageCount, setPageCount] = useState(0);
   const [limit] = useState(12);
   const [offset, setOffset] = useState(0);
-  const radioColor = [
-    "Black",
-    "Blue",
-    "Brown",
-    "Gray",
-    "Green",
-    "Maroon",
-    "Navy",
-    "Orange",
-    "Pink",
-    "Purple",
-    "Red",
-    "Turquoise",
-    "White",
-  ];
+  const radioColor = ["Black", "Blue", "Brown", "Gray", "Green", "Maroon", "Navy", "Orange", "Pink", "Purple", "Red", "Turquoise", "White"];
 
   const getCategory = (category_id) => {
     setCategory(category_id);
@@ -55,22 +34,19 @@ export default function Home() {
 
   const fetchProducts = async () => {
     try {
-      const productsData = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/products/`,
-        {
-          params: {
-            color,
-            search,
-            category,
-            minPrice,
-            maxPrice,
-            sortBy,
-            sortOrder,
-            limit,
-            offset,
-          },
-        }
-      );
+      const productsData = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/products/`, {
+        params: {
+          color,
+          search,
+          category,
+          minPrice,
+          maxPrice,
+          sortBy,
+          sortOrder,
+          limit,
+          offset,
+        },
+      });
       setProducts(productsData?.data?.data?.rows);
       setPageCount(Math.ceil(productsData?.data?.data?.count / limit));
     } catch (error) {
@@ -81,17 +57,7 @@ export default function Home() {
   useEffect(() => {
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    search,
-    color,
-    category,
-    minPrice,
-    maxPrice,
-    sortBy,
-    sortOrder,
-    limit,
-    offset,
-  ]);
+  }, [search, color, category, minPrice, maxPrice, sortBy, sortOrder, limit, offset]);
 
   return (
     <div className="flex flex-col justify-between w-full">
@@ -109,26 +75,10 @@ export default function Home() {
             },
           }}
         >
-          <img
-            src={Carousel1}
-            alt="carousel-1"
-            className="w-full rounded-none"
-          />
-          <img
-            src={Carousel2}
-            alt="carousel-2"
-            className="w-full rounded-none"
-          />
-          <img
-            src={Carousel3}
-            alt="carousel-3"
-            className="w-full rounded-none"
-          />
-          <img
-            src={Carousel4}
-            alt="carousel-4"
-            className="w-full rounded-none"
-          />
+          <img src={Carousel1} alt="carousel-1" className="w-full rounded-none" />
+          <img src={Carousel2} alt="carousel-2" className="w-full rounded-none" />
+          <img src={Carousel3} alt="carousel-3" className="w-full rounded-none" />
+          <img src={Carousel4} alt="carousel-4" className="w-full rounded-none" />
         </Carousel>
       </div>
 
@@ -161,9 +111,7 @@ export default function Home() {
           <p className="text-left font-[Oswald]">Price</p>
           <div className="py-4">
             <div className="flex text-md font-[Roboto]">
-              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-none dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                Rp
-              </span>
+              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-none dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">Rp</span>
               <input
                 onBlur={(event) => setMinPrice(event.target.value)}
                 type="text"
@@ -174,9 +122,7 @@ export default function Home() {
           </div>
           <div>
             <div className="flex text-md font-[Roboto]">
-              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-none dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                Rp
-              </span>
+              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-none dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">Rp</span>
               <input
                 onBlur={(event) => setMaxPrice(event.target.value)}
                 type="text"
@@ -206,10 +152,7 @@ export default function Home() {
                     name="color"
                     className="font-[Roboto] w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
-                  <label
-                    htmlFor="default-radio-1"
-                    className="ml-2 text-sm text-gray-900 dark:text-gray-300"
-                  >
+                  <label htmlFor="default-radio-1" className="ml-2 text-sm text-gray-900 dark:text-gray-300">
                     All
                   </label>
                 </div>
@@ -224,10 +167,7 @@ export default function Home() {
                         name="color"
                         className="font-[Roboto] w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                       />
-                      <label
-                        htmlFor="default-radio-1"
-                        className="font-[Roboto] ml-2 text-sm text-gray-900 dark:text-gray-300"
-                      >
+                      <label htmlFor="default-radio-1" className="font-[Roboto] ml-2 text-sm text-gray-900 dark:text-gray-300">
                         {color}
                       </label>
                     </div>
