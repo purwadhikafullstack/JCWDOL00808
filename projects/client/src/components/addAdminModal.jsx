@@ -47,6 +47,10 @@ const RegisterAdminModal = ({ isOpen, onClose, onAdminPatch }) => {
         .required("Email is required"),
       password: Yup.string()
         .min(8, "Password must have 8 character")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character"
+        )
         .required("Password is required"),
       confirmed_password: Yup.string() //  validasi untuk confirmed_password
         .oneOf([Yup.ref("password"), null], "Passwords must match")
