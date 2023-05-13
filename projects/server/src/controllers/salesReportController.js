@@ -23,8 +23,8 @@ module.exports = {
         category_filter,
         product_filter,
         time_period = "weekly",
-        page = 0, // default page value is 0
-        limit = 10, // default limit is 10
+        // page = 0, // default page value is 0
+        // limit = 10, // default limit is 10
       } = req.query;
 
       const [defaultWeekStart, defaultWeekEnd] = getCurrentWeek();
@@ -50,6 +50,9 @@ module.exports = {
         ? new Date(defaultWeekEnd)
         : new Date(defaultMonthEnd);
 
+      // const startDate = new Date(start_date);
+      // const endDate = new Date(end_date);
+
       // Ensure endDate includes the whole day
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
@@ -64,7 +67,7 @@ module.exports = {
 
       const warehouseIds = await Warehouse.findAll({
         attributes: ["id"],
-        where: { admins_id: authenticatedAdmin.id },
+        where: { admins_id: authenticatedAdmin.id, is_deleted: 0 },
       });
 
       const warehouseIdArray = warehouseIds.map((warehouse) => warehouse.id);
@@ -104,6 +107,9 @@ module.exports = {
           model: Warehouse,
           attributes: [],
           as: "warehouse",
+          where: {
+            is_deleted: 0,
+          },
         },
         where: {
           status: {
@@ -115,6 +121,9 @@ module.exports = {
       if (authenticatedAdmin.role === 1 && warehouse_filter) {
         orderInclude.where = {
           $warehouses_id$: warehouseFilter.id,
+          status: {
+            [Op.or]: ["On process", "Shipped", "Order confirmed"],
+          },
         };
       } else if (authenticatedAdmin.role !== 1) {
         orderInclude.where = {
@@ -124,21 +133,22 @@ module.exports = {
         };
       }
 
-      const offset = limit * page;
+      // const offset = limit * page;
 
       let salesData = await OrderDetail.findAll({
         where: whereCondition,
         include: [productInclude, orderInclude],
-        limit: parseInt(limit), // Apply limit for pagination
-        offset: offset, // Apply the offset for pagination
+        // limit: parseInt(limit), // Apply limit for pagination
+        // offset: offset, // Apply the offset for pagination
       });
+      // console.log("salesData:", salesData);
 
       const totalRows = await OrderDetail.count({
         where: whereCondition,
         include: [productInclude, orderInclude],
       });
 
-      const totalPage = Math.ceil(totalRows / limit);
+      // const totalPage = Math.ceil(totalRows / limit);
 
       // Generate report
       const report = generateReport(salesData);
@@ -146,10 +156,10 @@ module.exports = {
       // Send the report as a response
       res.status(200).json({
         report: report,
-        page: page,
-        limit: limit,
-        totalRows: totalRows,
-        totalPage: totalPage,
+        // page: page,
+        // limit: limit,
+        // totalRows: totalRows,
+        // totalPage: totalPage,
       });
     } catch (error) {
       console.error(error);
@@ -270,6 +280,9 @@ module.exports = {
     }
 
     function getWeekNumber(d) {
+      // Add timezone offset for GMT+7
+      d = new Date(d.getTime() + 25200000); // 7 hours in milliseconds
+
       d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
       d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
       const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));

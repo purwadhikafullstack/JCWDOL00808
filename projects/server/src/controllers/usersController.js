@@ -245,7 +245,7 @@ module.exports = {
       //Delete old profile_picture data
       const oldPicture = response.dataValues.profile_picture;
       if (oldPicture) {
-        await fs.unlink(oldPicture, (err) => {
+        await fs.unlink(`src/${oldPicture}`, (err) => {
           if (err) throw err;
         });
       }
@@ -255,6 +255,7 @@ module.exports = {
         "src\\",
         ""
       ); //public moved to src;
+
       //Update user's profile_picture with a new one
       await users.update(
         {
@@ -294,7 +295,7 @@ module.exports = {
         { transaction: t }
       );
       //Remove image from storage
-      await fs.unlink(response?.dataValues?.profile_picture, (err) => {
+      await fs.unlink("src/" + response?.dataValues?.profile_picture, (err) => {
         if (err) throw err;
       });
       t.commit();

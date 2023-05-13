@@ -1,4 +1,24 @@
-import { Box, FormControl, FormLabel, Input, Select, Flex, VStack, useToast, FormErrorMessage, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Image, Button, Checkbox, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  Flex,
+  VStack,
+  useToast,
+  FormErrorMessage,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Image,
+  Button,
+  Checkbox,
+  Stack,
+} from "@chakra-ui/react";
 import axios from "axios";
 import AddAdminConfirmation from "./AddConfirmation";
 import { useFormik } from "formik";
@@ -22,9 +42,17 @@ const RegisterAdminModal = ({ isOpen, onClose, onAdminPatch }) => {
     },
     validationSchema: Yup.object({
       full_name: Yup.string().required("Full Name is required"),
-      email: Yup.string().email("Invalid email address").required("Email is required"),
-      password: Yup.string().min(8, "Password must have 8 character").required("Password is required"),
-      confirmed_password: Yup.string() //  validasi untuk confirm_password
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string()
+        .min(8, "Password must have 8 character")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character"
+        )
+        .required("Password is required"),
+      confirmed_password: Yup.string() //  validasi untuk confirmed_password
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Confirm Password is required"),
       phone_number: Yup.string().required("Phone Number is required"),
@@ -33,7 +61,11 @@ const RegisterAdminModal = ({ isOpen, onClose, onAdminPatch }) => {
         .test("fileType", "Invalid image format", (value) => {
           if (value && value.length) {
             const fileType = value[0].type;
-            return fileType === "image/png" || fileType === "image/jpg" || fileType === "image/jpeg";
+            return (
+              fileType === "image/png" ||
+              fileType === "image/jpg" ||
+              fileType === "image/jpeg"
+            );
           }
           return true;
         })
@@ -63,11 +95,15 @@ const RegisterAdminModal = ({ isOpen, onClose, onAdminPatch }) => {
       formData.append("role", values.role);
       formData.append("profile_picture", values.profile_picture[0]);
 
-      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/admin/registerAdmin`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/registerAdmin`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       onClose();
       onAdminPatch();
       formik.resetForm();
@@ -109,48 +145,118 @@ const RegisterAdminModal = ({ isOpen, onClose, onAdminPatch }) => {
           <ModalCloseButton />
           <ModalBody>
             <Box w="100%" maxW="600px" mx="auto" my="auto" mt="3" mb="10">
-              <form onSubmit={formik.handleSubmit} style={{ margin: "auto", width: "100%" }}>
+              <form
+                onSubmit={formik.handleSubmit}
+                style={{ margin: "auto", width: "100%" }}
+              >
                 <VStack spacing="1" align="stretch">
-                  <FormControl id="fullName" isRequired isInvalid={formik.touched.full_name && formik.errors.full_name}>
+                  <FormControl
+                    id="fullName"
+                    isRequired
+                    isInvalid={
+                      formik.touched.full_name && formik.errors.full_name
+                    }
+                  >
                     <FormLabel>Full Name</FormLabel>
-                    <Input type="text" {...formik.getFieldProps("full_name")} placeholder="Input Admin Full Name" />
-                    <FormErrorMessage>{formik.errors.full_name}</FormErrorMessage>
+                    <Input
+                      type="text"
+                      {...formik.getFieldProps("full_name")}
+                      placeholder="Input Admin Full Name"
+                    />
+                    <FormErrorMessage>
+                      {formik.errors.full_name}
+                    </FormErrorMessage>
                   </FormControl>
 
-                  <FormControl id="email" isRequired isInvalid={formik.touched.email && formik.errors.email}>
+                  <FormControl
+                    id="email"
+                    isRequired
+                    isInvalid={formik.touched.email && formik.errors.email}
+                  >
                     <FormLabel>Email</FormLabel>
-                    <Input type="email" {...formik.getFieldProps("email")} placeholder="Input Admin Email" />
+                    <Input
+                      type="email"
+                      {...formik.getFieldProps("email")}
+                      placeholder="Input Admin Email"
+                    />
                     <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl id="password" isRequired isInvalid={formik.touched.password && formik.errors.password}>
+                  <FormControl
+                    id="password"
+                    isRequired
+                    isInvalid={
+                      formik.touched.password && formik.errors.password
+                    }
+                  >
                     <FormLabel>Password</FormLabel>
-                    <Input type={showPassword ? "text" : "password"} {...formik.getFieldProps("password")} placeholder="Input Admin Password" />
-                    <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      {...formik.getFieldProps("password")}
+                      placeholder="Input Admin Password"
+                    />
+                    <FormErrorMessage>
+                      {formik.errors.password}
+                    </FormErrorMessage>
                   </FormControl>
 
-                  <FormControl id="confirm_password" isRequired isInvalid={formik.touched.confirm_password && formik.errors.confirm_password}>
+                  <FormControl
+                    id="confirmed_password"
+                    isRequired
+                    isInvalid={
+                      formik.touched.confirmed_password &&
+                      formik.errors.confirmed_password
+                    }
+                  >
                     <FormLabel>Confirm Password</FormLabel>
-                    <Input type={showPassword ? "text" : "password"} {...formik.getFieldProps("confirm_password")} placeholder="Confirm Admin Password" />
-                    <FormErrorMessage>{formik.errors.confirm_password}</FormErrorMessage>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      {...formik.getFieldProps("confirmed_password")}
+                      placeholder="Confirm Admin Password"
+                    />
+                    <FormErrorMessage>
+                      {formik.errors.confirmed_password}
+                    </FormErrorMessage>
                   </FormControl>
 
                   {/*  Checkbox untuk menampilkan password */}
                   <Stack>
-                    <Checkbox onChange={(e) => setShowPassword(e.target.checked)} isChecked={showPassword}>
+                    <Checkbox
+                      onChange={(e) => setShowPassword(e.target.checked)}
+                      isChecked={showPassword}
+                    >
                       Show Password
                     </Checkbox>
                   </Stack>
 
-                  <FormControl id="phoneNumber" isRequired isInvalid={formik.touched.phone_number && formik.errors.phone_number}>
+                  <FormControl
+                    id="phoneNumber"
+                    isRequired
+                    isInvalid={
+                      formik.touched.phone_number && formik.errors.phone_number
+                    }
+                  >
                     <FormLabel>Phone Number</FormLabel>
-                    <Input type="tel" {...formik.getFieldProps("phone_number")} placeholder="Input Phone Number" />
-                    <FormErrorMessage>{formik.errors.phone_number}</FormErrorMessage>
+                    <Input
+                      type="tel"
+                      {...formik.getFieldProps("phone_number")}
+                      placeholder="Input Phone Number"
+                    />
+                    <FormErrorMessage>
+                      {formik.errors.phone_number}
+                    </FormErrorMessage>
                   </FormControl>
 
-                  <FormControl id="role" isRequired isInvalid={formik.touched.role && formik.errors.role}>
+                  <FormControl
+                    id="role"
+                    isRequired
+                    isInvalid={formik.touched.role && formik.errors.role}
+                  >
                     <FormLabel>Role</FormLabel>
-                    <Select placeholder="Choose Admin Role" {...formik.getFieldProps("role")}>
+                    <Select
+                      placeholder="Choose Admin Role"
+                      {...formik.getFieldProps("role")}
+                    >
                       {[
                         { value: "1", label: "Admin" },
                         { value: "2", label: "Admin Warehouse" },
@@ -163,15 +269,28 @@ const RegisterAdminModal = ({ isOpen, onClose, onAdminPatch }) => {
                     <FormErrorMessage>{formik.errors.role}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl mb={2} id="profile_picture" isInvalid={formik.touched.profile_picture && formik.errors.profile_picture}>
+                  <FormControl
+                    mb={2}
+                    id="profile_picture"
+                    isInvalid={
+                      formik.touched.profile_picture &&
+                      formik.errors.profile_picture
+                    }
+                  >
                     <FormLabel>Profile Picture</FormLabel>
                     <Flex>
                       <Box w={16} h={16} mr={4}>
                         {image && <Image src={image} alt="Produk" />}
                       </Box>
                       <Box>
-                        <Input type="file" accept="image/*" onChange={handleImageChange} />
-                        <FormErrorMessage>{formik.errors.profile_picture}</FormErrorMessage>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                        <FormErrorMessage>
+                          {formik.errors.profile_picture}
+                        </FormErrorMessage>
                       </Box>
                     </Flex>
                   </FormControl>
