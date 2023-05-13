@@ -1,8 +1,7 @@
-const dotenv = require("dotenv");
-dotenv.config();
+const { join } = require("path");
+require('dotenv').config({path:join(__dirname,'../.env')});
 const express = require("express");
 const cors = require("cors");
-const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -39,37 +38,17 @@ app.use(express.json());
 // ===========================
 // NOTE : Add your routes here
 
-// app.get("/api", (req, res) => {
-//   res.send(`Hello, this is my API`);
-// });
+app.get("/api", (req, res) => {
+   res.send(`Hello, this is my API`);
+});
 
-// app.get("/api/greetings", (req, res, next) => {
-//   res.status(200).json({
-//     message: "Hello, Student !",
-//   });
-// });
-
+app.get("/api/greetings", (req, res, next) => {
+res.status(200).json({
+     message: "Hello, Student !",
+   });
+});
+app.use("/api/public", express.static(join(__dirname, "../src/public")));
 // ===========================
-
-// // not found
-app.use((req, res, next) => {
-  if (req.path.includes("/api/")) {
-    res.status(404).send("Not found !");
-  } else {
-    next();
-  }
-});
-
-// // error
-app.use((err, req, res, next) => {
-  if (req.path.includes("/api/")) {
-    console.error("Error : ", err.stack);
-    res.status(500).send("Error !");
-  } else {
-    next();
-  }
-});
-
 //Import router for controller from index.js inside routers folder
 
 const {
@@ -90,34 +69,50 @@ const {
   salesReportRouter,
 } = require("./routers"); //refer to index.js in routers folder
 
-app.use("/user", usersRouter);
-app.use("/auth", authRouter);
-app.use("/admins", adminsRouter);
-app.use("/warehouses", warehousesRouter);
-app.use("/admin", adminRouter, confirmOrderRouter, salesReportRouter);
-app.use("/products", productsRouter);
-app.use("/product", productRouter);
-app.use("/productcategory", productCategoryRouter);
-app.use("/mutations", stockMutationRouter);
-app.use("/cart", cartsRouter);
-app.use("/address", addressesRouter);
-app.use("/histories", historiesRouter);
-app.use("/orders", ordersRouter);
+app.use("/api/user", usersRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/admins", adminsRouter);
+app.use("/api/warehouses", warehousesRouter);
+app.use("/api/admin", adminRouter, confirmOrderRouter, salesReportRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/product", productRouter);
+app.use("/api/productcategory", productCategoryRouter);
+app.use("/api/mutations", stockMutationRouter);
+app.use("/api/cart", cartsRouter);
+app.use("/api/address", addressesRouter);
+app.use("/api/histories", historiesRouter);
+app.use("/api/orders", ordersRouter);
 
 // app.use(express.static("."));
 
 //#endregion
+// // not found
+app.use((req, res, next) => {
+  if (req.path.includes("/api/")) {
+    res.status(404).send("Not found !");
+  } else {
+    next();
+  }
+});
 
+// // error
+app.use((err, req, res, next) => {
+  if (req.path.includes("/api/")) {
+    console.error("Error : ", err.stack);
+    res.status(500).send(err);
+  } else {
+    next();
+  }
+});
 // #region CLIENT
-// const clientPath = "../../client/build";
+const clientPath = "../../client/build";
 // app.use("/public", express.static(join(__dirname, "src/public")));
-// app.use(express.static(join(__dirname, "src/public")));
-app.use("/public", express.static(join(__dirname, "../src/public")));
+app.use(express.static(join(__dirname, clientPath)));
 
 // Serve the HTML page
-// app.get("*", (req, res) => {
-//   res.sendFile(join(__dirname, clientPath, "index.html"));
-// });
+app.get("*", (req, res) => {
+  res.sendFile(join(__dirname, clientPath, "index.html"));
+});
 
 //#endregion
 

@@ -8,7 +8,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { API_url } from "../../helper";
 import Axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -26,11 +25,10 @@ const UploadPaymentProof = () => {
     formData.append("payment_proof", proof);
     formData.append("id", orders_id);
 
-    await Axios.post(API_url + `/orders/upload-payment-proof`, formData, {
+    await Axios.post(`${process.env.REACT_APP_API_BASE_URL}/orders/upload-payment-proof`, formData, {
       headers: { Authorization: token },
     })
       .then((response) => {
-        // console.log(response.data);
         toast({
           title: `${response.data.message}`,
           duration: 9000,

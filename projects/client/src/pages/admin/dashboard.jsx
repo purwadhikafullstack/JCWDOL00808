@@ -1,7 +1,6 @@
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { API_url } from "../../helper";
 import { useState } from "react";
 import { useEffect } from "react";
 
@@ -10,7 +9,7 @@ export default function Dashboard() {
   const [data, setData] = useState([]);
 
   const dashboardData = () => {
-    Axios.get(API_url + `/admins/dashboardData`, {
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/admins/dashboardData`, {
       headers: { Authorization: token },
     })
       .then((response) => {
