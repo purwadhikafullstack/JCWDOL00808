@@ -35,6 +35,7 @@ export default function SendOrderModal(props) {
         duration: 5000,
         isClosable: true,
       });
+      props.onClose();
       props.func();
     } catch (error) {
       setIsLoading(false);
@@ -54,7 +55,8 @@ export default function SendOrderModal(props) {
         mr={2}
         _hover={{ bg: "green.600" }}
         colorScheme="green"
-        onClick={onOpen}>
+        onClick={onOpen}
+      >
         Send Order
       </Button>
 
@@ -79,7 +81,8 @@ export default function SendOrderModal(props) {
                 onClose();
               }}
               colorScheme="blue"
-              variant="solid">
+              variant="solid"
+            >
               Send
             </Button>
           </ModalFooter>
