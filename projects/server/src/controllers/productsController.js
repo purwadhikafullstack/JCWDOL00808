@@ -7,7 +7,6 @@ const db = require("../models/index");
 const products = db.products;
 const product_categories = db.product_categories;
 const stocks = db.stocks;
-const warehouses = db.warehouses;
 
 module.exports = {
   getCategories: async (req, res) => {
@@ -133,12 +132,6 @@ module.exports = {
           query.where.name = { [Op.like]: `${color}%` };
         }
       }
-      // Add search query by name
-      // if (search) {
-      //   query.where.name = {
-      //     [Op.like]: `%${search}%`,
-      //   };
-      // }
 
       // Add category query
       if (category) {
