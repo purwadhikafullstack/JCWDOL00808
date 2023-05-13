@@ -28,11 +28,10 @@ module.exports = {
 
       let warehouseId = await WarehousesModel.findAll({
         where: { admins_id },
-        attributes: ["id"],
+        attributes: ["id", "name"],
         raw: true,
       });
 
-      // console.log("wh id", warehouseId[0].id);
       return res.status(200).send(warehouseId[0]);
     } catch (error) {
       return res.status(500).send(error);
@@ -48,6 +47,7 @@ module.exports = {
       const offset = limit * page;
 
       let filterStockHistory = {};
+      let filterTambahan = {};
       let result = [];
       let warehouse = req.body.warehouse;
       let month1 = req.body.month;
@@ -55,6 +55,7 @@ module.exports = {
 
       if (warehouse !== "" && typeof warehouse !== "undefined") {
         filterStockHistory.warehouses_id = warehouse;
+        filterTambahan.warehouses_id = warehouse;
       }
 
       if (year !== "" && typeof year !== "undefined" && month1 !== "" && typeof month1 !== "undefined") {
@@ -64,6 +65,12 @@ module.exports = {
         endDate = bulan < 12 ? new Date(`${tahun}-${bulan + 1}-01`) : new Date(`${tahun + 1}-1-01`);
 
         filterStockHistory.updatedAt = {
+          [Op.and]: {
+            [Op.gte]: startDate,
+            [Op.lt]: endDate,
+          },
+        };
+        filterTambahan.updatedAt = {
           [Op.and]: {
             [Op.gte]: startDate,
             [Op.lt]: endDate,
@@ -82,7 +89,6 @@ module.exports = {
           {
             model: StockHistoriesModel,
             where: filterStockHistory,
-            // attributes: [],
           },
         ],
         distinct: true,
@@ -90,6 +96,7 @@ module.exports = {
         limit,
         offset,
       });
+      console.log("productsData: ", productsData);
 
       let totalPage = Math.ceil(parseInt(productsData.count) / limit);
 
@@ -99,11 +106,13 @@ module.exports = {
         let stockOut = 0;
         let products_id = productsData.rows[i].id;
         filterStockHistory.products_id = products_id;
+        filterTambahan.products_id = products_id;
         let name = productsData.rows[i].name;
         let stockCount = await StockHistoriesModel.findAll({
           where: filterStockHistory,
           raw: true,
         });
+        console.log("stockCount: ", stockCount);
 
         // loop untuk mencari stock in & stock out per product
         for (let j = 0; j < stockCount.length; j++) {
@@ -115,7 +124,7 @@ module.exports = {
           }
         }
 
-        // menentukan stock
+        // // menentukan stock akhir
         let latestStockChecker = await StockHistoriesModel.findOne({
           where: filterStockHistory,
           raw: true,
@@ -124,7 +133,33 @@ module.exports = {
             ["id", "desc"],
           ],
         });
-        let latestStock = latestStockChecker.stock_after;
+        console.log("latestStockChecker: ", latestStockChecker);
+
+        let latestStock = 0;
+        if (warehouse !== "" && typeof warehouse !== "undefined") {
+          latestStock = latestStockChecker.stock_after;
+        } else {
+          let temp = 0;
+          for (let z = 0; z < warehouseData.length; z++) {
+            let warehouse_id = warehouseData[z].id;
+            filterTambahan.warehouses_id = warehouse_id;
+
+            let stockData = await StockHistoriesModel.findOne({
+              where: filterTambahan,
+              raw: true,
+              order: [
+                ["updatedAt", "desc"],
+                ["id", "desc"],
+              ],
+            });
+
+            if (stockData) {
+              temp += stockData.stock_after;
+            }
+          }
+          latestStock = temp;
+        }
+        // let latestStock = latestStockChecker.stock_after;
 
         result.push({ name, products_id, stockIn, stockOut, latestStock });
       }
@@ -134,6 +169,7 @@ module.exports = {
         message: "Ok",
         data: result,
         totalPage,
+        // filterStockHistory,
         warehouse: warehouseData,
       });
     } catch (error) {

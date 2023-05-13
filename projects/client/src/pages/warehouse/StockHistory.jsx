@@ -47,6 +47,7 @@ const History = () => {
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [loading, setLoading] = useState(true);
   const [warehouseId, setWarehouseId] = useState(0);
+  const [warehouseName, setWarehouseName] = useState("");
 
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
@@ -54,9 +55,9 @@ const History = () => {
 
   const getHistoryData = () => {
     let warehouse = "";
-    if (role == 1) {
+    if (role == 1 && role) {
       warehouse = selectedWarehouse;
-    } else if (role == 2) {
+    } else if (role == 2 && role) {
       warehouse = warehouseId;
     }
     Axios.post(
@@ -88,16 +89,18 @@ const History = () => {
     })
       .then((response) => {
         setWarehouseId(response.data.id);
+        setWarehouseName(response.data.name);
       })
       .catch((error) => console.log(error));
   };
 
-  console.log("warehouseId: ", warehouseId);
-
   useEffect(() => {
     getHistoryData();
+  }, [warehouseId, role, selectedWarehouse, page, month, year]);
+
+  useEffect(() => {
     getWarehouseId();
-  }, [selectedWarehouse, page, month, year]);
+  }, [role]);
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {
@@ -166,17 +169,27 @@ const History = () => {
             </Text>
           )}
           <Box id="sort filter and search" mx="50" mt="100">
-            <Card maxW="xs" border="1px" borderColor="gray.200" display={role == 1 ? "block" : "none"}>
+            <Card maxW="xs" border="1px" borderColor="gray.200">
               <CardBody>
                 <VStack>
                   <FormControl>
                     <FormLabel>Warehouse:</FormLabel>
-                    <Select onChange={(element) => setSelectedWarehouse(element.target.value)}>
-                      <option value="">All Warehouse</option>
-                      {warehouseData?.map((value) => {
-                        return <option value={value.id}>{value.name}</option>;
-                      })}
-                    </Select>
+                    {role == 2 ? (
+                      <>
+                        <Select onChange={(element) => setSelectedWarehouse(element.target.value)}>
+                          <option value="">{warehouseName}</option>
+                        </Select>
+                      </>
+                    ) : (
+                      <>
+                        <Select onChange={(element) => setSelectedWarehouse(element.target.value)}>
+                          <option value="">All Warehouse</option>
+                          {warehouseData?.map((value) => {
+                            return <option value={value.id}>{value.name}</option>;
+                          })}
+                        </Select>
+                      </>
+                    )}
                   </FormControl>
                 </VStack>
               </CardBody>
