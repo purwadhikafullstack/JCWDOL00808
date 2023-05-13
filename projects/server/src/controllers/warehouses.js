@@ -1,3 +1,5 @@
+// Import env configuration
+require("dotenv").config();
 const db = require("../models/index");
 const WarehousesModel = db.warehouses;
 const stocks = db.stocks;
