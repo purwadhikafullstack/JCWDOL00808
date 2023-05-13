@@ -115,6 +115,16 @@ module.exports = {
               )`),
               "totalStock",
             ],
+            [
+              Sequelize.literal(`(
+          SELECT SUM(stock)
+          FROM stocks
+          WHERE
+            stocks.products_id = products.id
+            AND stocks.is_deleted = 0                    
+        ) - products.booked_stock`),
+              "availableStock",
+            ],
           ],
         },
       };
