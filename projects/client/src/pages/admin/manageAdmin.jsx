@@ -31,7 +31,7 @@ import {
 } from "@chakra-ui/react";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import RegisterAdminModal from "../../components/addAdminModal";
-import PatchAdminModal from "../../components/patchAdminModal";;
+import PatchAdminModal from "../../components/patchAdminModal";
 
 const ManageAdmin = () => {
   const [users, setUsers] = useState([]);
@@ -276,9 +276,15 @@ const ManageAdmin = () => {
                     Edit
                   </button>
                   {/* button assign admin */}
-                  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate(`/admin/assign/${user.id}`)}>
-                    Assign
-                  </button>
+                  {user.role == 2 ? (
+                    <button class="bg-gray-400 text-white font-bold py-2 px-4 rounded" disabled>
+                      Assign
+                    </button>
+                  ) : (
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate(`/admin/assign/${user.id}`)}>
+                      Assign
+                    </button>
+                  )}
                   {/* button delete admin */}
                   <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onMouseDown={() => openDeleteDialog(user.id)}>
                     Delete
