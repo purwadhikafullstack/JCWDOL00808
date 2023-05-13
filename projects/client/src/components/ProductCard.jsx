@@ -1,29 +1,54 @@
-import { useToast } from "@chakra-ui/react";
+import { Button, useToast } from "@chakra-ui/react";
+import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { addProduct } from "../reducers/cartSlice";
-import { Button } from "@chakra-ui/react";
 
 export const ProductCard = (props) => {
+  const token = localStorage.getItem("user_token");
   const dispatch = useDispatch();
   const toast = useToast();
   const { user } = useSelector((state) => state.auth);
   const { products } = props;
 
-  const handleAddToCart = (products_id, quantity) => {
-    // Add the product to the cart with the selected quantity
-    dispatch(
-      addProduct({
-        products_id,
-        quantity,
-      })
-    );
-    toast({
-      title: "Product added to cart",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
+  const handleAddToCart = async (products_id, quantity, availableStock) => {
+    try {
+      //Get product quantity in existing cart
+      const productQuantity = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/cart/quantity/${products_id}`,
+        { headers: { Authorization: token } }
+      );
+
+      if (quantity + productQuantity.data.data > availableStock) {
+        toast({
+          title: "Product in your cart exceeds available stocks",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        // Add the product to the cart with the selected quantity
+        dispatch(
+          addProduct({
+            products_id,
+            quantity,
+          })
+        );
+        toast({
+          title: "Product added to cart",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   if (products.length === 0) {
@@ -78,7 +103,9 @@ export const ProductCard = (props) => {
                 </span>
                 <Button
                   variant="buttonBlack"
-                  onClick={() => handleAddToCart(product.id, 1)}
+                  onClick={() =>
+                    handleAddToCart(product.id, 1, product.availableStock)
+                  }
                   isDisabled={
                     !user?.is_verified || product?.availableStock === "0"
                   }
