@@ -29,6 +29,10 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
     validationSchema: Yup.object({
       password: Yup.string()
         .min(8, "Password must have 8 characters")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character"
+        )
         .required("New password is required"),
       confirm_new_password: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
@@ -91,8 +95,14 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
               <FormControl
                 id="password"
                 isRequired
-                isInvalid={formik.touched.password && formik.errors.password}>
+                isInvalid={formik.touched.password && formik.errors.password}
+              >
                 <FormLabel>New Password</FormLabel>
+                <Input
+                  type="password"
+                  {...formik.getFieldProps("password")}
+                  placeholder="Input new password"
+                />
                 <Input
                   type="password"
                   {...formik.getFieldProps("password")}
@@ -107,8 +117,17 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
                 isInvalid={
                   formik.touched.confirm_new_password &&
                   formik.errors.confirm_new_password
-                }>
+                }
+              >
                 <FormLabel>Confirm New Password</FormLabel>
+                <Input
+                  type="password"
+                  {...formik.getFieldProps("confirm_new_password")}
+                  placeholder="Confirm new password"
+                />
+                <FormErrorMessage>
+                  {formik.errors.confirm_new_password}
+                </FormErrorMessage>
                 <Input
                   type="password"
                   {...formik.getFieldProps("confirm_new_password")}

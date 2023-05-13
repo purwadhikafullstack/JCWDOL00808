@@ -54,13 +54,16 @@ function ManageMutations() {
 
   const getListMutations = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/mutations/getAllRequestMutation?search_query=${keyword}&page=${page}&limit=${limit}`, {
-        params: {
-          sort,
-          order,
-        },
-        headers: { Authorization: token },
-      });
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/mutations/getAllRequestMutation?search_query=${keyword}&page=${page}&limit=${limit}`,
+        {
+          params: {
+            sort,
+            order,
+          },
+          headers: { Authorization: token },
+        }
+      );
       setMutation(response.data.result);
       setPage(response.data.page);
       setPages(response.data.totalPage);
@@ -166,11 +169,15 @@ function ManageMutations() {
   };
 
   const formatDate = (date) => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = ("0" + (d.getMonth() + 1)).slice(-2);
-    const day = ("0" + d.getDate()).slice(-2);
-    return `${day}/${month}/${year}`;
+    if (date) {
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = ("0" + (d.getMonth() + 1)).slice(-2);
+      const day = ("0" + d.getDate()).slice(-2);
+      return `${day}/${month}/${year}`;
+    }
+
+    return "";
   };
 
   return (
@@ -179,7 +186,14 @@ function ManageMutations() {
 
       <form onSubmit={searchData}>
         <Flex mt="2" size="sm">
-          <Input type="text" placeholder="Search" mr={2} width="30%" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Input
+            type="text"
+            placeholder="Search"
+            mr={2}
+            width="30%"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <Button colorScheme="blue" type="submit">
             Search
           </Button>
@@ -203,10 +217,16 @@ function ManageMutations() {
             <MenuItem value={sort} onClick={() => handleSort("quantity")}>
               Quantity
             </MenuItem>
-            <MenuItem value={sort} onClick={() => handleSort("from_warehouse_id")}>
+            <MenuItem
+              value={sort}
+              onClick={() => handleSort("from_warehouse_id")}
+            >
               From Warehouse
             </MenuItem>
-            <MenuItem value={sort} onClick={() => handleSort("to_warehouse_id")}>
+            <MenuItem
+              value={sort}
+              onClick={() => handleSort("to_warehouse_id")}
+            >
               To Warehouse
             </MenuItem>
             <MenuItem value={sort} onClick={() => handleSort("createdAt")}>
@@ -232,7 +252,13 @@ function ManageMutations() {
           </MenuList>
         </Menu>
 
-        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<FaPlus />} onClick={handleOpenModal}>
+        <Button
+          colorScheme="teal"
+          size="sm"
+          ml="auto"
+          leftIcon={<FaPlus />}
+          onClick={handleOpenModal}
+        >
           Request Stock Mutation
         </Button>
         <RequestMutationModal isOpen={isModalOpen} onClose={handleCloseModal} />
@@ -274,25 +300,78 @@ function ManageMutations() {
                   {mutation.mutation_type === "Pending" && (
                     <div key={mutation.id}>
                       <Box position="relative">
-                        <IconButton icon={<FaCheck />} name="check" size="sm" color="green.500" _hover={{ color: "green.600" }} onClick={() => handleIconClick(mutation.id, "ACCEPT", index)} />
-                        <IconButton icon={<FaTimes />} name="close" size="sm" color="red.500" _hover={{ color: "red.600" }} onClick={() => handleIconClick(mutation.id, "REJECT", index)} />
+                        <IconButton
+                          icon={<FaCheck />}
+                          name="check"
+                          size="sm"
+                          color="green.500"
+                          _hover={{ color: "green.600" }}
+                          onClick={() =>
+                            handleIconClick(mutation.id, "ACCEPT", index)
+                          }
+                        />
+                        <IconButton
+                          icon={<FaTimes />}
+                          name="close"
+                          size="sm"
+                          color="red.500"
+                          _hover={{ color: "red.600" }}
+                          onClick={() =>
+                            handleIconClick(mutation.id, "REJECT", index)
+                          }
+                        />
                       </Box>
                       <Box position="relative">
-                        <Popover isOpen={isPopoverOpen[index]} onClose={() => setIsPopoverOpen((prevState) => ({ ...prevState, [index]: false }))} placement="bottom-start" closeOnBlur={false}>
+                        <Popover
+                          isOpen={isPopoverOpen[index]}
+                          onClose={() =>
+                            setIsPopoverOpen((prevState) => ({
+                              ...prevState,
+                              [index]: false,
+                            }))
+                          }
+                          placement="bottom-start"
+                          closeOnBlur={false}
+                        >
                           <PopoverContent>
-                            <PopoverHeader fontWeight="bold">{selectedStatus === "ACCEPT" ? "Confirm Accept" : "Confirm Reject"}</PopoverHeader>
-                            <PopoverBody>Are you sure you want to {selectedStatus === "ACCEPT" ? "accept" : "reject"}?</PopoverBody>
+                            <PopoverHeader fontWeight="bold">
+                              {selectedStatus === "ACCEPT"
+                                ? "Confirm Accept"
+                                : "Confirm Reject"}
+                            </PopoverHeader>
+                            <PopoverBody>
+                              Are you sure you want to{" "}
+                              {selectedStatus === "ACCEPT"
+                                ? "accept"
+                                : "reject"}
+                              ?
+                            </PopoverBody>
                             <Flex justify="flex-end" mt={2}>
-                              <Button variant="ghost" onClick={handlePopoverClose}>
+                              <Button
+                                variant="ghost"
+                                onClick={handlePopoverClose}
+                              >
                                 Cancel
                               </Button>
-                              <Button colorScheme="teal" ml={3} onClick={handleDialogConfirm}>
+                              <Button
+                                colorScheme="teal"
+                                ml={3}
+                                onClick={handleDialogConfirm}
+                              >
                                 Confirm
                               </Button>
                             </Flex>
                           </PopoverContent>
                           <PopoverTrigger>
-                            <Box position="absolute" top="-10px" right="-10px" width="40px" height="40px" borderRadius="full" bg="transparent" />
+                            <Box
+                              position="absolute"
+                              top="-10px"
+                              right="-10px"
+                              width="40px"
+                              height="40px"
+                              borderRadius="full"
+                              bg="transparent"
+                            />
                           </PopoverTrigger>
                         </Popover>
                       </Box>
@@ -313,11 +392,21 @@ function ManageMutations() {
           pageCount={Math.min(10, pages)}
           onPageChange={changePage}
           containerClassName={"flex"}
-          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
-          disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
+          pageLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          previousLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          nextLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          activeLinkClassName={
+            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          }
+          disabledLinkClassName={
+            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+          }
         />
       </Flex>
     </div>

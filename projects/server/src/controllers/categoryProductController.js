@@ -51,8 +51,29 @@ module.exports = {
         limit: limit,
         order: [[sort, order]], // add order clause with the sort and order parameters
       });
+
+      const allResult = await product_categories.findAll({
+        where: {
+          is_deleted: 0,
+          [Op.or]: [
+            {
+              name: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              description: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+        order: [[sort, order]], // add order clause with the sort and order parameters
+      });
+
       res.json({
         result: result,
+        allResult: allResult,
         page: page,
         limit: limit,
         totalRows: totalRows,
