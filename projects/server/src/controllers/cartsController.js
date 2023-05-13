@@ -338,7 +338,7 @@ module.exports = {
       res.status(200).send({
         isError: false,
         message: "Get product quantity success",
-        data: productData.dataValues.quantity,
+        data: productData?.dataValues?.quantity || 0,
       });
     } catch (error) {
       res.status(404).send({
