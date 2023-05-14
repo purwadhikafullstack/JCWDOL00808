@@ -2,6 +2,7 @@
 require("dotenv").config();
 const db = require("../models/index");
 const WarehousesModel = db.warehouses;
+const AdminsModel = db.admins;
 const stocks = db.stocks;
 const stock_histories = db.stock_histories;
 const request = require("request");
@@ -217,8 +218,8 @@ module.exports = {
       } else {
         res.status(500).send({
           success: false,
-          message: "Warehouse not found."
-        })
+          message: "Warehouse not found.",
+        });
       }
 
       res.status(200).send({
@@ -239,9 +240,24 @@ module.exports = {
       let data = await WarehousesModel.findAll({
         where: { id },
       });
-      // console.log("data details: ", data);
 
-      res.status(200).send(data);
+      let idAdmin = data[0].dataValues.admins_id;
+
+      let adminAssigned = [];
+      if (idAdmin !== null) {
+      adminAssigned = await AdminsModel.findAll({
+        where: { id: idAdmin },
+      });
+      } else if (idAdmin == null){
+        adminAssigned.push({full_name: "This warehouse has no admin assigned yet"})
+      }
+
+      res.status(200).send({
+        success: true,
+        message: "Ok",
+        data,
+        adminAssigned,
+      });
     } catch (error) {
       console.log(error);
       return res.status(500).send({
