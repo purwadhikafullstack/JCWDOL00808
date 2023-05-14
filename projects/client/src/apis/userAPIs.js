@@ -26,8 +26,8 @@ export const isAuth = async () => {
 
 export const logout = (navigate, dispatch) => {
   dispatch(userLogout());
-  navigate("/");
-  window.location.reload();
+  navigate("/user/login");
+  // window.location.reload();
 };
 
 export const sessionExpired = () => {

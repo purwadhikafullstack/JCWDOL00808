@@ -48,7 +48,8 @@ const authSlice = createSlice({
       state.isSuccess = false;
       state.isLoading = false;
       state.isError = false;
-      localStorage.clear();
+      localStorage.removeItem("user_token");
+      localStorage.removeItem("user");
       setTimeout(() => {
         toast.success("Account logged out.");
       }, 500);

@@ -14,8 +14,10 @@ import {
 import axios from "axios";
 import { useFormik } from "formik";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { logout } from "../apis/userAPIs";
 import ChangePasswordConfirmation from "./ChangePasswordConfirmation";
 
 export default function ChangePassword(props) {
@@ -24,6 +26,7 @@ export default function ChangePassword(props) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const toast = useToast();
 
   const handleChangePassword = async (values) => {
@@ -45,8 +48,6 @@ export default function ChangePassword(props) {
         duration: 5000,
         isClosable: true,
       });
-      localStorage.removeItem("user_token");
-      setTimeout(() => navigate("/user/login", 5000));
     } catch (error) {
       setIsLoading(false);
       toast({
@@ -85,6 +86,7 @@ export default function ChangePassword(props) {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       handleChangePassword(values);
+      logout(navigate, dispatch);
     },
   });
 
