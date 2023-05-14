@@ -197,9 +197,7 @@ module.exports = {
         { where: { id: req.body.id } }
       );
 
-      res
-        .status(200)
-        .send({ success: true, message: "Warehouse data update success!" });
+      res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -209,16 +207,19 @@ module.exports = {
     }
   },
   deleteWarehouseData: async (req, res) => {
-    const t = await sequelize.transaction();
     try {
       let deletedWarehouse = await WarehousesModel.findAll({
         where: { id: req.query.id },
       });
 
-      let deleteWarehouse = await WarehousesModel.update(
-        { is_deleted: 1 },
-        { where: { id: req.query.id } }
-      );
+      if (deletedWarehouse.length !== 0) {
+        let deleteWarehouse = await WarehousesModel.update({ admins_id: null, is_deleted: 1 }, { where: { id: req.query.id } });
+      } else {
+        res.status(500).send({
+          success: false,
+          message: "Warehouse not found."
+        })
+      }
 
       res.status(200).send({
         success: true,
@@ -267,10 +268,7 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create(
-        { stock, products_id, warehouses_id: id },
-        { transaction: t }
-      );
+      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id: id }, { transaction: t });
       const updateHistories = await stock_histories.create(
         {
           stock_before: 0,
