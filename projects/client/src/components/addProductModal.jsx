@@ -32,14 +32,24 @@ import { useNavigate } from "react-router-dom";
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Product Name is required"),
   description: Yup.string().required("Product Description is required"),
-  price: Yup.number().min(0, "Price must be greater than or equal to 0").required("Price is required"),
-  weight: Yup.number().min(0, "Weight must be greater than or equal to 0").required("Weight must be filled"),
-  product_categories_id: Yup.number().min(1, "Please select a product category").required("Product Category is required"),
+  price: Yup.number()
+    .min(0, "Price must be greater than or equal to 0")
+    .required("Price is required"),
+  weight: Yup.number()
+    .min(0, "Weight must be greater than or equal to 0")
+    .required("Weight must be filled"),
+  product_categories_id: Yup.number()
+    .min(1, "Please select a product category")
+    .required("Product Category is required"),
   imageUrl: Yup.mixed()
     .test("fileType", "Invalid image format", (value) => {
       if (value && value.length) {
         const fileType = value[0].type;
-        return fileType === "image/png" || fileType === "image/jpg" || fileType === "image/jpeg";
+        return (
+          fileType === "image/png" ||
+          fileType === "image/jpg" ||
+          fileType === "image/jpeg"
+        );
       }
       return true;
     })
@@ -73,11 +83,15 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
       formData.append("product_categories_id", values.product_categories_id);
 
       try {
-        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/product/addproduct`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}/product/addproduct`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         setIsSubmitting(false);
         formik.resetForm();
         setImage("");
@@ -92,7 +106,7 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
       } catch (error) {
         setIsSubmitting(false);
         toast({
-          title: `${error.message}`,
+          title: `${error.response.data.message}`,
           status: "error",
           duration: 9000,
           isClosable: true,
@@ -106,7 +120,9 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
   }, []);
 
   const fetchCategories = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`);
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`
+    );
     setCategories(response.data.result);
   };
 
@@ -135,34 +151,77 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
               {/* <Text fontSize="xl" fontWeight="bold" mb="4">
                 Register Category
               </Text> */}
-              <form onSubmit={formik.handleSubmit} style={{ margin: "auto", width: "100%" }}>
-                <FormControl mb={2} mt="2" id="name" isInvalid={formik.touched.name && formik.errors.name}>
+              <form
+                onSubmit={formik.handleSubmit}
+                style={{ margin: "auto", width: "100%" }}
+              >
+                <FormControl
+                  mb={2}
+                  mt="2"
+                  id="name"
+                  isInvalid={formik.touched.name && formik.errors.name}
+                >
                   <FormLabel>Product Name</FormLabel>
-                  <Input type="text" placeholder="Input Product Name" {...formik.getFieldProps("name")} />
+                  <Input
+                    type="text"
+                    placeholder="Input Product Name"
+                    {...formik.getFieldProps("name")}
+                  />
                   <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl mb={2} id="product_categories_id" isInvalid={formik.touched.product_categories_id && formik.errors.product_categories_id}>
+                <FormControl
+                  mb={2}
+                  id="product_categories_id"
+                  isInvalid={
+                    formik.touched.product_categories_id &&
+                    formik.errors.product_categories_id
+                  }
+                >
                   <FormLabel>Product Category</FormLabel>
-                  <Select placeholder="Select Product Category" {...formik.getFieldProps("product_categories_id")}>
+                  <Select
+                    placeholder="Select Product Category"
+                    {...formik.getFieldProps("product_categories_id")}
+                  >
                     {categories.map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
                       </option>
                     ))}
                   </Select>
-                  <FormErrorMessage>{formik.errors.product_categories_id}</FormErrorMessage>
+                  <FormErrorMessage>
+                    {formik.errors.product_categories_id}
+                  </FormErrorMessage>
                 </FormControl>
 
-                <FormControl mb={2} id="description" isInvalid={formik.touched.description && formik.errors.description}>
+                <FormControl
+                  mb={2}
+                  id="description"
+                  isInvalid={
+                    formik.touched.description && formik.errors.description
+                  }
+                >
                   <FormLabel>Product Description</FormLabel>
-                  <Textarea placeholder="Input Product Description" {...formik.getFieldProps("description")} />
-                  <FormErrorMessage>{formik.errors.description}</FormErrorMessage>
+                  <Textarea
+                    placeholder="Input Product Description"
+                    {...formik.getFieldProps("description")}
+                  />
+                  <FormErrorMessage>
+                    {formik.errors.description}
+                  </FormErrorMessage>
                 </FormControl>
 
-                <FormControl mb={2} id="price" isInvalid={formik.touched.price && formik.errors.price}>
+                <FormControl
+                  mb={2}
+                  id="price"
+                  isInvalid={formik.touched.price && formik.errors.price}
+                >
                   <FormLabel>Price</FormLabel>
-                  <NumberInput min={0} {...formik.getFieldProps("price")} onChange={(value) => formik.setFieldValue("price", value)}>
+                  <NumberInput
+                    min={0}
+                    {...formik.getFieldProps("price")}
+                    onChange={(value) => formik.setFieldValue("price", value)}
+                  >
                     <NumberInputField />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -172,9 +231,17 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
                   <FormErrorMessage>{formik.errors.price}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl mb={2} id="weight" isInvalid={formik.touched.weight && formik.errors.weight}>
+                <FormControl
+                  mb={2}
+                  id="weight"
+                  isInvalid={formik.touched.weight && formik.errors.weight}
+                >
                   <FormLabel>Weight (in gram)</FormLabel>
-                  <NumberInput min={0} {...formik.getFieldProps("weight")} onChange={(value) => formik.setFieldValue("weight", value)}>
+                  <NumberInput
+                    min={0}
+                    {...formik.getFieldProps("weight")}
+                    onChange={(value) => formik.setFieldValue("weight", value)}
+                  >
                     <NumberInputField />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -184,15 +251,25 @@ const AddProductModal = ({ isOpen, onClose, onProductUpdate }) => {
                   <FormErrorMessage>{formik.errors.weight}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl mb={2} id="imageUrl" isInvalid={formik.touched.imageUrl && formik.errors.imageUrl}>
+                <FormControl
+                  mb={2}
+                  id="imageUrl"
+                  isInvalid={formik.touched.imageUrl && formik.errors.imageUrl}
+                >
                   <FormLabel>Image Product</FormLabel>
                   <Flex>
                     <Box w={16} h={16} mr={4}>
                       {image && <Image src={image} alt="Produk" />}
                     </Box>
                     <Box>
-                      <Input type="file" accept="image/*" onChange={handleImageChange} />
-                      <FormErrorMessage>{formik.errors.imageUrl}</FormErrorMessage>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                      <FormErrorMessage>
+                        {formik.errors.imageUrl}
+                      </FormErrorMessage>
                     </Box>
                   </Flex>
                 </FormControl>

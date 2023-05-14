@@ -55,15 +55,18 @@ const ManageAdmin = () => {
 
   useEffect(() => {
     getUsers();
-  }, [page, keyword, sort, order, roleAdmin]);
+  }, [page, keyword, sort, order, roleAdmin, selectedAdminId]);
 
   const getUsers = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/admin/getAdmin?search_query=${keyword}&page=${page}&limit=${limit}&role_admin=${roleAdmin}`, {
-      params: {
-        sort,
-        order,
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/admin/getAdmin?search_query=${keyword}&page=${page}&limit=${limit}&role_admin=${roleAdmin}`,
+      {
+        params: {
+          sort,
+          order,
+        },
+      }
+    );
     setUsers(response.data.result);
     setPage(response.data.page);
     setPages(response.data.totalPage);
@@ -76,7 +79,9 @@ const ManageAdmin = () => {
 
   const deleteAdmin = async (id) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/admin/deleteAdmin/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/deleteAdmin/${id}`
+      );
       getUsers();
       toast({
         title: `Admin is deleted`,
@@ -135,6 +140,7 @@ const ManageAdmin = () => {
   };
 
   const handleModalClose = () => {
+    setSelectedAdminId(null);
     setIsFirstModalOpen(false);
     setIsSecondModalOpen(false);
   };
@@ -167,7 +173,14 @@ const ManageAdmin = () => {
 
       <form onSubmit={searchData}>
         <Flex mt="2" size="sm">
-          <Input type="text" placeholder="Search" mr={2} width="30%" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Input
+            type="text"
+            placeholder="Search"
+            mr={2}
+            width="30%"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <Button colorScheme="blue" type="submit">
             Search
           </Button>
@@ -216,24 +229,46 @@ const ManageAdmin = () => {
         <Text fontWeight="bold">Role Admin :</Text>
         <Menu>
           <MenuButton ml={2} variant="ghost">
-            {roleAdmin === 1 ? "Admin" : roleAdmin === 2 ? "Admin Warehouse" : "All"}
+            {roleAdmin === 1
+              ? "Admin"
+              : roleAdmin === 2
+              ? "Admin Warehouse"
+              : "All"}
           </MenuButton>
 
           <MenuList>
             <MenuItem onClick={() => handleRoleAdmin("")}>All</MenuItem>
             <MenuItem onClick={() => handleRoleAdmin(1)}>Admin</MenuItem>
-            <MenuItem onClick={() => handleRoleAdmin(2)}>Admin Warehouse</MenuItem>
+            <MenuItem onClick={() => handleRoleAdmin(2)}>
+              Admin Warehouse
+            </MenuItem>
           </MenuList>
         </Menu>
 
-        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />} onClick={handleFirstModalOpen}>
+        <Button
+          colorScheme="teal"
+          size="sm"
+          ml="auto"
+          leftIcon={<Icon as={FaPlus} />}
+          onClick={handleFirstModalOpen}
+        >
           Add Admin
         </Button>
-        <RegisterAdminModal isOpen={isFirstModalOpen} onClose={handleModalClose} onAdminPatch={handleAdminUpdate} />
+        <RegisterAdminModal
+          isOpen={isFirstModalOpen}
+          onClose={handleModalClose}
+          onAdminPatch={handleAdminUpdate}
+        />
       </Flex>
 
       {/* tabel list Admin */}
-      <Table variant="striped" size="sm" mt="2" textAlign="center" border="1px solid gray">
+      <Table
+        variant="striped"
+        size="sm"
+        mt="2"
+        textAlign="center"
+        border="1px solid gray"
+      >
         <TableCaption mb="2">
           Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
         </TableCaption>
@@ -260,9 +295,15 @@ const ManageAdmin = () => {
               <Td fontSize="sm">{user.email}</Td>
               <Td fontSize="sm">{user.phone_number}</Td>
               <Td fontSize="sm">
-                <img src={`${process.env.REACT_APP_API_BASE_URL}/${user.profile_picture}`} alt="Admin" width="50" />
+                <img
+                  src={`${process.env.REACT_APP_API_BASE_URL}/${user.profile_picture}`}
+                  alt="Admin"
+                  width="50"
+                />
               </Td>
-              <Td fontSize="sm">{user.role == 1 ? "Admin" : "Admin Warehouse"}</Td>
+              <Td fontSize="sm">
+                {user.role == 1 ? "Admin" : "Admin Warehouse"}
+              </Td>
               <Td>
                 <Flex justifyContent="space-between">
                   {/* button patch admin */}
@@ -286,7 +327,10 @@ const ManageAdmin = () => {
                     </button>
                   )}
                   {/* button delete admin */}
-                  <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onMouseDown={() => openDeleteDialog(user.id)}>
+                  <button
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    onMouseDown={() => openDeleteDialog(user.id)}
+                  >
                     Delete
                   </button>
                 </Flex>
@@ -297,32 +341,60 @@ const ManageAdmin = () => {
       </Table>
 
       {/* Modal Patch Admin */}
-      <PatchAdminModal adminId={selectedAdminId} isOpen={isSecondModalOpen} onClose={handleModalClose} onAdminPatch={handleAdminUpdate} />
+      <PatchAdminModal
+        adminId={selectedAdminId}
+        isOpen={isSecondModalOpen}
+        onClose={handleModalClose}
+        onAdminPatch={handleAdminUpdate}
+      />
       {/* Batas Modal Patch Admin */}
 
-      <nav class="flex items-center justify-center mt-4 mb-10" key={rows} role="navigation" aria-label="pagination">
+      <nav
+        class="flex items-center justify-center mt-4 mb-10"
+        key={rows}
+        role="navigation"
+        aria-label="pagination"
+      >
         <ReactPaginate
           previousLabel={"< Prev"}
           nextLabel={"Next >"}
           pageCount={Math.min(10, pages)}
           onPageChange={changePage}
           containerClassName={"flex"}
-          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
-          disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
+          pageLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          previousLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          nextLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          activeLinkClassName={
+            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          }
+          disabledLinkClassName={
+            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+          }
         />
       </nav>
 
       {/* Modal to dialog alert delete Admin */}
-      <AlertDialog isOpen={isDeleteDialogOpen} onClose={closeDeleteDialog} leastDestructiveRef={cancelRef} motionPreset="slideInBottom">
+      <AlertDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={closeDeleteDialog}
+        leastDestructiveRef={cancelRef}
+        motionPreset="slideInBottom"
+      >
         <AlertDialogOverlay />
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             Delete Admin
           </AlertDialogHeader>
-          <AlertDialogBody>Are you sure you want to delete this admin? This action cannot be undone.</AlertDialogBody>
+          <AlertDialogBody>
+            Are you sure you want to delete this admin? This action cannot be
+            undone.
+          </AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={closeDeleteDialog}>
               Cancel
