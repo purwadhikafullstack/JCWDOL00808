@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DeleteProductAlert from "../../components/DeleteProductAlert";
 import ScrollToTopButton from "../../components/ScrollToTopButton";
 import {
@@ -56,7 +56,7 @@ export default function Cart() {
   const handleCheckout = () => {
     let hasOutOfStockProduct = false;
     for (const item of carts) {
-      if (item.product.availableStock === "0") {
+      if (item.product.availableStock <= "0") {
         hasOutOfStockProduct = true;
         break;
       }
@@ -132,7 +132,7 @@ export default function Cart() {
                             ).toLocaleString("ID")}{" "}
                             grams
                           </p>
-                          {cart.product.availableStock !== "0" ? (
+                          {cart.product.availableStock > "0" ? (
                             <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
                               Stocks: {cart.product.availableStock} Pcs
                             </p>
