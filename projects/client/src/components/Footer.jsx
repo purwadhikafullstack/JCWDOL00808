@@ -55,7 +55,11 @@ export default function Footer() {
                 )}
               </li>
               <li>
-                <Link to="/admin/login" className="hover:underline">
+                <Link
+                  to="/admin/login"
+                  target="blank"
+                  className="hover:underline"
+                >
                   Login as admin
                 </Link>
               </li>

@@ -153,11 +153,11 @@ export default function ProductDetails() {
               variant="buttonBlack"
               onClick={() => handleAddToCart(product.id, quantity)}
               isDisabled={
-                !profile?.is_verified || product.availableStock === "0"
+                !profile?.is_verified || product.availableStock <= "0"
               }
               width="100%"
             >
-              {product.availableStock !== "0" ? "Add to cart" : "Out of stock"}
+              {product.availableStock > "0" ? "Add to cart" : "Out of stock"}
             </Button>
             <Text>Available products: {product.availableStock} Pcs</Text>
           </VStack>
