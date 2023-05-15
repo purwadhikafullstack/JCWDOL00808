@@ -2,7 +2,6 @@ const db = require("../models/index");
 const StockHistoriesModel = db.stock_histories;
 const ProductsModel = db.products;
 const WarehousesModel = db.warehouses;
-const StocksModel = db.stocks;
 const { Op, QueryTypes } = require("sequelize");
 const sequelize = require("../models/index");
 
@@ -214,10 +213,11 @@ module.exports = {
       let historyDetails = await StockHistoriesModel.findAndCountAll({
         limit,
         offset,
-        include: {
-          model: WarehousesModel,
-          as: "warehouse",
-        },
+        include: 
+          {
+            model: WarehousesModel,
+            as: "warehouse",
+          },
         where: whereQuery,
       });
 
@@ -252,6 +252,14 @@ module.exports = {
 
         historyDetails.rows[i].dataValues.stockIn = stockIn;
         historyDetails.rows[i].dataValues.stockOut = stockOut;
+
+      //   // add from_warehouse_id dan to_warehouse_id
+      //   const stockMutation = historyDetails.rows[i].stockMutation;
+      //   const fromWarehouseId = stockMutation ? stockMutation.from_warehouse_id : null;
+      //   const toWarehouseId = stockMutation ? stockMutation.to_warehouse_id : null;
+
+      //   historyDetails.rows[i].dataValues.fromWarehouseId = fromWarehouseId;
+      //   historyDetails.rows[i].dataValues.toWarehouseId = toWarehouseId;
       }
 
       // filter history details by admin's input

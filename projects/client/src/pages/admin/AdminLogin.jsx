@@ -2,9 +2,7 @@ import { Link, Input, InputGroup, InputRightElement, Box, Spacer, Button, Text, 
 import React from "react";
 import { useState } from "react";
 import Axios from "axios";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginAction } from "../../actions/adminsAction";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
@@ -12,7 +10,6 @@ const AdminLogin = (props) => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const toast = useToast();
@@ -24,7 +21,6 @@ const AdminLogin = (props) => {
     })
       .then((response) => {
         if (response.data.success) {
-          dispatch(loginAction(response.data));
 
           let a = JSON.stringify(response?.data?.data);
           let b = JSON.parse(a);
