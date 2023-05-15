@@ -103,11 +103,6 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
                   {...formik.getFieldProps("password")}
                   placeholder="Input new password"
                 />
-                <Input
-                  type="password"
-                  {...formik.getFieldProps("password")}
-                  placeholder="Input new password"
-                />
                 <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
               </FormControl>
 
@@ -120,14 +115,6 @@ const ChangePasswordModal = ({ isOpen, onClose, adminId }) => {
                 }
               >
                 <FormLabel>Confirm New Password</FormLabel>
-                <Input
-                  type="password"
-                  {...formik.getFieldProps("confirm_new_password")}
-                  placeholder="Confirm new password"
-                />
-                <FormErrorMessage>
-                  {formik.errors.confirm_new_password}
-                </FormErrorMessage>
                 <Input
                   type="password"
                   {...formik.getFieldProps("confirm_new_password")}

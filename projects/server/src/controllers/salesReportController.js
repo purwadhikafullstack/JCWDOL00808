@@ -130,6 +130,9 @@ module.exports = {
           warehouses_id: {
             [Op.in]: warehouseIdArray,
           },
+          status: {
+            [Op.or]: ["On process", "Shipped", "Order confirmed"],
+          },
         };
       }
 
