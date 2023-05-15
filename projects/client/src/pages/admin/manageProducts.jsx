@@ -1,5 +1,30 @@
-import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  IconButton,
+  Flex,
+  Box,
+  Input,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Icon,
+  Text,
+  TableCaption,
+  useToast,
+} from "@chakra-ui/react";
+import {
+  EditIcon,
+  DeleteIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
@@ -32,12 +57,15 @@ function ManageProducts() {
   }, [page, keyword, sort, order, selectedCategoryId]);
 
   const getProducts = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/listproduct?search_query=${keyword}&page=${page}&limit=${limit}`, {
-      params: {
-        sort,
-        order,
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/product/listproduct?search_query=${keyword}&page=${page}&limit=${limit}`,
+      {
+        params: {
+          sort,
+          order,
+        },
+      }
+    );
     setProducts(response.data.result);
     setPage(response.data.page);
     setPages(response.data.totalPage);
@@ -47,7 +75,9 @@ function ManageProducts() {
 
   const deleteProducts = async (id) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/product/deleteproduct/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/product/deleteproduct/${id}`
+      );
       getProducts();
       toast({
         title: `Product success deleted`,
@@ -67,7 +97,9 @@ function ManageProducts() {
 
   const fetchData = async () => {
     // Fetch the product data here, and update the productData state.
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/productId/${selectedCategoryId}`);
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/product/productId/${selectedCategoryId}`
+    );
     setProductData(response.data);
   };
 
@@ -75,11 +107,13 @@ function ManageProducts() {
     setIsFirstModalOpen(true);
   };
 
-  const handleSecondModalOpen = () => {
+  const handleSecondModalOpen = (categoryId) => {
+    setSelectedCategoryId(categoryId);
     setIsSecondModalOpen(true);
   };
 
   const handleModalClose = () => {
+    setSelectedCategoryId(null);
     setIsFirstModalOpen(false);
     setIsSecondModalOpen(false);
   };
@@ -155,7 +189,14 @@ function ManageProducts() {
 
       <form onSubmit={searchData}>
         <Flex mt="2" size="sm">
-          <Input type="text" placeholder="Search" mr={2} width="30%" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Input
+            type="text"
+            placeholder="Search"
+            mr={2}
+            width="30%"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <Button colorScheme="blue" type="submit">
             Search
           </Button>
@@ -201,14 +242,31 @@ function ManageProducts() {
             </MenuItem>
           </MenuList>
         </Menu>
-        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />} isDisabled={isButtonDisabled} onClick={handleFirstModalOpen}>
+        <Button
+          colorScheme="teal"
+          size="sm"
+          ml="auto"
+          leftIcon={<Icon as={FaPlus} />}
+          isDisabled={isButtonDisabled}
+          onClick={handleFirstModalOpen}
+        >
           Add Product
         </Button>
-        <AddProductModal isOpen={isFirstModalOpen} onClose={handleModalClose} onProductUpdate={handleProductUpdate} />
+        <AddProductModal
+          isOpen={isFirstModalOpen}
+          onClose={handleModalClose}
+          onProductUpdate={handleProductUpdate}
+        />
       </Flex>
 
       {/* fitur table */}
-      <Table variant="striped" size="sm" mt="2" textAlign="center" border="1px solid gray">
+      <Table
+        variant="striped"
+        size="sm"
+        mt="2"
+        textAlign="center"
+        border="1px solid gray"
+      >
         <TableCaption mb="2">
           Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
         </TableCaption>
@@ -232,11 +290,17 @@ function ManageProducts() {
               <Td fontSize="sm" fontWeight="medium">
                 {product.name}
               </Td>
-              <Td fontSize="sm">{truncateDescription(product.description, 35)}</Td>
+              <Td fontSize="sm">
+                {truncateDescription(product.description, 35)}
+              </Td>
               <Td fontSize="sm">{formatRupiah(product.price)}</Td>
               <Td fontSize="sm">{formatWeight(product.weight)}</Td>
               <Td fontSize="sm">
-                <img src={`${process.env.REACT_APP_API_BASE_URL}/${product.imageUrl}`} alt="product" width="50" />
+                <img
+                  src={`${process.env.REACT_APP_API_BASE_URL}/${product.imageUrl}`}
+                  alt="product"
+                  width="50"
+                />
               </Td>
               <Td>
                 <Box display="flex">
@@ -250,19 +314,28 @@ function ManageProducts() {
                     _hover={{ bg: "green.700" }}
                     isDisabled={isButtonDisabled}
                     onClick={() => {
-                      handleSecondModalOpen(true);
-                      setSelectedCategoryId(product.id);
+                      handleSecondModalOpen(product.id);
+                      // setSelectedCategoryId(product.id);
                     }}
                   />
 
-                  <DeleteConfirmation onDelete={() => deleteProducts(product.id)} isButtonDisabled={isButtonDisabled} />
+                  <DeleteConfirmation
+                    onDelete={() => deleteProducts(product.id)}
+                    isButtonDisabled={isButtonDisabled}
+                  />
                 </Box>
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-      <PatchProductModal categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} onProductUpdate={handleProductUpdate} productData={productData} />
+      <PatchProductModal
+        categoryId={selectedCategoryId}
+        isOpen={isSecondModalOpen}
+        onClose={handleModalClose}
+        onProductUpdate={handleProductUpdate}
+        productData={productData}
+      />
       {/* fitur paginate */}
       <Flex alignItems="center" justifyContent="center">
         <ReactPaginate
@@ -271,11 +344,21 @@ function ManageProducts() {
           pageCount={Math.min(10, pages)}
           onPageChange={changePage}
           containerClassName={"flex"}
-          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
-          disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
+          pageLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          previousLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          nextLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          activeLinkClassName={
+            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          }
+          disabledLinkClassName={
+            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+          }
         />
       </Flex>
     </div>
