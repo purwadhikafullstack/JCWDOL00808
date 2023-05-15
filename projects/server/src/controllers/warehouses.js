@@ -364,6 +364,14 @@ module.exports = {
       const { id } = req.params;
       const { stock, description } = req.body;
 
+      if (stock < 0) {
+        return res.status(400).send({
+          isError: true,
+          message: "Stock value cannot be negative",
+          data: null,
+        });
+      }
+
       const fromStock = await stocks.findByPk(id);
 
       if (!fromStock) {

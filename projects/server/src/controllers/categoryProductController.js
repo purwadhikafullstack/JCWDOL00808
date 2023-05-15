@@ -13,7 +13,7 @@ module.exports = {
   getProductCategory: async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 0;
-      const limit = parseInt(req.query.limit) || 10;
+      const limit = parseInt(req.query.limit) || 1000;
       const search = req.query.search_query || "";
       const offset = limit * page;
       const sort = req.query.sort || "name"; //default sorting by name
