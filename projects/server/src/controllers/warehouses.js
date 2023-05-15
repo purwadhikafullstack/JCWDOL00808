@@ -198,7 +198,9 @@ module.exports = {
         { where: { id: req.body.id } }
       );
 
-      res.status(200).send({ success: true, message: "Warehouse data update success!" });
+      res
+        .status(200)
+        .send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -214,7 +216,10 @@ module.exports = {
       });
 
       if (deletedWarehouse.length !== 0) {
-        let deleteWarehouse = await WarehousesModel.update({ admins_id: null, is_deleted: 1 }, { where: { id: req.query.id } });
+        let deleteWarehouse = await WarehousesModel.update(
+          { admins_id: null, is_deleted: 1 },
+          { where: { id: req.query.id } }
+        );
       } else {
         res.status(500).send({
           success: false,
@@ -245,11 +250,13 @@ module.exports = {
 
       let adminAssigned = [];
       if (idAdmin !== null) {
-      adminAssigned = await AdminsModel.findAll({
-        where: { id: idAdmin },
-      });
-      } else if (idAdmin == null){
-        adminAssigned.push({full_name: "This warehouse has no admin assigned yet"})
+        adminAssigned = await AdminsModel.findAll({
+          where: { id: idAdmin },
+        });
+      } else if (idAdmin == null) {
+        adminAssigned.push({
+          full_name: "This warehouse has no admin assigned yet",
+        });
       }
 
       res.status(200).send({
@@ -284,7 +291,10 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id: id }, { transaction: t });
+      const addedProductToWarehouse = await stocks.create(
+        { stock, products_id, warehouses_id: id },
+        { transaction: t }
+      );
       const updateHistories = await stock_histories.create(
         {
           stock_before: 0,
@@ -378,13 +388,13 @@ module.exports = {
       const { id } = req.params;
       const { stock, description } = req.body;
 
-      if (stock < 0) {
-        return res.status(400).send({
-          isError: true,
-          message: "Stock value cannot be negative",
-          data: null,
-        });
-      }
+      // if (stock < 0) {
+      //   return res.status(400).send({
+      //     isError: true,
+      //     message: "Stock value cannot be negative",
+      //     data: null,
+      //   });
+      // }
 
       const fromStock = await stocks.findByPk(id);
 

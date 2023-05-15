@@ -68,7 +68,12 @@ module.exports = {
         for (j = 0; j < product_stock.length; j++) {
           stock += product_stock[j].stock;
         }
-        if (quantity <= stock) {
+        if (quantity > stock - booked_stock) {
+          res.status(404).send({
+            success: true,
+            message: "Product in your cart exceeds available stocks",
+          });
+        } else {
           validationChecker.push(i);
           booked_stock += quantity;
           let updateBookedStock = await products.update(
