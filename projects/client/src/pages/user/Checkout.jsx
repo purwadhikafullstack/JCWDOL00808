@@ -423,14 +423,16 @@ const Checkout = () => {
               <Select
                 fontFamily="Roboto"
                 placeholder="Select address"
-                onChange={handleAddressSelect}>
+                onChange={handleAddressSelect}
+              >
                 {addresses.map((address) => (
                   <option
                     key={address.id}
                     value={JSON.stringify(
                       // {[address.address, address.recipient, address.phone_number]}>
                       address
-                    )}>
+                    )}
+                  >
                     {address.recipient}
                   </option>
                 ))}
@@ -442,7 +444,8 @@ const Checkout = () => {
                   variant="buttonBlack"
                   colorScheme="blue"
                   mr={3}
-                  onClick={onNewAddressOpen}>
+                  onClick={onNewAddressOpen}
+                >
                   Add New Address
                 </Button>
               </Link>
@@ -519,7 +522,8 @@ const Checkout = () => {
                     return (
                       <div
                         key={index}
-                        className="justify-between border border-gray-200 mb-6 rounded-none bg-white p-6 shadow-md sm:flex sm:justify-start">
+                        className="justify-between border border-gray-200 mb-6 rounded-none bg-white p-6 shadow-md sm:flex sm:justify-start"
+                      >
                         <img
                           onClick={() =>
                             navigate(`/product-details/${cart.product.id}`)
@@ -534,7 +538,8 @@ const Checkout = () => {
                               onClick={() =>
                                 navigate(`/product-details/${cart.product.id}`)
                               }
-                              className="text-lg font-[Oswald] text-gray-900">
+                              className="text-lg font-[Oswald] text-gray-900"
+                            >
                               {cart.product?.name}
                             </h2>
                             <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
@@ -578,7 +583,8 @@ const Checkout = () => {
                     <Button
                       variant="buttonBlack"
                       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                      onClick={() => navigate("/")}>
+                      onClick={() => navigate("/")}
+                    >
                       Go Shopping
                     </Button>
                   </div>
@@ -587,12 +593,14 @@ const Checkout = () => {
               <div
                 className={`sticky top-[5.7rem] mt-6 h-full rounded-none border bg-white p-6 shadow-md md:mt-0 md:w-1/3 ${
                   carts.length === 0 ? "hidden" : null
-                }`}>
+                }`}
+              >
                 <Flex justifyContent="center" alignItems="center">
                   <Heading
                     size="md"
                     className="text-center"
-                    fontFamily="Oswald">
+                    fontFamily="Oswald"
+                  >
                     Shipping Address
                   </Heading>
                 </Flex>
@@ -603,7 +611,8 @@ const Checkout = () => {
                       <Text
                         justifyContent="space-between"
                         fontFamily="Oswald"
-                        fontSize="lg">
+                        fontSize="lg"
+                      >
                         {(selectedAddress || primaryAddress)?.recipient}
                       </Text>
                       <Text fontFamily="Roboto">
@@ -624,12 +633,14 @@ const Checkout = () => {
                             isInvalid={
                               formik.errors.user_addresses_id &&
                               formik.touched.user_addresses_id
-                            }>
+                            }
+                          >
                             <Button
                               variant="buttonBlack"
                               onClick={onOpen}
                               colorScheme="blue"
-                              mr={4}>
+                              mr={4}
+                            >
                               Change Address
                             </Button>
                             <FormErrorMessage>
@@ -643,16 +654,18 @@ const Checkout = () => {
                             isInvalid={
                               formik.errors.shipping_method &&
                               formik.touched.shipping_method
-                            }>
+                            }
+                          >
                             <Select
                               mt={2}
                               fontFamily="Roboto"
                               id="courier"
-                              name="courirer"
+                              name="courier"
                               type="text"
                               placeholder="Select Courier"
                               ref={courierRef}
-                              onChange={handleCourierSelect}>
+                              onChange={handleCourierSelect}
+                            >
                               {[
                                 { value: "jne", label: "JNE" },
                                 { value: "tiki", label: "Tiki" },
@@ -681,7 +694,8 @@ const Checkout = () => {
                                   isInvalid={
                                     formik.errors.shipping_method &&
                                     formik.touched.shipping_method
-                                  }>
+                                  }
+                                >
                                   <Select
                                     mt={2}
                                     fontFamily="Roboto"
@@ -690,12 +704,14 @@ const Checkout = () => {
                                     type="text"
                                     placeholder="Select Cost"
                                     onChange={handleCostSelect}
-                                    ref={costRef}>
+                                    ref={costRef}
+                                  >
                                     {shippingCosts.map(
                                       (shippingCost, index) => (
                                         <option
                                           key={index}
-                                          value={JSON.stringify(shippingCost)}>
+                                          value={JSON.stringify(shippingCost)}
+                                        >
                                           {shippingCost.description} -{" "}
                                           {shippingCost.cost[0].value.toLocaleString(
                                             "id-ID",
@@ -734,7 +750,8 @@ const Checkout = () => {
                           onClick={addNewAddress}
                           colorScheme="teal"
                           mb={4}
-                          mt={8}>
+                          mt={8}
+                        >
                           Add New Address
                         </Button>
                       </Link>
@@ -796,7 +813,8 @@ const Checkout = () => {
                     type="submit"
                     variant="buttonBlack"
                     width="100%"
-                    isLoading={formik.isSubmitting}>
+                    isLoading={formik.isSubmitting}
+                  >
                     Proceed to Payment
                   </Button>
                 </Box>

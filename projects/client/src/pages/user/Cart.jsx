@@ -12,7 +12,7 @@ import {
   getTotalWeightInCart,
   updateCarts,
 } from "../../reducers/cartSlice";
-import { Button, Tooltip } from "@chakra-ui/react";
+import { Button, Tooltip, useToast } from "@chakra-ui/react";
 
 export default function Cart() {
   const dispatch = useDispatch();
@@ -22,6 +22,7 @@ export default function Cart() {
   const totalWeightInCart = useSelector(getTotalWeightInCart);
   const [defaultValue, setDefaultValue] = useState({});
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleDeleteProduct = (id) => {
     dispatch(deleteProduct(id));
@@ -52,6 +53,28 @@ export default function Cart() {
     );
   };
 
+  const handleCheckout = () => {
+    let hasOutOfStockProduct = false;
+    for (const item of carts) {
+      if (item.product.availableStock === "0") {
+        hasOutOfStockProduct = true;
+        break;
+      }
+    }
+
+    if (hasOutOfStockProduct) {
+      toast({
+        title: "One of your products is out of stock.",
+        description: "Please remove that product to continue.",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      navigate("/user/checkout");
+    }
+  };
+
   useEffect(() => {
     dispatch(getCarts());
   }, [navigate, dispatch]);
@@ -78,7 +101,11 @@ export default function Cart() {
                   return (
                     <div
                       key={index}
-                      className="justify-between border border-gray-200 mb-6 rounded-none bg-white p-6 shadow-md sm:flex sm:justify-start"
+                      className={`justify-between border border-gray-200 mb-6 rounded-none ${
+                        cart.product.availableStock !== "0"
+                          ? "bg-white"
+                          : "bg-gray-100"
+                      } p-6 shadow-md sm:flex sm:justify-start`}
                     >
                       <img
                         onClick={() =>
@@ -105,9 +132,15 @@ export default function Cart() {
                             ).toLocaleString("ID")}{" "}
                             grams
                           </p>
-                          <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
-                            Stocks: {cart.product.availableStock} Pcs
-                          </p>
+                          {cart.product.availableStock !== "0" ? (
+                            <p className="mt-1 text-xs text-gray-700 text-left font-[Roboto]">
+                              Stocks: {cart.product.availableStock} Pcs
+                            </p>
+                          ) : (
+                            <p className="mt-1 text-xs text-red-500 text-left font-[Roboto] font-bold">
+                              Out of stock
+                            </p>
+                          )}
                         </div>
                         <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
                           <div className="flex items-center justify-end border-gray-100 font-[Roboto] font-bold">
@@ -231,30 +264,31 @@ export default function Cart() {
                 </div>
               </div>
 
-              <Link to="/user/checkout">
-                {totalWeightInCart >= 30000 ? (
-                  <Tooltip
-                    hasArrow
-                    label="Total weight should be less than 30 Kg"
-                    bg="red.600"
-                  >
-                    <Button
-                      isDisabled="true"
-                      variant="buttonBlack"
-                      className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600"
-                    >
-                      Checkout
-                    </Button>
-                  </Tooltip>
-                ) : (
+              {/* <Link to="/user/checkout"> */}
+              {totalWeightInCart >= 30000 ? (
+                <Tooltip
+                  hasArrow
+                  label="Total weight should be less than 30 Kg"
+                  bg="red.600"
+                >
                   <Button
+                    isDisabled="true"
                     variant="buttonBlack"
                     className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600"
                   >
                     Checkout
                   </Button>
-                )}
-              </Link>
+                </Tooltip>
+              ) : (
+                <Button
+                  onClick={handleCheckout}
+                  variant="buttonBlack"
+                  className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600"
+                >
+                  Checkout
+                </Button>
+              )}
+              {/* </Link> */}
             </div>
           </div>
         </div>
