@@ -153,7 +153,7 @@ const OrderList = () => {
       return (
         <Box key={detail?.id}>
           <Flex>
-            <Image src={`${process.env.REACT_APP_API_BASE_URL}/detail?.imageUrl}`} boxSize="132px" />
+            <Image src={`${process.env.REACT_APP_API_BASE_URL}/${detail.imageUrl}`} boxSize="132px" />
             <>
               <Text>{detail?.product_name}</Text>
               <Text>

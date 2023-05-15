@@ -122,6 +122,7 @@ module.exports = {
       console.log(error);
     }
   },
+
   getOrderList: async (req, res) => {
     const page = parseInt(req.query.page) || 0;
     const limit = 5;
@@ -182,6 +183,7 @@ module.exports = {
       res.status(500).send(error);
     }
   },
+
   getDetails: async (req, res) => {
     try {
       let data = await order_details.findAll({
@@ -198,8 +200,6 @@ module.exports = {
         where: { id: req.query.orders_id },
         raw: true,
       });
-
-      // console.log("ordersData: ", ordersData);
 
       let status = ordersData[0].status;
       let date = ordersData[0].createdAt;
@@ -230,7 +230,6 @@ module.exports = {
   },
   cancelOrder: async (req, res) => {
     try {
-      // console.log("d", req.dataDecode.id);
       let users_id = req.dataDecode.id;
       let cek = [];
 

@@ -2,6 +2,7 @@
 require("dotenv").config();
 const db = require("../models/index");
 const WarehousesModel = db.warehouses;
+const AdminsModel = db.admins;
 const stocks = db.stocks;
 const stock_histories = db.stock_histories;
 const request = require("request");
@@ -197,9 +198,7 @@ module.exports = {
         { where: { id: req.body.id } }
       );
 
-      res
-        .status(200)
-        .send({ success: true, message: "Warehouse data update success!" });
+      res.status(200).send({ success: true, message: "Warehouse data update success!" });
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -209,16 +208,19 @@ module.exports = {
     }
   },
   deleteWarehouseData: async (req, res) => {
-    const t = await sequelize.transaction();
     try {
       let deletedWarehouse = await WarehousesModel.findAll({
         where: { id: req.query.id },
       });
 
-      let deleteWarehouse = await WarehousesModel.update(
-        { is_deleted: 1 },
-        { where: { id: req.query.id } }
-      );
+      if (deletedWarehouse.length !== 0) {
+        let deleteWarehouse = await WarehousesModel.update({ admins_id: null, is_deleted: 1 }, { where: { id: req.query.id } });
+      } else {
+        res.status(500).send({
+          success: false,
+          message: "Warehouse not found.",
+        });
+      }
 
       res.status(200).send({
         success: true,
@@ -238,9 +240,24 @@ module.exports = {
       let data = await WarehousesModel.findAll({
         where: { id },
       });
-      // console.log("data details: ", data);
 
-      res.status(200).send(data);
+      let idAdmin = data[0].dataValues.admins_id;
+
+      let adminAssigned = [];
+      if (idAdmin !== null) {
+      adminAssigned = await AdminsModel.findAll({
+        where: { id: idAdmin },
+      });
+      } else if (idAdmin == null){
+        adminAssigned.push({full_name: "This warehouse has no admin assigned yet"})
+      }
+
+      res.status(200).send({
+        success: true,
+        message: "Ok",
+        data,
+        adminAssigned,
+      });
     } catch (error) {
       console.log(error);
       return res.status(500).send({
@@ -267,10 +284,7 @@ module.exports = {
         });
       }
 
-      const addedProductToWarehouse = await stocks.create(
-        { stock, products_id, warehouses_id: id },
-        { transaction: t }
-      );
+      const addedProductToWarehouse = await stocks.create({ stock, products_id, warehouses_id: id }, { transaction: t });
       const updateHistories = await stock_histories.create(
         {
           stock_before: 0,
