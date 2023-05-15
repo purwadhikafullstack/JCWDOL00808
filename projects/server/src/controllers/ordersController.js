@@ -339,6 +339,36 @@ module.exports = {
       });
     }
   },
+  cancelAndRefund: async (req, res) => {
+    try {
+      let orders_id = req.body.id;
+
+      let findToCancel = await order_details.findAll({
+        where: { orders_id },
+        raw: true,
+      });
+
+
+      // let products_id = findToCancel.products_id;
+
+      //     let findProducts = await products.findOne({
+      //       where: { id: products_id },
+      //       raw: true,
+      //     });
+
+      res.status(200).send({
+        success: true,
+        message: "Ok",
+        data: findToCancel
+      })
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        success: false,
+        message: ""
+      })
+    }
+  },
   uploadPaymentProof: async (req, res) => {
     try {
       const users_id = req.dataDecode.id;
