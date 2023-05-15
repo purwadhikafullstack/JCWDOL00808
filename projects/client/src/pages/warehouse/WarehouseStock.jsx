@@ -210,6 +210,7 @@ const WarehouseStock = () => {
     // const product = products.find((p) => p.id === id);
     // setSelectedProduct(product);
     // setSelectedProduct();
+    fetchWarehouseProducts();
     onAddStockClose();
   };
 
@@ -284,13 +285,15 @@ const WarehouseStock = () => {
     <>
       <Box width="100%" overflowX="auto">
         <HStack mb={4} mt={2} mr={4} justify="flex-end">
-          <Link to="/warehouse/list">
-            <IconButton
-              icon={<CloseIcon />}
-              aria-label="Back Button"
-              colorScheme="blue"
-            />
-          </Link>
+          {userRole !== "2" && (
+            <Link to="/warehouse/list">
+              <IconButton
+                icon={<CloseIcon />}
+                aria-label="Back Button"
+                colorScheme="blue"
+              />
+            </Link>
+          )}
         </HStack>
         <Heading>Stock List</Heading>
         <Text fontSize="xl" mb={10}>
@@ -406,9 +409,11 @@ const WarehouseStock = () => {
                   <NumberInput
                     min={0}
                     value={formikAdd.values.stock}
-                    onChange={(value) =>
-                      formikAdd.setFieldValue("stock", value)
-                    }>
+                    onChange={(value) => {
+                      if (value >= 0) {
+                        formikAdd.setFieldValue("stock", value);
+                      }
+                    }}>
                     <NumberInputField />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -454,9 +459,25 @@ const WarehouseStock = () => {
                   <FormLabel>Quantity Stock to Added</FormLabel>
                   <NumberInput
                     value={formikUpdate.values.stock}
-                    onChange={(value) =>
-                      formikUpdate.setFieldValue("stock", value)
-                    }>
+                    onChange={(value) => {
+                      // Get the current stock from the server
+                      const currentStock =
+                        products.find((product) => product.id === stockToUpdate)
+                          ?.stock || 0;
+
+                      // Check if the sum is less than zero
+                      if (currentStock + parseInt(value) < 0) {
+                        toast({
+                          title: "Stock cannot go below zero.",
+                          status: "error",
+                          duration: 3000,
+                          isClosable: true,
+                        });
+                        return;
+                      }
+
+                      formikUpdate.setFieldValue("stock", value);
+                    }}>
                     <NumberInputField />
                     <NumberInputStepper>
                       <NumberIncrementStepper />

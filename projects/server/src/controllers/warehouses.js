@@ -2,6 +2,7 @@
 require("dotenv").config();
 const db = require("../models/index");
 const WarehousesModel = db.warehouses;
+const AdminsModel = db.admins;
 const stocks = db.stocks;
 const stock_histories = db.stock_histories;
 const request = require("request");
@@ -209,16 +210,22 @@ module.exports = {
     }
   },
   deleteWarehouseData: async (req, res) => {
-    const t = await sequelize.transaction();
     try {
       let deletedWarehouse = await WarehousesModel.findAll({
         where: { id: req.query.id },
       });
 
-      let deleteWarehouse = await WarehousesModel.update(
-        { is_deleted: 1 },
-        { where: { id: req.query.id } }
-      );
+      if (deletedWarehouse.length !== 0) {
+        let deleteWarehouse = await WarehousesModel.update(
+          { admins_id: null, is_deleted: 1 },
+          { where: { id: req.query.id } }
+        );
+      } else {
+        res.status(500).send({
+          success: false,
+          message: "Warehouse not found.",
+        });
+      }
 
       res.status(200).send({
         success: true,
@@ -238,9 +245,26 @@ module.exports = {
       let data = await WarehousesModel.findAll({
         where: { id },
       });
-      // console.log("data details: ", data);
 
-      res.status(200).send(data);
+      let idAdmin = data[0].dataValues.admins_id;
+
+      let adminAssigned = [];
+      if (idAdmin !== null) {
+        adminAssigned = await AdminsModel.findAll({
+          where: { id: idAdmin },
+        });
+      } else if (idAdmin == null) {
+        adminAssigned.push({
+          full_name: "This warehouse has no admin assigned yet",
+        });
+      }
+
+      res.status(200).send({
+        success: true,
+        message: "Ok",
+        data,
+        adminAssigned,
+      });
     } catch (error) {
       console.log(error);
       return res.status(500).send({
@@ -363,6 +387,14 @@ module.exports = {
     try {
       const { id } = req.params;
       const { stock, description } = req.body;
+
+      // if (stock < 0) {
+      //   return res.status(400).send({
+      //     isError: true,
+      //     message: "Stock value cannot be negative",
+      //     data: null,
+      //   });
+      // }
 
       const fromStock = await stocks.findByPk(id);
 

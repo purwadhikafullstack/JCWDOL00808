@@ -59,6 +59,7 @@ const WarehouseDetails = (props) => {
   const [detailsProvince, setDetailsProvince] = useState("");
   const [detailsDistrict, setDetailsDistrict] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [adminAssigned, setAdminAssigned] = useState("")
 
   const toast = useToast();
   const {
@@ -82,17 +83,18 @@ const WarehouseDetails = (props) => {
     Axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getWarehouseDetails?id=${id}`)
       .then((response) => {
         setTimeout(() => {
-          setName(response.data[0].name);
-          setAddress(response.data[0].address);
-          setCity(response.data[0].city);
-          setProvince(response.data[0].province);
-          setDistrict(response.data[0].district);
+          setName(response.data.data[0].name);
+          setAddress(response.data.data[0].address);
+          setCity(response.data.data[0].city);
+          setProvince(response.data.data[0].province);
+          setDistrict(response.data.data[0].district);
+          setAdminAssigned(response.data.adminAssigned[0].full_name)
 
-          setDetailsName(response.data[0].name);
-          setDetailsAddress(response.data[0].address);
-          setDetailsCity(response.data[0].city);
-          setDetailsProvince(response.data[0].province);
-          setDetailsDistrict(response.data[0].district);
+          setDetailsName(response.data.data[0].name);
+          setDetailsAddress(response.data.data[0].address);
+          setDetailsCity(response.data.data[0].city);
+          setDetailsProvince(response.data.data[0].province);
+          setDetailsDistrict(response.data.data[0].district);
           setIsLoading(false);
         }, 1000);
       })
@@ -200,6 +202,7 @@ const WarehouseDetails = (props) => {
               />
               <Stack mt="6" spacing="3">
                 <Heading size="md">Warehouse name: {name}</Heading>
+                <Text size="sm">Admin: {adminAssigned}</Text>
                 <Text size="sm">Address: {address}</Text>
                 <Text color="blue.600" size="sm">
                   {city}, {province}

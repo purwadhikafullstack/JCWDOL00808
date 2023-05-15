@@ -422,8 +422,7 @@ function ListOrders() {
                     mr={2}
                     _hover={{ bg: "yellow.500" }}
                     colorScheme="yellow"
-                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}
-                  >
+                    onClick={() => fetchOrderDetailsAndOpenModal(orderData.id)}>
                     Order Details
                   </Button>
                 </Box>
@@ -462,8 +461,7 @@ function ListOrders() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        size="6xl"
-      >
+        size="6xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Payment Information</ModalHeader>
@@ -475,8 +473,7 @@ function ListOrders() {
               mt="8"
               maxHeight="70vh"
               overflowY="auto"
-              width="100%"
-            >
+              width="100%">
               <Text fontSize="2xl" fontWeight="bold" mb="4">
                 Order Confirmation Payment
               </Text>
@@ -592,16 +589,14 @@ function ListOrders() {
                     colorScheme="red"
                     onClick={() => {
                       onAlertOpen();
-                    }}
-                  >
+                    }}>
                     Cancel Order
                   </Button>
                 </Flex>
                 <AlertDialog
                   isOpen={isAlertOpen}
                   leastDestructiveRef={cancelRef}
-                  onClose={onAlertClose}
-                >
+                  onClose={onAlertClose}>
                   <AlertDialogOverlay>
                     <AlertDialogContent>
                       <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -624,8 +619,7 @@ function ListOrders() {
                             onAlertClose();
                             setIsModalOpen(false);
                           }}
-                          ml={3}
-                        >
+                          ml={3}>
                           Yes, cancel this order
                         </Button>
                       </AlertDialogFooter>
@@ -639,8 +633,7 @@ function ListOrders() {
                 <Button
                   colorScheme="green"
                   mr={3}
-                  onClick={openConfirmAcceptModal}
-                >
+                  onClick={openConfirmAcceptModal}>
                   Accept
                 </Button>
                 <Button colorScheme="red" onClick={openConfirmRejectModal}>
@@ -655,8 +648,7 @@ function ListOrders() {
       {/* Modal for reject Payment */}
       <Modal
         isOpen={isConfirmRejectModalOpen}
-        onClose={closeConfirmRejectModal}
-      >
+        onClose={closeConfirmRejectModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Reject Payment</ModalHeader>
@@ -668,8 +660,7 @@ function ListOrders() {
             <Button
               colorScheme="red"
               mr={3}
-              onClick={() => handleRejectPayment(allData.id)}
-            >
+              onClick={() => handleRejectPayment(allData.id)}>
               Reject
             </Button>
             <Button onClick={closeConfirmRejectModal}>Cancel</Button>
@@ -680,8 +671,7 @@ function ListOrders() {
       {/* Modal for Accepted Payment */}
       <Modal
         isOpen={isConfirmAcceptModalOpen}
-        onClose={closeConfirmAcceptModal}
-      >
+        onClose={closeConfirmAcceptModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Accept Payment</ModalHeader>
@@ -693,8 +683,7 @@ function ListOrders() {
             <Button
               colorScheme="teal"
               mr={3}
-              onClick={() => handleAcceptPayment(allData.id)}
-            >
+              onClick={() => handleAcceptPayment(allData.id)}>
               Accept
             </Button>
             <Button onClick={closeConfirmAcceptModal}>Cancel</Button>

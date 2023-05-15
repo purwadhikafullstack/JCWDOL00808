@@ -66,14 +66,14 @@ const StockHistory = () => {
           <Td>{value.description}</Td>
           <Td>
             <Flex>
-              <AiOutlineArrowUp style={{ marginTop: 1, marginRight: 10 }} />
-              {value.stockOut}
+              <AiOutlineArrowDown style={{ marginTop: 1, marginRight: 10 }} />
+              {value.stockIn}
             </Flex>
           </Td>
           <Td>
             <Flex>
-              <AiOutlineArrowDown style={{ marginTop: 1, marginRight: 10 }} />
-              {value.stockIn}
+              <AiOutlineArrowUp style={{ marginTop: 1, marginRight: 10 }} />
+              {value.stockOut}
             </Flex>
           </Td>
         </Tr>
@@ -84,7 +84,6 @@ const StockHistory = () => {
   const handlePageClick = (data) => {
     setPage(data.selected);
   };
-  // console.log("SH", stockHistories.length);
 
   return (
     <>
@@ -104,8 +103,8 @@ const StockHistory = () => {
                       <Tr>
                         <Th>Date & Time</Th>
                         <Th>Description</Th>
-                        <Th>Stock Out</Th>
                         <Th>Stock In</Th>
+                        <Th>Stock Out</Th>
                       </Tr>
                     </Thead>
                     <Tbody>{showStockHistories()}</Tbody>
