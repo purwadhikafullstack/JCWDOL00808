@@ -39,6 +39,7 @@ const SalesReport = () => {
   // const [limit, setLimit] = useState(10);
   // const [pages, setPages] = useState(0);
   // const [rows, setRows] = useState(0);
+  const [role, setRole] = useState(0);
 
   useEffect(() => {
     fetchReport();
@@ -53,6 +54,9 @@ const SalesReport = () => {
       // Decode the token and extract the email
       const decodedToken = jwtDecode(token);
       const email = decodedToken.email;
+      const decodedRole = decodedToken.role;
+
+      setRole(decodedRole);
 
       // Replace the URL below with the correct endpoint for your API.
       let url = `${process.env.REACT_APP_API_BASE_URL}/admin/sales-report?email=${email}&start_date=${startDate}&end_date=${endDate}`;
@@ -231,6 +235,7 @@ const SalesReport = () => {
                 placeholder="Select Warehouse"
                 value={warehouse}
                 onChange={(e) => setWarehouse(e.target.value)}
+                disabled={role === 2}
               >
                 {warehouses.map((w) => (
                   <option key={w.id} value={w.id}>

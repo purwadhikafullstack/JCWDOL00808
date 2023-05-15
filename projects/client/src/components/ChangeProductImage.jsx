@@ -4,9 +4,29 @@ import * as Yup from "yup";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, FormControl, FormErrorMessage, Image, Flex, Box, Input, FormLabel } from "@chakra-ui/react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Button,
+  FormControl,
+  FormErrorMessage,
+  Image,
+  Flex,
+  Box,
+  Input,
+  FormLabel,
+} from "@chakra-ui/react";
 
-const ChangeProductImage = ({ isOpen, onClose, categoryId, onProductUpdate }) => {
+const ChangeProductImage = ({
+  isOpen,
+  onClose,
+  categoryId,
+  onProductUpdate,
+}) => {
   const toast = useToast();
   const [localImage, setLocalImage] = useState("");
 
@@ -19,7 +39,11 @@ const ChangeProductImage = ({ isOpen, onClose, categoryId, onProductUpdate }) =>
         .test("fileType", "Invalid image format", (value) => {
           if (value && value.length) {
             const fileType = value[0].type;
-            return fileType === "image/png" || fileType === "image/jpg" || fileType === "image/jpeg";
+            return (
+              fileType === "image/png" ||
+              fileType === "image/jpg" ||
+              fileType === "image/jpeg"
+            );
           }
           return true;
         })
@@ -46,17 +70,21 @@ const ChangeProductImage = ({ isOpen, onClose, categoryId, onProductUpdate }) =>
         formData.append("imageUrl", values.imageUrl[0]);
       }
 
-      await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/product/patchproductImage/${categoryId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.patch(
+        `${process.env.REACT_APP_API_BASE_URL}/product/patchproductImage/${categoryId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       onClose();
       formik.resetForm();
       onProductUpdate();
       toast({
-        title: `Profile picture updated successfully`,
+        title: `Image updated successfully`,
         status: "success",
         duration: 9000,
         isClosable: true,
@@ -95,7 +123,9 @@ const ChangeProductImage = ({ isOpen, onClose, categoryId, onProductUpdate }) =>
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={formik.handleSubmit}>
-            <FormControl isInvalid={formik.touched.imageUrl && formik.errors.imageUrl}>
+            <FormControl
+              isInvalid={formik.touched.imageUrl && formik.errors.imageUrl}
+            >
               <FormLabel>Select a new product image:</FormLabel>
               <Flex>
                 <Box>
@@ -103,13 +133,22 @@ const ChangeProductImage = ({ isOpen, onClose, categoryId, onProductUpdate }) =>
                     type="file"
                     accept="image/*"
                     onChange={(event) => {
-                      formik.setFieldValue("imageUrl", event.currentTarget.files);
+                      formik.setFieldValue(
+                        "imageUrl",
+                        event.currentTarget.files
+                      );
                       handleImageChange(event);
                     }}
                   />
                   {localImage && (
                     <Box mt={2}>
-                      <Image src={localImage} alt="product" objectFit="contain" w="100%" maxH="200px" />
+                      <Image
+                        src={localImage}
+                        alt="product"
+                        objectFit="contain"
+                        w="100%"
+                        maxH="200px"
+                      />
                     </Box>
                   )}
                   <FormErrorMessage>{formik.errors.imageUrl}</FormErrorMessage>
