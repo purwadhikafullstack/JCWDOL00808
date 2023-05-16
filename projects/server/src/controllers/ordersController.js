@@ -12,6 +12,7 @@ const products = db.products;
 const carts = db.carts;
 const warehouses = db.warehouses;
 const stocks = db.stocks;
+const stock_mutations = db.stock_mutations;
 const admins = db.admins;
 
 const request = require("request");
@@ -20,14 +21,7 @@ module.exports = {
   addOrder: async (req, res) => {
     try {
       let { id } = req.dataDecode;
-      let {
-        total_price,
-        status,
-        shipping_method,
-        shipping_cost,
-        user_addresses_id,
-        warehouses_id,
-      } = req.body;
+      let { total_price, status, shipping_method, shipping_cost, user_addresses_id, warehouses_id } = req.body;
 
       // Get all carts data owned by specific user and merged with products data
       const fetchCart = await carts.findAll({
@@ -39,14 +33,7 @@ module.exports = {
             model: products,
             as: "product",
             required: true,
-            attributes: [
-              "id",
-              "name",
-              "price",
-              "weight",
-              "imageUrl",
-              "booked_stock",
-            ],
+            attributes: ["id", "name", "price", "weight", "imageUrl", "booked_stock"],
           },
         ],
         attributes: ["id", "users_id", "quantity", "products_id"],
@@ -76,10 +63,7 @@ module.exports = {
         } else {
           validationChecker.push(i);
           booked_stock += quantity;
-          let updateBookedStock = await products.update(
-            { booked_stock },
-            { where: { id } }
-          );
+          let updateBookedStock = await products.update({ booked_stock }, { where: { id } });
         }
       }
 
@@ -157,21 +141,7 @@ module.exports = {
         limit,
         offset,
         order: [["id", order]],
-        attributes: [
-          [
-            sequelize.fn(
-              "DATE_FORMAT",
-              sequelize.col("orders.createdAt"),
-              "%Y-%m-%d"
-            ),
-            "when",
-          ],
-          "status",
-          "total_price",
-          "id",
-          "shipping_method",
-          "shipping_cost",
-        ],
+        attributes: [[sequelize.fn("DATE_FORMAT", sequelize.col("orders.createdAt"), "%Y-%m-%d"), "when"], "status", "total_price", "id", "shipping_method", "shipping_cost"],
         where: {
           users_id,
           status: {
@@ -260,17 +230,11 @@ module.exports = {
           let stockToReturn = findToCancel[i].quantity;
           let booked_stock = findProducts.booked_stock - stockToReturn;
 
-          let updatedBooked_stock = await products.update(
-            { booked_stock },
-            { where: { id: products_id } }
-          );
+          let updatedBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
         }
 
         let newStatus = "Canceled";
-        let updateOrderStatus = await orders.update(
-          { status: newStatus },
-          { where: { id: orders_id } }
-        );
+        let updateOrderStatus = await orders.update({ status: newStatus }, { where: { id: orders_id } });
 
         res.status(200).send({
           success: true,
@@ -314,17 +278,11 @@ module.exports = {
           let stockToReturn = findToCancel[i].quantity;
           let booked_stock = findProducts.booked_stock - stockToReturn;
 
-          let updatedBooked_stock = await products.update(
-            { booked_stock },
-            { where: { id: products_id } }
-          );
+          let updatedBooked_stock = await products.update({ booked_stock }, { where: { id: products_id } });
         }
 
         let newStatus = "Canceled";
-        let updateOrderStatus = await orders.update(
-          { status: newStatus },
-          { where: { id: orders_id } }
-        );
+        let updateOrderStatus = await orders.update({ status: newStatus }, { where: { id: orders_id } });
       } else {
         res.status(500).send({
           success: false,
@@ -348,30 +306,47 @@ module.exports = {
     try {
       let orders_id = req.body.id;
 
+      // find order to cancel
       let findToCancel = await order_details.findAll({
         where: { orders_id },
         raw: true,
       });
 
+      // find the warehouse sender
+      let checkWarehouse = await orders.findOne({
+        where: { id: orders_id },
+        raw: true,
+      });
+      let senderId = checkWarehouse.warehouses_id;
 
-      // let products_id = findToCancel.products_id;
+      // find products (in that order) which stock will be returned
+      for (let i = 0; i < findToCancel.length; i++) {
+        let products_id = findToCancel[i].products_id;
+        let products_qty = findToCancel[i].quantity;
 
-      //     let findProducts = await products.findOne({
-      //       where: { id: products_id },
-      //       raw: true,
-      //     });
+        // check if there's any mutation for each products
+        let checkMutation = await stock_mutations.findOne({
+          where: { products_id, quantity: products_qty, to_warehouse_id: senderId },
+          raw: true,
+        });
+
+        // let date = checkMutation.id;
+        
+        console.log("cm", checkMutation);
+
+        }
 
       res.status(200).send({
         success: true,
         message: "Ok",
-        data: findToCancel
-      })
+        data: findToCancel,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send({
         success: false,
-        message: ""
-      })
+        message: "Something is wrong",
+      });
     }
   },
   uploadPaymentProof: async (req, res) => {
@@ -382,17 +357,11 @@ module.exports = {
       // check if user who wants to cancel order is the same user who is logging in
       if (users_id == checkUser.users_id) {
         // let payment_proof = req.files?.payment_proof[0]?.path;
-        let payment_proof = req.files?.payment_proof[0]?.path.replace(
-          "src\\",
-          ""
-        ); //public moved to src;
+        let payment_proof = req.files?.payment_proof[0]?.path.replace("src\\", ""); //public moved to src;
 
         await orders.update({ payment_proof }, { where: { id: req.body.id } });
 
-        await orders.update(
-          { status: "Waiting for confirmation" },
-          { where: { id: req.body.id } }
-        );
+        await orders.update({ status: "Waiting for confirmation" }, { where: { id: req.body.id } });
 
         res.status(200).send({
           success: true,
@@ -421,15 +390,11 @@ module.exports = {
       if (users_id == checkUser.users_id) {
         let orders_id = req.body.id;
 
-        await orders.update(
-          { status: "Order confirmed" },
-          { where: { id: orders_id } }
-        );
+        await orders.update({ status: "Order confirmed" }, { where: { id: orders_id } });
 
         res.status(200).send({
           success: true,
-          message:
-            "Your special delivery has made it to its destination! Thank you for ordering it from Big4commerce.",
+          message: "Your special delivery has made it to its destination! Thank you for ordering it from Big4commerce.",
         });
       } else if (users_id != checkUser.users_id) {
         res.status(500).send({
@@ -538,13 +503,9 @@ module.exports = {
         }
       });
       if (result.length === 0 && search !== "") {
-        return res
-          .status(404)
-          .json({ message: "No matching results found for the search query" });
+        return res.status(404).json({ message: "No matching results found for the search query" });
       } else if (result.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "Please assign warehouse first" });
+        return res.status(404).json({ message: "Please assign warehouse first" });
       }
       res.json({
         result: result,
@@ -573,15 +534,7 @@ module.exports = {
           },
           {
             model: user_addresses,
-            attributes: [
-              "recipient",
-              "phone_number",
-              "address",
-              "province",
-              "city",
-              "district",
-              "postal_code",
-            ],
+            attributes: ["recipient", "phone_number", "address", "province", "city", "district", "postal_code"],
           },
         ],
       });

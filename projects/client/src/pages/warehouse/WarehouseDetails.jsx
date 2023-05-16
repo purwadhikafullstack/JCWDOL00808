@@ -84,6 +84,8 @@ const WarehouseDetails = (props) => {
 
           setDetailsName(response.data.data[0].name);
           setDetailsAddress(response.data.data[0].address);
+          setDetailsProvince(response.data.data[0].province);
+          setDetailsCity(response.data.data[0].city);
           setDetailsDistrict(response.data.data[0].district);
           setIsLoading(false);
         }, 1000);
@@ -154,8 +156,8 @@ const WarehouseDetails = (props) => {
     initialValues: {
       name: detailsName,
       address: detailsAddress,
-      province,
-      city,
+      province: detailsProvince,
+      city: detailsCity,
       district: detailsDistrict,
     },
     validationSchema: yup.object().shape({
