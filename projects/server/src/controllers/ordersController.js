@@ -326,53 +326,47 @@ module.exports = {
         let products_qty = findToCancel[i].quantity;
 
         // check if there's any mutation for each products
-        let checkMutation = await stock_mutations.findOne({
+        let checkMutation = await stock_mutations.findAll({
           where: { to_warehouse_id: senderId, quantity: products_qty, products_id },
           raw: true,
         });
 
-        // let date = checkMutation.id;
-
-        console.log("cm", checkMutation);
-
-        if (checkMutation !== {}) {
+        if (checkMutation !== []) {
           // return the mutation
           // kurangi stock dari id:to_warehouse_id, tambahkan ke stock id:from_warehouse_id
           
           // return total_item - mutation_item to warehouse sender
 
           // change the mutation status
-          // await stock_mutations.update(
-          //   {
-          //     mutation_type: "Canceled",
-          //   },
-          //   { where: { products_id, to_warehouse_id: senderId } }
-          // );
+          await stock_mutations.update(
+            {
+              mutation_type: "Canceled",
+            },
+            { where: { products_id, to_warehouse_id: senderId } }
+          );
           
-          // add info to stock history
-          // await stock_histories.create({
-          //   stock_before,
-          //   stock_after,
-          //   description: "Order canceled by admin",
-          //   products_id,
-          //   warehouses_id: senderId
-          // })
-        } else if (checkMutation === {}) {
+          // add report to stock history
+          await stock_histories.create({
+            stock_before,
+            stock_after,
+            description: "Order canceled by admin",
+            products_id,
+            warehouses_id: senderId
+          })
+        } else if (checkMutation === []) {
           // return stock, only to warehouse sender
           let findStock = await stocks.findAll({
             where: { products_id, warehouses_id: senderId },
             // where: {products_id, warehouses_id: senderId, updateAt: date},
             raw: true,
           });
-          console.log("findStock: ", findStock);
 
           let newStock = (findStock.stock += products_qty);
-          console.log("newStock", newStock);
 
-          // let updateStock = await stocks.update({
-          //   stock: newStock
-          // },
-          // {where: {products_id, warehouses_id: senderId, updateAt: date}})
+          let updateStock = await stocks.update({
+            stock: newStock
+          },
+          {where: {products_id, warehouses_id: senderId, updateAt: date}})
         }
       }
 
@@ -380,6 +374,8 @@ module.exports = {
         success: true,
         message: "Ok",
         data: findToCancel,
+        checkWarehouse,
+        senderId
       });
     } catch (error) {
       console.log(error);
