@@ -15,17 +15,18 @@ import axios from "axios";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { logout, sessionExpired } from "../apis/userAPIs";
+import { sessionExpired } from "../apis/userAPIs";
 import ChangePasswordConfirmation from "./ChangePasswordConfirmation";
+import { userLogout } from "../reducers/authSlice";
 
 export default function ChangePassword(props) {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useToast();
 
@@ -48,6 +49,9 @@ export default function ChangePassword(props) {
         duration: 5000,
         isClosable: true,
       });
+      setTimeout(() => {
+        dispatch(userLogout());
+      }, 2000);
     } catch (error) {
       setIsLoading(false);
       if (error.response.status === 401) {
@@ -98,7 +102,6 @@ export default function ChangePassword(props) {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       handleChangePassword(values);
-      logout(navigate, dispatch);
     },
   });
 
