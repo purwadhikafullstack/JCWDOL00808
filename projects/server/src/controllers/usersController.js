@@ -249,26 +249,27 @@ module.exports = {
       }
       //Get image path data from middleware
       // let profile_picture = req.files?.profile_picture[0]?.path;
-      let profile_picture = req.files?.profile_picture[0]?.path.replace(
-        "src\\",
-        ""
-      ); //public moved to src;
+      if (req.files.profile_picture) {
+        let profile_picture = req.files?.profile_picture[0]?.path.replace(
+          "src\\",
+          ""
+        ); //public moved to src;
+        //Update user's profile_picture with a new one
+        await users.update(
+          {
+            profile_picture,
+          },
+          { where: { id } },
+          { transaction: t }
+        );
 
-      //Update user's profile_picture with a new one
-      await users.update(
-        {
-          profile_picture,
-        },
-        { where: { id } },
-        { transaction: t }
-      );
-
-      t.commit();
-      res.status(201).send({
-        isError: false,
-        message: "Upload Success!",
-        data: null,
-      });
+        t.commit();
+        res.status(201).send({
+          isError: false,
+          message: "Upload Success!",
+          data: null,
+        });
+      }
     } catch (error) {
       deleteFiles(req.files?.profile_picture);
       t.rollback();

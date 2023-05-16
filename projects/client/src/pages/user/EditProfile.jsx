@@ -39,25 +39,27 @@ export default function EditProfile() {
 
   const handlePictureChange = async (event) => {
     try {
-      const image = event.target.files[0];
-      const formData = new FormData();
-      formData.append("profile_picture", image);
-      const response = await axios.patch(
-        `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`,
-        formData,
-        {
-          headers: { Authorization: token },
-        }
-      );
-      setRefresh(!refresh);
+      const image = event.target?.files[0];
+      if (image) {
+        const formData = new FormData();
+        formData.append("profile_picture", image);
+        const response = await axios.patch(
+          `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`,
+          formData,
+          {
+            headers: { Authorization: token },
+          }
+        );
+        setRefresh(!refresh);
 
-      toast({
-        title: response?.data?.message,
-        description: "Refresh page if picture not available",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+        toast({
+          title: response?.data?.message,
+          description: "Refresh page if picture not available",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
       toast({
         title: error?.response?.data?.message,
