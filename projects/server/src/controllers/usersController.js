@@ -350,7 +350,7 @@ module.exports = {
       );
 
       if (hasMatchResult === false)
-        return res.status(401).send({
+        return res.status(404).send({
           isError: true,
           message: "Invalid password",
           data: true,
