@@ -274,7 +274,7 @@ module.exports = {
       const findOrder = await orders.findByPk(id);
 
       //Get all products_id from the orders
-      const findOrderDetails = await order_details
+      await order_details
         .findAll({
           attributes: ["products_id"],
           where: { orders_id: id },
@@ -289,17 +289,18 @@ module.exports = {
               },
             })
             .then(async (stocks) => {
+              // Check if any products have no stock
+              const foundStocks = stocks.map((data) => data.stock);
               // Check if any products have no data
-              const foundIds = stocks.map((stock) => stock.products_id);
+              const foundIds = stocks.map((data) => data.products_id);
               const missingIds = productIds.filter(
                 (id) => !foundIds.includes(id)
               );
-              if (missingIds.length > 0) {
+              if (foundStocks.includes(0) || missingIds.length > 0) {
                 res.status(404).send({
                   isError: true,
-                  message: `Stock for products ID ${missingIds.join(
-                    ", "
-                  )} is not available.`,
+                  message:
+                    "One of the products is not available, please check stock on the warehouse",
                   data: null,
                 });
               } else {
