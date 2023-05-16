@@ -17,7 +17,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { logout } from "../apis/userAPIs";
+import { logout, sessionExpired } from "../apis/userAPIs";
 import ChangePasswordConfirmation from "./ChangePasswordConfirmation";
 
 export default function ChangePassword(props) {
@@ -50,12 +50,24 @@ export default function ChangePassword(props) {
       });
     } catch (error) {
       setIsLoading(false);
-      toast({
-        title: error?.response?.data?.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      if (error.response.status === 401) {
+        toast({
+          title: error?.response?.data?.message || error?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          sessionExpired();
+        }, 1000);
+      } else {
+        toast({
+          title: error?.response?.data?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 
