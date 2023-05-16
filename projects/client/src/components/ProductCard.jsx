@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { addProduct } from "../reducers/cartSlice";
+import { sessionExpired } from "../apis/userAPIs";
 
 export const ProductCard = (props) => {
   const token = localStorage.getItem("user_token");
@@ -42,12 +43,24 @@ export const ProductCard = (props) => {
         });
       }
     } catch (error) {
-      toast({
-        title: error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      if (error.response.status === 401) {
+        toast({
+          title: error?.response?.data?.message || error?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          sessionExpired();
+        }, 1000);
+      } else {
+        toast({
+          title: error?.response?.data?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 

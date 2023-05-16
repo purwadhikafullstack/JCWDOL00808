@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { addProduct } from "../reducers/cartSlice";
+import { sessionExpired } from "../apis/userAPIs";
 
 export default function ProductDetails() {
   const [profile, setProfile] = useState(null);
@@ -77,12 +78,24 @@ export default function ProductDetails() {
         });
       }
     } catch (error) {
-      toast({
-        title: error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      if (error.response.status === 401) {
+        toast({
+          title: error?.response?.data?.message || error?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          sessionExpired();
+        }, 1000);
+      } else {
+        toast({
+          title: error?.response?.data?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 
