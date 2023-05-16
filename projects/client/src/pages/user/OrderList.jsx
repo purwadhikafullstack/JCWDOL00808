@@ -242,7 +242,7 @@ const OrderList = () => {
                 </Box>
               )}
               <Box ml={8} mt={4}>
-                Total payment: Rp{value.total_price}
+                Total payment: Rp{value.total_price + value.shipping_cost}
               </Box>
             </Flex>
           </Flex>

@@ -7,7 +7,7 @@ const { validateAddWarehouse, validateEditWarehouse } = require("../middleware/v
 route.get("/getAllWarehouse", warehousesController.getAllWarehouse);
 route.get("/getWarehouseData", warehousesController.getWarehouseData);
 route.post("/addWarehouse", validateAddWarehouse, warehousesController.addWarehouse);
-route.post("/updateWarehouseData", validateEditWarehouse, warehousesController.updateWarehouseData);
+route.post("/updateWarehouseData", warehousesController.updateWarehouseData);
 route.delete("/deleteWarehouseData", warehousesController.deleteWarehouseData);
 route.get("/getProvinceData", warehousesController.getProvinceData);
 route.get("/getCityData", warehousesController.getCityData);

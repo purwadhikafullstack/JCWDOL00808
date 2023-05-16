@@ -50,12 +50,13 @@ function App() {
 
   const cleanRoute = ["/user/register", "/user/verify", "/user/verify-new-password", "/user/login", "/user/reset-password", "/admin/login"].includes(location.pathname);
 
+  const token= localStorage.getItem("token")
   return (
     <div className="App">
       {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
       {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Navbar />}
       <div className="flex justify-between">
-        {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : null}
+        {cleanRoute ? null : (location.pathname.startsWith("/admin") && token) || (location.pathname.startsWith("/warehouse") && token) ? <Sidebar /> : null}
 
         <Routes>
           {/*Public user's route */}
