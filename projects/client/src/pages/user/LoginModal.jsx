@@ -50,7 +50,7 @@ const LoginModal = ({ onClose }) => {
   useEffect(() => {
     if (isSuccess) {
       setTimeout(() => {
-        navigate("/");
+        navigate(0);
         dispatch(clearState());
         onClose();
       }, 1000);
@@ -69,7 +69,7 @@ const LoginModal = ({ onClose }) => {
       });
       dispatch(clearState());
     } else if (user) {
-      navigate("/");
+      navigate(0);
     }
   }, [user, isSuccess, isError, message, navigate, dispatch, toast, onClose]);
 

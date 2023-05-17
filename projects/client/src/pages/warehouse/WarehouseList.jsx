@@ -30,7 +30,6 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, StackDivider, Box, Text } from "@chakra-ui/react";
 
 import Axios from "axios";
-import { API_url } from "../../helper";
 import { useEffect, useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -70,7 +69,7 @@ const WarehouseList = (props) => {
   const [loading, setLoading] = useState(true);
 
   const getWarehouseData = () => {
-    Axios.get(API_url + `/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getWarehouseData?page=${page}&sort=${sort}&order=${order}&keyword=${keyword}`)
       .then((response) => {
         setTotalPage(response.data.totalPage);
         setWarehouseData(response.data.rows);
@@ -85,7 +84,6 @@ const WarehouseList = (props) => {
   useEffect(() => {
     getWarehouseData();
   }, [page, sort, order, keyword]);
-
 
   const showWarehouseData = () => {
     let count = 0;
@@ -130,7 +128,7 @@ const WarehouseList = (props) => {
   };
 
   const getProvinceData = () => {
-    Axios.get(API_url + `/warehouses/getProvinceData`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getProvinceData`)
       .then((response) => {
         setProvinceData(response.data);
       })
@@ -144,7 +142,7 @@ const WarehouseList = (props) => {
   }, []);
 
   const onGetCity = (province_id) => {
-    Axios.get(API_url + `/warehouses/getCityData?province_id=${province_id}`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/warehouses/getCityData?province_id=${province_id}`)
       .then((response) => {
         setCityData(response.data);
       })
@@ -154,7 +152,7 @@ const WarehouseList = (props) => {
   };
 
   const buttonAddWarehouse = (values) => {
-    Axios.post(API_url + `/warehouses/addWarehouse`, values)
+    Axios.post(`${process.env.REACT_APP_API_BASE_URL}/warehouses/addWarehouse`, values)
       .then((response) => {
         toast({
           title: `${response.data.message}`,
@@ -258,7 +256,6 @@ const WarehouseList = (props) => {
           </Text>
         )}
 
-
         <div id="pagination" className="mt-5 flex items-center justify-center">
           <ReactPaginate
             previousLabel={"< Previous"}
@@ -303,10 +300,7 @@ const WarehouseList = (props) => {
                     id="province"
                     placeholder="Select province"
                     onChange={(e) => {
-                      formik.setFieldValue(
-                        "province",
-                        e.target.value.split(",")[1]
-                      );
+                      formik.setFieldValue("province", e.target.value.split(",")[1]);
 
                       onGetCity(e.target.value.split(",")[0]);
                     }}

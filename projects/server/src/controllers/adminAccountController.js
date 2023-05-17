@@ -13,6 +13,9 @@ const Joi = require("joi");
 //import hashing
 const { hashPassword } = require("../lib/hash");
 
+//import delete files images
+const deleteFiles = require("../helper/deleteFiles");
+
 module.exports = {
   getUserAdmin: async (req, res) => {
     try {
@@ -182,7 +185,10 @@ module.exports = {
       //step 1 ambil data dari client (body)
       // let { email, password, full_name, phone_number, role } = req.body;
       // let profile_picture = req.files.profile_picture[0].path;
-      let profile_picture = req.files.profile_picture[0].path.replace("src\\", ""); //public moved to src
+      let profile_picture = req.files.profile_picture[0].path.replace(
+        "src\\",
+        ""
+      ); //public moved to src
 
       // Validate input data against schema
       const { error, value } = schema.validate(req.body);
@@ -229,7 +235,9 @@ module.exports = {
       });
     } catch (error) {
       await t.rollback();
-
+      if (profile_picture) {
+        deleteFiles([{ path: profile_picture }]); // Call the deleteFiles function
+      }
       res.status(400).send({
         isError: true,
         message: error.message,
@@ -304,7 +312,10 @@ module.exports = {
       }
       if (req.files && req.files.profile_picture) {
         // admin.profile_picture = req.files.profile_picture[0].path;
-        admin.profile_picture = req.files.profile_picture[0].path.replace("src\\", ""); //public moved to src
+        admin.profile_picture = req.files.profile_picture[0].path.replace(
+          "src\\",
+          ""
+        ); //public moved to src
       }
       await admin.save({ transaction: t });
 
@@ -317,7 +328,9 @@ module.exports = {
       });
     } catch (error) {
       await t.rollback();
-
+      if (profile_picture) {
+        deleteFiles([{ path: profile_picture }]); // Call the deleteFiles function
+      }
       res.status(400).send({
         isError: true,
         message: error.message,
@@ -341,10 +354,7 @@ module.exports = {
       }
 
       // step 2: delete admin data from database
-      let deleteAdmin = await admins.update(
-        { is_deleted: 1 },
-        { where: { id }, transaction: t }
-      );
+      await admins.update({ is_deleted: 1 }, { where: { id }, transaction: t });
 
       // step 3: send response
       t.commit();

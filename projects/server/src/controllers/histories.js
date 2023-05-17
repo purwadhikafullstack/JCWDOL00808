@@ -2,7 +2,6 @@ const db = require("../models/index");
 const StockHistoriesModel = db.stock_histories;
 const ProductsModel = db.products;
 const WarehousesModel = db.warehouses;
-const StocksModel = db.stocks;
 const { Op, QueryTypes } = require("sequelize");
 const sequelize = require("../models/index");
 
@@ -22,6 +21,22 @@ module.exports = {
     }
   },
 
+  getWarehouseId: async (req, res) => {
+    try {
+      const admins_id = req.dataDecode.id;
+
+      let warehouseId = await WarehousesModel.findAll({
+        where: { admins_id },
+        attributes: ["id", "name"],
+        raw: true,
+      });
+
+      return res.status(200).send(warehouseId[0]);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  },
+
   getAllHistories: async (req, res) => {
     try {
       const admins_id = req.dataDecode.id;
@@ -31,6 +46,7 @@ module.exports = {
       const offset = limit * page;
 
       let filterStockHistory = {};
+      let filterTambahan = {};
       let result = [];
       let warehouse = req.body.warehouse;
       let month1 = req.body.month;
@@ -38,23 +54,22 @@ module.exports = {
 
       if (warehouse !== "" && typeof warehouse !== "undefined") {
         filterStockHistory.warehouses_id = warehouse;
+        filterTambahan.warehouses_id = warehouse;
       }
 
-      if (
-        year !== "" &&
-        typeof year !== "undefined" &&
-        month1 !== "" &&
-        typeof month1 !== "undefined"
-      ) {
+      if (year !== "" && typeof year !== "undefined" && month1 !== "" && typeof month1 !== "undefined") {
         let bulan = parseInt(month1);
         let tahun = parseInt(year);
         startDate = new Date(`${tahun}-${bulan}-01`);
-        endDate =
-          bulan < 12
-            ? new Date(`${tahun}-${bulan + 1}-01`)
-            : new Date(`${tahun + 1}-1-01`);
+        endDate = bulan < 12 ? new Date(`${tahun}-${bulan + 1}-01`) : new Date(`${tahun + 1}-1-01`);
 
         filterStockHistory.updatedAt = {
+          [Op.and]: {
+            [Op.gte]: startDate,
+            [Op.lt]: endDate,
+          },
+        };
+        filterTambahan.updatedAt = {
           [Op.and]: {
             [Op.gte]: startDate,
             [Op.lt]: endDate,
@@ -73,7 +88,6 @@ module.exports = {
           {
             model: StockHistoriesModel,
             where: filterStockHistory,
-            // attributes: [],
           },
         ],
         distinct: true,
@@ -81,6 +95,7 @@ module.exports = {
         limit,
         offset,
       });
+      console.log("productsData: ", productsData);
 
       let totalPage = Math.ceil(parseInt(productsData.count) / limit);
 
@@ -90,16 +105,17 @@ module.exports = {
         let stockOut = 0;
         let products_id = productsData.rows[i].id;
         filterStockHistory.products_id = products_id;
+        filterTambahan.products_id = products_id;
         let name = productsData.rows[i].name;
         let stockCount = await StockHistoriesModel.findAll({
           where: filterStockHistory,
           raw: true,
         });
+        console.log("stockCount: ", stockCount);
 
         // loop untuk mencari stock in & stock out per product
         for (let j = 0; j < stockCount.length; j++) {
-          let difference =
-            stockCount[j].stock_after - stockCount[j].stock_before;
+          let difference = stockCount[j].stock_after - stockCount[j].stock_before;
           if (difference < 0) {
             stockOut += Math.abs(difference);
           } else if (difference > 0) {
@@ -107,7 +123,7 @@ module.exports = {
           }
         }
 
-        // menentukan stock
+        // // menentukan stock akhir
         let latestStockChecker = await StockHistoriesModel.findOne({
           where: filterStockHistory,
           raw: true,
@@ -116,7 +132,33 @@ module.exports = {
             ["id", "desc"],
           ],
         });
-        let latestStock = latestStockChecker.stock_after;
+        console.log("latestStockChecker: ", latestStockChecker);
+
+        let latestStock = 0;
+        if (warehouse !== "" && typeof warehouse !== "undefined") {
+          latestStock = latestStockChecker.stock_after;
+        } else {
+          let temp = 0;
+          for (let z = 0; z < warehouseData.length; z++) {
+            let warehouse_id = warehouseData[z].id;
+            filterTambahan.warehouses_id = warehouse_id;
+
+            let stockData = await StockHistoriesModel.findOne({
+              where: filterTambahan,
+              raw: true,
+              order: [
+                ["updatedAt", "desc"],
+                ["id", "desc"],
+              ],
+            });
+
+            if (stockData) {
+              temp += stockData.stock_after;
+            }
+          }
+          latestStock = temp;
+        }
+        // let latestStock = latestStockChecker.stock_after;
 
         result.push({ name, products_id, stockIn, stockOut, latestStock });
       }
@@ -126,6 +168,7 @@ module.exports = {
         message: "Ok",
         data: result,
         totalPage,
+        // filterStockHistory,
         warehouse: warehouseData,
       });
     } catch (error) {
@@ -156,13 +199,7 @@ module.exports = {
           "$warehouse.name$": {
             [Op.like]: "%" + warehouseQuery + "%",
           },
-          createdAt: Models.sequelize.where(
-            Models.sequelize.fn(
-              "MONTH",
-              Models.sequelize.col("stock_histories.createdAt")
-            ),
-            month
-          ),
+          createdAt: Models.sequelize.where(Models.sequelize.fn("MONTH", Models.sequelize.col("stock_histories.createdAt")), month),
         };
       } else {
         whereQuery = {
@@ -176,10 +213,11 @@ module.exports = {
       let historyDetails = await StockHistoriesModel.findAndCountAll({
         limit,
         offset,
-        include: {
-          model: WarehousesModel,
-          as: "warehouse",
-        },
+        include: 
+          {
+            model: WarehousesModel,
+            as: "warehouse",
+          },
         where: whereQuery,
       });
 
@@ -196,19 +234,14 @@ module.exports = {
           minute: "2-digit",
           hour12: false,
         };
-        const formattedTime = dateB.toLocaleTimeString(
-          "id-ID",
-          timeFormatterOptions
-        );
+        const formattedTime = dateB.toLocaleTimeString("id-ID", timeFormatterOptions);
 
         const dateTimeString = `${formattedDate} ${formattedTime}`;
 
         historyDetails.rows[i].dataValues.time = dateTimeString;
 
         // add qty in and qty out
-        let difference =
-          historyDetails.rows[i].stock_after -
-          historyDetails.rows[i].stock_before;
+        let difference = historyDetails.rows[i].stock_after - historyDetails.rows[i].stock_before;
         let stockIn = 0;
         let stockOut = 0;
         if (difference < 0) {
@@ -219,15 +252,19 @@ module.exports = {
 
         historyDetails.rows[i].dataValues.stockIn = stockIn;
         historyDetails.rows[i].dataValues.stockOut = stockOut;
+
+      //   // add from_warehouse_id dan to_warehouse_id
+      //   const stockMutation = historyDetails.rows[i].stockMutation;
+      //   const fromWarehouseId = stockMutation ? stockMutation.from_warehouse_id : null;
+      //   const toWarehouseId = stockMutation ? stockMutation.to_warehouse_id : null;
+
+      //   historyDetails.rows[i].dataValues.fromWarehouseId = fromWarehouseId;
+      //   historyDetails.rows[i].dataValues.toWarehouseId = toWarehouseId;
       }
 
       // filter history details by admin's input
-      let stockInData = historyDetails.rows.filter(
-        (value) => value.dataValues.stockIn > 0
-      );
-      let stockOutData = historyDetails.rows.filter(
-        (value) => value.dataValues.stockOut > 0
-      );
+      let stockInData = historyDetails.rows.filter((value) => value.dataValues.stockIn > 0);
+      let stockOutData = historyDetails.rows.filter((value) => value.dataValues.stockOut > 0);
 
       // send data based on request from FE
       if (stockQuery == "") {

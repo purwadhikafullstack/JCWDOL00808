@@ -14,16 +14,20 @@ import {
 import axios from "axios";
 import { useFormik } from "formik";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+// import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { sessionExpired } from "../apis/userAPIs";
 import ChangePasswordConfirmation from "./ChangePasswordConfirmation";
+import { userLogout } from "../reducers/authSlice";
 
 export default function ChangePassword(props) {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const dispatch = useDispatch();
   const toast = useToast();
 
   const handleChangePassword = async (values) => {
@@ -45,16 +49,29 @@ export default function ChangePassword(props) {
         duration: 5000,
         isClosable: true,
       });
-      localStorage.removeItem("user_token");
-      setTimeout(() => navigate("/user/login", 5000));
+      setTimeout(() => {
+        dispatch(userLogout());
+      }, 2000);
     } catch (error) {
       setIsLoading(false);
-      toast({
-        title: error?.response?.data?.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      if (error.response.status === 401) {
+        toast({
+          title: error?.response?.data?.message || error?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          sessionExpired();
+        }, 1000);
+      } else {
+        toast({
+          title: error?.response?.data?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 

@@ -35,7 +35,6 @@ import {
   AlertDialogOverlay,
 } from "@chakra-ui/react";
 import React from "react";
-import { API_url } from "../../helper";
 import Axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -61,16 +60,31 @@ const OrderList = () => {
   const [total_price, setTotal_price] = useState(0);
   const [idToCancel, setIdToCancel] = useState(0);
 
-  const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure();
-  const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onClose: onDetailsClose } = useDisclosure();
-  const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
+  const {
+    isOpen: isCancelOpen,
+    onOpen: onCancelOpen,
+    onClose: onCancelClose,
+  } = useDisclosure();
+  const {
+    isOpen: isDetailsOpen,
+    onOpen: onDetailsOpen,
+    onClose: onDetailsClose,
+  } = useDisclosure();
+  const {
+    isOpen: isConfirmOpen,
+    onOpen: onConfirmOpen,
+    onClose: onConfirmClose,
+  } = useDisclosure();
   const cancelRef = React.useRef();
 
   let token = localStorage.getItem("user_token");
   const getTransactionList = async () => {
-    await Axios.get(API_url + `/orders/getOrderList?page=${page}&order=${order}&status=${status}`, {
-      headers: { Authorization: token },
-    })
+    await Axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/orders/getOrderList?page=${page}&order=${order}&status=${status}`,
+      {
+        headers: { Authorization: token },
+      }
+    )
       .then((response) => {
         setTotalPage(response.data.totalPage);
         setList(response.data.data);
@@ -86,7 +100,7 @@ const OrderList = () => {
 
   const handleCancelButton = (value) => {
     Axios.post(
-      API_url + `/orders/cancelOrder`,
+      `${process.env.REACT_APP_API_BASE_URL}/orders/cancelOrder`,
       {
         id: value,
       },
@@ -109,7 +123,7 @@ const OrderList = () => {
 
   const handleConfirmButton = (value) => {
     Axios.post(
-      API_url + `/orders/confirmDelivery`,
+      `${process.env.REACT_APP_API_BASE_URL}/orders/confirmDelivery`,
       {
         id: value,
       },
@@ -131,9 +145,12 @@ const OrderList = () => {
   };
 
   const getDetails = (value) => {
-    Axios.get(API_url + `/orders/getDetails?orders_id=${value}`, {
-      headers: { Authorization: token },
-    })
+    Axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/orders/getDetails?orders_id=${value}`,
+      {
+        headers: { Authorization: token },
+      }
+    )
       .then((response) => {
         setDataDetails(response.data.data);
         setDate(format(new Date(response.data.date), "dd-MMM-yyyy HH:mm"));
@@ -154,7 +171,10 @@ const OrderList = () => {
       return (
         <Box key={detail?.id}>
           <Flex>
-            <Image src={`${API_url}/${detail?.imageUrl}`} boxSize="132px" />
+            <Image
+              src={`${process.env.REACT_APP_API_BASE_URL}/${detail.imageUrl}`}
+              boxSize="132px"
+            />
             <>
               <Text>{detail?.product_name}</Text>
               <Text>
@@ -170,9 +190,25 @@ const OrderList = () => {
   const showOrderList = () => {
     return list.map((value) => {
       return (
-        <Box key={value.id} boxSize="lg" border="1px" borderColor="gray.300" mt={4} px={8} py={6} className="rounded-none" height="200px" maxW="lg" p={4}>
+        <Box
+          key={value.id}
+          // boxSize="lg"
+          border="1px"
+          borderColor="gray.300"
+          mt={4}
+          px={8}
+          py={6}
+          className="rounded-none"
+          height="200px"
+          minW="35vw"
+          maxW="lg"
+          p={4}
+        >
           <Flex>
-            <Image src={`${process.env.REACT_APP_API_BASE_URL}/${value.order_details[0].imageUrl}`} boxSize="132px" />
+            <Image
+              src={`${process.env.REACT_APP_API_BASE_URL}/${value.order_details[0].imageUrl}`}
+              boxSize="132px"
+            />
             <Flex flexDirection="column" alignItems="flex-start">
               <Text fontSize="md" ml={8}>
                 Transaction date: {value.when}
@@ -194,9 +230,11 @@ const OrderList = () => {
                   {value.status}
                 </Badge>
               )}
-              {value.order_details.length > 1 && value.order_details.length - 1 != 1 ? (
+              {value.order_details.length > 1 &&
+              value.order_details.length - 1 != 1 ? (
                 <Box ml={8} mt={4}>
-                  {value.order_details[0].product_name} and {value.order_details.length - 1} other
+                  {value.order_details[0].product_name} and{" "}
+                  {value.order_details.length - 1} other
                 </Box>
               ) : (
                 <Box ml={8} mt={4}>
@@ -204,7 +242,7 @@ const OrderList = () => {
                 </Box>
               )}
               <Box ml={8} mt={4}>
-                Total payment: Rp{value.total_price}
+                Total payment: Rp{value.total_price + value.shipping_cost}
               </Box>
             </Flex>
           </Flex>
@@ -226,7 +264,10 @@ const OrderList = () => {
                 <ModalContent>
                   <ModalHeader>Request order cancellation?</ModalHeader>
                   <ModalCloseButton />
-                  <ModalBody>This action can't be undone. Please add your reason for cancellation:</ModalBody>
+                  <ModalBody>
+                    This action can't be undone. Please add your reason for
+                    cancellation:
+                  </ModalBody>
                   <Select placeholder="Select reason">
                     <option>I bought the wrong item</option>
                     <option>I don't need it anymore</option>
@@ -236,13 +277,22 @@ const OrderList = () => {
                     <Button colorScheme="blue" mr={3} onClick={onCancelClose}>
                       Close
                     </Button>
-                    <Button variant="ghost" onClick={() => handleCancelButton(value.id)}>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleCancelButton(value.id)}
+                    >
                       Cancel my order
                     </Button>
                   </ModalFooter>
                 </ModalContent>
               </Modal>
-              <Button variant="buttonBlack" type="submit" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
+              <Button
+                variant="buttonBlack"
+                type="submit"
+                onClick={() =>
+                  navigate(`/user/upload-payment-proof?id=${value.id}`)
+                }
+              >
                 Upload payment proof
               </Button>
             </>
@@ -263,7 +313,10 @@ const OrderList = () => {
                 <ModalContent>
                   <ModalHeader>Request order cancellation?</ModalHeader>
                   <ModalCloseButton />
-                  <ModalBody>This action can't be undone. Please add your reason for cancellation:</ModalBody>
+                  <ModalBody>
+                    This action can't be undone. Please add your reason for
+                    cancellation:
+                  </ModalBody>
                   <Select placeholder="Select reason">
                     <option>I bought the wrong item</option>
                     <option>I don't need it anymore</option>
@@ -273,22 +326,39 @@ const OrderList = () => {
                     <Button colorScheme="blue" mr={3} onClick={onCancelClose}>
                       Close
                     </Button>
-                    <Button variant="ghost" onClick={() => handleCancelButton(value.id)}>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleCancelButton(value.id)}
+                    >
                       Cancel my order
                     </Button>
                   </ModalFooter>
                 </ModalContent>
               </Modal>
-              <Button variant="buttonBlack" type="submit" onClick={() => navigate(`/user/upload-payment-proof?id=${value.id}`)}>
+              <Button
+                variant="buttonBlack"
+                type="submit"
+                onClick={() =>
+                  navigate(`/user/upload-payment-proof?id=${value.id}`)
+                }
+              >
                 Re-upload payment proof
               </Button>
             </>
           ) : value.status == "Shipped" ? (
             <>
-              <Button variant="buttonBlack" type="submit" onClick={onConfirmOpen}>
+              <Button
+                variant="buttonBlack"
+                type="submit"
+                onClick={onConfirmOpen}
+              >
                 Confirm delivery order
               </Button>
-              <AlertDialog isOpen={isConfirmOpen} leastDestructiveRef={cancelRef} onClose={onConfirmClose}>
+              <AlertDialog
+                isOpen={isConfirmOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={onConfirmClose}
+              >
                 <AlertDialogOverlay>
                   <AlertDialogContent>
                     <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -296,8 +366,11 @@ const OrderList = () => {
                     </AlertDialogHeader>
 
                     <AlertDialogBody>
-                      Have your order received? Please confirm your delivered order on the Big4commerce within 7 days. Once confirmed, your payment will be released to us. If there is no confirmation within the specified time, the payment
-                      will be transferred automatically.
+                      Have your order received? Please confirm your delivered
+                      order on the Big4commerce within 7 days. Once confirmed,
+                      your payment will be released to us. If there is no
+                      confirmation within the specified time, the payment will
+                      be transferred automatically.
                     </AlertDialogBody>
 
                     <AlertDialogFooter>
@@ -344,20 +417,48 @@ const OrderList = () => {
 
   return (
     <>
-      <div className="mx-auto">
-        <Box id="sort and filter" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-          <Box boxSize="lg" border="1px" borderColor="gray.300" mt={4} px={8} pt={6} className="rounded-none" height="100px" maxW="lg" p={4}>
+      <div className="mx-auto min-h-[70vh]">
+        <Box
+          id="sort and filter"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Box
+            // boxSize="lg"
+            border="1px"
+            borderColor="gray.300"
+            mt={4}
+            px={8}
+            pt={6}
+            className="rounded-none"
+            height="100px"
+            minW="35vw"
+            maxW="lg"
+            p={4}
+          >
             <Text>Filter transaction:</Text>
             <Flex>
-              <Select placeholder="Select status" onChange={(element) => setStatus(element.target.value)}>
+              <Select
+                placeholder="Select status"
+                onChange={(element) => setStatus(element.target.value)}
+              >
                 <option value="Confirmed">Confirmed</option>
                 <option value="Waiting for payment">Waiting for payment</option>
-                <option value="Waiting for confirmation">Waiting for confirmation</option>
-                <option value="Previous payment proof rejected">Payment proof rejected</option>
+                <option value="Waiting for confirmation">
+                  Waiting for confirmation
+                </option>
+                <option value="Previous payment proof rejected">
+                  Payment proof rejected
+                </option>
                 <option value="Canceled">Canceled</option>
               </Select>
 
-              <Select placeholder="Latest/Oldest" onChange={(element) => setOrder(element.target.value)}>
+              <Select
+                placeholder="Latest/Oldest"
+                onChange={(element) => setOrder(element.target.value)}
+              >
                 <option value="DESC">Latest</option>
                 <option value="ASC">Oldest</option>
               </Select>
@@ -425,9 +526,15 @@ const OrderList = () => {
               onPageChange={handlePageClick}
               containerClassName={"flex"}
               pageClassName={"page-item"}
-              pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-              previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-              nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
+              pageLinkClassName={
+                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              }
+              previousLinkClassName={
+                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              }
+              nextLinkClassName={
+                "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              }
             />
           </div>
         </Box>

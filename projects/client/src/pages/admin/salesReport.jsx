@@ -35,10 +35,11 @@ const SalesReport = () => {
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [categories, setCategoriesProducts] = useState([]);
-  const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
-  const [pages, setPages] = useState(0);
-  const [rows, setRows] = useState(0);
+  // const [page, setPage] = useState(0);
+  // const [limit, setLimit] = useState(10);
+  // const [pages, setPages] = useState(0);
+  // const [rows, setRows] = useState(0);
+  const [role, setRole] = useState(0);
 
   useEffect(() => {
     fetchReport();
@@ -53,9 +54,12 @@ const SalesReport = () => {
       // Decode the token and extract the email
       const decodedToken = jwtDecode(token);
       const email = decodedToken.email;
+      const decodedRole = decodedToken.role;
+
+      setRole(decodedRole);
 
       // Replace the URL below with the correct endpoint for your API.
-      let url = `${process.env.REACT_APP_API_BASE_URL}/admin/sales-report?email=${email}&start_date=${startDate}&end_date=${endDate}&page=${page}&limit=${limit}`;
+      let url = `${process.env.REACT_APP_API_BASE_URL}/admin/sales-report?email=${email}&start_date=${startDate}&end_date=${endDate}`;
       if (warehouse) url += `&warehouse_filter=${warehouse}`;
       if (category) url += `&category_filter=${category}`;
       if (product) url += `&product_filter=${product}`;
@@ -63,9 +67,9 @@ const SalesReport = () => {
       const response = await axios.get(url);
       // console.log(response.data);
       setReport(response.data.report);
-      setPage(response.data.page);
-      setPages(response.data.totalPage);
-      setRows(response.data.totalRows);
+      // setPage(response.data.page);
+      // setPages(response.data.totalPage);
+      // setRows(response.data.totalRows);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -73,9 +77,9 @@ const SalesReport = () => {
   };
 
   // console.log("SD", startDate);
-  const changePage = ({ selected }) => {
-    setPage(selected);
-  };
+  // const changePage = ({ selected }) => {
+  //   setPage(selected);
+  // };
 
   const fetchData = async () => {
     const responseWarehouse = await axios.get(
@@ -91,7 +95,7 @@ const SalesReport = () => {
     const responseCategory = await axios.get(
       `${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory`
     );
-    setCategoriesProducts(responseCategory.data.result);
+    setCategoriesProducts(responseCategory.data.allResult);
   };
 
   const createChartData = (data) => {
@@ -223,13 +227,16 @@ const SalesReport = () => {
             direction="row"
             wrap="wrap"
             justifyContent="space-between"
-            alignItems="center">
+            alignItems="center"
+          >
             <FormControl minWidth="100px" maxWidth="150px">
               <FormLabel>Warehouse</FormLabel>
               <Select
                 placeholder="Select Warehouse"
                 value={warehouse}
-                onChange={(e) => setWarehouse(e.target.value)}>
+                onChange={(e) => setWarehouse(e.target.value)}
+                disabled={role === 2}
+              >
                 {warehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.name}
@@ -242,7 +249,8 @@ const SalesReport = () => {
               <Select
                 placeholder="Select Category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}>
+                onChange={(e) => setCategory(e.target.value)}
+              >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -255,7 +263,8 @@ const SalesReport = () => {
               <Select
                 placeholder="Select Product"
                 value={product}
-                onChange={(e) => setProduct(e.target.value)}>
+                onChange={(e) => setProduct(e.target.value)}
+              >
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -332,7 +341,8 @@ const SalesReport = () => {
             <FormLabel>Time Period</FormLabel>
             <Select
               value={timePeriod}
-              onChange={(e) => setTimePeriod(e.target.value)}>
+              onChange={(e) => setTimePeriod(e.target.value)}
+            >
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>
             </Select>
@@ -341,7 +351,7 @@ const SalesReport = () => {
         </>
       </VStack>
 
-      <Flex alignItems="center" justifyContent="center">
+      {/* <Flex alignItems="center" justifyContent="center">
         <ReactPaginate
           previousLabel={"< Prev"}
           nextLabel={"Next >"}
@@ -364,7 +374,7 @@ const SalesReport = () => {
             "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
           }
         />
-      </Flex>
+      </Flex> */}
     </div>
   );
 };

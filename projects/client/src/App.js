@@ -8,7 +8,6 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import AdminWarehouseNotFound from "./pages/AdminWarehouseNotFound";
 import ProductDetails from "./pages/ProductDetails";
-import AdminList from "./pages/admin/AdminList";
 import AssignAdmin from "./pages/admin/AssignAdmin";
 import ManageAdmin from "./pages/admin/manageAdmin";
 import ManageCategoryProducts from "./pages/admin/manageCategoryProduct";
@@ -51,12 +50,13 @@ function App() {
 
   const cleanRoute = ["/user/register", "/user/verify", "/user/verify-new-password", "/user/login", "/user/reset-password", "/admin/login"].includes(location.pathname);
 
+  const token= localStorage.getItem("token")
   return (
     <div className="App">
       {/*Admin and warehouse path will have dashboard Sidebar, user will have Navbar */}
       {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? null : <Navbar />}
       <div className="flex justify-between">
-        {cleanRoute ? null : location.pathname.startsWith("/admin") || location.pathname.startsWith("/warehouse") ? <Sidebar /> : null}
+        {cleanRoute ? null : (location.pathname.startsWith("/admin") && token) || (location.pathname.startsWith("/warehouse") && token) ? <Sidebar /> : null}
 
         <Routes>
           {/*Public user's route */}
@@ -87,7 +87,6 @@ function App() {
 
           {/*Super admin's route */}
           <Route element={<SuperAdminRoutes />}>
-            <Route path="/admin/list" element={<AdminList />} />
             <Route path="/admin/assign/:id" element={<AssignAdmin />} />
             <Route path="/admin/adminuserlist" element={<UserList />} />
             <Route path="/admin/manageadmin" element={<ManageAdmin />} />

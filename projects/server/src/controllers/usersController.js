@@ -1,10 +1,11 @@
+// Import env configuration
+require("dotenv").config();
 // Import Sequelize
 const { sequelize } = require("../models");
 
 // Import models
 const db = require("../models/index");
 const users = db.users;
-const orders = db.orders;
 
 // Import verification token function
 const {
@@ -19,7 +20,6 @@ const handlebars = require("handlebars");
 const deleteFiles = require("./../helper/deleteFiles");
 // Import hash function
 const { hashPassword, hashMatch } = require("../lib/hash");
-const { error } = require("console");
 
 module.exports = {
   register: async (req, res) => {
@@ -43,7 +43,6 @@ module.exports = {
         );
         let compiledTemplate = handlebars.compile(template);
         let registerTemplate = compiledTemplate({
-          // registrationLink: "http://localhost:3000/user/verify",
           registrationLink: `${process.env.WHITELISTED_DOMAIN}/user/verify`,
           email,
           token: createVerificationToken({ id: createAccount.dataValues.id }),
@@ -181,7 +180,6 @@ module.exports = {
         );
         let compiledTemplate = handlebars.compile(template);
         let resetPasswordTemplate = compiledTemplate({
-          // resetPasswordLink: "http://localhost:3000/user/verify-new-password",
           resetPasswordLink: `${process.env.WHITELISTED_DOMAIN}/user/verify-new-password`,
           email,
           token: createToken({ id: findEmail.dataValues.id }),
@@ -245,33 +243,35 @@ module.exports = {
       //Delete old profile_picture data
       const oldPicture = response.dataValues.profile_picture;
       if (oldPicture) {
-        await fs.unlink(oldPicture, (err) => {
+        await fs.unlink(`src/${oldPicture}`, (err) => {
           if (err) throw err;
         });
       }
       //Get image path data from middleware
       // let profile_picture = req.files?.profile_picture[0]?.path;
-      let profile_picture = req.files?.profile_picture[0]?.path.replace(
-        "src\\",
-        ""
-      ); //public moved to src;
-      //Update user's profile_picture with a new one
-      await users.update(
-        {
-          profile_picture,
-        },
-        { where: { id } },
-        { transaction: t }
-      );
+      if (req.files.profile_picture) {
+        let profile_picture = req.files?.profile_picture[0]?.path.replace(
+          "src\\",
+          ""
+        ); //public moved to src;
+        //Update user's profile_picture with a new one
+        await users.update(
+          {
+            profile_picture,
+          },
+          { where: { id } },
+          { transaction: t }
+        );
 
-      t.commit();
-      res.status(201).send({
-        isError: false,
-        message: "Upload Success!",
-        data: null,
-      });
+        t.commit();
+        res.status(201).send({
+          isError: false,
+          message: "Upload Success!",
+          data: null,
+        });
+      }
     } catch (error) {
-      deleteFiles(req.files.profile_picture);
+      deleteFiles(req.files?.profile_picture);
       t.rollback();
       res.status(404).send({
         isError: true,
@@ -294,7 +294,7 @@ module.exports = {
         { transaction: t }
       );
       //Remove image from storage
-      await fs.unlink(response?.dataValues?.profile_picture, (err) => {
+      await fs.unlink("src/" + response?.dataValues?.profile_picture, (err) => {
         if (err) throw err;
       });
       t.commit();
@@ -350,7 +350,7 @@ module.exports = {
       );
 
       if (hasMatchResult === false)
-        return res.status(401).send({
+        return res.status(404).send({
           isError: true,
           message: "Invalid password",
           data: true,

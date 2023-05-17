@@ -55,7 +55,11 @@ export default function Footer() {
                 )}
               </li>
               <li>
-                <Link to="/admin/login" className="hover:underline">
+                <Link
+                  to="/admin/login"
+                  target="blank"
+                  className="hover:underline"
+                >
                   Login as admin
                 </Link>
               </li>
@@ -162,7 +166,7 @@ export default function Footer() {
           </Link>
           . All Rights Reserved.
         </span>
-        <div className="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
+        <div className="flex mt-4 space-x-6 justify-center sm:mt-0">
           <Link
             to="http://facebook.com"
             target="_blank"

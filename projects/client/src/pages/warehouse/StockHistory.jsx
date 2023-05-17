@@ -32,7 +32,6 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Axios from "axios";
-import { API_url } from "../../helper";
 import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import { useNavigate } from "react-router-dom";
@@ -47,16 +46,24 @@ const History = () => {
   const [warehouseData, setWarehouseData] = useState([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [loading, setLoading] = useState(true);
+  const [warehouseId, setWarehouseId] = useState(0);
+  const [warehouseName, setWarehouseName] = useState("");
 
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
   const navigate = useNavigate();
 
   const getHistoryData = () => {
+    let warehouse = "";
+    if (role == 1 && role) {
+      warehouse = selectedWarehouse;
+    } else if (role == 2 && role) {
+      warehouse = warehouseId;
+    }
     Axios.post(
-      API_url + `/histories/getAllHistories?page=${page}`,
+      `${process.env.REACT_APP_API_BASE_URL}/histories/getAllHistories?page=${page}`,
       {
-        warehouse: selectedWarehouse,
+        warehouse,
         month: month,
         year: year,
       },
@@ -76,13 +83,24 @@ const History = () => {
       });
   };
 
+  const getWarehouseId = () => {
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/histories/getWarehouseId`, {
+      headers: { Authorization: token },
+    })
+      .then((response) => {
+        setWarehouseId(response.data.id);
+        setWarehouseName(response.data.name);
+      })
+      .catch((error) => console.log(error));
+  };
+
   useEffect(() => {
     getHistoryData();
-  }, [selectedWarehouse, page, month, year]);
+  }, [warehouseId, role, selectedWarehouse, page, month, year]);
 
-  // const handleResetButton = () => {
-  //   setKeyword("");
-  // };
+  useEffect(() => {
+    getWarehouseId();
+  }, [role]);
 
   const showStockHistories = () => {
     return stockHistories.map((value) => {
@@ -103,13 +121,9 @@ const History = () => {
           </Td>
           <Td>{value.latestStock}</Td>
           <Td>
-            {role == 1 ? (
-              <>
-                <Button colorScheme="blue" onClick={() => navigate(`/warehouse/history-details?id=${value.products_id}`)}>
-                  View details
-                </Button>
-              </>
-            ) : null}
+            <Button colorScheme="blue" onClick={() => navigate(`/warehouse/history-details?id=${value.products_id}`)}>
+              View details
+            </Button>
           </Td>
         </Tr>
       );
@@ -142,7 +156,7 @@ const History = () => {
                       <Th>Stock In</Th>
                       <Th>Stock Out</Th>
                       <Th>Latest Stock</Th>
-                      {role == 1 ? <Th isNumeric>Action</Th> : null}
+                      <Th isNumeric>Action</Th>
                     </Tr>
                   </Thead>
                   <Tbody>{showStockHistories()}</Tbody>
@@ -151,7 +165,7 @@ const History = () => {
             </Box>
           ) : (
             <Text as="b" fontSize="xl" mt="40">
-              There was no stock changes.<br></br>You may check the filter that you are using.
+              There was no stock changes, or<br></br>you may check the filter that you are using.
             </Text>
           )}
           <Box id="sort filter and search" mx="50" mt="100">
@@ -160,12 +174,22 @@ const History = () => {
                 <VStack>
                   <FormControl>
                     <FormLabel>Warehouse:</FormLabel>
-                    <Select onChange={(element) => setSelectedWarehouse(element.target.value)}>
-                      <option value="">All Warehouse</option>
-                      {warehouseData?.map((value) => {
-                        return <option value={value.id}>{value.name}</option>;
-                      })}
-                    </Select>
+                    {role == 2 ? (
+                      <>
+                        <Select onChange={(element) => setSelectedWarehouse(element.target.value)}>
+                          <option value="">{warehouseName}</option>
+                        </Select>
+                      </>
+                    ) : (
+                      <>
+                        <Select onChange={(element) => setSelectedWarehouse(element.target.value)}>
+                          <option value="">All Warehouse</option>
+                          {warehouseData?.map((value) => {
+                            return <option value={value.id}>{value.name}</option>;
+                          })}
+                        </Select>
+                      </>
+                    )}
                   </FormControl>
                 </VStack>
               </CardBody>
