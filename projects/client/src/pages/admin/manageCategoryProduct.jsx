@@ -1,4 +1,24 @@
-import { Table, Thead, Tbody, Tr, Th, Td, IconButton, Flex, Box, Input, Button, Menu, MenuButton, MenuList, MenuItem, Icon, Text, TableCaption, useToast } from "@chakra-ui/react";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  IconButton,
+  Flex,
+  Box,
+  Input,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Icon,
+  Text,
+  TableCaption,
+  useToast,
+} from "@chakra-ui/react";
 import { EditIcon } from "@chakra-ui/icons";
 import { FaSort, FaFilter, FaPlus } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
@@ -27,15 +47,18 @@ function ManageCategoryProducts() {
 
   useEffect(() => {
     getCategoryProducts();
-  }, [page, keyword, sort, order]);
+  }, [page, keyword, sort, order, selectedCategoryId]);
 
   const getCategoryProducts = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory?search_query=${keyword}&page=${page}&limit=${limit}`, {
-      params: {
-        sort,
-        order,
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/productcategory/listproductcategory?search_query=${keyword}&page=${page}&limit=${limit}`,
+      {
+        params: {
+          sort,
+          order,
+        },
+      }
+    );
     setCategoryProducts(response.data.result);
     setPage(response.data.page);
     setPages(response.data.totalPage);
@@ -44,7 +67,9 @@ function ManageCategoryProducts() {
 
   const deleteProducts = async (id) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/productcategory/deletecategoryproduct/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/productcategory/deletecategoryproduct/${id}`
+      );
       toast({
         title: `Delete Category Success`,
         status: "success",
@@ -70,11 +95,13 @@ function ManageCategoryProducts() {
     setIsFirstModalOpen(true);
   };
 
-  const handleSecondModalOpen = () => {
+  const handleSecondModalOpen = (categoryId) => {
+    setSelectedCategoryId(categoryId);
     setIsSecondModalOpen(true);
   };
 
   const handleModalClose = () => {
+    setSelectedCategoryId(null);
     setIsFirstModalOpen(false);
     setIsSecondModalOpen(false);
   };
@@ -131,7 +158,14 @@ function ManageCategoryProducts() {
 
       <form onSubmit={searchData}>
         <Flex mt="2" size="sm">
-          <Input type="text" placeholder="Search" mr={2} width="30%" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Input
+            type="text"
+            placeholder="Search"
+            mr={2}
+            width="30%"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <Button colorScheme="blue" type="submit">
             Search
           </Button>
@@ -178,14 +212,31 @@ function ManageCategoryProducts() {
           </MenuList>
         </Menu>
 
-        <Button colorScheme="teal" size="sm" ml="auto" leftIcon={<Icon as={FaPlus} />} isDisabled={isButtonDisabled} onClick={handleFirstModalOpen}>
+        <Button
+          colorScheme="teal"
+          size="sm"
+          ml="auto"
+          leftIcon={<Icon as={FaPlus} />}
+          isDisabled={isButtonDisabled}
+          onClick={handleFirstModalOpen}
+        >
           Add Category Product
         </Button>
-        <AddCategoryProductModal isOpen={isFirstModalOpen} onClose={handleModalClose} onCategoryUpdate={handleCategoryUpdate} />
+        <AddCategoryProductModal
+          isOpen={isFirstModalOpen}
+          onClose={handleModalClose}
+          onCategoryUpdate={handleCategoryUpdate}
+        />
       </Flex>
 
       {/* fitur table */}
-      <Table variant="striped" size="sm" mt="2" textAlign="center" border="1px solid gray">
+      <Table
+        variant="striped"
+        size="sm"
+        mt="2"
+        textAlign="center"
+        border="1px solid gray"
+      >
         <TableCaption mb="2">
           Total Rows: {rows} Page: {rows ? page + 1 : 0} of {pages}
         </TableCaption>
@@ -204,7 +255,9 @@ function ManageCategoryProducts() {
                 {index + 1 + page * limit}
               </Td>
               <Td fontSize="sm">{categoryProduct.name}</Td>
-              <Td fontSize="sm">{truncateDescription(categoryProduct.description, 35)}</Td>
+              <Td fontSize="sm">
+                {truncateDescription(categoryProduct.description, 35)}
+              </Td>
               <Td>
                 <Box display="flex">
                   <IconButton
@@ -217,20 +270,28 @@ function ManageCategoryProducts() {
                     _hover={{ bg: "green.700" }}
                     isDisabled={isButtonDisabled}
                     onClick={() => {
-                      handleSecondModalOpen(true);
-                      setSelectedCategoryId(categoryProduct.id);
+                      handleSecondModalOpen(categoryProduct.id);
+                      // setSelectedCategoryId(categoryProduct.id);
                     }}
                   />
 
                   {/* button icon for delete category product */}
-                  <DeleteConfirmation onDelete={() => deleteProducts(categoryProduct.id)} isButtonDisabled={isButtonDisabled} />
+                  <DeleteConfirmation
+                    onDelete={() => deleteProducts(categoryProduct.id)}
+                    isButtonDisabled={isButtonDisabled}
+                  />
                 </Box>
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-      <PatchCategoryProduct categoryId={selectedCategoryId} isOpen={isSecondModalOpen} onClose={handleModalClose} onCategoryUpdate={handleCategoryUpdate} />
+      <PatchCategoryProduct
+        categoryId={selectedCategoryId}
+        isOpen={isSecondModalOpen}
+        onClose={handleModalClose}
+        onCategoryUpdate={handleCategoryUpdate}
+      />
 
       {/* fitur paginate */}
       <Flex alignItems="center" justifyContent="center">
@@ -240,11 +301,21 @@ function ManageCategoryProducts() {
           pageCount={Math.min(10, pages)}
           onPageChange={changePage}
           containerClassName={"flex"}
-          pageLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          previousLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          nextLinkClassName={"mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"}
-          activeLinkClassName={"mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
-          disabledLinkClassName={"mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"}
+          pageLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          previousLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          nextLinkClassName={
+            "mx-2 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+          }
+          activeLinkClassName={
+            "mx-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          }
+          disabledLinkClassName={
+            "mx-2 bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded"
+          }
         />
       </Flex>
     </div>

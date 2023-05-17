@@ -32,27 +32,22 @@ var storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
-    cb(
-      null,
-      "PIMG" +
-        "-" +
-        Date.now() +
-        Math.round(Math.random() * 1000000000) +
-        "." +
-        file.mimetype.split("/")[1]
-    ); // [image, png]
+    cb(null, "PIMG" + "-" + Date.now() + Math.round(Math.random() * 1000000000) + "." + file.mimetype.split("/")[1]); // [image, png]
   },
 });
 
 // 2. Setup File Filter
 var fileFilter = (req, file, cb) => {
-  if (file.mimetype.split("/")[0] === "image") {
-    // [image, png]
-    // Accept
+  var allowedExtensions = [".jpg", ".jpeg", ".png"]; // Daftar ekstensi yang diperbolehkan
+
+  // Memeriksa ekstensi file
+  var extension = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf("."));
+  if (allowedExtensions.includes(extension)) {
+    // File diperbolehkan
     cb(null, true);
-  } else if (file.mimetype.split("/")[0] !== "image") {
-    // Reject
-    cb(new Error("File Must Be Image!"));
+  } else {
+    // File tidak diperbolehkan
+    cb(new Error("File Must Be Image (JPG, JPEG, PNG)!"));
   }
 };
 

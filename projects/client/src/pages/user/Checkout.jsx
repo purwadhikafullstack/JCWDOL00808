@@ -371,7 +371,7 @@ const Checkout = () => {
       navigate("/user/order-list");
     } catch (error) {
       toast({
-        title: "Error adding order.",
+        title: "Product in your cart exceeds available stocks.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -648,7 +648,7 @@ const Checkout = () => {
                               mt={2}
                               fontFamily="Roboto"
                               id="courier"
-                              name="courirer"
+                              name="courier"
                               type="text"
                               placeholder="Select Courier"
                               ref={courierRef}

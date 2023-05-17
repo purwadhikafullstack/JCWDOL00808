@@ -273,59 +273,63 @@ module.exports = {
       //Get order data
       const findOrder = await orders.findByPk(id);
 
+      //Tidak jadi dipakai validasi stock karena fitur bentrok dengan accept user order
       //Get all products_id from the orders
-      const findOrderDetails = await order_details
-        .findAll({
-          attributes: ["products_id"],
-          where: { orders_id: id },
-        })
-        .then((products) => {
-          const productIds = products.map((product) => product.products_id);
-          stocks
-            .findAll({
-              where: {
-                warehouses_id: findOrder.dataValues.warehouses_id,
-                products_id: productIds,
-              },
-            })
-            .then(async (stocks) => {
-              // Check if any products have no data
-              const foundIds = stocks.map((stock) => stock.products_id);
-              const missingIds = productIds.filter(
-                (id) => !foundIds.includes(id)
-              );
-              if (missingIds.length > 0) {
-                res.status(404).send({
-                  isError: true,
-                  message: `Stock for products ID ${missingIds.join(
-                    ", "
-                  )} is not available.`,
-                  data: null,
-                });
-              } else {
-                await orders.update(
-                  { status: "Shipped" },
-                  { where: { id } },
-                  { transaction: t }
-                );
-                t.commit();
-
-                // Create the MySQL event to update the order status after 7 days
-                //     await sequelize.query(`
-                //   CREATE EVENT update_order_status_${id}
-                //   ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 7 DAY
-                //   DO
-                //     UPDATE orders SET status = 'Order confirmed' WHERE id = ${id};
-                // `);
-
-                res.status(200).send({
-                  isError: false,
-                  message: "Orders has been shipped",
-                  data: null,
-                });
-              }
-            });
-        });
+      // await order_details
+      //   .findAll({
+      //     attributes: ["products_id"],
+      //     where: { orders_id: id },
+      //   })
+      //   .then((products) => {
+      //     const productIds = products.map((product) => product.products_id);
+      //     stocks
+      //       .findAll({
+      //         where: {
+      //           warehouses_id: findOrder.dataValues.warehouses_id,
+      //           products_id: productIds,
+      //         },
+      //       })
+      //       .then(async (stocks) => {
+      //         // Check if any products have no stock
+      //         const foundStocks = stocks.map((data) => data.stock);
+      //         // Check if any products have no data
+      //         const foundIds = stocks.map((data) => data.products_id);
+      //         const missingIds = productIds.filter(
+      //           (id) => !foundIds.includes(id)
+      //         );
+      //         if (foundStocks.includes(0) || missingIds.length > 0) {
+      //           res.status(404).send({
+      //             isError: true,
+      //             message:
+      //               "One of the products is not available, please check stock on the warehouse",
+      //             data: null,
+      //           });
+      //         } else {
+      //           await orders.update(
+      //             { status: "Shipped" },
+      //             { where: { id } },
+      //             { transaction: t }
+      //           );
+      //           t.commit();
+      //           res.status(200).send({
+      //             isError: false,
+      //             message: "Orders has been shipped",
+      //             data: null,
+      //           });
+      //         }
+      //       });
+      //   });
+      await orders.update(
+        { status: "Shipped" },
+        { where: { id } },
+        { transaction: t }
+      );
+      t.commit();
+      res.status(200).send({
+        isError: false,
+        message: "Orders has been shipped",
+        data: findOrder,
+      });
     } catch (error) {
       t.rollback();
       res.status(404).send({
@@ -347,7 +351,7 @@ module.exports = {
       res.status(200).send({
         isError: false,
         message: "Get product quantity success",
-        data: productData.dataValues.quantity,
+        data: productData?.dataValues?.quantity || 0,
       });
     } catch (error) {
       res.status(404).send({

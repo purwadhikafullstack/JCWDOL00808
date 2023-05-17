@@ -7,7 +7,6 @@ const db = require("../models/index");
 const products = db.products;
 const product_categories = db.product_categories;
 const stocks = db.stocks;
-const warehouses = db.warehouses;
 
 module.exports = {
   getCategories: async (req, res) => {
@@ -116,6 +115,16 @@ module.exports = {
               )`),
               "totalStock",
             ],
+            [
+              Sequelize.literal(`(
+          SELECT SUM(stock)
+          FROM stocks
+          WHERE
+            stocks.products_id = products.id
+            AND stocks.is_deleted = 0                    
+        ) - products.booked_stock`),
+              "availableStock",
+            ],
           ],
         },
       };
@@ -133,12 +142,6 @@ module.exports = {
           query.where.name = { [Op.like]: `${color}%` };
         }
       }
-      // Add search query by name
-      // if (search) {
-      //   query.where.name = {
-      //     [Op.like]: `%${search}%`,
-      //   };
-      // }
 
       // Add category query
       if (category) {

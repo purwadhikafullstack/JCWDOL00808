@@ -32,5 +32,5 @@ export const logout = (navigate, dispatch) => {
 
 export const sessionExpired = () => {
   localStorage.clear();
-  window.location.assign("/user/login");
+  window.location.assign("/");
 };

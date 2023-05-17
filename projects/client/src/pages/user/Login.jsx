@@ -51,6 +51,7 @@ const Login = () => {
     if (isSuccess) {
       setTimeout(() => {
         navigate("/");
+        // navigate(-1) // fitur ini belum bisa digunakan dari page user/login
         dispatch(clearState());
       }, 2000);
       toast({
@@ -69,6 +70,7 @@ const Login = () => {
       dispatch(clearState());
     } else if (user) {
       navigate("/");
+      // navigate(-1) // fitur ini belum bisa digunakan dari page user/login
     }
   }, [user, isSuccess, isError, message, navigate, dispatch, toast]);
 

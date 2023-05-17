@@ -20,7 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { isAuth } from "../../apis/userAPIs";
+import { isAuth, sessionExpired } from "../../apis/userAPIs";
 import ChangePassword from "../../components/ChangePassword";
 import RemovePicConfirmation from "../../components/RemovePicConfirmation";
 import { userUpdate, userProfile } from "../../reducers/authSlice";
@@ -39,32 +39,46 @@ export default function EditProfile() {
 
   const handlePictureChange = async (event) => {
     try {
-      const image = event.target.files[0];
-      const formData = new FormData();
-      formData.append("profile_picture", image);
-      const response = await axios.patch(
-        `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`,
-        formData,
-        {
-          headers: { Authorization: token },
-        }
-      );
-      setRefresh(!refresh);
+      const image = event.target?.files[0];
+      if (image) {
+        const formData = new FormData();
+        formData.append("profile_picture", image);
+        const response = await axios.patch(
+          `${process.env.REACT_APP_API_BASE_URL}/user/profile/picture`,
+          formData,
+          {
+            headers: { Authorization: token },
+          }
+        );
+        setRefresh(!refresh);
 
-      toast({
-        title: response?.data?.message,
-        description: "Refresh page if picture not available",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+        toast({
+          title: response?.data?.message,
+          description: "Refresh page if picture not available",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
-      toast({
-        title: error?.response?.data?.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      if (error.response.status === 401) {
+        toast({
+          title: error?.response?.data?.message || error?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          sessionExpired();
+        }, 1000);
+      } else {
+        toast({
+          title: error?.response?.data?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 
@@ -84,12 +98,24 @@ export default function EditProfile() {
       });
       setRefresh(!refresh);
     } catch (error) {
-      toast({
-        title: error?.response?.data?.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      if (error.response.status === 401) {
+        toast({
+          title: error?.response?.data?.message || error?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          sessionExpired();
+        }, 1000);
+      } else {
+        toast({
+          title: error?.response?.data?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 
@@ -112,12 +138,24 @@ export default function EditProfile() {
       });
     } catch (error) {
       setIsLoading(false);
-      toast({
-        title: error?.response?.data?.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      if (error.response.status === 401) {
+        toast({
+          title: error?.response?.data?.message || error?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          sessionExpired();
+        }, 1000);
+      } else {
+        toast({
+          title: error?.response?.data?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 
@@ -185,12 +223,11 @@ export default function EditProfile() {
                 crossOrigin="true"
                 size="xl"
                 name={profile.full_name}
+                bg={"black"}
                 src={
                   profile?.profile_picture &&
                   `${process.env.REACT_APP_API_BASE_URL}/${profile?.profile_picture}`
                 }
-                border="2px"
-                borderColor="papayawhip"
               >
                 <RemovePicConfirmation
                   picture={profile?.profile_picture}

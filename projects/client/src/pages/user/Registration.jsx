@@ -5,7 +5,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  HStack,
   Heading,
   Input,
   Link,
@@ -83,8 +82,8 @@ export default function Registration() {
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}
     >
-      <HStack>
-        <img src={big4Logo} className="h-60" alt="Big4Commerce Logo" />
+      <Flex direction={["column", "row"]}>
+        <img src={big4Logo} alt="Big4Commerce Logo" />
 
         <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} w={"md"}>
           <Stack align={"center"}>
@@ -147,7 +146,7 @@ export default function Registration() {
             </Stack>
           </Box>
         </Stack>
-      </HStack>
+      </Flex>
     </Flex>
   );
 }

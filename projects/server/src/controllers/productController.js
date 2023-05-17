@@ -315,6 +315,7 @@ module.exports = {
           model: stocks,
           where: {
             warehouses_id,
+            is_deleted: 0,
             // stock: {
             //   [Op.gt]: 0,
             // },
@@ -328,6 +329,7 @@ module.exports = {
       res.status(500).json({ message: "Server error" });
     }
   },
+
   getProductsByCategoryId: async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 0;
@@ -395,7 +397,11 @@ module.exports = {
 
   getAllProducts: async (req, res) => {
     try {
-      const result = await products.findAll();
+      const result = await products.findAll({
+        where: {
+          is_deleted: 0,
+        },
+      });
 
       //replace '\' with '/'
       result.forEach((product) => {
